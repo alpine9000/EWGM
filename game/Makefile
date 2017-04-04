@@ -64,7 +64,6 @@ CFLAGS_ASM_OUTPUT=$(C_OPT_ASM_OUTPUT) $(BASE_CFLAGS)
 LEVEL_FILES=$(addsuffix .h,$(addprefix out/sprite_, $(LEVELS)))\
 	    $(addsuffix .h,$(addprefix out/tile_, $(LEVELS)))\
 	    $(addsuffix -map.c,$(addprefix out/background_, $(LEVELS)))\
-	    $(addsuffix .h,$(addprefix out/fade_in_, $(LEVELS)))\
 	    $(addsuffix .h,$(addprefix out/level_recording_, $(LEVELS)))
 MAX_P61_SIZE=$(shell ls -Sl assets/P61*.bin | awk '{print $$5}' | head -1)
 MODULE_HEADERS=$(addprefix out/, $(MODULES:.bin=.h))
@@ -139,11 +138,7 @@ $(ADF): out/bootblock.bin
 
 wb: | out version libgcc/out/gcc.lib $(ALL_TOOLS) bin/$(GAME_NAME)
 
-out/adf/logo.o: logo.c out/logo_fade_in.h out/logo_fade_out.h
-out/adf/menu.o: level.c out/menu_fade_in.h
 out/adf/level.o: level.c $(LEVEL_FILES)
-out/workbench/logo.o: logo.c out/logo_fade_in.h out/logo_fade_out.h
-out/workbench/menu.o: level.c out/menu_fade_in.h
 out/workbench/level.o: level.c $(LEVEL_FILES)
 
 
@@ -215,18 +210,6 @@ out/bootblock.bin: out/bootblock.o
 
 out/font%.bin: assets/font%.png palettes/font.pal
 	$(IMAGECON) --input $< $(IMAGECON_ARGS) --output-bitplanes --output-grey-palette-asm --output-palette-asm --output-palette --output out/font$* --colors=2 --use-palette=palettes/font.pal --full-color-palette-file --output-mask --transparent-color=0,0,0 --output-png
-
-out/fade_in_%.h: ./palettes/palette_%.pal
-	$(FADE) --steps=64 --colors=32 --from-black --to=palettes/palette_$*.pal --output=fadeIn_$* > $@
-
-out/menu_fade_in.h: ./palettes/menu.pal
-	$(FADE) --steps=64 --colors=32 --from-black --to=palettes/menu.pal --output=menuFadeIn > $@
-
-out/logo_fade_in.h: ./out/logo.pal
-	$(FADE) --steps=64 --colors=16 --from-black --to=out/logo.pal --output=logoFadeIn > $@
-
-out/logo_fade_out.h: ./out/logo.pal
-	$(FADE) --steps=64 --colors=16 --to-black --from=out/logo.pal --output=logoFadeOut > $@
 
 
 #./out/logo.pal: out/logo.bin

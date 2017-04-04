@@ -12,23 +12,63 @@ palette_black()
   palette_background = 0;
 }
 
+#define _PALETTE_RED(x) ((x >> 8) & 0xf)
+#define _PALETTE_GREEN(x) ((x >> 4) & 0xf)
+#define _PALETTE_BLUE(x) ((x) & 0xf)
+#define _PALETTE_FIXED 8
+
 void
-palette_fadeIn(uint16_t* fadeInFadeTable, uint16_t colors)
+palette_fadeTo(uint16_t* palette, uint16_t colors, uint16_t color)
 {
-  for (int16_t i = 0; i < 64; i++) {
-    for (int16_t c = 0; c < colors; c++) {
-      custom->color[c] = fadeInFadeTable[(i*colors)+c];
+  int fr = _PALETTE_RED(color) << 4;
+  int fg = _PALETTE_GREEN(color) << 4;
+  int fb = _PALETTE_BLUE(color) << 4;
+  
+  for (int i = 0; i < 64+1; i++) {
+    for (int c = 0; c < colors; c++) {
+
+      int tr = _PALETTE_RED(palette[c]);
+      int tg = _PALETTE_GREEN(palette[c]);
+      int tb = _PALETTE_BLUE(palette[c]);            
+      
+      int nr = ((fr<<_PALETTE_FIXED)+((((tr<<_PALETTE_FIXED)-(fr<<_PALETTE_FIXED))/64)*i))>>_PALETTE_FIXED;
+      int ng = ((fg<<_PALETTE_FIXED)+((((tg<<_PALETTE_FIXED)-(fg<<_PALETTE_FIXED))/64)*i))>>_PALETTE_FIXED;
+      int nb = ((fb<<_PALETTE_FIXED)+((((tb<<_PALETTE_FIXED)-(fb<<_PALETTE_FIXED))/64)*i))>>_PALETTE_FIXED;      
+
+      custom->color[c] = (nr<<8)|(ng<<4)|nb;
     }
 
     hw_waitScanLines(100);
   }
 
-  palette_background = fadeInFadeTable[63*colors];
+  palette_background = palette[0];
 }
 
-
-uint16_t
-palette_getColor(uint16_t* fadeInFadeTable, uint16_t index)
+void
+palette_fadeFrom(uint16_t* palette, uint16_t colors, uint16_t color)
 {
-  return fadeInFadeTable[(63*32)+index];
+  int tr = _PALETTE_RED(color) << 4;
+  int tg = _PALETTE_GREEN(color) << 4;
+  int tb = _PALETTE_BLUE(color) << 4;
+  
+  for (int i = 0; i < 64+1; i++) {
+    for (int c = 0; c < colors; c++) {
+
+      int fr = _PALETTE_RED(palette[c]);
+      int fg = _PALETTE_GREEN(palette[c]);
+      int fb = _PALETTE_BLUE(palette[c]);            
+      
+      int nr = ((fr<<_PALETTE_FIXED)+((((tr<<_PALETTE_FIXED)-(fr<<_PALETTE_FIXED))/64)*i))>>_PALETTE_FIXED;
+      int ng = ((fg<<_PALETTE_FIXED)+((((tg<<_PALETTE_FIXED)-(fg<<_PALETTE_FIXED))/64)*i))>>_PALETTE_FIXED;
+      int nb = ((fb<<_PALETTE_FIXED)+((((tb<<_PALETTE_FIXED)-(fb<<_PALETTE_FIXED))/64)*i))>>_PALETTE_FIXED;      
+
+      custom->color[c] = (nr<<8)|(ng<<4)|nb;
+    }
+
+    hw_waitScanLines(100);
+  }
+
+  palette_background = palette[0];
 }
+
+

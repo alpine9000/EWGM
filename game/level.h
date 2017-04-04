@@ -31,7 +31,7 @@ typedef struct {
   uint8_t spriteBitplanes[SPRITE_SHEET_WIDTH_BYTES*SCREEN_BIT_DEPTH*SPRITE_SHEET_HEIGHT];
   uint8_t spriteMask[SPRITE_SHEET_WIDTH_BYTES*SCREEN_BIT_DEPTH*SPRITE_SHEET_HEIGHT];
   uint8_t tileBitplanes[TILE_SHEET_WIDTH_BYTES*SCREEN_BIT_DEPTH*TILE_SHEET_HEIGHT];
-  uint16_t fadeIn[PALETTE_FADE_IN_SIZE];
+  uint16_t palette[32];
   uint16_t clouds;
   uint16_t moduleIndex;
 #ifdef GAME_RECORDING

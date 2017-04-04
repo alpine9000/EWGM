@@ -11,7 +11,7 @@
 #define __LEVEL_SPRITE_MASK(x)       __LEVEL_SPRITE_MASK2(x)
 #define __LEVEL_TILE2(x)             __LEVEL_STRINGIFY(out/tile_ ##x.h)
 #define __LEVEL_TILE(x)              __LEVEL_TILE2(x)
-#define __LEVEL_FADE_IN2(x)          __LEVEL_STRINGIFY(out/fade_in_ ##x.h)
+#define __LEVEL_FADE_IN2(x)          __LEVEL_STRINGIFY(out/palette_sprite_ ##x.h)
 #define __LEVEL_FADE_IN(x)           __LEVEL_FADE_IN2(x)
 #define __LEVEL_RECORDING2(x)        __LEVEL_STRINGIFY(out/level_recording_ ##x.h)
 #define __LEVEL_RECORDING(x)         __LEVEL_RECORDING2(x)
@@ -34,7 +34,7 @@ __LEVEL_DEFINITION(__LEVEL_NUMBER) =
     .tileBitplanes = {
 #include __LEVEL_TILE(__LEVEL_NUMBER)
     },
-    .fadeIn = {
+    .palette = {
 #include __LEVEL_FADE_IN(__LEVEL_NUMBER)
     },
 #ifdef GAME_RECORDING

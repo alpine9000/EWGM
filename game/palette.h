@@ -8,7 +8,8 @@ extern uint16_t palette_background;
 void 
 palette_black(void);
 void
-palette_fadeIn(uint16_t* fadeInFadeTable, uint16_t colors);
-uint16_t
-palette_getColor(uint16_t* fadeInFadeTable, uint16_t index);
+palette_fadeTo(uint16_t* palette, uint16_t colors, uint16_t colorFrom);
+void
+palette_fadeFrom(uint16_t* palette, uint16_t colors, uint16_t colorTo);
+
 #endif

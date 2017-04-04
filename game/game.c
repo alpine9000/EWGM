@@ -334,7 +334,7 @@ game_loadLevel(menu_command_t command)
 
   hw_waitVerticalBlank();
 
-  palette_fadeIn(level.fadeIn, 32);
+  palette_fadeTo(level.palette, 32, 0);
 
   hw_waitVerticalBlank();
   hw_verticalBlankCount = 0;
@@ -767,7 +767,7 @@ game_loop()
       custom->color[16] = 0xf00;
       game_turtle--;
     } else if (game_turtle == 1) {
-      custom->color[16] = palette_getColor(level.fadeIn, 16);
+      custom->color[16] = level.palette[16];
       game_turtle--;
     }
 #endif

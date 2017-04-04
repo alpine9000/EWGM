@@ -188,6 +188,7 @@ main(int argc, char** argv)
     }
   }
 
+  #if 0
   for (int s = 0; s < config.steps+1; s++) {
     printf("//.step%d\n", s);
     for (int i = 0; i < config.numColors; i++) {
@@ -210,6 +211,34 @@ main(int argc, char** argv)
 	     ((from[i].b+db)>>4));
     }
   }
+
+  #else
+
+  #define FIXED 4
+
+    for (int s = 0; s < config.steps+1; s++) {
+    printf("//.step%d\n", s);
+    for (int i = 0; i < config.numColors; i++) {
+      int dr = ((((original[i].r<<FIXED)-(from[i].r<<FIXED))/config.steps)*s)>>FIXED;
+      int dg = ((((original[i].g<<FIXED)-(from[i].g<<FIXED))/config.steps)*s)>>FIXED;
+      int db = ((((original[i].b<<FIXED)-(from[i].b<<FIXED))/config.steps)*s)>>FIXED;
+
+      if (config.verbose) {
+	printf("r:%d %d %d -> %d\n"
+	       "g:%d %d %d -> %d\n"
+	       "b:%d %d %d -> %d\n",
+	       original[i].r,from[i].r, dr, from[i].r+dr, 
+	       original[i].g,from[i].g, dg, from[i].g+dg,
+	       original[i].b,from[i].b, db, from[i].b+db);
+      }
+
+      printf("0x%03x,\n", 
+	     ((from[i].r+dr)>>4)<<8|
+	     ((from[i].g+dg)>>4)<<4|
+	     ((from[i].b+db)>>4));
+    }
+  }
+  #endif
 
   printf("//_%sFadeComplete:\n", config.output);
 }

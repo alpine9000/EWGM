@@ -80,6 +80,7 @@ palette_output(imagecon_image_t* ic, char* outFilename)
   FILE* paletteTableFP = 0;
   FILE* paletteGreyTableFP = 0;
   FILE* paletteGreyCopperFP = 0;
+  FILE* paletteC = 0;  
 
   if (config.outputCopperList) {
     fp = file_openWrite("%s-copper-list.s", outFilename);
@@ -88,6 +89,7 @@ palette_output(imagecon_image_t* ic, char* outFilename)
 
   if (config.outputPalette) {
     paletteFP = file_openWrite("%s.pal", outFilename);
+    paletteC = file_openWrite("%s/palette_%s.h", dirname(outFilename), basename(outFilename));    
   }
 
   if (config.outputPaletteGrey) {
@@ -116,6 +118,11 @@ palette_output(imagecon_image_t* ic, char* outFilename)
     if (config.verbose) {
       printf("%02d: hex=%03x r=%03d g=%03d b=%03d a=%03d\n", i , RGB24TORGB12(ic->palette[i].r) << 8 | RGB24TORGB12(ic->palette[i].g) << 4 | RGB24TORGB12(ic->palette[i].b), ic->palette[i].r, ic->palette[i].g, ic->palette[i].b, ic->palette[i].a);
     }
+
+    if (paletteC) {
+      fprintf(paletteC, "\t0x%x,\n",  RGB24TORGB12(ic->palette[i].r) << 8 | RGB24TORGB12(ic->palette[i].g) << 4 | RGB24TORGB12(ic->palette[i].b));
+    }
+    
     if (paletteFP) {
 
       if (!config.fullColorPaletteFile) {
@@ -163,6 +170,9 @@ palette_output(imagecon_image_t* ic, char* outFilename)
     fclose(paletteTableFP);
   }
 
+  if (paletteC) {
+    fclose(paletteC);
+  }
 
   if (paletteFP) {
     fclose(paletteFP);

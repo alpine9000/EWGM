@@ -39,8 +39,9 @@ uint16_t menu_selected = 0;
    .color2 = { COLOR01, c2},\
    }
 
-static uint16_t menuFadeIn[PALETTE_FADE_IN_SIZE] = {
-#include "out/menu_fade_in.h"
+
+static uint16_t menuPalette[32] = {
+  #include "out/palette_menu.h"
 };
 
 static  __section(data_c)  menu_copper_t menu_copper  = {
@@ -575,7 +576,7 @@ menu_loop(menu_mode_t mode)
 
   custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
 
-  palette_fadeIn(menuFadeIn, 32);
+  palette_fadeTo(menuPalette, 32, 0);
 
   menu_render();
 

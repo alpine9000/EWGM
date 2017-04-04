@@ -10,12 +10,8 @@ typedef struct {
   uint16_t end[2];
 } logo_copper_t;
 
-static uint16_t logoFadeIn[PALETTE_FADE_IN_SIZE] = {
-#include "out/logo_fade_in.h"
-};
-
-uint16_t logoFadeOut[PALETTE_FADE_IN_SIZE] = {
-#include "out/logo_fade_out.h"
+static uint16_t logoPalette[16] = {
+  #include "out/palette_logo.h"
 };
 
 static uint32_t logo_startFrame;
@@ -92,8 +88,8 @@ logo_display(void)
 
   custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
 
-  palette_fadeIn(logoFadeIn, 16);
-    
+  palette_fadeTo(logoPalette, 16, 0);
+  
 #if 0
   hw_waitVerticalBlank();
   custom->dmacon = DMAF_RASTER;
@@ -102,7 +98,7 @@ logo_display(void)
   menu_mode = MENU_MODE_INACTIVE;
 
   return command;
-  #endif
+#endif
 }
 
 void
@@ -112,5 +108,5 @@ logo_clear(void)
     hw_waitVerticalBlank();
   }
   
-  palette_fadeIn(logoFadeOut, 16);
+  palette_fadeFrom(logoPalette, 16, 0);
 }
