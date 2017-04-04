@@ -30,8 +30,8 @@ PROGRAM_BIN=out/main.bin
 # all the components that form the game
 C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text.c sound.c music.c keyboard.c menu.c message.c record.c  string.c hw.c hiscore.c dos.c panic.c script.c object.c object_data.c sort.c player.c enemy.c logo.c #item.c  sprite.c popup.c
 SRCS=blitmtext.s hw_asm.s trackloader.s palette_asm.s  P6112-Play.s  blittext.s music_asm.s keyboard_asm.s sg_trackdisk.s
-MODULES=P61.climbyskies_ingame_a.bin P61.climbyskies_ingame_b.bin P61.climbyskies_ingame_c.bin
-SOUND_FILES=jump.wav coin1.wav pop.wav kill.wav falling.wav jetpack.wav jetpack_coin.wav
+MODULES=P61.jojo_ingame1.bin P61.jojo_boss.bin P61.switpiano.bin
+SOUND_FILES=fathitdouble-8khz.wav finehitdouble-8khz.wav coin1.wav pop.wav
 LEVELS=1
 IMAGES=font8x8.png menu.png scoreboard.png logo.png #popup.png
 
@@ -66,7 +66,7 @@ LEVEL_FILES=$(addsuffix .h,$(addprefix out/sprite_, $(LEVELS)))\
 	    $(addsuffix -map.c,$(addprefix out/background_, $(LEVELS)))\
 	    $(addsuffix .h,$(addprefix out/fade_in_, $(LEVELS)))\
 	    $(addsuffix .h,$(addprefix out/level_recording_, $(LEVELS)))
-MAX_P61_SIZE=$(shell ls -Sl assets/P61.climby*.bin | awk '{print $$5}' | head -1)
+MAX_P61_SIZE=$(shell ls -Sl assets/P61*.bin | awk '{print $$5}' | head -1)
 MODULE_HEADERS=$(addprefix out/, $(MODULES:.bin=.h))
 IMAGEDATA=$(addprefix out/, $(IMAGES:.png=.bin))
 RAW_SOUND_FILES=$(addprefix out/, $(SOUND_FILES:.wav=.raw))
@@ -146,32 +146,20 @@ out/workbench/logo.o: logo.c out/logo_fade_in.h out/logo_fade_out.h
 out/workbench/menu.o: level.c out/menu_fade_in.h
 out/workbench/level.o: level.c $(LEVEL_FILES)
 
-#(c) Enable Software
-out/jetpack.raw: assets/jetpack.wav
+
+out/finehitdouble-8khz.raw: assets/finehitdouble-8khz.wav
 	sox -R -v 1.0 $<  -b 8 -c 1 -r 11025 $@	
 
-#http://opengameart.org/content/jump-landing-sound
-out/jump.raw: assets/jump.wav
+out/fathitdouble-8khz.raw: assets/fathitdouble-8khz.wav
 	sox -R -v 1.2 $<  -b 8 -c 1 -r 11025 $@	
 
 #http://opengameart.org/content/10-8bit-coin-sounds
 out/coin1.raw: assets/coin1.wav
 	sox -R -v 1.0 $<  -b 8 -c 1 -r 11025 $@	
 
-out/jetpack_coin.raw: assets/jetpack_coin.wav
-	sox -R -v 1.0 $<  -b 8 -c 1 -r 11025 $@	
-
 #http://opengameart.org/content/bubbles-pop
 out/pop.raw: assets/pop.wav
 	sox -R -v 1.0 $<  -b 8 -c 1 -r 11025 $@	
-
-#http://freesound.org/people/CGEffex/sounds/98341/
-out/kill.raw: assets/kill.wav
-	sox -R -v 1.2 $<  -b 8 -c 1 -r 11025 $@	
-
-#http://opengameart.org/content/512-sound-effects-8-bit-style
-out/falling.raw: assets/falling.wav
-	sox -R -v 1.2 $<  -b 8 -c 1 -r 11025 $@	
 
 
 out/adf/sprite.o: $(HSPRITE_HEADERS)
@@ -188,7 +176,7 @@ out/background_%-map.c: assets/background_%.tmx out
 	@rm background_$*-sprites.c
 
 out/sprite_%.h: assets/sprite_%.png palettes/palette_%.pal
-	$(CROPPA) --width=320 --height=360 --input=assets/sprite_$*.png --output=out/sprite_$*-resized.png
+	$(CROPPA) --width=320 --height=448 --input=assets/sprite_$*.png --output=out/sprite_$*-resized.png
 	$(IMAGECON) --quantize --colors=32 --full-color-palette --input=out/sprite_$*-resized.png --output=out/sprite_$* --output-bitplanes --output-png --output-palette --output-palette-asm --use-palette=palettes/palette_$*.pal --output-mask
 	cat out/sprite_$*.bin | $(BIN2C) > out/sprite_$*.h
 	cat out/sprite_$*-mask.bin | $(BIN2C) > out/sprite_$*-mask.h

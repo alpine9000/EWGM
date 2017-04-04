@@ -2,14 +2,9 @@
 #define __SOUND_H
 
 typedef enum {
-  SOUND_HEADSMASH = 0,
-  SOUND_LAND = 1,
+  SOUND_FINEHIT = 0,
+  SOUND_FATHIT = 1,
   SOUND_PICKUP,
-  SOUND_KILL,
-  SOUND_FALLING,
-#ifdef GAME_JETPACK
-  SOUND_JETPACK,
-#endif
   SOUND_MENU
 } sound_t;
 

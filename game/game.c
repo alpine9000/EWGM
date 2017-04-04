@@ -711,7 +711,7 @@ game_loop()
 
   logo_display();
 
-  music_play(2);
+  music_play(0);
 
   music_toggle();
   

@@ -4,8 +4,11 @@ P61mode	=2	;Try other modes ONLY IF there are no Fxx commands >= 20.
 
 ;;    ---  options common to all P61modes  ---
 
-climbyskies_ingame_usecode equ $9D59|$8559|$400000
-usecode=-1;climbyskies_ingame_usecode 
+;climbyskies_ingame_usecode equ $9D59|$8559|$400000
+jojo_ingame_usecode equ $915f
+jojo_boss_usecode equ $1518
+switpiano_usecode equ $b513
+usecode=-1;
 
 
 		;CHANGE! to the USE hexcode from P61con for a big 

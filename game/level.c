@@ -18,7 +18,7 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
   { 
     .levelData = &level_level1,
     .clouds = 0,
-    .moduleIndex = 2,
+    .moduleIndex = 0,
     .initFunctor = 0,
     .effectFunctor = 0,
   }

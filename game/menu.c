@@ -190,6 +190,10 @@ static int16_t
 menu_processKeyboard(void)
 {
   switch (keyboard_key) {
+  case 'Z':
+    music_next();
+    return -1;
+    break;
 #if TRACKLOADER==1
 #ifdef DEBUG
   case 'Y':

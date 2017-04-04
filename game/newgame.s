@@ -107,27 +107,19 @@ _logoBitplanes:
 	section data_c
 	align 4
 	if SFX==1
-	xdef _sound_jetpack
-_sound_jetpack:	
-	incbin "out/jetpack.raw"
-	xdef _sound_land
-_sound_land:	
-	incbin "out/jump.raw"
-	xdef _sound_falling
-_sound_falling:	
-	incbin "out/falling.raw"	
+	xdef _sound_fathit
+_sound_fathit:	
+	incbin "out/fathitdouble-8khz.raw"
+	xdef _sound_finehit
+_sound_finehit:	
+	incbin "out/finehitdouble-8khz.raw"
 	xdef _sound_coin
 _sound_coin:	
 	incbin "out/coin1.raw"
-	xdef _sound_jetpack_coin
-_sound_jetpack_coin:	
-	incbin "out/jetpack_coin.raw"	
 	xdef _sound_pop
 _sound_pop:	
 	incbin "out/pop.raw"
-	xdef _sound_kill
-_sound_kill:	
-	incbin "out/kill.raw"		
+
 
 	endif
 	

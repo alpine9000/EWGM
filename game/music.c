@@ -12,15 +12,15 @@ __attribute__((aligned (4))) __section(random_c) uint32_t music_module1[(MAX_P61
 __attribute__((aligned (4))) __section(random_c) uint32_t music_module2[(MAX_P61_SIZE+512)/4];
 
 static __section(section music) uint8_t music_level_a[] DISK_SECTOR_ALIGN = {
-#include "out/P61.climbyskies_ingame_a.h"
+#include "out/P61.jojo_ingame1.h"
  } ;
 
 static __section(section music) uint8_t music_level_b[] DISK_SECTOR_ALIGN = {
-#include "out/P61.climbyskies_ingame_b.h"
+#include "out/P61.jojo_boss.h"
  } ;
 
 static __section(section music) uint8_t music_level_c[] DISK_SECTOR_ALIGN = {
-#include "out/P61.climbyskies_ingame_c.h"
+#include "out/P61.switpiano.h"
  } ;
 
 typedef struct {
