@@ -1,0 +1,9 @@
+PROJECT_DIR=~/project
+INSTALL_DIR=/usr/local/amiga/vgcc
+DOWNLOADS=$(PROJECT_DIR)/downloads
+BUILD=$(PROJECT_DIR)/build
+REPOS=$(PROJECT_DIR)/repos
+LOCAL=/usr/local
+GIT=0
+AUTOCONF=0
+AUTORECONF=0
