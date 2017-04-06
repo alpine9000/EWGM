@@ -99,10 +99,10 @@ static int16_t game_debugRenderFrame;
    .wait = {     
 #if 1
      0x00e1|1, 0xfffe,
-     ((RASTER_Y_STOP-SCOREBOARD_HEIGHT-1)<<8)|0xe1, 0xfffe,
+     ((GAME_RASTER_Y_STOP-SCOREBOARD_HEIGHT-1)<<8)|0xe1, 0xfffe,
 #else
      0xffdf, 0xfffe,
-     ((RASTER_Y_STOP-SCOREBOARD_HEIGHT-256)<<8)|0xe1, 0xfffe,     
+     ((GAME_RASTER_Y_STOP-SCOREBOARD_HEIGHT-256)<<8)|0xe1, 0xfffe,     
 #endif
     },
    .sb_ddfstrt = {

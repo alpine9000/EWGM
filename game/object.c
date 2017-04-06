@@ -251,8 +251,8 @@ object_updateObject(object_t* ptr)
   ptr->x = ptr->px / OBJECT_PHYSICS_FACTOR;
   ptr->y = ptr->py / OBJECT_PHYSICS_FACTOR;  
   
-  if (ptr->y >= SCREEN_HEIGHT) {
-    ptr->y = SCREEN_HEIGHT-2;
+  if (ptr->y >= PLAYAREA_HEIGHT) {
+    ptr->y = PLAYAREA_HEIGHT-2;
     ptr->py = ptr->y * OBJECT_PHYSICS_FACTOR;
   }
 

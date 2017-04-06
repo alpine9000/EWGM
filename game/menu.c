@@ -524,9 +524,9 @@ menu_loop(menu_mode_t mode)
   hw_waitVerticalBlank();
   game_switchFrameBuffers();    
   
-  disk_loadData((void*)game_offScreenBuffer, (void*)menu_frameBuffer, MENU_SCREEN_WIDTH_BYTES*MENU_SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
+  disk_loadData((void*)game_offScreenBuffer, (void*)menu_frameBuffer, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
 
-  //memset((void*)game_offScreenBuffer, 0, MENU_SCREEN_WIDTH_BYTES*MENU_SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
+  //memset((void*)game_offScreenBuffer, 0, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
 
   if (!first) {
     while (hw_verticalBlankCount < startFrame+200) {
@@ -541,8 +541,8 @@ menu_loop(menu_mode_t mode)
   custom->dmacon = DMAF_RASTER|DMAF_SPRITE;
   game_switchFrameBuffers();  
 
-  for (uint16_t y = 0; y < MENU_SCREEN_HEIGHT; y += MENU_SCREEN_HEIGHT/8) {
-    gfx_screenWidthBitBlitNoMask(game_offScreenBuffer, game_onScreenBuffer, 0, y, 0, y, SCREEN_WIDTH, MENU_SCREEN_HEIGHT/8);
+  for (uint16_t y = 0; y < SCREEN_HEIGHT; y += SCREEN_HEIGHT/8) {
+    gfx_screenWidthBitBlitNoMask(game_offScreenBuffer, game_onScreenBuffer, 0, y, 0, y, SCREEN_WIDTH, SCREEN_HEIGHT/8);
   }
 
   palette_black();
@@ -555,7 +555,7 @@ menu_loop(menu_mode_t mode)
   /* set up playfield */
   
   custom->diwstrt = (RASTER_Y_START<<8)|RASTER_X_START;
-  custom->diwstop = ((MENU_RASTER_Y_STOP-256)<<8)|(RASTER_X_STOP-256);
+  custom->diwstop = ((SCREEN_RASTER_Y_STOP-256)<<8)|(RASTER_X_STOP-256);
 
   custom->ddfstrt = (RASTER_X_START/2-SCREEN_RES);
   custom->ddfstop = (RASTER_X_START/2-SCREEN_RES)+(8*((MENU_SCREEN_WIDTH/16)-1));

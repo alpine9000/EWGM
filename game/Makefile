@@ -1,5 +1,5 @@
 # frequently changed config items
-KEEP_ASM=1
+#KEEP_ASM=1
 USE_BIG=1
 SFX=1
 PHOTON_TRACKLOADER=0
@@ -29,8 +29,8 @@ PROGRAM_BIN=out/main.bin
 
 # all the components that form the game
 C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text.c sound.c music.c keyboard.c menu.c message.c record.c  string.c hw.c hiscore.c dos.c panic.c script.c object.c object_data.c sort.c player.c enemy.c logo.c #item.c  sprite.c popup.c
-SRCS=blitmtext.s hw_asm.s trackloader.s palette_asm.s  P6112-Play.s  blittext.s music_asm.s keyboard_asm.s sg_trackdisk.s
-MODULES=P61.jojo_ingame1.bin P61.jojo_boss.bin P61.switpiano.bin
+SRCS=blitmtext.s hw_asm.s trackloader.s palette_asm.s  P6112-Play.s music_asm.s keyboard_asm.s sg_trackdisk.s
+MODULES=P61.jojo_ingame.bin P61.jojo_boss.bin P61.switpiano.bin
 SOUND_FILES=fathitdouble-8khz.wav finehitdouble-8khz.wav coin1.wav pop.wav
 LEVELS=1
 IMAGES=font8x8.png menu.png scoreboard.png logo.png #popup.png
@@ -96,7 +96,7 @@ adf: libgcc/out/gcc.lib version bin $(ALL_TOOLS) $(ADF)
 .PHONY: version
 version:
 	@echo $(ALL_TOOLS)
-	#./version/version.sh
+	-@#./version/version.sh
 
 gdrive: all
 	cp $(ADF) ~/Google\ Drive
@@ -118,7 +118,6 @@ test: testadf
 go: testadf
 	@rm -f default.lua
 	 $(RUN_SCRIPT)
-
 
 
 goaga: testadf
@@ -242,7 +241,7 @@ out/workbench/%.o: out/%.c
 adf_big.c: $(ADF_C_OBJS) $(C_SRCS)
 	cat $(C_SRCS) > adf_big.c
 
-out/adf/big.o:  adf_big.c
+out/adf/big.o: adf_big.c
 	$(CC) -c $(CFLAGS) $(BIG_FLAGS) -DTRACKLOADER=1 adf_big.c -o $*.o
 	-@$(CC) -MM $(CFLAGS_CHECL) -DTRACKLOADER=1 adf_big.c -o $*.d
 	@mv -f $*.d $*.d.tmp
@@ -253,7 +252,7 @@ out/adf/big.o:  adf_big.c
 ifeq ($(KEEP_ASM), 1)
 	-@$(CC) -c $(CFLAGS) $(BIG_FLAGS) -DTRACKLOADER=1 adf_big.c -S -o out/adf/big.s
 endif
-	-@rm adf_big.c
+	-@#rm adf_big.c
 
 workbench_big.c: $(WORKBENCH_C_OBJS) $(C_SRCS)
 	cat $(C_SRCS) > workbench_big.c
@@ -269,7 +268,7 @@ out/workbench/big.o: workbench_big.c
 ifeq ($(KEEP_ASM), 1)
 	-@$(CC) -c $(CFLAGS) $(BIG_FLAGS) -DTRACKLOADER=0  workbench_big.c -S -o out/workbench/big.s
 endif
-	-@rm workbench_big.c
+	-@#rm workbench_big.c
 
 out/adf/%.o: %.c
 ifeq ($(KEEP_ASM),1)
@@ -312,13 +311,13 @@ out/main.bin: out/adf/main.o $(ADF_OBJS)
 	@cp $@.symbols ~/Projects/amiga/debugger.syms
 	@echo "RAM USAGE:" $$((16#`cat ~/Projects/amiga/debugger.syms | grep endRam | sed 's/0x//' | sed 's/endRam: //'`)) bytes
 ifeq ($(USE_BIG), 1)	
-	-@rm out/adf/big.o
+	-@#rm out/adf/big.o
 endif
 
 bin/$(GAME_NAME): bin $(ALL_TOOLS)  $(ALL_WORKBENCH_OBJS) 
 	$(LD) $(C_LIBS_WB) -hunkattr random_c=2 -hunkattr bss_c=2 -hunkattr code_c=2 -hunkattr data_c=2  $(ALL_WORKBENCH_OBJS) -o $@
 ifeq ($(USE_BIG), 1)	
-	-@rm out/workbench/big.o
+	-@#rm out/workbench/big.o
 endif
 	cp $@ ~/A1200/BlockySkies
 	cp $@ ~/A4000/BlockySkies

@@ -34,7 +34,7 @@ message_pokeCopperList(frame_buffer_t frameBuffer)
   for (int16_t i = 0; i < SCREEN_BIT_DEPTH; i++) {
     copperPtr[1] = (uint16_t)bitplanesPtr;
     copperPtr[3] = (uint16_t)(((uint32_t)bitplanesPtr)>>16);
-    bitplanesPtr = bitplanesPtr + (MESSAGE_SCREEN_WIDTH_BYTES);
+    bitplanesPtr = bitplanesPtr + (SCREEN_WIDTH_BYTES);
     copperPtr = copperPtr + 4;
   }
 }
@@ -44,8 +44,8 @@ void
 message_screenOn(char* message)
 {
   if (message_on) {
-    gfx_fillRectSmallScreen(game_offScreenBuffer, 0, 0, MESSAGE_SCREEN_WIDTH, MESSAGE_SCREEN_HEIGHT, 0);
-    text_drawMaskedText8Blitter(game_offScreenBuffer, message, (MESSAGE_SCREEN_WIDTH/2)-(strlen(message)*4), (MESSAGE_SCREEN_HEIGHT/2)+4);
+    gfx_fillRectSmallScreen(game_offScreenBuffer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    text_drawMaskedText8Blitter(game_offScreenBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)+4);
     hw_waitBlitter();
     custom->bltafwm = 0xffff;
     return;
@@ -61,21 +61,21 @@ message_screenOn(char* message)
 
   uint16_t volatile* copperPtr = (uint16_t*)&message_copper;
 
-  gfx_fillRectSmallScreen(game_offScreenBuffer, 0, 0, MESSAGE_SCREEN_WIDTH, MESSAGE_SCREEN_HEIGHT, 0);
-  text_drawMaskedText8Blitter(game_offScreenBuffer, message, (MESSAGE_SCREEN_WIDTH/2)-(strlen(message)*4), (MESSAGE_SCREEN_HEIGHT/2)+4);
+  gfx_fillRectSmallScreen(game_offScreenBuffer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+  text_drawMaskedText8Blitter(game_offScreenBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)+4);
   hw_waitBlitter();
   custom->bltafwm = 0xffff;
 
   /* set up playfield */
   
   custom->diwstrt = (RASTER_Y_START<<8)|RASTER_X_START;
-  custom->diwstop = ((MENU_RASTER_Y_STOP-256)<<8)|(RASTER_X_STOP-256);
+  custom->diwstop = ((SCREEN_RASTER_Y_STOP-256)<<8)|(RASTER_X_STOP-256);
 
   custom->ddfstrt = (RASTER_X_START/2-SCREEN_RES);
-  custom->ddfstop = (RASTER_X_START/2-SCREEN_RES)+(8*((MESSAGE_SCREEN_WIDTH/16)-1));
+  custom->ddfstop = (RASTER_X_START/2-SCREEN_RES)+(8*((SCREEN_WIDTH/16)-1));
   custom->bplcon0 = (SCREEN_BIT_DEPTH<<12)|0x200;
-  custom->bpl1mod = (MESSAGE_SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-MESSAGE_SCREEN_WIDTH_BYTES;
-  custom->bpl2mod = (MESSAGE_SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-MESSAGE_SCREEN_WIDTH_BYTES;
+  custom->bpl1mod = (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-SCREEN_WIDTH_BYTES;
+  custom->bpl2mod = (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-SCREEN_WIDTH_BYTES;
 
   /* install copper list, then enable dma and selected interrupts */
   custom->cop1lc = (uint32_t)copperPtr;
@@ -100,7 +100,7 @@ message_screenOff(void)
     hw_waitVerticalBlank();
     palette_black();
     
-    gfx_fillRectSmallScreen(game_onScreenBuffer, 0, 0, MESSAGE_SCREEN_WIDTH, MESSAGE_SCREEN_HEIGHT, 0);
+    gfx_fillRectSmallScreen(game_onScreenBuffer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     hw_waitBlitter();
     
     hw_waitVerticalBlank();

@@ -10,7 +10,7 @@ typedef struct {
   uint16_t end[2];
 } logo_copper_t;
 
-static uint16_t logoPalette[16] = {
+static uint16_t logoPalette[1<<LOGO_BIT_DEPTH] = {
   #include "out/palette_logo.h"
 };
 
@@ -54,7 +54,7 @@ logo_display(void)
 
   logo_startFrame = hw_verticalBlankCount;
 
-  disk_loadData((void*)game_onScreenBuffer, (void*)logo_frameBuffer, MENU_SCREEN_WIDTH_BYTES*MENU_SCREEN_HEIGHT*LOGO_BIT_DEPTH);
+  disk_loadData((void*)game_onScreenBuffer, (void*)logo_frameBuffer, SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*LOGO_BIT_DEPTH);
 
   hw_waitVerticalBlank();
   custom->dmacon = DMAF_RASTER|DMAF_SPRITE;
@@ -68,7 +68,7 @@ logo_display(void)
   /* set up playfield */
   
   custom->diwstrt = (RASTER_Y_START<<8)|RASTER_X_START;
-  custom->diwstop = ((MENU_RASTER_Y_STOP-256)<<8)|(RASTER_X_STOP-256);
+  custom->diwstop = ((SCREEN_RASTER_Y_STOP-256)<<8)|(RASTER_X_STOP-256);
   custom->ddfstrt = (RASTER_X_START/2-SCREEN_RES);
   custom->ddfstop = (RASTER_X_START/2-SCREEN_RES)+(8*((MENU_SCREEN_WIDTH/16)-1));
   custom->bplcon0 = (LOGO_BIT_DEPTH<<12)|0x200;
@@ -88,7 +88,7 @@ logo_display(void)
 
   custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
 
-  palette_fadeTo(logoPalette, 16, 0);
+  palette_fadeTo(logoPalette, 1<<LOGO_BIT_DEPTH, 0);
   
 #if 0
   hw_waitVerticalBlank();
