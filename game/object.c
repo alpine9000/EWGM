@@ -244,8 +244,6 @@ object_updateObject(object_t* ptr)
     break;
   }
   
-  ptr->lx = ptr->x;
-  ptr->ly = ptr->y;
   int16_t lastX = ptr->px;
   int16_t lastY = ptr->py;
   ptr->px += vx;
@@ -263,6 +261,7 @@ object_updateObject(object_t* ptr)
     ptr->py = ptr->y * OBJECT_PHYSICS_FACTOR;
   }
 
+  
   if (ptr->x + ptr->image->w >= WORLD_WIDTH) {
     ptr->x = WORLD_WIDTH - ptr->image->w - 1;
     ptr->px = ptr->x * OBJECT_PHYSICS_FACTOR;
@@ -272,6 +271,7 @@ object_updateObject(object_t* ptr)
   vy = ptr->py - lastY;
 
   if (ptr->state == OBJECT_STATE_ALIVE) {
+    ptr->z = ptr->y;
     if (vx || vy) {
       if (vx > 0) {
 	object_setAction(ptr, OBJECT_RUN_RIGHT);
@@ -397,8 +397,7 @@ object_render(frame_buffer_t fb)
   object_restoreBackground(fb);
   object_saveBackground(fb);  
 
-  sort_y(object_count, object_zBuffer);
-  //sort(object_zBuffer);
+  sort_z(object_count, object_zBuffer);
   
   SPEED_COLOR(0x00f);  
 
@@ -543,14 +542,11 @@ object_add(int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(object
 
 
 void
-object_hit(object_t* ptr, int16_t hpy, int16_t dx)
+object_hit(object_t* ptr, int16_t dx)
 {
   sound_queueSound(SOUND_KILL);
-  if (hpy < ptr->py) {
-    ptr->hitpy = hpy;
-  } else {
-    ptr->hitpy = ptr->py;
-  }
+  ptr->z = ptr->y;
+  ptr->hitpy = ptr->py;
   ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
   ptr->velocity.x = dx;
   ptr->state = OBJECT_STATE_HIT;

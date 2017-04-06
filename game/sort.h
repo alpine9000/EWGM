@@ -2,6 +2,6 @@
 #define __SORT_H
 
 void
-sort_y(int16_t count, object_t **d);
+sort_z(int16_t count, object_t **d);
 
 #endif

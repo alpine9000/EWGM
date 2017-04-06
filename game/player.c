@@ -78,9 +78,9 @@ player_updatePlayer(object_t* ptr)
     object_collision_t collision;
     if (object_collision2(ptr, &collision, 32, 6)) {
       if (ptr->anim->facing == FACING_RIGHT && collision.right) {
-	object_hit(collision.right, ptr->py-2, 1);
+	object_hit(collision.right, 1);
       } else if (ptr->anim->facing == FACING_LEFT && collision.left) {
-	object_hit(collision.left, ptr->py-2, -1);
+	object_hit(collision.left, -1);
       }
     }
   } else if (data->punchCount) {

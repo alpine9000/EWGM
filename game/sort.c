@@ -2,8 +2,8 @@
 
 // http://pages.ripco.net/~jgamble/nw.html
 
-#define _min(a, b) (d[a]->y<d[b]->y?d[a]:d[b])
-#define _max(a, b) (d[a]->y<d[b]->y?d[b]:d[a]) 
+#define _min(a, b) (d[a]->z<d[b]->z?d[a]:d[b])
+#define _max(a, b) (d[a]->z<d[b]->z?d[b]:d[a]) 
 #define SWAP(x,y) { object_t* a = _min(x,y);object_t* b = _max(x,y); d[x] = a; d[y] = b; }
 
 
@@ -101,7 +101,7 @@ static void sort8(object_t **d){
 }
 #endif
 
-static void(*sort_ys[OBJECT_MAX_OBJECTS+1])(object_t**) = {
+static void(*sort_zs[OBJECT_MAX_OBJECTS+1])(object_t**) = {
   sort0,
   sort0,
   sort2,
@@ -119,7 +119,7 @@ static void(*sort_ys[OBJECT_MAX_OBJECTS+1])(object_t**) = {
   
 
 void
-sort_y(int16_t count, object_t **d)
+sort_z(int16_t count, object_t **d)
 {
-  sort_ys[count](d);
+  sort_zs[count](d);
 }

@@ -179,10 +179,9 @@ typedef struct object {
   struct object* prev;
   int16_t x;
   int16_t y;
+  int16_t z;
   int16_t px;
   int16_t py;
-  int16_t lx;
-  int16_t ly;
   object_velocity_t velocity;
   int16_t imageIndex;
   object_image_t* image;
@@ -232,5 +231,5 @@ object_updateObject(object_t* ptr);
 void
 object_setAction(object_t* ptr, object_action_t action);
 void
-object_hit(object_t* ptr, int16_t hpy, int16_t dx);
+object_hit(object_t* ptr, int16_t dx);
 #endif
