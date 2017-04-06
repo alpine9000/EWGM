@@ -5,6 +5,8 @@
 #define OBJECT_HEIGHT 52
 #define OBJECT_WIDTH 32
 
+#define OBJECT_HIT_DISTANCE 25
+
 //#define OBJECT_BACKING_STORE 1
 
 #define OBJECT_MAX_OBJECTS    8
@@ -200,6 +202,12 @@ typedef struct object {
   int16_t hitpy;
 } object_t;
 
+
+typedef struct {
+  uint16_t punchCount;
+  uint16_t punchType;
+} player_data_t;
+
 typedef struct {
   object_t* up;
   object_t* down;
@@ -227,9 +235,11 @@ object_collision2(object_t* a, object_collision_t* collision, uint16_t threshold
 int16_t
 object_strikingDistanceX(object_t* a, object_t* b);
 void
-object_updateObject(object_t* ptr);
+object_updatePosition(object_t* ptr);
 void
 object_setAction(object_t* ptr, object_action_t action);
 void
 object_hit(object_t* ptr, int16_t dx);
+void
+object_updatePlayer(object_t* ptr, uint16_t punch, player_data_t* data);
 #endif

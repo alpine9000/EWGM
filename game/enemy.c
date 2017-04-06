@@ -3,6 +3,9 @@
 static object_t* enemy_player1;
 static object_t* enemy_player2;
 
+#define ENEMY_MAX 6
+
+player_data_t enemy_data[ENEMY_MAX];
 
 object_t*
 enemy_closestPlayer(object_t* ptr)
@@ -24,19 +27,28 @@ enemy_closestPlayer(object_t* ptr)
 void
 object_updateEnemy(object_t* ptr)
 {  
+
+  uint16_t punch = 0;
+  
   if (ptr->walkAbout) {
     ptr->walkAbout--;
   } else {
     object_t* player = enemy_closestPlayer(ptr);
-    object_t* collision;
-    
-    if ((collision = object_collision(ptr))) {
-      if (ptr->x & 0x1 && ptr->y & 0x1) {
-	ptr->velocity.y = ptr->y < collision->y ? -1 : 1;
-	ptr->velocity.x = 0;
-      } else {
-	ptr->velocity.x = ptr->x < collision->x ? -1 : 1;
+    object_collision_t collision;
+
+    if ((object_collision2(ptr, &collision, 20, 1))) {
+      if (collision.left) {
+	ptr->velocity.x = 1;
 	ptr->velocity.y = 0;
+      } else if (collision.right) {
+	ptr->velocity.x = -1;
+	ptr->velocity.y = 0;
+      } else if (collision.up) {
+	ptr->velocity.x = 0;
+	ptr->velocity.y = 1;
+      } else {
+	ptr->velocity.x = 0;
+	ptr->velocity.y = -1;
       }
       ptr->walkAbout = 50;
     } else {
@@ -47,11 +59,15 @@ object_updateEnemy(object_t* ptr)
       } else if (ptr->y > player->y) {
 	ptr->velocity.y = -1;
       } else {
+	if (ptr->velocity.x == 0) {
+	  punch = 1;
+	}
 	ptr->velocity.y = 0;
       }
     }
   }
-  object_updateObject(ptr);
+
+  object_updatePlayer(ptr, punch, ptr->data);
 }
 
 
@@ -60,12 +76,13 @@ enemy_init(object_t* player1, object_t * player2)
 {
   enemy_player1 = player1;
   enemy_player2 = player2;
-  if (0) {
-    object_add(10, 85, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, 0); 
-    object_add(SCREEN_WIDTH-64, 85, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, 0);
-    object_add(SCREEN_WIDTH/2, 168, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, 0);
-    object_add(64, 188, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, 0);
-    object_add(SCREEN_WIDTH-64, 85, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, 0);
-    object_add(64, 188, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, 0);
+  uint16_t i = 0;
+    object_add(10, 85, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, &enemy_data[i++]);   
+  if (1) {
+    object_add(SCREEN_WIDTH-64, 85, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, &enemy_data[i++]);
+    object_add(SCREEN_WIDTH/2, 168, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, &enemy_data[i++]);
+    object_add(64, 188, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, &enemy_data[i++]);
+    //    object_add(SCREEN_WIDTH-64, 85, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, &enemy_data[i++]);
+    //    object_add(64, 188, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, &enemy_data[i++]);
   }
 }

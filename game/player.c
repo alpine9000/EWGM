@@ -45,11 +45,6 @@ static void
 player_updatePlayer(object_t* ptr)
 {
   uint16_t punch = 0;
-
-  if (ptr->state == OBJECT_STATE_HIT) {
-    object_updateObject(ptr);
-    return;
-  }
   
   player_data_t* data = &player_data[(int)ptr->data];
   
@@ -65,63 +60,12 @@ player_updatePlayer(object_t* ptr)
     }    
   }
 
-  if (punch && data->punchCount == 0) {
-    ptr->velocity.x = 0;
-    ptr->velocity.y = 0;
-    if (ptr->anim->facing == FACING_RIGHT) {
-      object_setAction(ptr, OBJECT_PUNCH_RIGHT1 + data->punchType);
-    } else {
-      object_setAction(ptr, OBJECT_PUNCH_LEFT1 + data->punchType);
-    }
-    data->punchCount = 10;
-    data->punchType = !data->punchType;
-    object_collision_t collision;
-    if (object_collision2(ptr, &collision, 32, 6)) {
-      if (ptr->anim->facing == FACING_RIGHT && collision.right) {
-	object_hit(collision.right, 1);
-      } else if (ptr->anim->facing == FACING_LEFT && collision.left) {
-	object_hit(collision.left, -1);
-      }
-    }
-  } else if (data->punchCount) {
-    data->punchCount--;
-  } else {
-    object_collision_t collision;
-    if (object_collision2(ptr, &collision, 20, 1)) {
-      if (ptr->velocity.x > 0 && collision.right) {
-	ptr->velocity.x = 0;
-      }
-      if (ptr->velocity.x < 0 && collision.left) {
-	ptr->velocity.x = 0;
-      }
-      if (ptr->velocity.y > 0 && collision.up) {
-	ptr->velocity.y = 0;
-      }
-      if (ptr->velocity.y < 0 && collision.down) {
-	ptr->velocity.y = 0;
-      }    
-    }
-    
-    if (ptr->x - game_cameraX < -TILE_WIDTH && ptr->velocity.x < 0) {
-      ptr->velocity.x = 0;    
-    }
-    
-    object_updateObject(ptr);
-  }
-
-    
-#if 0
-  static int buttonDown = 1;
-  if (!buttonDown && JOYSTICK_BUTTON_DOWN/* && ptr->x-game_cameraX > 256*/) {
-    game_requestCameraX(game_cameraX+(SCREEN_WIDTH/3));
-  }
-  buttonDown = JOYSTICK_BUTTON_DOWN;
-#else
+  object_updatePlayer(ptr, punch, data);
+#if 0  
   if (ptr->x-game_cameraX > 256) {
     game_requestCameraX(game_cameraX+(SCREEN_WIDTH/3));
   }
 #endif
-
 }
 
 object_t*

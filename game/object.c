@@ -165,7 +165,7 @@ object_strikingDistanceX(object_t* a, object_t* b)
   int16_t a_x = a->x + (a->image->w>>2);
   int16_t b_x = b->x + (b->image->w>>2);
 
-  if (abs(a_x - b_x) > OBJECT_WIDTH) {
+  if (abs(a_x - b_x) > OBJECT_HIT_DISTANCE) {
     return (a->x > b->x) ? 1 : -1;
   }
   
@@ -184,7 +184,7 @@ object_collision2(object_t* a, object_collision_t* collision, uint16_t threshold
   collision->up = collision->down = collision->left = collision->right = 0;
 
   while (b) {
-    if (b != a) {
+    if (b != a && b->state == OBJECT_STATE_ALIVE) {
       int16_t a_x = ((a->px + a->velocity.x) / OBJECT_PHYSICS_FACTOR) + a->image->dx + (OBJECT_WIDTH>>2);
       int16_t b_x = ((b->px + b->velocity.x) / OBJECT_PHYSICS_FACTOR) + a->image->dx + (OBJECT_WIDTH>>2);
       int16_t a_y = ((a->py + a->velocity.y) / OBJECT_PHYSICS_FACTOR);
@@ -219,7 +219,7 @@ object_setAction(object_t* ptr, object_action_t action)
 
 
 void
-object_updateObject(object_t* ptr)
+object_updatePosition(object_t* ptr)
 {
   static int tooSlow = 0;
   uint32_t frame = hw_verticalBlankCount;
@@ -299,7 +299,7 @@ object_updateObject(object_t* ptr)
       ptr->velocity.x = 0;      
       ptr->state = OBJECT_STATE_ALIVE;
     } else {
-      ptr->velocity.y+= deltaT;
+      ptr->velocity.y += deltaT;
     }
   }    
 }
@@ -385,7 +385,11 @@ object_update(void)
   object_t* ptr = object_activeList;
 
   while (ptr) {
-    ptr->update(ptr);
+    if (ptr->state == OBJECT_STATE_HIT) {
+      object_updatePosition(ptr);
+    } else {
+      ptr->update(ptr);
+    }
     ptr = ptr->next;
   }
 }
@@ -554,5 +558,62 @@ object_hit(object_t* ptr, int16_t dx)
     object_setAction(ptr, OBJECT_HIT_LEFT);
   } else {
     object_setAction(ptr, OBJECT_HIT_RIGHT);
+  }
+}
+
+
+void
+object_updatePlayer(object_t* ptr, uint16_t punch, player_data_t* data)
+{
+  uint32_t frame = hw_verticalBlankCount;
+  int16_t deltaT = frame-ptr->lastUpdatedFrame;
+  
+  if (punch && data->punchCount == 0) {
+    ptr->velocity.x = 0;
+    ptr->velocity.y = 0;
+    if (ptr->anim->facing == FACING_RIGHT) {
+      object_setAction(ptr, OBJECT_PUNCH_RIGHT1 + data->punchType);
+    } else {
+      object_setAction(ptr, OBJECT_PUNCH_LEFT1 + data->punchType);
+    }
+    data->punchCount = 50;
+    data->punchType = !data->punchType;
+    object_collision_t collision;
+    if (object_collision2(ptr, &collision, OBJECT_HIT_DISTANCE, 6)) {
+      if (ptr->anim->facing == FACING_RIGHT && collision.right) {
+	object_hit(collision.right, 1);
+      } else if (ptr->anim->facing == FACING_LEFT && collision.left) {
+	object_hit(collision.left, -1);
+      }
+    }
+  } else if (data->punchCount) {
+    if (data->punchCount >= deltaT) {
+      data->punchCount-=deltaT;
+    } else {
+      data->punchCount = 0;
+    }
+    
+  } else {
+    object_collision_t collision;
+    if (object_collision2(ptr, &collision, 20, 1)) {
+      if (ptr->velocity.x > 0 && collision.right) {
+	ptr->velocity.x = 0;
+      }
+      if (ptr->velocity.x < 0 && collision.left) {
+	ptr->velocity.x = 0;
+      }
+      if (ptr->velocity.y > 0 && collision.up) {
+	ptr->velocity.y = 0;
+      }
+      if (ptr->velocity.y < 0 && collision.down) {
+	ptr->velocity.y = 0;
+      }    
+    }
+    
+    if (ptr->x - game_cameraX < -TILE_WIDTH && ptr->velocity.x < 0) {
+      ptr->velocity.x = 0;    
+    }
+    
+    object_updatePosition(ptr);
   }
 }

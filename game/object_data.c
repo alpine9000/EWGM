@@ -267,7 +267,55 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-
+  [SPRITE_PLAYER1_PUNCH_LEFT_1] = {
+    .x = 32,
+    .y = 54,
+    .w = 32,
+    .h = 53,
+    .dx = -3,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER1_PUNCH_LEFT_2] = {
+    .x = 64,
+    .y = 54,
+    .w = 32,
+    .h = 53,
+    .dx = -1,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER1_PUNCH_RIGHT_1] = {
+    .x = 128,
+    .y = 0,
+    .w = 32,
+    .h = 53,
+    .dx = 1,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER1_PUNCH_RIGHT_2] = {
+    .x = 160,
+    .y = 0,
+    .w = 32,
+    .h = 53,
+    .dx = 3,
+    .dy = 0,    
+    },
+  
+  [SPRITE_PLAYER1_HIT_RIGHT] = {
+    .x = 0,
+    .y = 54,
+    .w = 32,
+    .h = 53,
+    .dx = -2,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER1_HIT_LEFT] = {
+    .x = 192,
+    .y = 0,
+    .w = 32,
+    .h = 53,
+    .dx = 1,
+    .dy = 0,    
+    },
   //==============================
   [SPRITE_PLAYER2_STAND_RIGHT] = {
     .x = 0,
