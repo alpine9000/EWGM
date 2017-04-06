@@ -176,40 +176,42 @@ object_strikingDistanceX(object_t* a, object_t* b)
 
 //static
 int16_t
-object_collision2(object_t* a, object_movement_t* movement)
+object_collision2(object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy)
 {
-  int16_t collision = 0;
+  int16_t _collision = 0;
   object_t* b = object_activeList;
 
-  movement->up = movement->down = movement->left = movement->right = 1;
+  collision->up = collision->down = collision->left = collision->right = 0;
 
   while (b) {
     if (b != a) {
-      int16_t a_x = a->x + (OBJECT_WIDTH>>2);
-      int16_t b_x = b->x + (OBJECT_WIDTH>>2);
+      int16_t a_x = ((a->px + a->velocity.x) / OBJECT_PHYSICS_FACTOR) + a->image->dx + (OBJECT_WIDTH>>2);
+      int16_t b_x = ((b->px + b->velocity.x) / OBJECT_PHYSICS_FACTOR) + a->image->dx + (OBJECT_WIDTH>>2);
+      int16_t a_y = ((a->py + a->velocity.y) / OBJECT_PHYSICS_FACTOR);
+      int16_t b_y = ((b->py + b->velocity.y) / OBJECT_PHYSICS_FACTOR);      
       
-      if (abs(a_x - b_x) <= 20 && abs(a->y - b->y) <= 1) {
-	if (b->y >= a->y) {
-	  movement->up = 0;
-	} else if (b->y < a->y) {
-	  movement->down = 0;
+      if (abs(a_x - b_x) <= thresholdx && abs(a_y - b_y) <= thresholdy) {
+	if (b_y >= a_y) {
+	  collision->up = b;
+	} else if (b_y < a_y) {
+	  collision->down = b;
 	}
-	if (b->x >= a->x) {
-	  movement->right = 0;
-	} else if (b->x < a->x) {
-	  movement->left = 0;
+	if (b_x >= a_x) {
+	  collision->right = b;
+	} else if (b_x < a_x) {
+	  collision->left = b;
 	}      
-	collision = 1;
+	_collision = 1;
       }
     }
     b = b->next;
   }
   
-  return collision;
+  return _collision;
 }
 
 
-static void
+void
 object_setAction(object_t* ptr, object_action_t action)
 {
   object_setAnim(ptr, ptr->baseId + action);
@@ -269,25 +271,37 @@ object_updateObject(object_t* ptr)
   vx = ptr->px - lastX;
   vy = ptr->py - lastY;
 
-  if (vx || vy) {
-    if (vx > 0) {
-      object_setAction(ptr, OBJECT_RUN_RIGHT);
-    } else if (vx < 0) {
-      object_setAction(ptr, OBJECT_RUN_LEFT);
+  if (ptr->state == OBJECT_STATE_ALIVE) {
+    if (vx || vy) {
+      if (vx > 0) {
+	object_setAction(ptr, OBJECT_RUN_RIGHT);
+      } else if (vx < 0) {
+	object_setAction(ptr, OBJECT_RUN_LEFT);
+      } else {
+	if (ptr->anim->facing == FACING_RIGHT) {
+	  object_setAction(ptr, OBJECT_RUN_RIGHT);
+	} else {
+	  object_setAction(ptr, OBJECT_RUN_LEFT);
+	}
+      }
     } else {
       if (ptr->anim->facing == FACING_RIGHT) {
-	object_setAction(ptr, OBJECT_RUN_RIGHT);
+	object_setAction(ptr, OBJECT_STAND_RIGHT);
       } else {
-	object_setAction(ptr, OBJECT_RUN_LEFT);
+	object_setAction(ptr, OBJECT_STAND_LEFT);
       }
     }
-  } else {
-    if (ptr->anim->facing == FACING_RIGHT) {
-      object_setAction(ptr, OBJECT_STAND_RIGHT);
+  } else if (ptr->state == OBJECT_STATE_HIT) {
+    if (ptr->py >= ptr->hitpy) {
+      ptr->py = ptr->hitpy;
+      ptr->y = ptr->py / OBJECT_PHYSICS_FACTOR;
+      ptr->velocity.y = 0;
+      ptr->velocity.x = 0;      
+      ptr->state = OBJECT_STATE_ALIVE;
     } else {
-      object_setAction(ptr, OBJECT_STAND_LEFT);
+      ptr->velocity.y+= deltaT;
     }
-  }
+  }    
 }
 
 
@@ -528,3 +542,21 @@ object_add(int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(object
 }
 
 
+void
+object_hit(object_t* ptr, int16_t hpy, int16_t dx)
+{
+  sound_queueSound(SOUND_KILL);
+  if (hpy < ptr->py) {
+    ptr->hitpy = hpy;
+  } else {
+    ptr->hitpy = ptr->py;
+  }
+  ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
+  ptr->velocity.x = dx;
+  ptr->state = OBJECT_STATE_HIT;
+  if (dx >= 0) {
+    object_setAction(ptr, OBJECT_HIT_LEFT);
+  } else {
+    object_setAction(ptr, OBJECT_HIT_RIGHT);
+  }
+}

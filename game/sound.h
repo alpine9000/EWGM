@@ -2,7 +2,7 @@
 #define __SOUND_H
 
 typedef enum {
-  SOUND_FINEHIT = 0,
+  SOUND_KILL = 0,
   SOUND_FATHIT = 1,
   SOUND_PICKUP,
   SOUND_MENU

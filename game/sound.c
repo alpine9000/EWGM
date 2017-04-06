@@ -3,10 +3,10 @@
 #define SOUND_LATCH_SCANLINES 5
 
 #if SFX==1
-extern UWORD sound_finehit, sound_fathit, sound_coin, sound_pop;
+extern UWORD sound_kill, sound_fathit, sound_coin, sound_pop;
 
 static void 
-sound_playFineHit(void);
+sound_playKill(void);
 static void
 sound_playFatHit(void);
 static void
@@ -30,12 +30,12 @@ static sound_config_t sound_queue[] = {
     .loop = 0,
     .play = &sound_playFatHit
   },
-  [SOUND_FINEHIT] = {
+  [SOUND_KILL] = {
     .count = 0,
-    .delay = 2,
-    .interrupt = 0,
+    .delay = 1,
+    .interrupt = 1,
     .loop = 0,
-    .play = &sound_playFineHit
+    .play = &sound_playKill
   },
   [SOUND_PICKUP] = {
     .count = 0,
@@ -56,15 +56,16 @@ static sound_config_t sound_queue[] = {
 static int16_t sound_next = -1;
 static int16_t sound_loop = -1;
 
+
 static void 
-sound_playFineHit(void)
+sound_playKill(void)
 {
   volatile struct AudChannel *aud = &custom->aud[3];
   
-  aud->ac_ptr = &sound_finehit;
+  aud->ac_ptr = &sound_kill;
   aud->ac_per = 321;
   aud->ac_vol = 64;
-  aud->ac_len = 4384/2;
+  aud->ac_len = 3509/2;
   custom->dmacon = DMAF_AUD3|DMAF_SETCLR;
 }
 

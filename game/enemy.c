@@ -60,7 +60,7 @@ enemy_init(object_t* player1, object_t * player2)
 {
   enemy_player1 = player1;
   enemy_player2 = player2;
-  if (1) {
+  if (0) {
     object_add(10, 85, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, 0); 
     object_add(SCREEN_WIDTH-64, 85, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, 0);
     object_add(SCREEN_WIDTH/2, 168, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, 0);

@@ -41,6 +41,8 @@ hw_getRasterLine(void);
 
 extern volatile uint8_t hw_lastJoystickButton;
 extern volatile uint8_t hw_joystickButton;
+extern volatile uint8_t hw_lastJoystick2Button;
+extern volatile uint8_t hw_joystick2Button;
 extern volatile uint8_t hw_joystickPos;
 extern volatile uint8_t hw_joystick2Pos;
 extern volatile uint32_t hw_verticalBlankCount;

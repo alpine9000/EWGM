@@ -24,6 +24,8 @@ potgor    = $dff016
 bit_joyb1 = 7
 bit_joyb2 = 14
 
+bit_joy2b1 = 6
+
 __hw_waitBlitter:
 	move.l	a6,-(sp)
 	lea 	CUSTOM,a6
@@ -132,7 +134,7 @@ _hw_readJoystick2:
 	btst    #bit_joyb2&7,potgor
         seq     d0
 	add.w   d0,d0
-	btst    #bit_joyb1,ciaa_pra
+	btst    #bit_joy2b1,ciaa_pra
         seq     d0
 	add.w   d0,d0
 	move.w  _joy0dat,d1

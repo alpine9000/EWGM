@@ -1,5 +1,7 @@
 #include "game.h"
 
+player_data_t player_data[2];
+
 static void
 player_processJoystick(object_t * ptr, uint8_t joystickPos)
 {
@@ -42,35 +44,72 @@ player_processJoystick(object_t * ptr, uint8_t joystickPos)
 static void
 player_updatePlayer(object_t* ptr)
 {
+  uint16_t punch = 0;
+
+  if (ptr->state == OBJECT_STATE_HIT) {
+    object_updateObject(ptr);
+    return;
+  }
+  
+  player_data_t* data = &player_data[(int)ptr->data];
+  
   if (ptr->data == 0) {
     player_processJoystick(ptr, hw_joystickPos);
+    if (hw_joystickButton != hw_lastJoystickButton) {
+      punch = hw_joystickButton & 0x1;
+    }
   } else {
     player_processJoystick(ptr, hw_joystick2Pos);
-  }
-
-  object_movement_t movement;
-  if (object_collision2(ptr, &movement)) {
-    if (ptr->velocity.x > 0 && !movement.right) {
-      ptr->velocity.x = 0;
-    }
-    if (ptr->velocity.x < 0 && !movement.left) {
-      ptr->velocity.x = 0;
-    }
-    if (ptr->velocity.y > 0 && !movement.up) {
-      ptr->velocity.y = 0;
-    }
-    if (ptr->velocity.y < 0 && !movement.down) {
-      ptr->velocity.y = 0;
+    if (hw_joystick2Button != hw_lastJoystick2Button) {
+      punch = hw_joystick2Button & 0x1;
     }    
   }
 
-  if (ptr->x - game_cameraX < -TILE_WIDTH && ptr->velocity.x < 0) {
-    ptr->velocity.x = 0;    
+  if (punch && data->punchCount == 0) {
+    ptr->velocity.x = 0;
+    ptr->velocity.y = 0;
+    if (ptr->anim->facing == FACING_RIGHT) {
+      object_setAction(ptr, OBJECT_PUNCH_RIGHT1 + data->punchType);
+    } else {
+      object_setAction(ptr, OBJECT_PUNCH_LEFT1 + data->punchType);
+    }
+    data->punchCount = 10;
+    data->punchType = !data->punchType;
+    object_collision_t collision;
+    if (object_collision2(ptr, &collision, 32, 6)) {
+      if (ptr->anim->facing == FACING_RIGHT && collision.right) {
+	object_hit(collision.right, ptr->py-2, 1);
+      } else if (ptr->anim->facing == FACING_LEFT && collision.left) {
+	object_hit(collision.left, ptr->py-2, -1);
+      }
+    }
+  } else if (data->punchCount) {
+    data->punchCount--;
+  } else {
+    object_collision_t collision;
+    if (object_collision2(ptr, &collision, 20, 1)) {
+      if (ptr->velocity.x > 0 && collision.right) {
+	ptr->velocity.x = 0;
+      }
+      if (ptr->velocity.x < 0 && collision.left) {
+	ptr->velocity.x = 0;
+      }
+      if (ptr->velocity.y > 0 && collision.up) {
+	ptr->velocity.y = 0;
+      }
+      if (ptr->velocity.y < 0 && collision.down) {
+	ptr->velocity.y = 0;
+      }    
+    }
+    
+    if (ptr->x - game_cameraX < -TILE_WIDTH && ptr->velocity.x < 0) {
+      ptr->velocity.x = 0;    
+    }
+    
+    object_updateObject(ptr);
   }
-  
-  object_updateObject(ptr);
 
-  
+    
 #if 0
   static int buttonDown = 1;
   if (!buttonDown && JOYSTICK_BUTTON_DOWN/* && ptr->x-game_cameraX > 256*/) {
@@ -88,5 +127,8 @@ player_updatePlayer(object_t* ptr)
 object_t*
 player_init(uint32_t id, uint16_t animId, int16_t x)
 {
+  player_data_t* data = &player_data[id];
+  data->punchType = 0;
+  data->punchCount = 0;
   return object_add(x, 100, 0, animId, player_updatePlayer, (void*)id);
 }

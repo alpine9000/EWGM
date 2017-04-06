@@ -31,7 +31,7 @@ PROGRAM_BIN=out/main.bin
 C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text.c sound.c music.c keyboard.c menu.c message.c record.c  string.c hw.c hiscore.c dos.c panic.c script.c object.c object_data.c sort.c player.c enemy.c logo.c #item.c  sprite.c popup.c
 SRCS=blitmtext.s hw_asm.s trackloader.s palette_asm.s  P6112-Play.s music_asm.s keyboard_asm.s sg_trackdisk.s
 MODULES=P61.jojo_ingame.bin P61.jojo_boss.bin P61.switpiano.bin
-SOUND_FILES=fathitdouble-8khz.wav finehitdouble-8khz.wav coin1.wav pop.wav
+SOUND_FILES=fathitdouble-8khz.wav kill.wav coin1.wav pop.wav #finehitdouble-8khz.wav
 LEVELS=1
 IMAGES=font8x8.png menu.png scoreboard.png logo.png #popup.png
 
@@ -140,9 +140,12 @@ wb: | out version libgcc/out/gcc.lib $(ALL_TOOLS) bin/$(GAME_NAME)
 out/adf/level.o: level.c $(LEVEL_FILES)
 out/workbench/level.o: level.c $(LEVEL_FILES)
 
+#http://freesound.org/people/CGEffex/sounds/98341/
+out/kill.raw: assets/kill.wav
+	sox -R -v 1.2 $<  -b 8 -c 1 -r 11025 $@	
 
-out/finehitdouble-8khz.raw: assets/finehitdouble-8khz.wav
-	sox -R -v 1.0 $<  -b 8 -c 1 -r 11025 $@	
+#out/finehitdouble-8khz.raw: assets/finehitdouble-8khz.wav
+#	sox -R -v 1.0 $<  -b 8 -c 1 -r 11025 $@	
 
 out/fathitdouble-8khz.raw: assets/fathitdouble-8khz.wav
 	sox -R -v 1.2 $<  -b 8 -c 1 -r 11025 $@	
