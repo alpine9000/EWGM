@@ -273,7 +273,9 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
   }
 
   if (w > 0 && h > 0) {
-    gfx_renderSprite(fb, sx, sy, screenx, screeny, w, h);
+    if (ptr->visible) {
+      gfx_renderSprite(fb, sx, sy, screenx, screeny, w, h);
+    }
   }
 
 }
@@ -411,6 +413,7 @@ object_add(int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16
 
   object_t* ptr = object_getFree();
   ptr->state = OBJECT_STATE_ALIVE;
+  ptr->visible = 1;
   ptr->velocity.x = dx;
   ptr->velocity.y = 0;
 #ifdef OBJECT_BACKING_STORE

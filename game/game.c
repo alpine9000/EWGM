@@ -314,9 +314,10 @@ game_loadLevel(menu_command_t command)
     break;
   }
 #endif
-  
-  object_init();
 
+  object_init();
+  fighter_init();
+  
   object_t* player1 = player_init(0, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80);
   object_t* player2 = 0;
   if (game_numPlayers == 2) {

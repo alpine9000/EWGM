@@ -5,7 +5,7 @@
 #define OBJECT_HEIGHT 52
 #define OBJECT_WIDTH 32
 
-#define OBJECT_HIT_DISTANCE 25
+#define OBJECT_HIT_DISTANCE 28
 
 //#define OBJECT_BACKING_STORE 1
 
@@ -127,7 +127,8 @@ typedef enum {
   OBJECT_STATE_ALIVE,
   OBJECT_STATE_REMOVED,
   OBJECT_STATE_DEAD,
-  OBJECT_STATE_HIT
+  OBJECT_STATE_HIT,
+  OBJECT_STATE_FLASHING
 } object_state_t;
 
 typedef struct {
@@ -197,6 +198,7 @@ typedef struct object {
   void (*update)(uint16_t deltaT, struct object* ptr);
   void* data;
   uint32_t lastUpdatedFrame;
+  uint16_t visible;
 } object_t;
 
 
@@ -259,8 +261,8 @@ object_set_px(object_t* ptr, int16_t px)
   ptr->_x = ptr->_px / OBJECT_PHYSICS_FACTOR;
 
   /* TODO: player width, not image width */
-  if (ptr->_x + ptr->image->w >= SCREEN_WIDTH) {
-    ptr->_x = SCREEN_WIDTH - ptr->image->w - 1;
+  if (ptr->_x + OBJECT_WIDTH >= SCREEN_WIDTH) {
+    ptr->_x = SCREEN_WIDTH - OBJECT_WIDTH - 1;
     ptr->_px = ptr->_x * OBJECT_PHYSICS_FACTOR;
   }
 }
