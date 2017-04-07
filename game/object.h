@@ -179,11 +179,11 @@ typedef struct {
 typedef struct object {
   struct object* next;
   struct object* prev;
-  int16_t x;
-  int16_t y;
-  int16_t z;
-  int16_t px;
-  int16_t py;
+  int16_t _x;
+  int16_t _y;
+  int16_t _z;
+  int16_t _px;
+  int16_t _py;
   object_velocity_t velocity;
   int16_t imageIndex;
   object_image_t* image;
@@ -194,19 +194,11 @@ typedef struct object {
   uint16_t frameCounter;
   uint16_t deadRenderCount;
   uint16_t state;
-  void (*update)(struct object* ptr);
+  void (*update)(uint16_t deltaT, struct object* ptr);
   void* data;
-  int16_t walkAbout; // todo: move to enemy data
   uint32_t lastUpdatedFrame;
-
-  int16_t hitpy;
 } object_t;
 
-
-typedef struct {
-  uint16_t punchCount;
-  uint16_t punchType;
-} player_data_t;
 
 typedef struct {
   object_t* up;
@@ -221,25 +213,79 @@ extern object_animation_t object_animations[];
 void
 object_init(void);
 object_t*
-object_add(int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(object_t* ptr), void* data);
+object_add(int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data);
 void
 object_render(frame_buffer_t fb);
 void
 object_saveBackground(frame_buffer_t fb);
 void
 object_restoreBackground(frame_buffer_t fb);
-object_t*
-object_collision(object_t* a);
 int16_t
-object_collision2(object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy);
-int16_t
-object_strikingDistanceX(object_t* a, object_t* b);
+object_collision(object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy);
 void
-object_updatePosition(object_t* ptr);
+object_updatePosition(uint16_t deltaT, object_t* ptr);
 void
 object_setAction(object_t* ptr, object_action_t action);
-void
-object_hit(object_t* ptr, int16_t dx);
-void
-object_updatePlayer(object_t* ptr, uint16_t punch, player_data_t* data);
+
+inline static int16_t
+object_x(object_t* ptr) {
+  return ptr->_x;
+}
+
+inline static int16_t
+object_y(object_t* ptr) {
+  return ptr->_y;
+}
+
+inline static int16_t
+object_z(object_t* ptr) {
+  return ptr->_z;
+}
+
+inline static int16_t
+object_px(object_t* ptr) {
+  return ptr->_px;
+}
+
+inline static int16_t
+object_py(object_t* ptr) {
+  return ptr->_py;
+}
+
+inline static void
+object_set_px(object_t* ptr, int16_t px)
+{
+  ptr->_px = px;  
+  ptr->_x = ptr->_px / OBJECT_PHYSICS_FACTOR;
+
+  /* TODO: player width, not image width */
+  if (ptr->_x + ptr->image->w >= SCREEN_WIDTH) {
+    ptr->_x = SCREEN_WIDTH - ptr->image->w - 1;
+    ptr->_px = ptr->_x * OBJECT_PHYSICS_FACTOR;
+  }
+}
+
+inline static void
+object_set_py(object_t* ptr, int16_t py)
+{
+  ptr->_py = py;  
+  ptr->_y = ptr->_py / OBJECT_PHYSICS_FACTOR;
+
+  if (ptr->_y >= PLAYAREA_HEIGHT) {
+    ptr->_y = PLAYAREA_HEIGHT-2;
+    ptr->_py = ptr->_y * OBJECT_PHYSICS_FACTOR;
+  }
+
+  if ((ptr->_y-ptr->image->h) <= 0) {
+    ptr->_y = ptr->image->h;
+    ptr->_py = ptr->_y * OBJECT_PHYSICS_FACTOR;
+  }
+}
+
+inline static void
+object_set_z(object_t* ptr, int16_t z)
+{
+  ptr->_z = z;
+}
+
 #endif

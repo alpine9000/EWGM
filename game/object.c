@@ -1,40 +1,17 @@
 #include "game.h"
 
-#define object_screenx(ptr) (ptr->image->dx + 0xf + ptr->x-game_cameraX-game_screenScrollX)
-#define object_screeny(ptr) (ptr->image->dy + (ptr->y-ptr->image->h))
-
+#define object_screenx(ptr) (ptr->image->dx + 0xf + ptr->_x-game_cameraX-game_screenScrollX)
+#define object_screeny(ptr) (ptr->image->dy + (ptr->_y-ptr->image->h))
 
 #define SPEED_COLOR(x)
 //#define SPEED_COLOR(x) (custom->color[0]=x)
 
-
-
 static int16_t object_count;
 static object_t* object_activeList;
 static object_t* object_freeList;
-
 static __section(random_c) object_t object_buffer[OBJECT_MAX_OBJECTS];
 static object_t* object_zBuffer[OBJECT_MAX_OBJECTS];
 
-
-
-//static
-void sort(object_t** d)
-{  
-  int16_t j, i, imin;
-  object_t *tmp;
-  for (j = 0 ; j < object_count-1; j++){
-    imin = j;
-    for (i = j + 1; i < object_count; i++){
-      if (d[i]->y < d[imin]->y){
-	imin = i;
-      }
-    }
-    tmp = d[j];
-    d[j] = d[imin];
-    d[imin] = tmp;
-  }
-}
 
 static object_t*
 object_getFree(void)
@@ -102,6 +79,7 @@ object_remove(object_t* ptr)
   }
 }
 
+
 static void
 object_setAnim(object_t* ptr, int16_t anim)
 {
@@ -114,69 +92,9 @@ object_setAnim(object_t* ptr, int16_t anim)
   }
 }
 
-static inline int16_t
-object_aabb(object_t* a, object_t* b)
-{
-#define COLLISION_FUZZY_X 0
-#define COLLISION_FUZZY_Y 0  
-#define COLLISION_FUZZY_WIDTH 0
-#define COLLISION_FUZZY_HEIGHT 0
-
-  if (a != b) {
-    int16_t x1 = a->x + COLLISION_FUZZY_X;
-    int16_t w1 = OBJECT_WIDTH-(COLLISION_FUZZY_WIDTH);
-    int16_t x2 = b->x + COLLISION_FUZZY_X;
-    int16_t w2 = OBJECT_WIDTH - (COLLISION_FUZZY_WIDTH);
-    int16_t y1 = a->y + COLLISION_FUZZY_Y;
-    int16_t h1 = 2 - (COLLISION_FUZZY_HEIGHT);
-    int16_t y2 = b->y + COLLISION_FUZZY_Y;
-    int16_t h2 = 2 - (COLLISION_FUZZY_HEIGHT);
-    
-    if (x1 < x2 + w2 &&
-	x1 + w1 > x2 &&
-	y1 < y2 + h2 &&
-	h1 + y1 > y2) {
-      return 1;
-    }
-  }
-  return 0;
-}
-
-
-object_t*
-object_collision(object_t* a)
-{
-  object_t* ptr = object_activeList;
-
-  while (ptr) {    
-    if (object_aabb(a, ptr)) {
-      return ptr;
-    }
-    ptr = ptr->next;
-  }
-  
-  return 0;
-}
-
 
 int16_t
-object_strikingDistanceX(object_t* a, object_t* b)
-{
-  int16_t a_x = a->x + (a->image->w>>2);
-  int16_t b_x = b->x + (b->image->w>>2);
-
-  if (abs(a_x - b_x) > OBJECT_HIT_DISTANCE) {
-    return (a->x > b->x) ? 1 : -1;
-  }
-  
-  return 0;
-}
-
-
-
-//static
-int16_t
-object_collision2(object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy)
+object_collision(object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy)
 {
   int16_t _collision = 0;
   object_t* b = object_activeList;
@@ -185,10 +103,10 @@ object_collision2(object_t* a, object_collision_t* collision, uint16_t threshold
 
   while (b) {
     if (b != a && b->state == OBJECT_STATE_ALIVE) {
-      int16_t a_x = ((a->px + a->velocity.x) / OBJECT_PHYSICS_FACTOR) + a->image->dx + (OBJECT_WIDTH>>2);
-      int16_t b_x = ((b->px + b->velocity.x) / OBJECT_PHYSICS_FACTOR) + a->image->dx + (OBJECT_WIDTH>>2);
-      int16_t a_y = ((a->py + a->velocity.y) / OBJECT_PHYSICS_FACTOR);
-      int16_t b_y = ((b->py + b->velocity.y) / OBJECT_PHYSICS_FACTOR);      
+      int16_t a_x = ((object_px(a) + a->velocity.x) / OBJECT_PHYSICS_FACTOR) + a->image->dx + (OBJECT_WIDTH>>2);
+      int16_t b_x = ((object_px(b) + b->velocity.x) / OBJECT_PHYSICS_FACTOR) + a->image->dx + (OBJECT_WIDTH>>2);
+      int16_t a_y = ((object_py(a) + a->velocity.y) / OBJECT_PHYSICS_FACTOR);
+      int16_t b_y = ((object_py(b) + b->velocity.y) / OBJECT_PHYSICS_FACTOR);      
       
       if (abs(a_x - b_x) <= thresholdx && abs(a_y - b_y) <= thresholdy) {
 	if (b_y >= a_y) {
@@ -219,12 +137,9 @@ object_setAction(object_t* ptr, object_action_t action)
 
 
 void
-object_updatePosition(object_t* ptr)
+object_updatePosition(uint16_t deltaT, object_t* ptr)
 {
   static int tooSlow = 0;
-  uint32_t frame = hw_verticalBlankCount;
-  int16_t deltaT = frame-ptr->lastUpdatedFrame;
-  ptr->lastUpdatedFrame = frame;
   int16_t vx = ptr->velocity.x;
   int16_t vy = ptr->velocity.y;
 
@@ -244,34 +159,18 @@ object_updatePosition(object_t* ptr)
     break;
   }
   
-  int16_t lastX = ptr->px;
-  int16_t lastY = ptr->py;
-  ptr->px += vx;
-  ptr->py += vy;
-  ptr->x = ptr->px / OBJECT_PHYSICS_FACTOR;
-  ptr->y = ptr->py / OBJECT_PHYSICS_FACTOR;  
-  
-  if (ptr->y >= PLAYAREA_HEIGHT) {
-    ptr->y = PLAYAREA_HEIGHT-2;
-    ptr->py = ptr->y * OBJECT_PHYSICS_FACTOR;
-  }
-
-  if (0 && (ptr->y-ptr->image->h) <= 0) {
-    ptr->y = ptr->image->h;
-    ptr->py = ptr->y * OBJECT_PHYSICS_FACTOR;
-  }
-
-  
-  if (ptr->x + ptr->image->w >= WORLD_WIDTH) {
-    ptr->x = WORLD_WIDTH - ptr->image->w - 1;
-    ptr->px = ptr->x * OBJECT_PHYSICS_FACTOR;
-  }
-  
-  vx = ptr->px - lastX;
-  vy = ptr->py - lastY;
+  int16_t lastX = object_px(ptr);
+  int16_t lastY = object_py(ptr);
+  object_set_px(ptr, lastX + vx);
+  object_set_py(ptr, lastY + vy);
+  //  ptr->x = ptr->px / OBJECT_PHYSICS_FACTOR;
+  //ptr->y = ptr->py / OBJECT_PHYSICS_FACTOR;  
+    
+  vx = object_px(ptr) - lastX;
+  vy = object_py(ptr) - lastY;
 
   if (ptr->state == OBJECT_STATE_ALIVE) {
-    ptr->z = ptr->y;
+    object_set_z(ptr, object_y(ptr));
     if (vx || vy) {
       if (vx > 0) {
 	object_setAction(ptr, OBJECT_RUN_RIGHT);
@@ -291,17 +190,17 @@ object_updatePosition(object_t* ptr)
 	object_setAction(ptr, OBJECT_STAND_LEFT);
       }
     }
-  } else if (ptr->state == OBJECT_STATE_HIT) {
-    if (ptr->py >= ptr->hitpy) {
-      ptr->py = ptr->hitpy;
-      ptr->y = ptr->py / OBJECT_PHYSICS_FACTOR;
+  }/* else if (ptr->state == OBJECT_STATE_HIT) {
+    if (object_py(ptr) >= ptr->hitpy) {
+      object_set_py(ptr, ptr->hitpy);
+      //object_y(ptr) = object_py(ptr) / OBJECT_PHYSICS_FACTOR;
       ptr->velocity.y = 0;
       ptr->velocity.x = 0;      
       ptr->state = OBJECT_STATE_ALIVE;
     } else {
       ptr->velocity.y += deltaT;
     }
-  }    
+    }  */  
 }
 
 
@@ -385,11 +284,10 @@ object_update(void)
   object_t* ptr = object_activeList;
 
   while (ptr) {
-    if (ptr->state == OBJECT_STATE_HIT) {
-      object_updatePosition(ptr);
-    } else {
-      ptr->update(ptr);
-    }
+    uint32_t frame = hw_verticalBlankCount;
+    int16_t deltaT = frame-ptr->lastUpdatedFrame;    
+    ptr->update(deltaT, ptr);
+    ptr->lastUpdatedFrame = frame;
     ptr = ptr->next;
   }
 }
@@ -437,8 +335,8 @@ object_saveBackground(frame_buffer_t fb)
       ptr->save.buffer = ptr->save.buffer == ptr->save.buffers[0].fb ? ptr->save.buffers[1].fb : ptr->save.buffers[0].fb;
 #else
       //      if (ptr->x >= 0) {
-	ptr->save.position->x = ptr->x+ptr->image->dx;
-	ptr->save.position->y = ptr->y-ptr->image->h;
+	ptr->save.position->x = object_x(ptr)+ptr->image->dx;
+	ptr->save.position->y = object_y(ptr)-ptr->image->h;
 	ptr->save.position->w = ptr->image->w;
 	ptr->save.position->h = ptr->image->h;    
 	ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];
@@ -505,7 +403,7 @@ object_restoreBackground(frame_buffer_t fb)
 
 //static
 object_t*
-object_add(int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(object_t* ptr), void* data)
+object_add(int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data)
 {
   if (object_count >= OBJECT_MAX_OBJECTS) {
     return 0;
@@ -513,8 +411,6 @@ object_add(int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(object
 
   object_t* ptr = object_getFree();
   ptr->state = OBJECT_STATE_ALIVE;
-  ptr->px = x<<1;
-  ptr->py = y<<1;
   ptr->velocity.x = dx;
   ptr->velocity.y = 0;
 #ifdef OBJECT_BACKING_STORE
@@ -534,86 +430,13 @@ object_add(int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(object
   ptr->baseId = anim;
   ptr->imageIndex = ptr->anim->start;
   ptr->image = &object_imageAtlas[ptr->imageIndex];
+  object_set_px(ptr, x*OBJECT_PHYSICS_FACTOR);
+  object_set_py(ptr, y*OBJECT_PHYSICS_FACTOR);
   ptr->frameCounter = 0;
   ptr->deadRenderCount = 0;
   ptr->update = update;
   ptr->data = data;
-  ptr->walkAbout = 0;
   ptr->lastUpdatedFrame = 0;
   object_addObject(ptr);
   return ptr;
-}
-
-
-void
-object_hit(object_t* ptr, int16_t dx)
-{
-  sound_queueSound(SOUND_KILL);
-  ptr->z = ptr->y;
-  ptr->hitpy = ptr->py;
-  ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
-  ptr->velocity.x = dx;
-  ptr->state = OBJECT_STATE_HIT;
-  if (dx >= 0) {
-    object_setAction(ptr, OBJECT_HIT_LEFT);
-  } else {
-    object_setAction(ptr, OBJECT_HIT_RIGHT);
-  }
-}
-
-
-void
-object_updatePlayer(object_t* ptr, uint16_t punch, player_data_t* data)
-{
-  uint32_t frame = hw_verticalBlankCount;
-  int16_t deltaT = frame-ptr->lastUpdatedFrame;
-  
-  if (punch && data->punchCount == 0) {
-    ptr->velocity.x = 0;
-    ptr->velocity.y = 0;
-    if (ptr->anim->facing == FACING_RIGHT) {
-      object_setAction(ptr, OBJECT_PUNCH_RIGHT1 + data->punchType);
-    } else {
-      object_setAction(ptr, OBJECT_PUNCH_LEFT1 + data->punchType);
-    }
-    data->punchCount = 50;
-    data->punchType = !data->punchType;
-    object_collision_t collision;
-    if (object_collision2(ptr, &collision, OBJECT_HIT_DISTANCE, 6)) {
-      if (ptr->anim->facing == FACING_RIGHT && collision.right) {
-	object_hit(collision.right, 1);
-      } else if (ptr->anim->facing == FACING_LEFT && collision.left) {
-	object_hit(collision.left, -1);
-      }
-    }
-  } else if (data->punchCount) {
-    if (data->punchCount >= deltaT) {
-      data->punchCount-=deltaT;
-    } else {
-      data->punchCount = 0;
-    }
-    
-  } else {
-    object_collision_t collision;
-    if (object_collision2(ptr, &collision, 20, 1)) {
-      if (ptr->velocity.x > 0 && collision.right) {
-	ptr->velocity.x = 0;
-      }
-      if (ptr->velocity.x < 0 && collision.left) {
-	ptr->velocity.x = 0;
-      }
-      if (ptr->velocity.y > 0 && collision.up) {
-	ptr->velocity.y = 0;
-      }
-      if (ptr->velocity.y < 0 && collision.down) {
-	ptr->velocity.y = 0;
-      }    
-    }
-    
-    if (ptr->x - game_cameraX < -TILE_WIDTH && ptr->velocity.x < 0) {
-      ptr->velocity.x = 0;    
-    }
-    
-    object_updatePosition(ptr);
-  }
 }

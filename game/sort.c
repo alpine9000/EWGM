@@ -2,8 +2,8 @@
 
 // http://pages.ripco.net/~jgamble/nw.html
 
-#define _min(a, b) (d[a]->z<d[b]->z?d[a]:d[b])
-#define _max(a, b) (d[a]->z<d[b]->z?d[b]:d[a]) 
+#define _min(a, b) (d[a]->_z<d[b]->_z?d[a]:d[b])
+#define _max(a, b) (d[a]->_z<d[b]->_z?d[b]:d[a]) 
 #define SWAP(x,y) { object_t* a = _min(x,y);object_t* b = _max(x,y); d[x] = a; d[y] = b; }
 
 

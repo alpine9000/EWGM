@@ -114,6 +114,7 @@ extern uint16_t game_numPlayers;
 #include "init.h"
 #include "gfx.h"
 #include "object.h"
+#include "fighter.h"
 #include "player.h"
 #include "enemy.h"
 #include "screen.h"
