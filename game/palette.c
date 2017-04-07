@@ -1,6 +1,6 @@
 #include "game.h"
 
-#define PALETTE_NUM_FADE_STEPS 64
+#define PALETTE_NUM_FADE_STEPS 16
 #define _PALETTE_RED(x) ((x >> 8) & 0xf)
 #define _PALETTE_GREEN(x) ((x >> 4) & 0xf)
 #define _PALETTE_BLUE(x) ((x) & 0xf)
@@ -26,7 +26,7 @@ palette_fadeTo(uint16_t* palette, uint16_t colors, uint16_t color)
   int fg = _PALETTE_GREEN(color) << 4;
   int fb = _PALETTE_BLUE(color) << 4;
   
-  for (int i = 0; i < PALETTE_NUM_FADE_STEPS+1; i++) {
+  for (int i = 0; i < PALETTE_NUM_FADE_STEPS; i++) {
     for (int c = 0; c < colors; c++) {
 
       int tr = _PALETTE_RED(palette[c]);
@@ -40,7 +40,11 @@ palette_fadeTo(uint16_t* palette, uint16_t colors, uint16_t color)
       custom->color[c] = (nr<<8)|(ng<<4)|nb;
     }
 
-    hw_waitScanLines(100);
+    hw_waitVerticalBlank();
+  }
+
+  for (int c = 0; c < colors; c++) {
+    custom->color[c] = palette[c];
   }
 
   palette_background = palette[0];
@@ -53,7 +57,7 @@ palette_fadeFrom(uint16_t* palette, uint16_t colors, uint16_t color)
   int tg = _PALETTE_GREEN(color) << 4;
   int tb = _PALETTE_BLUE(color) << 4;
   
-  for (int i = 0; i < PALETTE_NUM_FADE_STEPS+1; i++) {
+  for (int i = 0; i < PALETTE_NUM_FADE_STEPS; i++) {
     for (int c = 0; c < colors; c++) {
 
       int fr = _PALETTE_RED(palette[c]);
@@ -67,7 +71,11 @@ palette_fadeFrom(uint16_t* palette, uint16_t colors, uint16_t color)
       custom->color[c] = (nr<<8)|(ng<<4)|nb;
     }
 
-    hw_waitScanLines(100);
+    hw_waitVerticalBlank();
+  }
+
+  for (int c = 0; c < colors; c++) {
+    custom->color[c] = color;
   }
 
   palette_background = palette[0];
