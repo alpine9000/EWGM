@@ -96,37 +96,50 @@ fighter_updatePositionUnderAttack(uint16_t deltaT, object_t* ptr, fighter_data_t
   }
 }
 
+void
+fighter_doAttack(object_t* ptr, fighter_data_t* data)
+{
+  ptr->velocity.x = 0;
+  ptr->velocity.y = 0;
+  if (ptr->anim->facing == FACING_RIGHT) {
+    object_setAction(ptr, OBJECT_PUNCH_RIGHT1 + data->punchType);
+  } else {
+    object_setAction(ptr, OBJECT_PUNCH_LEFT1 + data->punchType);
+  }
+  data->punchCount = data->attackDurationFrames;
+  data->punchType = !data->punchType;
+  object_collision_t collision;
+  if (object_collision(ptr, &collision, OBJECT_HIT_DISTANCE, 6)) {
+    if (ptr->anim->facing == FACING_RIGHT && collision.right) {
+      fighter_attack(collision.right, data->attackDammage, 1);
+    } else if (ptr->anim->facing == FACING_LEFT && collision.left) {
+      fighter_attack(collision.left, data->attackDammage, -1);
+    }
+  }
+}
 
 void
 fighter_update(uint16_t deltaT, object_t* ptr)
 {
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   uint16_t attack = (ptr->state == OBJECT_STATE_ALIVE) ? data->intelligence(ptr, data) : 0;
-    
-  if (attack && data->punchCount == 0) {
-    ptr->velocity.x = 0;
-    ptr->velocity.y = 0;
-    if (ptr->anim->facing == FACING_RIGHT) {
-      object_setAction(ptr, OBJECT_PUNCH_RIGHT1 + data->punchType);
-    } else {
-      object_setAction(ptr, OBJECT_PUNCH_LEFT1 + data->punchType);
-    }
-    data->punchCount = data->attackDurationFrames;
-    data->punchType = !data->punchType;
-    object_collision_t collision;
-    if (object_collision(ptr, &collision, OBJECT_HIT_DISTANCE, 6)) {
-      if (ptr->anim->facing == FACING_RIGHT && collision.right) {
-	fighter_attack(collision.right, data->attackDammage, 1);
-      } else if (ptr->anim->facing == FACING_LEFT && collision.left) {
-	fighter_attack(collision.left, data->attackDammage, -1);
-      }
-    }
+
+  if (!data->attackQueued && attack) {
+    data->attackQueued = 1;
+  }
+  
+  if (data->punchCount >= deltaT) {
+    data->punchCount-=deltaT;
+  } else {
+    data->punchCount = 0;
+  }      
+  
+  if (data->attackQueued && data->punchCount == 0) {
+    data->buttonReleased = 0;
+    data->attackQueued = 0;
+    fighter_doAttack(ptr, data);
   } else if (data->punchCount) {
-    if (data->punchCount >= deltaT) {
-      data->punchCount-=deltaT;
-    } else {
-      data->punchCount = 0;
-    }    
+
   } else {
     if (ptr->state == OBJECT_STATE_HIT) {
       fighter_updatePositionUnderAttack(deltaT, ptr, data);
@@ -172,6 +185,8 @@ object_t*
 fighter_add(uint16_t id, uint16_t animId, int16_t x, int16_t y, uint16_t initialHealth,  uint16_t attackDammage, uint16_t (*intelligence)(object_t* ptr, struct fighter_data* data))
 {
   fighter_data_t* data = fighter_getFree();
+  data->buttonReleased = 0;
+  data->attackQueued = 0;
   data->id = id;
   data->intelligence = intelligence;
   data->punchType = 0;

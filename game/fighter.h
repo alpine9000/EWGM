@@ -12,6 +12,8 @@ typedef struct fighter_data {
   uint16_t (*intelligence)(object_t* ptr, struct fighter_data* data);
   int16_t walkAbout; // todo: move to enemy data  
   int16_t health;
+  uint16_t buttonReleased;
+  uint16_t attackQueued;
   uint16_t attackDurationFrames;
   uint16_t attackDammage;
   int16_t flashCount;

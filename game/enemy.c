@@ -116,7 +116,7 @@ enemy_init(object_t* player1, object_t * player2)
 {
   enemy_player1 = player1;
   enemy_player2 = player2;
-  if (1) {
+  if (0) {
     enemy_add(SCREEN_WIDTH-64, 85);
     enemy_add(64, 85);
     enemy_add(SCREEN_WIDTH-64, 200);

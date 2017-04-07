@@ -649,7 +649,11 @@ game_processKeyboard()
     game_startRecord();
     break;
   case 'P':
-    game_startPlayback();
+    game_paused = !game_paused;
+#ifdef DEBUG
+    game_lastVerticalBlankCount = hw_verticalBlankCount;
+#endif
+    //game_startPlayback();
     break;
   case 'S':
     record_setState(RECORD_IDLE);
@@ -662,10 +666,7 @@ game_processKeyboard()
     game_singleStep = 1;
     break;
   case ' ':
-    game_paused = !game_paused;
-#ifdef DEBUG
-    game_lastVerticalBlankCount = hw_verticalBlankCount;
-#endif
+
     break;
   case 'Z':
     music_next();
