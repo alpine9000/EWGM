@@ -182,7 +182,15 @@ object_animation_t object_animations[] = {
     .stop = SPRITE_PLAYER3_HIT_RIGHT,
     .speed = 0,
     .facing = FACING_RIGHT
-  },            
+  },
+
+  // =================================
+  [OBJECT_ANIM_HAND] = {
+    .start = SPRITE_HAND,
+    .stop = SPRITE_HAND,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },              
 };
 
 
@@ -577,5 +585,15 @@ object_image_t object_imageAtlas[] = {
     .h = 60,
     .dx = 0,
     .dy = 0,    
-    },      
+    },
+
+  //==========================
+  [SPRITE_HAND] = {
+    .x = 64,
+    .y = 336,
+    .w = 64,
+    .h = 50,
+    .dx = 0,
+    .dy = 0,    
+    },        
 };

@@ -265,6 +265,9 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 	  enemy_count--;
 	  if (enemy_count == 0) {
 	    game_phase += SCREEN_WIDTH;
+	    if (game_phase < WORLD_WIDTH) {
+	      hand_show();
+	    }
 	  }
 	  break;	  
 	case 1:

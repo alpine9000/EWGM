@@ -285,6 +285,7 @@ object_render(frame_buffer_t fb)
 	if (game_cameraX < game_phase) {
 #define _object_min(x,y)(x<=y?x:y)
 	  game_requestCameraX(_object_min(game_phase, game_cameraX+(SCREEN_WIDTH/3)));
+	  hand_hide();
 	} else {
 	  enemy_init(game_player1, game_player2);
 	}

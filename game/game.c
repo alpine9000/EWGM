@@ -321,6 +321,7 @@ game_loadLevel(menu_command_t command)
 
   object_init();
   fighter_init();
+  hand_init();
   
   game_player1 = player_init(1, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80);
   game_player2 = 0;

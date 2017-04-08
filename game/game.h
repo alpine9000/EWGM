@@ -141,6 +141,7 @@ extern object_t* game_player2;
 #include "script.h"
 #include "sort.h"
 #include "logo.h"
+#include "hand.h"
 
 #define game_fire() ((!(hw_lastJoystickButton&0x1) && (hw_joystickButton&0x1)) || \
 			(keyboard_key && keyboard_code == KEYBOARD_CODE_RETURN))
