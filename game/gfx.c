@@ -210,7 +210,7 @@ gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_
 
 }
 
-
+#if 0
 uint32_t _gfx_quickRenderSpriteBlitSize;
 void
 gfx_setupQuickRenderSprite(void)
@@ -252,6 +252,7 @@ gfx_quickRenderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, i
   _custom->bltsize = _gfx_quickRenderSpriteBlitSize;
 
 }
+#endif
 
 INLINE void
 gfx_saveSprite(frame_buffer_t source, frame_buffer_t dest, gfx_blit_t* blit, int16_t dx, int16_t dy, int16_t w, int16_t h)

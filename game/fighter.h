@@ -1,11 +1,10 @@
 #ifndef __FIGHTER_H
 #define __FIGHTER_H
 
-
-#define FIGHTER_MAX_FIGHTERS 8
-#define FIGHTER_LONG_PUNCH_RANGE 13
-#define FIGHTER_SHORT_PUNCH_RANGE 8
-#define FIGHTER_Y_ATTACK_THRESHOLD 6
+#define FIGHTER_MAX_FIGHTERS         8
+#define FIGHTER_LONG_PUNCH_RANGE     13
+#define FIGHTER_SHORT_PUNCH_RANGE    8
+#define FIGHTER_Y_ATTACK_THRESHOLD   6
 #define FIGHTER_ENEMY_Y_ATTACK_RANGE 3
 
 typedef struct fighter_data {
@@ -40,6 +39,4 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
 void
 fighter_update(uint16_t deltaT, object_t* ptr);
 
-void
-fighter_remove(object_t* ptr);
 #endif

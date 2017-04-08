@@ -29,8 +29,8 @@ uint16_t game_over;
 uint16_t game_levelComplete;
 uint32_t game_paused;
 uint16_t game_numPlayers;
-uint16_t game_phase;
-uint16_t game_newPhase;
+uint16_t game_wave;
+uint16_t game_nextWave;
 object_t* game_player1;
 object_t* game_player2;
 
@@ -232,8 +232,8 @@ game_newGame(menu_command_t command)
   game_score = 0;
   game_lives = 3;
   game_level = 0;
-  game_phase = 0;
-  game_newPhase = 1;
+  game_wave = 0;
+  game_nextWave = 1;
 
   if (command >= MENU_COMMAND_LEVEL) {
     game_level = command - MENU_COMMAND_LEVEL;
@@ -431,11 +431,14 @@ debug_mode(void)
   case 6:
       text_drawScoreBoard(text_intToAscii(hw_verticalBlankCount-game_lastVerticalBlankCount, 8), 15*8, 10);
     break;
+  case 7:
+      text_drawScoreBoard(text_intToAscii(object_count, 4), 25*8, 10);
+    break;    
   default:
     break;
   } 
   game_debugRenderFrame++;
-  if (game_debugRenderFrame > 6) {
+  if (game_debugRenderFrame > 7) {
     game_debugRenderFrame = 0;
   }
 }
@@ -624,7 +627,7 @@ game_processKeyboard()
   switch (keyboard_key) {
 #ifdef DEBUG
   case 'L':
-    game_requestCameraX(game_cameraX+(SCREEN_WIDTH/3));
+    game_requestCameraX(game_cameraX+2);
     break;
   case 'O':
     {
@@ -745,9 +748,9 @@ game_loop()
 
   for (;;) {
 
-    if (game_newPhase) {
+    if (game_nextWave) {
       enemy_init(game_player1, game_player2);
-      game_newPhase = 0;
+      game_nextWave = 0;
     }    
     
     keyboard_read();

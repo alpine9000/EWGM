@@ -1,13 +1,10 @@
 #ifndef __OBJECT_H
 #define __OBJECT_H
 
-#define OBJECT_PHYSICS_FACTOR 2
-#define OBJECT_HEIGHT 52
-#define OBJECT_WIDTH 32
-
 //#define OBJECT_BACKING_STORE 1
-
 #define OBJECT_MAX_OBJECTS    8
+#define OBJECT_PHYSICS_FACTOR 2
+#define OBJECT_WIDTH 32
 
 #ifdef OBJECT_BACKING_STORE
 #define OBJECT_MAX_BLIT_WIDTH 48+16
@@ -208,6 +205,7 @@ typedef struct object {
   uint16_t state;
   void (*update)(uint16_t deltaT, struct object* ptr);
   void* data;
+  void (*freeData)(void* data);
   uint32_t lastUpdatedFrame;
   uint16_t visible;
 } object_t;
@@ -224,11 +222,12 @@ typedef struct {
 extern object_image_t object_imageAtlas[];
 extern object_animation_t object_animations[];
 object_t* object_activeList;
+int16_t object_count;
 
 void
 object_init(void);
 object_t*
-object_add(uint16_t id, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data);
+object_add(uint16_t id, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data, void (*freeData)(void*));
 void
 object_free(object_t* ptr);
 void

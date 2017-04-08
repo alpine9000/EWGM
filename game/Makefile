@@ -1,5 +1,5 @@
 # frequently changed config items
-KEEP_ASM=1
+#KEEP_ASM=1
 USE_BIG=1
 SFX=1
 PHOTON_TRACKLOADER=0

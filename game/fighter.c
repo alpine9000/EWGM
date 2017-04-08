@@ -35,8 +35,9 @@ fighter_getFree(void)
 
 //static
 void
-fighter_addFree(fighter_data_t* ptr)
+fighter_addFree(void* data)
 {
+  fighter_data_t* ptr = data;
   fighter_count--;
 
   if (fighter_freeList == 0) {
@@ -67,51 +68,10 @@ fighter_init(void)
   ptr->next = 0;
 }
 
-#if 0
-int16_t
-fighter_collision(object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy)
-{
-  int16_t _collision = 0;
-  object_t* b = object_activeList;
-  
-  collision->up = collision->down = collision->left = collision->right = 0;
 
-  while (b) {
-    if (b != a && b->state == OBJECT_STATE_ALIVE) {
-      int16_t a_x = ((object_px(a) + a->velocity.x) / OBJECT_PHYSICS_FACTOR) + a->image->dx + (OBJECT_WIDTH>>2);
-      int16_t b_x = ((object_px(b) + b->velocity.x) / OBJECT_PHYSICS_FACTOR) + a->image->dx + (OBJECT_WIDTH>>2);
-      int16_t a_y = ((object_py(a) + a->velocity.y) / OBJECT_PHYSICS_FACTOR);
-      int16_t b_y = ((object_py(b) + b->velocity.y) / OBJECT_PHYSICS_FACTOR);      
-      
-      if (abs(a_x - b_x) <= thresholdx && abs(a_y - b_y) <= thresholdy) {
-	if (b_y >= a_y) {
-	  collision->up = b;
-	} else if (b_y < a_y) {
-	  collision->down = b;
-	}
-	if (b_x >= a_x) {
-	  collision->right = b;
-	} else if (b_x < a_x) {
-	  collision->left = b;
-	}      
-	_collision = 1;
-      }
-    }
-    b = b->next;
-  }
-  
-  return _collision;
-}
-#else
-
-/*
-   ************ 
-+----------------+
-*/
 int16_t
 fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy)
 {
-  USE(deltaT);
   int16_t vx = a->velocity.x;
   int16_t vy = a->velocity.y;
 
@@ -128,7 +88,6 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
     break;
   }
   
-
   int16_t _collision = 0;
   fighter_data_t* a_data = a->data;  
   object_t* b = object_activeList;
@@ -167,7 +126,6 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
   
   return _collision;
 }
-#endif
 
 
 static void
@@ -194,6 +152,7 @@ fighter_attack(object_t* ptr, uint16_t dammage, int16_t dx)
   }
 }
 
+
 void
 fighter_updatePositionUnderAttack(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
@@ -212,6 +171,7 @@ fighter_updatePositionUnderAttack(uint16_t deltaT, object_t* ptr, fighter_data_t
     ptr->velocity.y += deltaT;
   }
 }
+
 
 void
 fighter_doAttack(int16_t deltaT, object_t* ptr, fighter_data_t* data)
@@ -234,6 +194,7 @@ fighter_doAttack(int16_t deltaT, object_t* ptr, fighter_data_t* data)
     }
   }
 }
+
 
 void
 fighter_update(uint16_t deltaT, object_t* ptr)
@@ -274,8 +235,8 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 	case 0:
 	  enemy_count--;
 	  if (enemy_count == 0) {
-	    game_phase += SCREEN_WIDTH;
-	    if (game_phase < WORLD_WIDTH) {
+	    game_wave += SCREEN_WIDTH;
+	    if (game_wave < WORLD_WIDTH) {
 	      hand_show();
 	    }
 	  }
@@ -327,13 +288,5 @@ fighter_add(uint16_t id, uint16_t animId, int16_t x, int16_t y, uint16_t initial
   data->walkAbout = 0;
   data->health = initialHealth;
   data->attackDammage = attackDammage;
-  return object_add(id, x, y, 0, animId, fighter_update, data);
-}
-
-void
-fighter_remove(object_t* ptr)
-{
-  USE(ptr);
-  object_free(ptr);
-  fighter_addFree(ptr->data);
+  return object_add(id, x, y, 0, animId, fighter_update, data, fighter_addFree);
 }

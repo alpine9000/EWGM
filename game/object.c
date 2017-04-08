@@ -1,14 +1,11 @@
 #include "game.h"
 
-#define SPEED_COLOR(x)
-//#define SPEED_COLOR(x) (custom->color[0]=x)
-
-static int16_t object_count;
+int16_t object_count;
+object_t* object_activeList;
 static object_t* object_freeList;
 static __section(random_c) object_t object_buffer[OBJECT_MAX_OBJECTS];
 static object_t* object_zBuffer[OBJECT_MAX_OBJECTS];
 
-object_t* object_activeList;
 
 static object_t*
 object_getFree(void)
@@ -29,8 +26,7 @@ object_getFree(void)
 }
 
 
-//static
-void
+static void
 object_addFree(object_t* ptr)
 {
   object_count--;
@@ -49,7 +45,7 @@ object_addFree(object_t* ptr)
 
 
 static void
-object_addObject(object_t* ptr)
+object_addToActive(object_t* ptr)
 {
   object_count++;
 
@@ -66,9 +62,8 @@ object_addObject(object_t* ptr)
 }
 
 
-//static
-void
-object_remove(object_t* ptr)
+static void
+object_removeFromActive(object_t* ptr)
 {
   if (ptr->prev == 0) {
     object_activeList = ptr->next;
@@ -84,15 +79,6 @@ object_remove(object_t* ptr)
 }
 
 
-void
-object_free(object_t* ptr)
-{
-  USE(ptr);
-  object_remove(ptr);
-  object_addFree(ptr);
-}
-
-
 static void
 object_setAnim(object_t* ptr, int16_t anim)
 {
@@ -103,6 +89,17 @@ object_setAnim(object_t* ptr, int16_t anim)
     ptr->image = &object_imageAtlas[ptr->imageIndex];
     ptr->frameCounter = 0;   
   }
+}
+
+
+void
+object_free(object_t* ptr)
+{
+  if (ptr->freeData) {
+    ptr->freeData(ptr->data);
+  }
+  object_removeFromActive(ptr);
+  object_addFree(ptr);
 }
 
 
@@ -219,8 +216,6 @@ object_updateAnimation(object_t *ptr)
   }
 }
 
-//-5 -4 -3 -2 -1 0 1 2 3 4 5
-//         +-------------+
          
 void
 object_renderObject(frame_buffer_t fb, object_t* ptr)
@@ -266,9 +261,17 @@ object_update(void)
   while (ptr) {
     uint32_t frame = hw_verticalBlankCount;
     int16_t deltaT = frame-ptr->lastUpdatedFrame;    
+    object_t* next = ptr->next;
     ptr->update(deltaT, ptr);
     ptr->lastUpdatedFrame = frame;
-    ptr = ptr->next;
+    if (ptr->state == OBJECT_STATE_REMOVED) {
+      if (ptr->deadRenderCount == 2) {
+	object_free(ptr);
+      } else {
+	ptr->deadRenderCount++;
+      }
+    }
+    ptr = next;
   }
 }
 
@@ -281,8 +284,6 @@ object_render(frame_buffer_t fb)
 
   sort_z(object_count, object_zBuffer);
   
-  SPEED_COLOR(0x00f);  
-
   //  gfx_setupQuickRenderSprite();
 
   for (int16_t i = 0; i < object_count; i++) {
@@ -296,20 +297,18 @@ object_render(frame_buffer_t fb)
   if (enemy_count == 0) {
     if ((!game_player1 || object_x(game_player1)-game_cameraX > SCREEN_WIDTH/3) &&
 	(!game_player2 || object_x(game_player2)-game_cameraX > SCREEN_WIDTH/3)) {
-      if ((game_player1 && object_x(game_player1)-game_cameraX > (SCREEN_WIDTH-(SCREEN_WIDTH/3))) ||
-	  (game_player2 && object_x(game_player2)-game_cameraX > (SCREEN_WIDTH-(SCREEN_WIDTH/3)))) {
-	if (game_cameraX < game_phase) {
+      if ((game_player1 && object_x(game_player1)-game_cameraX > (SCREEN_WIDTH-48)) ||
+	  (game_player2 && object_x(game_player2)-game_cameraX > (SCREEN_WIDTH-48))) {
+	if (game_cameraX < game_wave) {
 #define _object_min(x,y)(x<=y?x:y)
-	  game_requestCameraX(_object_min(game_phase, game_cameraX+(SCREEN_WIDTH/3)));
+	  game_requestCameraX(_object_min(game_wave, game_cameraX+(SCREEN_WIDTH/3)));
 	  hand_hide();
 	} else {
-	  game_newPhase = 1;
+	  game_nextWave = 1;
 	}
       }
     }
   }
-
-  SPEED_COLOR(0x000)
 }
 
 
@@ -318,7 +317,6 @@ object_saveBackground(frame_buffer_t fb)
 {
   object_t* ptr = object_activeList;
 
-  SPEED_COLOR(0xff0);
   int16_t i = 0;
   while (ptr != 0) {
     object_zBuffer[i] = ptr;
@@ -342,8 +340,6 @@ object_saveBackground(frame_buffer_t fb)
     
     ptr = ptr->next;
   }
-
-  SPEED_COLOR(0)
 }
 
 #ifndef OBJECT_BACKING_STORE
@@ -372,7 +368,6 @@ object_clear(frame_buffer_t fb, object_position_t* pos)
 void
 object_restoreBackground(frame_buffer_t fb)
 {
-  SPEED_COLOR(0x0f0)
   object_t* ptr = object_activeList;
 
 #ifndef OBJECT_BACKING_STORE  
@@ -393,12 +388,11 @@ object_restoreBackground(frame_buffer_t fb)
 
     ptr = ptr->next;
   }
-  SPEED_COLOR(0x000);
 }
 
 //static
 object_t*
-object_add(uint16_t id, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data)
+object_add(uint16_t id, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data, void (*freeData)(void*))
 {
 #ifdef DEBUG
   if (object_count >= OBJECT_MAX_OBJECTS) {
@@ -437,7 +431,8 @@ object_add(uint16_t id, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*u
   ptr->deadRenderCount = 0;
   ptr->update = update;
   ptr->data = data;
+  ptr->freeData = freeData;
   ptr->lastUpdatedFrame = 0;
-  object_addObject(ptr);
+  object_addToActive(ptr);
   return ptr;
 }

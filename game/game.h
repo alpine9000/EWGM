@@ -106,8 +106,8 @@ extern uint32_t game_score;
 extern uint16_t game_over;
 extern uint16_t game_levelComplete;
 extern uint16_t game_numPlayers;
-extern uint16_t game_phase;
-extern uint16_t game_newPhase;
+extern uint16_t game_wave;
+extern uint16_t game_nextWave;
 
 #include "string.h"
 #include "registers.h"

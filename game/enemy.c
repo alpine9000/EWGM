@@ -1,7 +1,5 @@
 #include "game.h"
 
-#define ENEMY_ATTACK_DURATION_FRAMES 20
-
 static object_t* enemy_player1;
 static object_t* enemy_player2;
 
@@ -87,7 +85,7 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
  uint16_t attack = 0;
   
   if (data->walkAbout) {
-    data->walkAbout--;
+    data->walkAbout-=deltaT;
   } else {
     object_t* player = enemy_closestPlayer(ptr);
     if (!player) {
@@ -97,7 +95,7 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
     }
     object_collision_t collision;
 
-    if ((fighter_collision(deltaT, ptr, &collision, 20, 1))) {
+    if ((fighter_collision(deltaT, ptr, &collision, ENEMY_INTERCEPT_X_RANGE, ENEMY_INTERCEPT_Y_THRESHOLD))) {
       if (collision.left) {
 	ptr->velocity.x = 1;
 	ptr->velocity.y = 0;
@@ -111,14 +109,14 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 	ptr->velocity.x = 0;
 	ptr->velocity.y = -1;
       }
-      data->walkAbout = 50;
+      data->walkAbout = ENEMY_WALKABOUT_TICS;
     } else {
       ptr->velocity.x = enemy_strikingDistanceX(player, ptr);
 
       if (abs(object_y(ptr)-object_y(player)) <= FIGHTER_ENEMY_Y_ATTACK_RANGE) {
 	if (ptr->velocity.x == 0) {
 	  if (data->enemyAttackWait <= 0) {
-	    data->enemyAttackWait = ENEMY_ATTACK_WAIT_FRAMES;
+	    data->enemyAttackWait = ENEMY_ATTACK_WAIT_TICS;
 	    attack = 1;
 	  } else {
 	    data->enemyAttackWait-=deltaT;
@@ -141,11 +139,11 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 void
 enemy_add(uint16_t x, uint16_t y)
 {
-  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_PLAYER1_STAND_RIGHT, x, y, 100, 0, enemy_intelligence);
+  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_PLAYER1_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, ENEMY_ATTACK_DAMMAGE, enemy_intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
-  data->attackDurationFrames = ENEMY_ATTACK_DURATION_FRAMES;
-  data->widthOffset = (OBJECT_WIDTH-22)/2;
-  data->enemyAttackWait = ENEMY_ATTACK_WAIT_FRAMES;
+  data->attackDurationFrames = ENEMY_ATTACK_DURATION_TICS;
+  data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
+  data->enemyAttackWait = ENEMY_ATTACK_WAIT_TICS;
   enemy_count++;
 }
 
@@ -160,7 +158,7 @@ enemy_init(object_t* player1, object_t * player2)
   while (ptr) {
     object_t* next = ptr->next;
     if (ptr->id == OBJECT_ID_ENEMY) {
-      fighter_remove(ptr);
+      object_free(ptr);
     }
     ptr = next;
   }
