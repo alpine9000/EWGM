@@ -5,8 +5,6 @@
 #define OBJECT_HEIGHT 52
 #define OBJECT_WIDTH 32
 
-#define OBJECT_HIT_DISTANCE 28
-
 //#define OBJECT_BACKING_STORE 1
 
 #define OBJECT_MAX_OBJECTS    8
@@ -190,6 +188,7 @@ typedef struct object {
   object_image_t* image;
   uint16_t baseId;
   uint16_t animId;
+  uint16_t actionId;
   object_animation_t* anim;  
   object_save_t save;
   uint16_t frameCounter;
@@ -212,6 +211,8 @@ typedef struct {
 
 extern object_image_t object_imageAtlas[];
 extern object_animation_t object_animations[];
+object_t* object_activeList;
+
 void
 object_init(void);
 object_t*
@@ -222,8 +223,6 @@ void
 object_saveBackground(frame_buffer_t fb);
 void
 object_restoreBackground(frame_buffer_t fb);
-int16_t
-object_collision(object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy);
 void
 object_updatePosition(uint16_t deltaT, object_t* ptr);
 void

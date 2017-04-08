@@ -7,11 +7,11 @@
 //#define SPEED_COLOR(x) (custom->color[0]=x)
 
 static int16_t object_count;
-static object_t* object_activeList;
 static object_t* object_freeList;
 static __section(random_c) object_t object_buffer[OBJECT_MAX_OBJECTS];
 static object_t* object_zBuffer[OBJECT_MAX_OBJECTS];
 
+object_t* object_activeList;
 
 static object_t*
 object_getFree(void)
@@ -93,45 +93,10 @@ object_setAnim(object_t* ptr, int16_t anim)
 }
 
 
-int16_t
-object_collision(object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy)
-{
-  int16_t _collision = 0;
-  object_t* b = object_activeList;
-
-  collision->up = collision->down = collision->left = collision->right = 0;
-
-  while (b) {
-    if (b != a && b->state == OBJECT_STATE_ALIVE) {
-      int16_t a_x = ((object_px(a) + a->velocity.x) / OBJECT_PHYSICS_FACTOR) + a->image->dx + (OBJECT_WIDTH>>2);
-      int16_t b_x = ((object_px(b) + b->velocity.x) / OBJECT_PHYSICS_FACTOR) + a->image->dx + (OBJECT_WIDTH>>2);
-      int16_t a_y = ((object_py(a) + a->velocity.y) / OBJECT_PHYSICS_FACTOR);
-      int16_t b_y = ((object_py(b) + b->velocity.y) / OBJECT_PHYSICS_FACTOR);      
-      
-      if (abs(a_x - b_x) <= thresholdx && abs(a_y - b_y) <= thresholdy) {
-	if (b_y >= a_y) {
-	  collision->up = b;
-	} else if (b_y < a_y) {
-	  collision->down = b;
-	}
-	if (b_x >= a_x) {
-	  collision->right = b;
-	} else if (b_x < a_x) {
-	  collision->left = b;
-	}      
-	_collision = 1;
-      }
-    }
-    b = b->next;
-  }
-  
-  return _collision;
-}
-
-
 void
 object_setAction(object_t* ptr, object_action_t action)
 {
+  ptr->actionId = action;
   object_setAnim(ptr, ptr->baseId + action);
 }
 

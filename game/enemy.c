@@ -37,6 +37,7 @@ enemy_closestPlayer(object_t* ptr)
   }
 }
 
+#if 0
 
 static int16_t
 enemy_strikingDistanceX(object_t* a, object_t* b)
@@ -51,9 +52,35 @@ enemy_strikingDistanceX(object_t* a, object_t* b)
   return 0;
 }
 
+#else
+
+static int16_t
+enemy_strikingDistanceX(object_t* a, object_t* b)
+{
+  fighter_data_t* a_data = a->data;
+  fighter_data_t* b_data = b->data;    
+  uint16_t thresholdx = FIGHTER_SHORT_PUNCH_RANGE;
+  int16_t a_widthOffset = a_data->widthOffset;
+  int16_t b_widthOffset = b_data->widthOffset;
+  int16_t a_x1 = (((object_px(a)) / OBJECT_PHYSICS_FACTOR) + a_widthOffset)-thresholdx;
+  int16_t a_x2 = (((object_px(a)) / OBJECT_PHYSICS_FACTOR) + (OBJECT_WIDTH - a_widthOffset)) + thresholdx;
+  int16_t b_x1 = ((object_px(b)) / OBJECT_PHYSICS_FACTOR) + b_widthOffset;
+  int16_t b_x2 = ((object_px(b)) / OBJECT_PHYSICS_FACTOR) + (OBJECT_WIDTH - b_widthOffset);
+  
+  if (a_x1 < b_x2 && a_x2 > b_x1) {
+    return 0;
+  } else {
+    return (object_x(a) > object_x(b)) ? 1 : -1;
+  }
+        
+  return 0;
+}
+
+#endif
+
 
 uint16_t
-enemy_intelligence(object_t* ptr, fighter_data_t* data)
+enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
  uint16_t attack = 0;
   
@@ -68,7 +95,7 @@ enemy_intelligence(object_t* ptr, fighter_data_t* data)
     }
     object_collision_t collision;
 
-    if ((object_collision(ptr, &collision, 20, 1))) {
+    if ((fighter_collision(deltaT, ptr, &collision, 20, 1))) {
       if (collision.left) {
 	ptr->velocity.x = 1;
 	ptr->velocity.y = 0;
@@ -85,17 +112,18 @@ enemy_intelligence(object_t* ptr, fighter_data_t* data)
       data->walkAbout = 50;
     } else {
       ptr->velocity.x = enemy_strikingDistanceX(player, ptr);
-      
-      if (object_y(ptr) < object_y(player)) {
-	ptr->velocity.y = 1;
-      } else if (object_y(ptr) > object_y(player)) {
-	ptr->velocity.y = -1;
-      } else {
+
+      if (abs(object_y(ptr)-object_y(player)) <= FIGHTER_ENEMY_Y_ATTACK_RANGE) {
 	if (ptr->velocity.x == 0) {
 	  attack = 1;
 	}
 	ptr->velocity.y = 0;
       }
+      else if (object_y(ptr) < object_y(player)) {
+	ptr->velocity.y = 1;
+      } else if (object_y(ptr) > object_y(player)) {
+	ptr->velocity.y = -1;
+      } 
     }
   }
 
@@ -109,6 +137,8 @@ enemy_add(uint16_t x, uint16_t y)
   object_t* ptr =  fighter_add(0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, x, y, 100, 0, enemy_intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   data->attackDurationFrames = ENEMY_ATTACK_DURATION_FRAMES;
+  data->widthOffset = (OBJECT_WIDTH-22)/2;  
+  //  data->attackWidth = 32;
 }
 
 void
@@ -116,7 +146,7 @@ enemy_init(object_t* player1, object_t * player2)
 {
   enemy_player1 = player1;
   enemy_player2 = player2;
-  if (0) {
+  if (1) {
     enemy_add(SCREEN_WIDTH-64, 85);
     enemy_add(64, 85);
     enemy_add(SCREEN_WIDTH-64, 200);

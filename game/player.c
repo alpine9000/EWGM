@@ -44,9 +44,10 @@ player_processJoystick(object_t * ptr, uint8_t joystickPos)
 
 
 uint16_t
-player_intelligence(object_t* ptr, fighter_data_t* data)
+player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
   USE(data);
+  USE(deltaT);
   uint16_t attack = 0;
   uint16_t buttonDown;
   
@@ -76,5 +77,13 @@ player_init(uint32_t id, uint16_t animId, int16_t x)
   object_t* ptr = fighter_add(id, animId, x, 100, 100, 20, player_intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   data->attackDurationFrames = PLAYER_ATTACK_DURATION_FRAMES;
+  uint16_t width;
+  if (id == 0) {
+    width = 22;
+  } else {
+    width = 26;
+  }
+  data->widthOffset = (OBJECT_WIDTH-width)/2;  
+  //  data->attackWidth = ((
   return ptr;
 }
