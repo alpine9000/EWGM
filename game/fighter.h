@@ -25,6 +25,7 @@ typedef struct fighter_data {
   int16_t flashCount;
   int16_t flashFrames;
   uint16_t widthOffset;
+  uint16_t enemyAttackWait;
 } fighter_data_t;
 
 

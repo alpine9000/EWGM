@@ -5,6 +5,8 @@
 static object_t* enemy_player1;
 static object_t* enemy_player2;
 
+uint16_t enemy_count;
+
 object_t*
 enemy_closestPlayer(object_t* ptr)
 {
@@ -115,7 +117,12 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 
       if (abs(object_y(ptr)-object_y(player)) <= FIGHTER_ENEMY_Y_ATTACK_RANGE) {
 	if (ptr->velocity.x == 0) {
-	  attack = 1;
+	  if (data->enemyAttackWait <= 0) {
+	    data->enemyAttackWait = ENEMY_ATTACK_WAIT_FRAMES;
+	    attack = 1;
+	  } else {
+	    data->enemyAttackWait-=deltaT;
+	  }
 	}
 	ptr->velocity.y = 0;
       }
@@ -137,25 +144,28 @@ enemy_add(uint16_t x, uint16_t y)
   object_t* ptr =  fighter_add(0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, x, y, 100, 0, enemy_intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   data->attackDurationFrames = ENEMY_ATTACK_DURATION_FRAMES;
-  data->widthOffset = (OBJECT_WIDTH-22)/2;  
-  //  data->attackWidth = 32;
+  data->widthOffset = (OBJECT_WIDTH-22)/2;
+  data->enemyAttackWait = ENEMY_ATTACK_WAIT_FRAMES;
+  enemy_count++;
 }
 
 void
 enemy_init(object_t* player1, object_t * player2)
 {
+  enemy_count = 0;
   enemy_player1 = player1;
   enemy_player2 = player2;
-  if (1) {
-    enemy_add(SCREEN_WIDTH-64, 85);
-    enemy_add(64, 85);
-    enemy_add(SCREEN_WIDTH-64, 200);
-    enemy_add(64, 200);
-    enemy_add(SCREEN_WIDTH/2, 128);    
 
-    //    fighter_add(0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, SCREEN_WIDTH-104, 185, 100, 0, enemy_intelligence);    
-   
-    //    object_add(SCREEN_WIDTH-64, 85, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, &enemy_data[i++]);
-    //    object_add(64, 188, 0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, object_updateEnemy, &enemy_data[i++]);
+  if (1) {
+    if (player1) {
+      enemy_add(game_cameraX-64, 85);
+      //enemy_add(game_cameraX-132, 120);    
+    }
+    
+    if (player2) {
+      enemy_add(game_cameraX+SCREEN_WIDTH+64, 85);
+      //      enemy_add(game_cameraX+SCREEN_WIDTH+132, 200);
+      //      enemy_add(game_cameraX+SCREEN_WIDTH+160, 128);
+    }
   }
 }

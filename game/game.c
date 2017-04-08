@@ -29,6 +29,9 @@ uint16_t game_over;
 uint16_t game_levelComplete;
 uint32_t game_paused;
 uint16_t game_numPlayers;
+uint16_t game_phase;
+object_t* game_player1;
+object_t* game_player2;
 
 static volatile __section(random_c) struct framebuffeData {
 #ifdef DEBUG
@@ -228,6 +231,7 @@ game_newGame(menu_command_t command)
   game_score = 0;
   game_lives = 3;
   game_level = 0;
+  game_phase = 0;
 
   if (command >= MENU_COMMAND_LEVEL) {
     game_level = command - MENU_COMMAND_LEVEL;
@@ -318,12 +322,12 @@ game_loadLevel(menu_command_t command)
   object_init();
   fighter_init();
   
-  object_t* player1 = player_init(0, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80);
-  object_t* player2 = 0;
+  game_player1 = player_init(1, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80);
+  game_player2 = 0;
   if (game_numPlayers == 2) {
-    player2 = player_init(1, OBJECT_ANIM_PLAYER3_STAND_RIGHT, SCREEN_WIDTH-80);
+    game_player2 = player_init(2, OBJECT_ANIM_PLAYER3_STAND_RIGHT, SCREEN_WIDTH-80);
   }
-  enemy_init(player1, player2);
+  enemy_init(game_player1, game_player2);
 
   hw_waitBlitter();
 
@@ -631,7 +635,7 @@ game_processKeyboard()
       game_refreshDebugScoreboard();
     } else {
       game_collisions = 1;
-      gfx_fillRect(game_scoreBoardFrameBuffer, 0, 0, FRAME_BUFFER_WIDTH, SCOREBOARD_HEIGHT, 0);
+      //gfx_fillRect(game_scoreBoardFrameBuffer, 0, 0, FRAME_BUFFER_WIDTH, SCOREBOARD_HEIGHT, 0);
       game_refreshScoreboard();
     }
     break;    

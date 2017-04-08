@@ -95,6 +95,7 @@ typedef volatile uint8_t* frame_buffer_t;
 typedef volatile struct Custom* custom_t;
 
 #define custom ((custom_t)0xdff000)
+
 extern int16_t game_cameraX;
 extern int16_t game_screenScrollX;
 extern int16_t game_collisions;
@@ -105,6 +106,7 @@ extern uint32_t game_score;
 extern uint16_t game_over;
 extern uint16_t game_levelComplete;
 extern uint16_t game_numPlayers;
+extern uint16_t game_phase;
 
 #include "string.h"
 #include "registers.h"
@@ -114,6 +116,10 @@ extern uint16_t game_numPlayers;
 #include "init.h"
 #include "gfx.h"
 #include "object.h"
+
+extern object_t* game_player1;
+extern object_t* game_player2;
+
 #include "fighter.h"
 #include "player.h"
 #include "enemy.h"

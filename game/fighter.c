@@ -241,7 +241,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
     data->punchCount = 0;
   }      
   
-  if (data->attackQueued && data->punchCount == 0) {
+  if (data->attackQueued && data->punchCount == 0 && ptr->state == OBJECT_STATE_ALIVE) {
     data->buttonReleased = 0;
     data->attackQueued = 0;
     fighter_doAttack(deltaT, ptr, data);
@@ -260,6 +260,20 @@ fighter_update(uint16_t deltaT, object_t* ptr)
       data->flashFrames -= deltaT;
       if (data->flashFrames <= 0) {
 	ptr->state = OBJECT_STATE_REMOVED;
+	switch (data->id) {
+	case 0:
+	  enemy_count--;
+	  if (enemy_count == 0) {
+	    game_phase += SCREEN_WIDTH;
+	  }
+	  break;	  
+	case 1:
+	  game_player1 = 0;
+	  break;
+	case 2:
+	  game_player2 = 0;
+	  break;
+	}
       }
     } else {
       object_collision_t collision;

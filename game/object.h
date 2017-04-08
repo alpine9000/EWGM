@@ -253,17 +253,23 @@ object_py(object_t* ptr) {
   return ptr->_py;
 }
 
+#define object_screenx(ptr) (ptr->image->dx + 0xf + ptr->_x-game_cameraX-game_screenScrollX)
+#define object_screeny(ptr) (ptr->image->dy + (ptr->_y-ptr->image->h))
+
 inline static void
 object_set_px(object_t* ptr, int16_t px)
 {
   ptr->_px = px;  
+  int16_t oldX = ptr->_x - game_cameraX;
   ptr->_x = ptr->_px / OBJECT_PHYSICS_FACTOR;
-
-  /* TODO: player width, not image width */
-  if (ptr->_x + OBJECT_WIDTH >= SCREEN_WIDTH) {
-    ptr->_x = SCREEN_WIDTH - OBJECT_WIDTH - 1;
+  
+  if (oldX + OBJECT_WIDTH < SCREEN_WIDTH && (ptr->_x + OBJECT_WIDTH - game_cameraX)>= SCREEN_WIDTH) {
+    ptr->_x = game_cameraX + (SCREEN_WIDTH - OBJECT_WIDTH - 1);
     ptr->_px = ptr->_x * OBJECT_PHYSICS_FACTOR;
-  }
+  } else if (oldX >= 0 && ptr->_x - game_cameraX < 0) {
+    ptr->_x = game_cameraX;
+    ptr->_px = ptr->_x * OBJECT_PHYSICS_FACTOR;
+  }  
 }
 
 inline static void
@@ -277,8 +283,8 @@ object_set_py(object_t* ptr, int16_t py)
     ptr->_py = ptr->_y * OBJECT_PHYSICS_FACTOR;
   }
 
-  if ((ptr->_y-ptr->image->h) <= 0) {
-    ptr->_y = ptr->image->h;
+  if (ptr->_y < 66) {
+    ptr->_y = 66;
     ptr->_py = ptr->_y * OBJECT_PHYSICS_FACTOR;
   }
 }

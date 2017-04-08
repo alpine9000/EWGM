@@ -1,8 +1,5 @@
 #include "game.h"
 
-#define object_screenx(ptr) (ptr->image->dx + 0xf + ptr->_x-game_cameraX-game_screenScrollX)
-#define object_screeny(ptr) (ptr->image->dy + (ptr->_y-ptr->image->h))
-
 #define SPEED_COLOR(x)
 //#define SPEED_COLOR(x) (custom->color[0]=x)
 
@@ -280,6 +277,21 @@ object_render(frame_buffer_t fb)
     object_updateAnimation(ptr);
   }
 
+  if (enemy_count == 0) {
+    if ((!game_player1 || object_x(game_player1)-game_cameraX > SCREEN_WIDTH/3) &&
+	(!game_player2 || object_x(game_player2)-game_cameraX > SCREEN_WIDTH/3)) {
+      if ((game_player1 && object_x(game_player1)-game_cameraX > (SCREEN_WIDTH-(SCREEN_WIDTH/3))) ||
+	  (game_player2 && object_x(game_player2)-game_cameraX > (SCREEN_WIDTH-(SCREEN_WIDTH/3)))) {
+	if (game_cameraX < game_phase) {
+#define _object_min(x,y)(x<=y?x:y)
+	  game_requestCameraX(_object_min(game_phase, game_cameraX+(SCREEN_WIDTH/3)));
+	} else {
+	  enemy_init(game_player1, game_player2);
+	}
+      }
+    }
+    //    enemy_init(game_player1, game_player2);
+  }
 
   SPEED_COLOR(0x000)
 }
@@ -398,7 +410,8 @@ object_add(int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16
   ptr->baseId = anim;
   ptr->imageIndex = ptr->anim->start;
   ptr->image = &object_imageAtlas[ptr->imageIndex];
-  object_set_px(ptr, x*OBJECT_PHYSICS_FACTOR);
+  ptr->_px = x*OBJECT_PHYSICS_FACTOR;
+  ptr->_x = x;
   object_set_py(ptr, y*OBJECT_PHYSICS_FACTOR);
   ptr->frameCounter = 0;
   ptr->deadRenderCount = 0;

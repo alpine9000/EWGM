@@ -1,6 +1,6 @@
 #include "game.h"
 
-#define PLAYER_ATTACK_DURATION_FRAMES 20
+#define PLAYER_ATTACK_DURATION_FRAMES 10
 
 
 static void
@@ -49,12 +49,12 @@ player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   USE(data);
   USE(deltaT);
   uint16_t attack = 0;
-  uint16_t buttonDown;
+  uint16_t buttonDown = 0;
   
-  if (data->id == 0) {
+  if (data->id == 1) {
     player_processJoystick(ptr, hw_joystickPos);
     buttonDown = hw_joystickButton & 0x1;
-  } else {
+  } else if (data->id == 2) {
     player_processJoystick(ptr, hw_joystick2Pos);
     buttonDown = hw_joystick2Button & 0x1;
   }
@@ -84,6 +84,5 @@ player_init(uint32_t id, uint16_t animId, int16_t x)
     width = 26;
   }
   data->widthOffset = (OBJECT_WIDTH-width)/2;  
-  //  data->attackWidth = ((
   return ptr;
 }
