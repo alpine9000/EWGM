@@ -18,6 +18,13 @@ object_getFree(void)
   if (object_freeList) {
     object_freeList->prev = 0;
   }
+
+#ifdef DEBUG
+  if (!entry) {
+    PANIC("object_getFree: empty list");
+  }
+#endif
+  
   return entry;
 }
 
@@ -74,6 +81,15 @@ object_remove(object_t* ptr)
       ptr->next->prev = ptr->prev;
     }
   }
+}
+
+
+void
+object_free(object_t* ptr)
+{
+  USE(ptr);
+  object_remove(ptr);
+  object_addFree(ptr);
 }
 
 
@@ -287,11 +303,10 @@ object_render(frame_buffer_t fb)
 	  game_requestCameraX(_object_min(game_phase, game_cameraX+(SCREEN_WIDTH/3)));
 	  hand_hide();
 	} else {
-	  enemy_init(game_player1, game_player2);
+	  game_newPhase = 1;
 	}
       }
     }
-    //    enemy_init(game_player1, game_player2);
   }
 
   SPEED_COLOR(0x000)
@@ -383,15 +398,19 @@ object_restoreBackground(frame_buffer_t fb)
 
 //static
 object_t*
-object_add(int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data)
+object_add(uint16_t id, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data)
 {
+#ifdef DEBUG
   if (object_count >= OBJECT_MAX_OBJECTS) {
+    PANIC("object_add: no free objects");
     return 0;
   }
+#endif
 
   object_t* ptr = object_getFree();
   ptr->state = OBJECT_STATE_ALIVE;
   ptr->visible = 1;
+  ptr->id = id;
   ptr->velocity.x = dx;
   ptr->velocity.y = 0;
 #ifdef OBJECT_BACKING_STORE

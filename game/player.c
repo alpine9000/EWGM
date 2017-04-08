@@ -51,10 +51,10 @@ player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   uint16_t attack = 0;
   uint16_t buttonDown = 0;
   
-  if (data->id == 1) {
+  if (ptr->id == 1) {
     player_processJoystick(ptr, hw_joystickPos);
     buttonDown = hw_joystickButton & 0x1;
-  } else if (data->id == 2) {
+  } else if (ptr->id == 2) {
     player_processJoystick(ptr, hw_joystick2Pos);
     buttonDown = hw_joystick2Button & 0x1;
   }
@@ -72,9 +72,9 @@ player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 
 
 object_t*
-player_init(uint32_t id, uint16_t animId, int16_t x)
+player_init(uint16_t id, uint16_t animId, int16_t x)
 {
-  object_t* ptr = fighter_add(id, animId, x, 100, 100, 20, player_intelligence);
+  object_t* ptr = fighter_add(id, animId, x, 100, 100, 100, player_intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   data->attackDurationFrames = PLAYER_ATTACK_DURATION_FRAMES;
   uint16_t width;

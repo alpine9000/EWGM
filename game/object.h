@@ -7,7 +7,7 @@
 
 //#define OBJECT_BACKING_STORE 1
 
-#define OBJECT_MAX_OBJECTS    9
+#define OBJECT_MAX_OBJECTS    8
 
 #ifdef OBJECT_BACKING_STORE
 #define OBJECT_MAX_BLIT_WIDTH 48+16
@@ -68,6 +68,13 @@ typedef enum {
 
   SPRITE_HAND
 } sprite_id_t;
+
+typedef enum {
+  OBJECT_ID_ENEMY = 0,
+  OBJECT_ID_PLAYER1 = 1,
+  OBJECT_ID_PLAYER2 = 2,
+  OBJECT_ID_HAND = 3
+} object_id_t;
 
 typedef enum {
   OBJECT_STAND_RIGHT = 0,
@@ -182,6 +189,7 @@ typedef struct {
 typedef struct object {
   struct object* next;
   struct object* prev;
+  uint16_t id;
   int16_t _x;
   int16_t _y;
   int16_t _z;
@@ -220,7 +228,9 @@ object_t* object_activeList;
 void
 object_init(void);
 object_t*
-object_add(int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data);
+object_add(uint16_t id, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data);
+void
+object_free(object_t* ptr);
 void
 object_render(frame_buffer_t fb);
 void

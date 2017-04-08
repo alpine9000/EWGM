@@ -26,7 +26,7 @@ hand_update(uint16_t deltaT, object_t* ptr)
 object_t*
 hand_init(void)
 {
-  hand = object_add(HAND_X, 65, 0, OBJECT_ANIM_HAND, hand_update, 0);
+  hand = object_add(OBJECT_ID_HAND, HAND_X, 65, 0, OBJECT_ANIM_HAND, hand_update, 0);
   hand->visible = 0;
   hand_frame = 0;
   object_set_z(hand, 4096);  

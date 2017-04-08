@@ -14,11 +14,21 @@ static uint16_t figher_attack_range[] = {
 static fighter_data_t*
 fighter_getFree(void)
 {
+  fighter_count++;
+
+#ifdef DEBUG
+  if (fighter_count > FIGHTER_MAX_FIGHTERS) {
+    PANIC("fighter_getFree: empty list");
+  }
+#endif
+  
+  
   fighter_data_t* entry = fighter_freeList;
   fighter_freeList = fighter_freeList->next;
   if (fighter_freeList) {
     fighter_freeList->prev = 0;
   }
+
   return entry;
 }
 
@@ -260,7 +270,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
       data->flashFrames -= deltaT;
       if (data->flashFrames <= 0) {
 	ptr->state = OBJECT_STATE_REMOVED;
-	switch (data->id) {
+	switch (ptr->id) {
 	case 0:
 	  enemy_count--;
 	  if (enemy_count == 0) {
@@ -311,12 +321,19 @@ fighter_add(uint16_t id, uint16_t animId, int16_t x, int16_t y, uint16_t initial
   fighter_data_t* data = fighter_getFree();
   data->buttonReleased = 0;
   data->attackQueued = 0;
-  data->id = id;
   data->intelligence = intelligence;
   data->punchType = 0;
   data->punchCount = 0;
   data->walkAbout = 0;
   data->health = initialHealth;
   data->attackDammage = attackDammage;
-  return object_add(x, y, 0, animId, fighter_update, data);
+  return object_add(id, x, y, 0, animId, fighter_update, data);
+}
+
+void
+fighter_remove(object_t* ptr)
+{
+  USE(ptr);
+  object_free(ptr);
+  fighter_addFree(ptr->data);
 }

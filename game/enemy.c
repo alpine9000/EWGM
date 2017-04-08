@@ -141,7 +141,7 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 void
 enemy_add(uint16_t x, uint16_t y)
 {
-  object_t* ptr =  fighter_add(0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, x, y, 100, 0, enemy_intelligence);
+  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_PLAYER1_STAND_RIGHT, x, y, 100, 0, enemy_intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   data->attackDurationFrames = ENEMY_ATTACK_DURATION_FRAMES;
   data->widthOffset = (OBJECT_WIDTH-22)/2;
@@ -156,16 +156,25 @@ enemy_init(object_t* player1, object_t * player2)
   enemy_player1 = player1;
   enemy_player2 = player2;
 
+  object_t* ptr = object_activeList;
+  while (ptr) {
+    object_t* next = ptr->next;
+    if (ptr->id == OBJECT_ID_ENEMY) {
+      fighter_remove(ptr);
+    }
+    ptr = next;
+  }
+  
   if (1) {
     if (player1) {
       enemy_add(game_cameraX-64, 85);
-      //enemy_add(game_cameraX-132, 120);    
+      enemy_add(game_cameraX-132, 120);
     }
     
     if (player2) {
       enemy_add(game_cameraX+SCREEN_WIDTH+64, 85);
-      //      enemy_add(game_cameraX+SCREEN_WIDTH+132, 200);
-      //      enemy_add(game_cameraX+SCREEN_WIDTH+160, 128);
+      enemy_add(game_cameraX+SCREEN_WIDTH+132, 200);
+      enemy_add(game_cameraX+SCREEN_WIDTH+160, 128);
     }
   }
 }

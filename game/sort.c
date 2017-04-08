@@ -121,5 +121,10 @@ static void(*sort_zs[OBJECT_MAX_OBJECTS+1])(object_t**) = {
 void
 sort_z(int16_t count, object_t **d)
 {
+#ifdef DEBUG
+  if (count > 8) {
+    PANIC("sort_z: out of bounds");
+  }
+#endif
   sort_zs[count](d);
 }

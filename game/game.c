@@ -30,6 +30,7 @@ uint16_t game_levelComplete;
 uint32_t game_paused;
 uint16_t game_numPlayers;
 uint16_t game_phase;
+uint16_t game_newPhase;
 object_t* game_player1;
 object_t* game_player2;
 
@@ -232,6 +233,7 @@ game_newGame(menu_command_t command)
   game_lives = 3;
   game_level = 0;
   game_phase = 0;
+  game_newPhase = 1;
 
   if (command >= MENU_COMMAND_LEVEL) {
     game_level = command - MENU_COMMAND_LEVEL;
@@ -323,12 +325,11 @@ game_loadLevel(menu_command_t command)
   fighter_init();
   hand_init();
   
-  game_player1 = player_init(1, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80);
+  game_player1 = player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80);
   game_player2 = 0;
   if (game_numPlayers == 2) {
-    game_player2 = player_init(2, OBJECT_ANIM_PLAYER3_STAND_RIGHT, SCREEN_WIDTH-80);
+    game_player2 = player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER3_STAND_RIGHT, SCREEN_WIDTH-80);
   }
-  enemy_init(game_player1, game_player2);
 
   hw_waitBlitter();
 
@@ -622,6 +623,9 @@ game_processKeyboard()
 {
   switch (keyboard_key) {
 #ifdef DEBUG
+  case 'L':
+    game_requestCameraX(game_cameraX+(SCREEN_WIDTH/3));
+    break;
   case 'O':
     {
       game_finish();
@@ -739,7 +743,13 @@ game_loop()
 
   game_init(menuCommand);
 
-  for (;;) {    
+  for (;;) {
+
+    if (game_newPhase) {
+      enemy_init(game_player1, game_player2);
+      game_newPhase = 0;
+    }    
+    
     keyboard_read();
     hw_readJoystick();
     if (game_numPlayers == 2) {

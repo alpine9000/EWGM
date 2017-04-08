@@ -2,7 +2,7 @@
 #define __FIGHTER_H
 
 
-#define FIGHTER_MAX_FIGHTERS 10
+#define FIGHTER_MAX_FIGHTERS 8
 #define FIGHTER_LONG_PUNCH_RANGE 13
 #define FIGHTER_SHORT_PUNCH_RANGE 8
 #define FIGHTER_Y_ATTACK_THRESHOLD 6
@@ -11,7 +11,6 @@
 typedef struct fighter_data {
   struct fighter_data* prev;
   struct fighter_data* next;  
-  uint16_t id;
   uint16_t punchCount;
   uint16_t punchType;
   int16_t attack_py;
@@ -25,7 +24,7 @@ typedef struct fighter_data {
   int16_t flashCount;
   int16_t flashFrames;
   uint16_t widthOffset;
-  uint16_t enemyAttackWait;
+  int16_t enemyAttackWait;
 } fighter_data_t;
 
 
@@ -41,4 +40,6 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
 void
 fighter_update(uint16_t deltaT, object_t* ptr);
 
+void
+fighter_remove(object_t* ptr);
 #endif

@@ -107,6 +107,7 @@ extern uint16_t game_over;
 extern uint16_t game_levelComplete;
 extern uint16_t game_numPlayers;
 extern uint16_t game_phase;
+extern uint16_t game_newPhase;
 
 #include "string.h"
 #include "registers.h"
