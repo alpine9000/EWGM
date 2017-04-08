@@ -318,7 +318,7 @@ game_loadLevel(menu_command_t command)
   object_init();
   fighter_init();
   
-  object_t* player1 = player_init(0, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80);
+  object_t* player1 = player_init(0, OBJECT_ANIM_PLAYER1_STAND_RIGHT, 80);
   object_t* player2 = 0;
   if (game_numPlayers == 2) {
     player2 = player_init(1, OBJECT_ANIM_PLAYER3_STAND_RIGHT, SCREEN_WIDTH-80);

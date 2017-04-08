@@ -200,7 +200,7 @@ object_image_t object_imageAtlas[] = {
     .y = 0,
     .w = 32,
     .h = 53,
-    .dx = 0,
+    .dx = 1,
     .dy = 0,    
   },
   [SPRITE_PLAYER1_RUN_RIGHT_2] = {
@@ -208,7 +208,7 @@ object_image_t object_imageAtlas[] = {
     .y = 0,
     .w = 32,
     .h = 53,
-    .dx = 0,
+    .dx = 1,
     .dy = 0,    
   },
   [SPRITE_PLAYER1_RUN_RIGHT_3] = {
@@ -224,7 +224,7 @@ object_image_t object_imageAtlas[] = {
     .y = 0,
     .w = 32,
     .h = 53,
-    .dx = 0,
+    .dx = 1,
     .dy = 0,    
     },
   [SPRITE_PLAYER1_STAND_LEFT] = {
@@ -240,7 +240,7 @@ object_image_t object_imageAtlas[] = {
     .y = 54,
     .w = 32,
     .h = 53,
-    .dx = 0,
+    .dx = -1,
     .dy = 0,    
   },
   [SPRITE_PLAYER1_RUN_LEFT_2] = {
@@ -248,7 +248,7 @@ object_image_t object_imageAtlas[] = {
     .y = 54,
     .w = 32,
     .h = 53,
-    .dx = 0,
+    .dx = -1,
     .dy = 0,   
   },
   [SPRITE_PLAYER1_RUN_LEFT_3] = {
@@ -256,7 +256,7 @@ object_image_t object_imageAtlas[] = {
     .y = 54,
     .w = 32,
     .h = 53,
-    .dx = 0,
+    .dx = 1,
     .dy = 0,    
   },
   [SPRITE_PLAYER1_RUN_LEFT_4] = {
@@ -264,7 +264,7 @@ object_image_t object_imageAtlas[] = {
     .y = 54,
     .w = 32,
     .h = 53,
-    .dx = 0,
+    .dx = -1,
     .dy = 0,    
   },
   [SPRITE_PLAYER1_PUNCH_LEFT_1] = {
@@ -280,7 +280,7 @@ object_image_t object_imageAtlas[] = {
     .y = 54,
     .w = 32,
     .h = 53,
-    .dx = -1,
+    .dx = -2,
     .dy = 0,    
     },
   [SPRITE_PLAYER1_PUNCH_RIGHT_1] = {
@@ -288,7 +288,7 @@ object_image_t object_imageAtlas[] = {
     .y = 0,
     .w = 32,
     .h = 53,
-    .dx = 1,
+    .dx = 3,
     .dy = 0,    
     },
   [SPRITE_PLAYER1_PUNCH_RIGHT_2] = {
@@ -296,7 +296,7 @@ object_image_t object_imageAtlas[] = {
     .y = 0,
     .w = 32,
     .h = 53,
-    .dx = 3,
+    .dx = 4,
     .dy = 0,    
     },
   
@@ -305,7 +305,7 @@ object_image_t object_imageAtlas[] = {
     .y = 54,
     .w = 32,
     .h = 53,
-    .dx = -2,
+    .dx = -3,
     .dy = 0,    
     },
   [SPRITE_PLAYER1_HIT_LEFT] = {
@@ -313,7 +313,7 @@ object_image_t object_imageAtlas[] = {
     .y = 0,
     .w = 32,
     .h = 53,
-    .dx = 1,
+    .dx = 3,
     .dy = 0,    
     },
   //==============================
@@ -402,7 +402,7 @@ object_image_t object_imageAtlas[] = {
   [SPRITE_PLAYER2_PUNCH_LEFT_1] = {
     .x = 224,
     .y = 161,
-    .w = 32,
+    .w = 48,
     .h = 53,
     .dx = -4,
     .dy = 0,    
