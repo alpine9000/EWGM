@@ -216,13 +216,12 @@ menu_processKeyboard(void)
     return MENU_COMMAND_RECORD;
     break;
   case '1':
+    game_numPlayers = 1;    
     return MENU_COMMAND_LEVEL;
     break;
   case '2':
-    return MENU_COMMAND_LEVEL+1;
-    break;
-  case '3':
-    return MENU_COMMAND_LEVEL+2;
+    game_numPlayers = 2;
+    return MENU_COMMAND_LEVEL;
     break;
 #if TRACKLOADER==0
   case 'Q':

@@ -380,7 +380,11 @@ game_scrollBackground(void)
 {
   int16_t lastCameraX = game_cameraX;
 
-  game_cameraX += 2;
+  if (game_targetCameraX-game_cameraX < 2) {
+    game_cameraX += 1;
+  } else {
+    game_cameraX += 2;
+  }
   
   uint16_t tile = game_cameraX >> 4;
   uint16_t scroll = (game_cameraX % 16);
@@ -571,8 +575,8 @@ game_requestCameraX(int16_t targetCameraX)
 
   if (game_targetCameraX < 0) {
     game_targetCameraX = 0;
-  } else if (game_targetCameraX > WORLD_WIDTH-SCREEN_WIDTH) {
-    game_targetCameraX = WORLD_WIDTH-SCREEN_WIDTH;
+  } else if (game_targetCameraX >= WORLD_WIDTH-SCREEN_WIDTH) {
+    game_targetCameraX = WORLD_WIDTH-SCREEN_WIDTH-1;
   }
 }
 
@@ -639,7 +643,7 @@ game_processKeyboard()
   switch (keyboard_key) {
 #ifdef DEBUG
   case 'L':
-    game_requestCameraX(game_cameraX+2);
+    // game_requestCameraX(WORLD_WIDTH-SCREEN_WIDTH);
     break;
   case 'O':
     {
