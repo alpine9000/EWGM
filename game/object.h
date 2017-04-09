@@ -206,7 +206,6 @@ typedef struct object {
   void (*update)(uint16_t deltaT, struct object* ptr);
   void* data;
   void (*freeData)(void* data);
-  uint32_t lastUpdatedFrame;
   uint16_t visible;
 } object_t;
 
@@ -231,7 +230,7 @@ object_add(uint16_t id, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*u
 void
 object_free(object_t* ptr);
 void
-object_render(frame_buffer_t fb);
+object_render(frame_buffer_t fb, uint16_t deltaT);
 void
 object_saveBackground(frame_buffer_t fb);
 void

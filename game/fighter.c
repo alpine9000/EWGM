@@ -75,17 +75,9 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
   int16_t vx = a->velocity.x;
   int16_t vy = a->velocity.y;
 
-  switch (deltaT) {
-  case 0:
-  case 1:
-    break;
-  case 2:
+  if (deltaT == 2) {
     vx *= 2;
     vy *= 2;
-    break;
-  default:
-
-    break;
   }
   
   int16_t _collision = 0;
@@ -129,17 +121,38 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
 
 
 static void
-fighter_attack(object_t* ptr, uint16_t dammage, int16_t dx)
+fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
 {
   fighter_data_t* data = (fighter_data_t*)ptr->data;
-  sound_queueSound(SOUND_KILL);
   object_set_z(ptr, object_y(ptr));
   data->attack_py = object_py(ptr);
   data->health -= dammage;
   if (data->health <= 0) {
+    switch (attacker->id) {
+    case OBJECT_ID_PLAYER1:
+      sound_queueSound(SOUND_DIE01);
+      break;
+    case OBJECT_ID_PLAYER2:
+      sound_queueSound(SOUND_DIE02);
+      break;
+    default:
+      sound_queueSound(SOUND_DIE03);
+      break;
+    }
     ptr->velocity.y = -8*OBJECT_PHYSICS_FACTOR;
     ptr->velocity.x = dx*2;
   } else {
+    switch (attacker->id) {
+    case OBJECT_ID_PLAYER1:    
+      sound_queueSound(SOUND_TERENCE_PUNCH01);
+      break;
+    case OBJECT_ID_PLAYER2:          
+      sound_queueSound(SOUND_BUD_PUNCH01);
+      break;
+    default:
+      sound_queueSound(SOUND_ENEMY_PUNCH01);
+      break;
+    }
     ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
     ptr->velocity.x = dx;
   }
@@ -188,9 +201,9 @@ fighter_doAttack(int16_t deltaT, object_t* ptr, fighter_data_t* data)
   object_collision_t collision;
   if (fighter_collision(deltaT, ptr, &collision, figher_attack_range[ptr->actionId], FIGHTER_Y_ATTACK_THRESHOLD)) {
     if (ptr->anim->facing == FACING_RIGHT && collision.right) {
-      fighter_attack(collision.right, data->attackDammage, 1);
+      fighter_attack(ptr, collision.right, data->attackDammage, 1);
     } else if (ptr->anim->facing == FACING_LEFT && collision.left) {
-      fighter_attack(collision.left, data->attackDammage, -1);
+      fighter_attack(ptr, collision.left, data->attackDammage, -1);
     }
   }
 }

@@ -12,7 +12,7 @@ game_newGame(menu_command_t command);
 static void
 game_loadLevel(menu_command_t command);
 static void
-game_render(void);
+game_render(uint16_t deltaT);
 static void
 game_scrollBackground(void);
 
@@ -54,6 +54,7 @@ static int16_t game_targetCameraX;
 static uint32_t game_lastScore;
 static uint32_t game_lastScrollFrame;
 static uint16_t game_lastTileX;
+static uint16_t game_deltaT;
 #ifdef DEBUG
 static int16_t game_turtle;
 static uint16_t game_rasterLines[GAME_RASTERAVERAGE_LENGTH];
@@ -222,6 +223,16 @@ game_refreshDebugScoreboard(void)
   game_lastMaxRasterLine = -1;
   game_lastEnemyCount = -1;
   game_lastItemCount = -1;
+
+  text_drawScoreBoard("s/l:", 0, 0);
+  text_drawScoreBoard("tics:", 14*8, 0);
+  text_drawScoreBoard("vbi:", 27*8, 0);
+
+  text_drawScoreBoard("skip:", 0, 9);
+  text_drawScoreBoard("asl:", 9*8, 9);
+  text_drawScoreBoard("msl:", 18*8, 9);
+  text_drawScoreBoard("dt:", 27*8, 9);
+  text_drawScoreBoard("obj:", 33*8, 9);    
 }
 #endif
 
@@ -234,6 +245,7 @@ game_newGame(menu_command_t command)
   game_level = 0;
   game_wave = 0;
   game_nextWave = 1;
+  game_deltaT = 0;
 
   if (command >= MENU_COMMAND_LEVEL) {
     game_level = command - MENU_COMMAND_LEVEL;
@@ -333,11 +345,11 @@ game_loadLevel(menu_command_t command)
 
   hw_waitBlitter();
 
-  game_render();
+  game_render(0);
 
   game_switchFrameBuffers();
 
-  game_render();
+  game_render(0);
 
   hw_waitVerticalBlank();
 
@@ -403,36 +415,36 @@ debug_mode(void)
 { 
   switch (game_debugRenderFrame) {
   case 0:
-    text_drawScoreBoard(itoa(game_total), 0, 0);
+    text_drawScoreBoard(itoan(game_total, 8), 5*8, 0);
     break;
   case 1:
-    text_drawScoreBoard(itoa(game_frame), 9*8, 0);
+    text_drawScoreBoard(itoan(game_frame, 6), 20*8, 0);
     break;
   case 2:
     {
       uint32_t frame = hw_verticalBlankCount;
-      text_drawScoreBoard(itoa(frame), 18*8, 0);
+      text_drawScoreBoard(itoan(frame, 6), 32*8, 0);
     }
     break;
   case 3:
-    text_drawScoreBoard(itoa(game_missedFrameCount),27*8, 0);
+    text_drawScoreBoard(itoan(game_missedFrameCount, 3),5*8, 9);
     break;
   case 4:
     if (game_average != game_lastAverage) {
-      text_drawScoreBoard(itoa(game_average), 0, 10);
+      text_drawScoreBoard(itoan(game_average, 4), 13*8, 9);
       game_lastAverage = game_average;
     }
     break;
   case 5:
     if (game_maxRasterLine != game_lastMaxRasterLine) {
-      text_drawScoreBoard(itoa(game_maxRasterLine), 5*8, 10);
+      text_drawScoreBoard(itoan(game_maxRasterLine, 4), 22*8, 9);
       game_lastMaxRasterLine = game_maxRasterLine;
     }
   case 6:
-      text_drawScoreBoard(text_intToAscii(hw_verticalBlankCount-game_lastVerticalBlankCount, 8), 15*8, 10);
+      text_drawScoreBoard(itoan(game_deltaT, 2), 30*8, 9);
     break;
   case 7:
-      text_drawScoreBoard(text_intToAscii(object_count, 4), 25*8, 10);
+      text_drawScoreBoard(itoan(object_count, 2), 37*8, 9);
     break;    
   default:
     break;
@@ -535,7 +547,7 @@ debug_showRasterLine(void)
 
 
 static void
-game_render(void)
+game_render(uint16_t deltaT)
 {
   //tile_renderInvalidTiles(game_offScreenBuffer);
 
@@ -544,7 +556,7 @@ game_render(void)
   //popup_render(game_offScreenBuffer);
   //object_saveBackground(game_offScreenBuffer);
   
-  object_render(game_offScreenBuffer);
+  object_render(game_offScreenBuffer, deltaT);
   
   if (level.effectFunctor) {
     level.effectFunctor(game_offScreenBuffer);
@@ -822,9 +834,9 @@ game_loop()
     game_switchFrameBuffers();
 
     uint32_t frame = hw_verticalBlankCount;
-    uint32_t deltaFrame = hw_verticalBlankCount-game_lastScrollFrame;
+    game_deltaT = hw_verticalBlankCount-game_lastScrollFrame;
     game_lastScrollFrame = frame;
-    for (uint32_t i = 0; i < deltaFrame; i++) {
+    for (uint32_t i = 0; i < game_deltaT; i++) {
       if (game_targetCameraX != game_cameraX) {
 	game_scrollBackground();      
       }
@@ -832,7 +844,11 @@ game_loop()
      
     //object_restoreBackground(game_offScreenBuffer);
 
-    game_render();    
+    if (game_deltaT == 0 || game_deltaT > 2) {
+      PANIC("deltat");
+    }
+    
+    game_render(game_deltaT);    
 
 #ifdef DEBUG_SPEED
     custom->color[0] = 0;

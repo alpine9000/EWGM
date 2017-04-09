@@ -2,31 +2,31 @@
 
 object_animation_t object_animations[] = {
   [OBJECT_ANIM_PLAYER1_RUN_RIGHT] = {
-    .start =SPRITE_PLAYER1_RUN_RIGHT_1,
-    .stop =SPRITE_PLAYER1_RUN_RIGHT_4,
+    .start = SPRITE_PLAYER1_RUN_RIGHT_1,
+    .stop = SPRITE_PLAYER1_RUN_RIGHT_4,
     .speed = 2,
     .facing = FACING_RIGHT
   },
   [OBJECT_ANIM_PLAYER1_STAND_RIGHT] = {
-    .start =SPRITE_PLAYER1_STAND_RIGHT,
-    .stop =SPRITE_PLAYER1_STAND_RIGHT,
+    .start = SPRITE_PLAYER1_STAND_RIGHT,
+    .stop = SPRITE_PLAYER1_STAND_RIGHT,
     .speed = 0,
     .facing = FACING_RIGHT
   },
   [OBJECT_ANIM_PLAYER1_RUN_LEFT] = {
-    .start =SPRITE_PLAYER1_RUN_LEFT_1,
-    .stop =SPRITE_PLAYER1_RUN_LEFT_4,
+    .start = SPRITE_PLAYER1_RUN_LEFT_1,
+    .stop = SPRITE_PLAYER1_RUN_LEFT_4,
     .speed = 2,
     .facing = FACING_LEFT
   },
   [OBJECT_ANIM_PLAYER1_STAND_LEFT] = {
-    .start =SPRITE_PLAYER1_STAND_LEFT,
-    .stop =SPRITE_PLAYER1_STAND_LEFT,
+    .start = SPRITE_PLAYER1_STAND_LEFT,
+    .stop = SPRITE_PLAYER1_STAND_LEFT,
     .speed = 0,
     .facing = FACING_LEFT
   },
   [OBJECT_ANIM_PLAYER1_PUNCH_LEFT1] = {
-    .start =SPRITE_PLAYER1_PUNCH_LEFT_1,
+    .start = SPRITE_PLAYER1_PUNCH_LEFT_1,
     .stop = SPRITE_PLAYER1_PUNCH_LEFT_1,
     .speed = 0,
     .facing = FACING_LEFT
@@ -38,7 +38,7 @@ object_animation_t object_animations[] = {
     .facing = FACING_LEFT
   },
   [OBJECT_ANIM_PLAYER1_PUNCH_RIGHT1] = {
-    .start =SPRITE_PLAYER1_PUNCH_RIGHT_1,
+    .start = SPRITE_PLAYER1_PUNCH_RIGHT_1,
     .stop = SPRITE_PLAYER1_PUNCH_RIGHT_1,
     .speed = 0,
     .facing = FACING_RIGHT
@@ -64,25 +64,25 @@ object_animation_t object_animations[] = {
   // =================================
   [OBJECT_ANIM_PLAYER2_RUN_RIGHT] = {
     .start =SPRITE_PLAYER2_RUN_RIGHT_1,
-    .stop =SPRITE_PLAYER2_RUN_RIGHT_4,
+    .stop = SPRITE_PLAYER2_RUN_RIGHT_4,
     .speed = 2,
     .facing = FACING_RIGHT
   },
   [OBJECT_ANIM_PLAYER2_STAND_RIGHT] = {
-    .start =SPRITE_PLAYER2_STAND_RIGHT,
-    .stop =SPRITE_PLAYER2_STAND_RIGHT,
+    .start = SPRITE_PLAYER2_STAND_RIGHT,
+    .stop = SPRITE_PLAYER2_STAND_RIGHT,
     .speed = 0,
     .facing = FACING_RIGHT
   },
   [OBJECT_ANIM_PLAYER2_RUN_LEFT] = {
-    .start =SPRITE_PLAYER2_RUN_LEFT_1,
-    .stop =SPRITE_PLAYER2_RUN_LEFT_4,
+    .start = SPRITE_PLAYER2_RUN_LEFT_1,
+    .stop = SPRITE_PLAYER2_RUN_LEFT_4,
     .speed = 2,
     .facing = FACING_LEFT
   },
   [OBJECT_ANIM_PLAYER2_STAND_LEFT] = {
-    .start =SPRITE_PLAYER2_STAND_LEFT,
-    .stop =SPRITE_PLAYER2_STAND_LEFT,
+    .start = SPRITE_PLAYER2_STAND_LEFT,
+    .stop = SPRITE_PLAYER2_STAND_LEFT,
     .speed = 0,
     .facing = FACING_LEFT
   },
@@ -99,7 +99,7 @@ object_animation_t object_animations[] = {
     .facing = FACING_LEFT
   },      
   [OBJECT_ANIM_PLAYER2_PUNCH_RIGHT1] = {
-    .start =SPRITE_PLAYER2_PUNCH_RIGHT_1,
+    .start = SPRITE_PLAYER2_PUNCH_RIGHT_1,
     .stop = SPRITE_PLAYER2_PUNCH_RIGHT_1,
     .speed = 0,
     .facing = FACING_RIGHT
@@ -124,31 +124,31 @@ object_animation_t object_animations[] = {
   },            
   // =================================
   [OBJECT_ANIM_PLAYER3_RUN_RIGHT] = {
-    .start =SPRITE_PLAYER3_RUN_RIGHT_1,
-    .stop =SPRITE_PLAYER3_RUN_RIGHT_4,
+    .start = SPRITE_PLAYER3_RUN_RIGHT_1,
+    .stop = SPRITE_PLAYER3_RUN_RIGHT_4,
     .speed = 2,
     .facing = FACING_RIGHT
   },
   [OBJECT_ANIM_PLAYER3_STAND_RIGHT] = {
-    .start =SPRITE_PLAYER3_STAND_RIGHT,
-    .stop =SPRITE_PLAYER3_STAND_RIGHT,
+    .start = SPRITE_PLAYER3_STAND_RIGHT,
+    .stop = SPRITE_PLAYER3_STAND_RIGHT,
     .speed = 0,
     .facing = FACING_RIGHT
   },
   [OBJECT_ANIM_PLAYER3_RUN_LEFT] = {
-    .start =SPRITE_PLAYER3_RUN_LEFT_1,
-    .stop =SPRITE_PLAYER3_RUN_LEFT_4,
+    .start = SPRITE_PLAYER3_RUN_LEFT_1,
+    .stop = SPRITE_PLAYER3_RUN_LEFT_4,
     .speed = 2,
     .facing = FACING_LEFT
   },
   [OBJECT_ANIM_PLAYER3_STAND_LEFT] = {
-    .start =SPRITE_PLAYER3_STAND_LEFT,
-    .stop =SPRITE_PLAYER3_STAND_LEFT,
+    .start = SPRITE_PLAYER3_STAND_LEFT,
+    .stop = SPRITE_PLAYER3_STAND_LEFT,
     .speed = 0,
     .facing = FACING_LEFT
   },
   [OBJECT_ANIM_PLAYER3_PUNCH_LEFT1] = {
-    .start =SPRITE_PLAYER3_PUNCH_LEFT_1,
+    .start = SPRITE_PLAYER3_PUNCH_LEFT_1,
     .stop = SPRITE_PLAYER3_PUNCH_LEFT_1,
     .speed = 0,
     .facing = FACING_LEFT
@@ -160,7 +160,7 @@ object_animation_t object_animations[] = {
     .facing = FACING_LEFT
   },      
   [OBJECT_ANIM_PLAYER3_PUNCH_RIGHT1] = {
-    .start =SPRITE_PLAYER3_PUNCH_RIGHT_1,
+    .start = SPRITE_PLAYER3_PUNCH_RIGHT_1,
     .stop = SPRITE_PLAYER3_PUNCH_RIGHT_1,
     .speed = 0,
     .facing = FACING_RIGHT
@@ -224,7 +224,7 @@ object_image_t object_imageAtlas[] = {
     .y = 0,
     .w = 32,
     .h = 53,
-    .dx = -2,
+    .dx = -1,
     .dy = 0,    
   },
   [SPRITE_PLAYER1_RUN_RIGHT_4] = {

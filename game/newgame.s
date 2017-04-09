@@ -107,15 +107,34 @@ _logoBitplanes:
 	section data_c
 	align 4
 	if SFX==1
-	xdef _sound_fathit
-_sound_fathit:	
-	incbin "out/fathitdouble-8khz.raw"	
-	xdef _sound_kill
-_sound_kill:	
-	incbin "out/kill.raw"
+
+	xdef _sound_Bud_Punch01
+_sound_Bud_Punch01:	
+	incbin "out/Bud_Punch01.raw"	
+	xdef _sound_enemy01
+_sound_enemy01:	
+	incbin "out/enemy01.raw"
+	
+	xdef _sound_Terence_punch01
+_sound_Terence_punch01:	
+	incbin "out/Terence_punch01.raw"
+	xdef _sound_enemy02
+_sound_enemy02:	
+	incbin "out/enemy02.raw"	
+
+	xdef _sound_Terence_punch02
+_sound_Terence_punch02:	
+	incbin "out/Terence_punch02.raw"
+	xdef _sound_enemy03
+_sound_enemy03:	
+	incbin "out/enemy03.raw"
+
+	if 0
 	xdef _sound_coin
 _sound_coin:	
 	incbin "out/coin1.raw"
+	endif
+	
 	xdef _sound_pop
 _sound_pop:	
 	incbin "out/pop.raw"

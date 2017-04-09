@@ -114,32 +114,19 @@ object_setAction(object_t* ptr, object_action_t action)
 void
 object_updatePosition(uint16_t deltaT, object_t* ptr)
 {
-  static int tooSlow = 0;
   int16_t vx = ptr->velocity.x;
   int16_t vy = ptr->velocity.y;
 
-  switch (deltaT) {
-  case 0:
-  case 1:
-    break;
-  case 2:
+  if (deltaT == 2) {
     vx *= 2;
     vy *= 2;
-    break;
-  default:
-    tooSlow++;
-    if (tooSlow > 100) {
-      //      PANIC("TOO SLOW!");
-    }
-    break;
-  }
+  }  
   
   int16_t lastX = object_px(ptr);
   int16_t lastY = object_py(ptr);
+
   object_set_px(ptr, lastX + vx);
   object_set_py(ptr, lastY + vy);
-  //  ptr->x = ptr->px / OBJECT_PHYSICS_FACTOR;
-  //ptr->y = ptr->py / OBJECT_PHYSICS_FACTOR;  
     
   vx = object_px(ptr) - lastX;
   vy = object_py(ptr) - lastY;
@@ -165,17 +152,7 @@ object_updatePosition(uint16_t deltaT, object_t* ptr)
 	object_setAction(ptr, OBJECT_STAND_LEFT);
       }
     }
-  }/* else if (ptr->state == OBJECT_STATE_HIT) {
-    if (object_py(ptr) >= ptr->hitpy) {
-      object_set_py(ptr, ptr->hitpy);
-      //object_y(ptr) = object_py(ptr) / OBJECT_PHYSICS_FACTOR;
-      ptr->velocity.y = 0;
-      ptr->velocity.x = 0;      
-      ptr->state = OBJECT_STATE_ALIVE;
-    } else {
-      ptr->velocity.y += deltaT;
-    }
-    }  */  
+  }
 }
 
 
@@ -201,10 +178,10 @@ object_init(void)
 #endif
 }
 
-void
-object_updateAnimation(object_t *ptr)
+static void
+object_updateAnimation(uint16_t deltaT, object_t *ptr)
 {
-  if (ptr->frameCounter == ptr->anim->speed) {
+  if (ptr->frameCounter >= ptr->anim->speed) {
     ptr->imageIndex++;
     ptr->frameCounter = 0;
     if (ptr->imageIndex > ptr->anim->stop) {
@@ -212,7 +189,7 @@ object_updateAnimation(object_t *ptr)
     }
     ptr->image = &object_imageAtlas[ptr->imageIndex];
   } else {
-    ptr->frameCounter++;
+    ptr->frameCounter+=deltaT;
   }
 }
 
@@ -253,17 +230,14 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
 
 }
 
-void
-object_update(void)
+static void
+object_update(uint16_t deltaT)
 {
   object_t* ptr = object_activeList;
 
   while (ptr) {
-    uint32_t frame = hw_verticalBlankCount;
-    int16_t deltaT = frame-ptr->lastUpdatedFrame;    
     object_t* next = ptr->next;
     ptr->update(deltaT, ptr);
-    ptr->lastUpdatedFrame = frame;
     if (ptr->state == OBJECT_STATE_REMOVED) {
       if (ptr->deadRenderCount == 2) {
 	object_free(ptr);
@@ -276,9 +250,9 @@ object_update(void)
 }
 
 void
-object_render(frame_buffer_t fb)
+object_render(frame_buffer_t fb, uint16_t deltaT)
 {
-  object_update();
+  object_update(deltaT);
   object_restoreBackground(fb);
   object_saveBackground(fb);  
 
@@ -291,7 +265,7 @@ object_render(frame_buffer_t fb)
     if (ptr->state != OBJECT_STATE_REMOVED) {
       object_renderObject(fb, ptr);
     }
-    object_updateAnimation(ptr);
+    object_updateAnimation(deltaT, ptr);
   }
 
   if (enemy_count == 0) {
@@ -432,7 +406,6 @@ object_add(uint16_t id, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*u
   ptr->update = update;
   ptr->data = data;
   ptr->freeData = freeData;
-  ptr->lastUpdatedFrame = 0;
   object_addToActive(ptr);
   return ptr;
 }

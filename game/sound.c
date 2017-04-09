@@ -3,14 +3,24 @@
 #define SOUND_LATCH_SCANLINES 5
 
 #if SFX==1
-extern UWORD sound_kill, sound_fathit, sound_coin, sound_pop;
+extern UWORD sound_Terence_punch01, sound_Terence_punch02, sound_Bud_Punch01, sound_enemy01, sound_enemy02, sound_enemy03, sound_pop; //sound_coin
 
 static void 
-sound_playKill(void);
+sound_playBud_Punch01(void);
+static void 
+sound_playTerence_punch01(void);
+static void 
+sound_playTerence_punch02(void);
 static void
-sound_playFatHit(void);
+sound_playEnemy01(void);
+static void
+sound_playEnemy02(void);
+static void
+sound_playEnemy03(void);
+#if 0
 static void
 sound_playPickup(void);
+#endif
 static void
 sound_playPop(void);
 
@@ -23,20 +33,49 @@ typedef struct {
 } sound_config_t;
 
 static sound_config_t sound_queue[] = {
-  [SOUND_FATHIT] = {
+  [SOUND_DIE01] = {
     .count = 0,
     .delay = 2,
-    .interrupt = 0,
+    .interrupt = 1,
     .loop = 0,
-    .play = &sound_playFatHit
+    .play = &sound_playEnemy01
   },
-  [SOUND_KILL] = {
+  [SOUND_DIE02] = {
+    .count = 0,
+    .delay = 2,
+    .interrupt = 1,
+    .loop = 0,
+    .play = &sound_playEnemy02
+  },
+  [SOUND_DIE03] = {
+    .count = 0,
+    .delay = 2,
+    .interrupt = 1,
+    .loop = 0,
+    .play = &sound_playEnemy03
+  },  
+  [SOUND_BUD_PUNCH01] = {
     .count = 0,
     .delay = 1,
     .interrupt = 1,
     .loop = 0,
-    .play = &sound_playKill
+    .play = &sound_playBud_Punch01
   },
+  [SOUND_TERENCE_PUNCH01] = {
+    .count = 0,
+    .delay = 1,
+    .interrupt = 1,
+    .loop = 0,
+    .play = &sound_playTerence_punch01
+  },
+  [SOUND_ENEMY_PUNCH01] = {
+    .count = 0,
+    .delay = 1,
+    .interrupt = 1,
+    .loop = 0,
+    .play = &sound_playTerence_punch02
+  },    
+#if 0
   [SOUND_PICKUP] = {
     .count = 0,
     .delay = 1,
@@ -44,6 +83,7 @@ static sound_config_t sound_queue[] = {
     .loop = 0,
     .play = &sound_playPickup
   },
+  #endif
   [SOUND_MENU] = {
     .count = 0,
     .delay = 0,
@@ -58,14 +98,81 @@ static int16_t sound_loop = -1;
 
 
 static void 
-sound_playKill(void)
+sound_playBud_Punch01(void)
+{
+  volatile struct AudChannel *aud = &custom->aud[3];
+  static uint16_t periods[] = {321, 295, 354, 321};
+  uint16_t periodIndex =  hw_verticalBlankCount & 0x3;
+  
+  aud->ac_ptr = &sound_Bud_Punch01;
+  aud->ac_per = periods[periodIndex];
+  aud->ac_vol = 64;
+  aud->ac_len = 4711/2;//3509/2;
+  custom->dmacon = DMAF_AUD3|DMAF_SETCLR;
+}
+
+static void 
+sound_playTerence_punch01(void)
+{
+  volatile struct AudChannel *aud = &custom->aud[3];
+  static uint16_t periods[] = {321, 295, 354, 321};
+  uint16_t periodIndex =  hw_verticalBlankCount & 0x3;
+  
+  aud->ac_ptr = &sound_Terence_punch01;
+  aud->ac_per = periods[periodIndex];
+  aud->ac_vol = 64;
+  aud->ac_len = 2614/2;//3509/2;
+  custom->dmacon = DMAF_AUD3|DMAF_SETCLR;
+}
+
+static void 
+sound_playTerence_punch02(void)
+{
+  volatile struct AudChannel *aud = &custom->aud[3];
+  static uint16_t periods[] = {321, 295, 354, 321};
+  uint16_t periodIndex =  hw_verticalBlankCount & 0x3;
+  
+  aud->ac_ptr = &sound_Terence_punch02;
+  aud->ac_per = periods[periodIndex];
+  aud->ac_vol = 64;
+  aud->ac_len = 2851/2;//3509/2;
+  custom->dmacon = DMAF_AUD3|DMAF_SETCLR;
+}
+
+static void 
+sound_playEnemy01(void)
 {
   volatile struct AudChannel *aud = &custom->aud[3];
   
-  aud->ac_ptr = &sound_kill;
+  aud->ac_ptr = &sound_Bud_Punch01;
   aud->ac_per = 321;
   aud->ac_vol = 64;
-  aud->ac_len = 3509/2;
+  aud->ac_len = 4711/2 + 4410/2;
+  custom->dmacon = DMAF_AUD3|DMAF_SETCLR;
+}
+
+static void 
+sound_playEnemy02(void)
+{
+  volatile struct AudChannel *aud = &custom->aud[3];
+  
+  aud->ac_ptr = &sound_Terence_punch01;
+  aud->ac_per = 321;
+  aud->ac_vol = 64;
+  aud->ac_len = 3503/2 + 2614/2;
+  custom->dmacon = DMAF_AUD3|DMAF_SETCLR;
+}
+
+
+static void 
+sound_playEnemy03(void)
+{
+  volatile struct AudChannel *aud = &custom->aud[3];
+  
+  aud->ac_ptr = &sound_Terence_punch02;
+  aud->ac_per = 321;
+  aud->ac_vol = 64;
+  aud->ac_len = 4063/2 + 2851/2;
   custom->dmacon = DMAF_AUD3|DMAF_SETCLR;
 }
 
@@ -82,20 +189,7 @@ sound_playPop(void)
   custom->dmacon = DMAF_AUD3|DMAF_SETCLR;
 }
 
-
-static void 
-sound_playFatHit(void)
-{
-  volatile struct AudChannel *aud = &custom->aud[3];
-  
-  aud->ac_ptr = &sound_fathit;
-  aud->ac_per = 321;
-  aud->ac_vol = 64;
-  aud->ac_len = 4036/2;
-  custom->dmacon = DMAF_AUD3|DMAF_SETCLR;
-}
-
-
+#if 0
 static void 
 sound_playPickup(void)
 {
@@ -107,7 +201,7 @@ sound_playPickup(void)
   aud->ac_len = 3919/2;
   custom->dmacon = DMAF_AUD3|DMAF_SETCLR;
 }
-
+#endif
 
 static void
 sound_resetSound(void)

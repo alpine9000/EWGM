@@ -82,9 +82,9 @@ enemy_strikingDistanceX(object_t* a, object_t* b)
 uint16_t
 enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
- uint16_t attack = 0;
+  uint16_t attack = 0;
   
-  if (data->walkAbout) {
+  if (data->walkAbout > 0) {
     data->walkAbout-=deltaT;
   } else {
     object_t* player = enemy_closestPlayer(ptr);
@@ -95,7 +95,13 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
     }
     object_collision_t collision;
 
-    if ((fighter_collision(deltaT, ptr, &collision, ENEMY_INTERCEPT_X_RANGE, ENEMY_INTERCEPT_Y_THRESHOLD))) {
+    if (object_x(ptr)-game_cameraX <= 0) {
+      data->walkAbout = ENEMY_WALKABOUT_TICS;
+      ptr->velocity.x = 1;
+    } else if (object_x(ptr)-game_cameraX >= SCREEN_WIDTH) {
+      data->walkAbout = ENEMY_WALKABOUT_TICS;
+      ptr->velocity.x = -1;      
+    } else if ((fighter_collision(deltaT, ptr, &collision, ENEMY_INTERCEPT_X_RANGE, ENEMY_INTERCEPT_Y_THRESHOLD))) {
       if (collision.left) {
 	ptr->velocity.x = 1;
 	ptr->velocity.y = 0;
@@ -167,6 +173,7 @@ enemy_init(object_t* player1, object_t * player2)
     if (player1) {
       enemy_add(game_cameraX-64, 85);
       enemy_add(game_cameraX-132, 120);
+      //      enemy_add(game_cameraX-160, 200);      
     }
     
     if (player2) {
