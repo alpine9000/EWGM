@@ -22,8 +22,6 @@ uint16_t game_bplcon1;
 int16_t game_cameraX;
 int16_t game_screenScrollX;
 int16_t game_collisions;
-uint32_t game_score;
-uint32_t game_lives;
 uint16_t game_level;
 uint16_t game_over;
 uint16_t game_levelComplete;
@@ -33,6 +31,8 @@ uint16_t game_wave;
 uint16_t game_nextWave;
 object_t* game_player1;
 object_t* game_player2;
+uint32_t game_player1Score;
+uint32_t game_player2Score;
 
 static volatile __section(random_c) struct framebuffeData {
 #ifdef DEBUG
@@ -47,6 +47,11 @@ static volatile __section(random_c) struct framebuffeData {
 #endif
 } game_frameBufferData;
 
+
+static uint16_t game_lastPlayer1Health;
+static uint16_t game_lastPlayer2Health;
+static uint32_t game_lastPlayer1Score;
+static uint32_t game_lastPlayer2Score;
 static int16_t game_scroll;
 static uint16_t game_gotoMenu;				 
 static uint16_t game_singleStep;
@@ -185,7 +190,7 @@ void
 game_overCallback(void)
 {
   game_gotoMenu = 1;  
-  hiscore_addScore(game_score);
+  //  hiscore_addScore(game_score);
 }
 
 
@@ -203,7 +208,7 @@ game_finish(void)
 }
 
 
-void
+/*void
 game_loseLife(void)
 { 
   if (game_lives > 1) {
@@ -211,7 +216,7 @@ game_loseLife(void)
   } else {
     game_finish();
   }
-}
+  }*/
 
 
 #ifdef DEBUG
@@ -240,12 +245,16 @@ game_refreshDebugScoreboard(void)
 static void
 game_newGame(menu_command_t command)
 {
-  game_score = 0;
-  game_lives = 3;
   game_level = 0;
   game_wave = 0;
   game_nextWave = 1;
   game_deltaT = 0;
+  game_lastPlayer1Health = 0;
+  game_lastPlayer2Health = 0;
+  game_player1Score = 0;
+  game_player2Score = 0;
+  game_lastPlayer1Score = 0xffffffff;
+  game_lastPlayer2Score = 0xffffffff;    
 
   if (command >= MENU_COMMAND_LEVEL) {
     game_level = command - MENU_COMMAND_LEVEL;
@@ -254,6 +263,23 @@ game_newGame(menu_command_t command)
 
   game_loadLevel(command);
 }
+
+
+static void
+game_updatePlayerHealth(uint16_t x, uint16_t health)
+{
+  uint16_t score;
+
+  for (score = 0; score < health; score+=10, x+= 5) {
+    gfx_screenWidthBitBlit(game_scoreBoardFrameBuffer, 0, 288, x, 30, 16, 8);
+  }
+
+  for (; score < 100; score+= 10, x+= 5) {
+    gfx_screenWidthBitBlit(game_scoreBoardFrameBuffer, 0, 296, x, 30, 16, 8);
+  }
+  
+}
+
 
 
 static void
@@ -341,6 +367,8 @@ game_loadLevel(menu_command_t command)
   game_player2 = 0;
   if (game_numPlayers == 2) {
     game_player2 = player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER3_STAND_RIGHT, SCREEN_WIDTH-80);
+  } else {
+    game_updatePlayerHealth(50, 0);
   }
 
   hw_waitBlitter();
@@ -459,7 +487,6 @@ debug_mode(void)
   }
 }
 
-
 static void
 game_refreshScoreboard(void)
 {
@@ -568,7 +595,7 @@ game_render(uint16_t deltaT)
 }
 
 
-void
+uint16_t
 game_requestCameraX(int16_t targetCameraX)
 {
   game_targetCameraX = targetCameraX;
@@ -578,6 +605,8 @@ game_requestCameraX(int16_t targetCameraX)
   } else if (game_targetCameraX >= WORLD_WIDTH-SCREEN_WIDTH) {
     game_targetCameraX = WORLD_WIDTH-SCREEN_WIDTH-1;
   }
+
+  return targetCameraX;
 }
 
 
@@ -619,8 +648,6 @@ game_setLevelComplete(void)
 void
 game_startPlayback(void)
 {
-  game_score = 0;
-  game_lives = 3;
 
   palette_black();
   music_restart();
@@ -808,6 +835,22 @@ game_loop()
     }
 #endif
 
+    if (game_player1 && game_lastPlayer1Health != ((fighter_data_t*)game_player1->data)->health) {
+      game_updatePlayerHealth(225, ((fighter_data_t*)game_player1->data)->health);
+      game_lastPlayer1Health = ((fighter_data_t*)game_player1->data)->health;
+    }
+
+    if (game_player2 && game_lastPlayer2Health != ((fighter_data_t*)game_player2->data)->health) {
+      game_updatePlayerHealth(50, ((fighter_data_t*)game_player2->data)->health);
+      game_lastPlayer2Health = ((fighter_data_t*)game_player2->data)->health;
+    }
+
+    if (game_player1 && game_lastPlayer1Score != game_player1Score) {
+      frame_buffer_t fb = game_scoreBoardFrameBuffer;
+      text_drawText8(fb, itoan(game_player1Score, 6), 224, 8);
+      game_lastPlayer1Score = game_player1Score;
+      custom->bltafwm = 0xffff;
+    }
       
 #ifdef DEBUG
     debug_showRasterLine();

@@ -8,7 +8,7 @@
 //#define DEBUG_SPEED                   1
 #define DEBUG                         1
 #define GAME_KEYBOARD_ENABLED         1
-#define GAME_RECORDING                1
+//#define GAME_RECORDING                1
 //#define GAME_BLITTER_WAIT_DEBUG       1
 
 #define INLINE inline
@@ -37,7 +37,7 @@
 #define FRAME_BUFFER_WIDTH  (SCREEN_WIDTH+64)
 
 #define SPRITE_SHEET_WIDTH  272
-#define SPRITE_SHEET_HEIGHT 448
+#define SPRITE_SHEET_HEIGHT 507
 #define SPRITE_SHEET_WIDTH_BYTES (SPRITE_SHEET_WIDTH/8)
 
 #define TILE_SHEET_WIDTH  272
@@ -102,12 +102,13 @@ extern int16_t game_collisions;
 extern frame_buffer_t game_onScreenBuffer;
 extern frame_buffer_t game_offScreenBuffer;
 extern frame_buffer_t game_scoreBoardFrameBuffer;
-extern uint32_t game_score;
 extern uint16_t game_over;
 extern uint16_t game_levelComplete;
 extern uint16_t game_numPlayers;
 extern uint16_t game_wave;
 extern uint16_t game_nextWave;
+extern uint32_t game_player1Score;
+extern uint32_t game_player2Score;
 
 #include "string.h"
 #include "registers.h"
@@ -148,7 +149,7 @@ extern object_t* game_player2;
 			(keyboard_key && keyboard_code == KEYBOARD_CODE_RETURN))
 void 
 game_loop(void);
-void
+uint16_t
 game_requestCameraX(int16_t targetCameraX);
 void
 game_loseLife(void);

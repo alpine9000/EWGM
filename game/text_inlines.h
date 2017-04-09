@@ -29,11 +29,11 @@ _text_drawChar8(frame_buffer_t frameBuffer, char c, int16_t x, int16_t y)
   USE(y);
   char* src = fontAtlas[(int)c];
   char* dest = (char*)frameBuffer+(x>>3);
-  dest += (FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH)*y;
+  dest += (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)*y;
 
   for (y = 0; y < 8; y++) {
     *dest = *src;
-    dest += (FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH);
+    dest += (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH);
     src += FONTMAP_WIDTH_BYTES*FONTMAP_BIT_DEPTH;
   }  
 }
@@ -45,13 +45,13 @@ __text_drawChar8(frame_buffer_t frameBuffer, char c, int16_t x, int16_t y, int16
   USE(y);
   char* src = fontAtlas[(int)c];
   char* dest = (char*)frameBuffer+(x>>3);
-  dest += (FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH)*y;
+  dest += (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)*y;
 
   src += (FONTMAP_WIDTH_BYTES*FONTMAP_BIT_DEPTH)*sy;
 
   for (y = sy; y < ny; y++) {
     *dest = *src;
-    dest += (FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH);
+    dest += (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH);
     src += FONTMAP_WIDTH_BYTES*FONTMAP_BIT_DEPTH;
   }  
 }

@@ -130,9 +130,11 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
   if (data->health <= 0) {
     switch (attacker->id) {
     case OBJECT_ID_PLAYER1:
+      game_player1Score += 1000;
       sound_queueSound(SOUND_DIE01);
       break;
     case OBJECT_ID_PLAYER2:
+      game_player2Score += 1000;      
       sound_queueSound(SOUND_DIE02);
       break;
     default:
@@ -245,19 +247,22 @@ fighter_update(uint16_t deltaT, object_t* ptr)
       if (data->flashFrames <= 0) {
 	ptr->state = OBJECT_STATE_REMOVED;
 	switch (ptr->id) {
-	case 0:
+	case OBJECT_ID_ENEMY:
 	  enemy_count--;
 	  if (enemy_count == 0) {
 	    game_wave += SCREEN_WIDTH;
-	    if (game_wave < WORLD_WIDTH) {
+	    if (game_wave == WORLD_WIDTH-SCREEN_WIDTH) {
+	      game_wave = WORLD_WIDTH-SCREEN_WIDTH-1;
+	      hand_show();	      
+	    } else if (game_wave < WORLD_WIDTH-SCREEN_WIDTH) {
 	      hand_show();
 	    }
 	  }
 	  break;	  
-	case 1:
+	case OBJECT_ID_PLAYER1:
 	  game_player1 = 0;
 	  break;
-	case 2:
+	case OBJECT_ID_PLAYER2:
 	  game_player2 = 0;
 	  break;
 	}

@@ -367,7 +367,7 @@ object_image_t object_imageAtlas[] = {
     },
   [SPRITE_PLAYER2_STAND_LEFT] = {
     .x = 192,
-    .y = 161,
+    .y = 162,
     .w = 32,
     .h = 53,
     .dx = 0,
@@ -375,7 +375,7 @@ object_image_t object_imageAtlas[] = {
   },
   [SPRITE_PLAYER2_RUN_LEFT_1] = {
     .x = 160,
-    .y = 161,
+    .y = 162,
     .w = 32,
     .h = 53,
     .dx = -1,
@@ -383,7 +383,7 @@ object_image_t object_imageAtlas[] = {
   },
   [SPRITE_PLAYER2_RUN_LEFT_2] = {
     .x = 128,
-    .y = 161,
+    .y = 162,
     .w = 32,
     .h = 53,
     .dx = -1,
@@ -391,7 +391,7 @@ object_image_t object_imageAtlas[] = {
   },
   [SPRITE_PLAYER2_RUN_LEFT_3] = {
     .x = 96,
-    .y = 161,
+    .y = 162,
     .w = 32,
     .h = 53,
     .dx = 2,
@@ -400,7 +400,7 @@ object_image_t object_imageAtlas[] = {
 
   [SPRITE_PLAYER2_RUN_LEFT_4] = {
     .x = 128,
-    .y = 161,
+    .y = 162,
     .w = 32,
     .h = 53,
     .dx = -1,
@@ -409,7 +409,7 @@ object_image_t object_imageAtlas[] = {
 
   [SPRITE_PLAYER2_PUNCH_LEFT_1] = {
     .x = 224,
-    .y = 161,
+    .y = 162,
     .w = 48,
     .h = 53,
     .dx = -4,
@@ -417,7 +417,7 @@ object_image_t object_imageAtlas[] = {
     },
   [SPRITE_PLAYER2_PUNCH_LEFT_2] = {
     .x = 64,
-    .y = 161,
+    .y = 162,
     .w = 32,
     .h = 53,
     .dx = -3,
@@ -441,25 +441,25 @@ object_image_t object_imageAtlas[] = {
     },
   [SPRITE_PLAYER2_HIT_LEFT] = {
     .x = 0,
-    .y = 161,
+    .y = 162,
     .w = 32,
     .h = 53,
     .dx = 0,
     .dy = 0,    
     },
   [SPRITE_PLAYER2_HIT_RIGHT] = {
-    .x = 208,
-    .y = 108,
+    .x = 32,
+    .y = 162,
     .w = 32,
     .h = 53,
-    .dx = 2,
+    .dx = 0,
     .dy = 0,    
     },      
 
   //==============================
   [SPRITE_PLAYER3_STAND_RIGHT] = {
     .x = 0,
-    .y = 214,
+    .y = 215,
     .w = 32,
     .h = 60,
     .dx = 0,
@@ -467,7 +467,7 @@ object_image_t object_imageAtlas[] = {
   },
   [SPRITE_PLAYER3_RUN_RIGHT_1] = {
     .x = 32,
-    .y = 214,
+    .y = 215,
     .w = 48,
     .h = 60,
     .dx = 0,
@@ -475,7 +475,7 @@ object_image_t object_imageAtlas[] = {
   },
   [SPRITE_PLAYER3_RUN_RIGHT_2] = {
     .x = 80,
-    .y = 214,
+    .y = 215,
     .w = 32,
     .h = 60,
     .dx = 0,
@@ -483,7 +483,7 @@ object_image_t object_imageAtlas[] = {
   },
   [SPRITE_PLAYER3_RUN_RIGHT_3] = {
     .x = 112,
-    .y = 214,
+    .y = 215,
     .w = 48,
     .h = 60,
     .dx = -5,
@@ -491,7 +491,7 @@ object_image_t object_imageAtlas[] = {
   },
     [SPRITE_PLAYER3_RUN_RIGHT_4] = {
     .x = 80,
-    .y = 214,
+    .y = 215,
     .w = 32,
     .h = 60,
     .dx = 0,
@@ -499,7 +499,7 @@ object_image_t object_imageAtlas[] = {
     },
   [SPRITE_PLAYER3_STAND_LEFT] = {
     .x = 240,
-    .y = 274,
+    .y = 275,
     .w = 32,
     .h = 60,
     .dx = 0,
@@ -507,7 +507,7 @@ object_image_t object_imageAtlas[] = {
   },
   [SPRITE_PLAYER3_RUN_LEFT_1] = {
     .x = 192,
-    .y = 274,
+    .y = 275,
     .w = 48,
     .h = 60,
     .dx = -6,
@@ -515,7 +515,7 @@ object_image_t object_imageAtlas[] = {
   },
   [SPRITE_PLAYER3_RUN_LEFT_2] = {
     .x = 160,
-    .y = 274,
+    .y = 275,
     .w = 32,
     .h = 60,
     .dx = 0,
@@ -523,7 +523,7 @@ object_image_t object_imageAtlas[] = {
   },
   [SPRITE_PLAYER3_RUN_LEFT_3] = {
     .x = 112,
-    .y = 274,
+    .y = 275,
     .w = 48,
     .h = 60,
     .dx = -3,
@@ -531,7 +531,7 @@ object_image_t object_imageAtlas[] = {
   },
     [SPRITE_PLAYER3_RUN_LEFT_4] = {
     .x = 160,
-    .y = 274,
+    .y = 275,
     .w = 32,
     .h = 60,
     .dx = 0,
@@ -540,7 +540,7 @@ object_image_t object_imageAtlas[] = {
 
   [SPRITE_PLAYER3_PUNCH_LEFT_1] = {
     .x = 16,
-    .y = 274,
+    .y = 275,
     .w = 48,
     .h = 60,
     .dx = -19,
@@ -548,7 +548,7 @@ object_image_t object_imageAtlas[] = {
     },
   [SPRITE_PLAYER3_PUNCH_LEFT_2] = {
     .x = 64,
-    .y = 274,
+    .y = 275,
     .w = 48,
     .h = 60,
     .dx = -19,
@@ -556,7 +556,7 @@ object_image_t object_imageAtlas[] = {
     },
   [SPRITE_PLAYER3_PUNCH_RIGHT_1] = {
     .x = 208,
-    .y = 214,
+    .y = 215,
     .w = 48,
     .h = 60,
     .dx = 1,
@@ -564,7 +564,7 @@ object_image_t object_imageAtlas[] = {
     },
   [SPRITE_PLAYER3_PUNCH_RIGHT_2] = {
     .x = 160,
-    .y = 214,
+    .y = 215,
     .w = 48,
     .h = 60,
     .dx = 1,
@@ -572,7 +572,7 @@ object_image_t object_imageAtlas[] = {
     },  
   [SPRITE_PLAYER3_HIT_LEFT] = {
     .x = 32,
-    .y = 334,
+    .y = 335,
     .w = 32,
     .h = 60,
     .dx = 0,
@@ -580,7 +580,7 @@ object_image_t object_imageAtlas[] = {
     },
   [SPRITE_PLAYER3_HIT_RIGHT] = {
     .x = 0,
-    .y = 334,
+    .y = 335,
     .w = 32,
     .h = 60,
     .dx = 0,
@@ -589,8 +589,8 @@ object_image_t object_imageAtlas[] = {
 
   //==========================
   [SPRITE_HAND] = {
-    .x = 64,
-    .y = 336,
+    .x = 208,
+    .y = 112,
     .w = 64,
     .h = 50,
     .dx = 0,

@@ -30,7 +30,7 @@ void
 level_load(uint16_t index)
 {
   if (index == level_current) {
-    disk_loadData(&level, level_levels[index].levelData, sizeof(level.tileAddresses) + sizeof(level.item_spriteIds));
+    disk_loadData(&level, level_levels[index].levelData, sizeof(level.tileAddresses) /*+ sizeof(level.item_spriteIds)*/);
     return;
   }
 

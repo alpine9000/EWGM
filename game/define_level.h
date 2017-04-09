@@ -22,9 +22,9 @@ __NOLOAD level_t
 __LEVEL_DEFINITION(__LEVEL_NUMBER) =
   {
 #include __LEVEL_BACKGROUND_MAP(__LEVEL_NUMBER)
-    .item_spriteIds = {
-#include __LEVEL_SPRITE_IDS(__LEVEL_NUMBER)
-    },
+    //    .item_spriteIds = {
+    //#include __LEVEL_SPRITE_IDS(__LEVEL_NUMBER)
+    //    },
     .spriteBitplanes = {
 #include __LEVEL_SPRITE_BITPLANES(__LEVEL_NUMBER)
     },

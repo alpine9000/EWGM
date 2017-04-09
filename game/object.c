@@ -278,7 +278,12 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
 	  game_requestCameraX(_object_min(game_wave, game_cameraX+(SCREEN_WIDTH/3)));
 	  hand_hide();
 	} else {
-	  game_nextWave = 1;
+	  if (game_wave < WORLD_WIDTH-SCREEN_WIDTH-1) {
+	    game_nextWave = 1;
+	  } else if (game_wave == WORLD_WIDTH-SCREEN_WIDTH-1) {
+	    game_nextWave = 1;	    
+	    game_wave += SCREEN_WIDTH;
+	  }
 	}
       }
     }
