@@ -128,6 +128,7 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
   data->attack_py = object_py(ptr);
   data->health -= dammage;
   if (data->health <= 0) {
+    data->health = 0;
     switch (attacker->id) {
     case OBJECT_ID_PLAYER1:
       game_player1Score += 1000;

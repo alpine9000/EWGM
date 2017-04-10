@@ -241,6 +241,48 @@ game_refreshDebugScoreboard(void)
 }
 #endif
 
+static void
+game_refreshScoreboard(void)
+{
+  game_lastScore = 1;  
+
+#ifdef DEBUG
+  if (game_scoreBoardMode == 0) {
+#endif
+
+    text_drawText8(game_scoreBoardFrameBuffer, "         ", 48, 8);    
+    /*
+#ifdef GAME_RECORDING    
+    switch (record_getState()) {
+    case RECORD_IDLE:
+      text_drawScoreBoard(" SCORE  " , SCREEN_WIDTH-(14*8));  
+      break;
+    case RECORD_RECORD:
+      text_drawScoreBoard("RECORD  " , SCREEN_WIDTH-(14*8));        
+      break;
+    case RECORD_PLAYBACK:
+      text_drawScoreBoard("REPLAY  " , SCREEN_WIDTH-(14*8));        
+      break;
+    }
+#else
+    text_drawScoreBoard(" SCORE  " , SCREEN_WIDTH-(14*8));
+#endif
+
+    text_drawScoreBoard("BONUS 0" , 8);  
+    game_renderScore(1);
+    uint32_t i, x;
+    for (i = 0, x = (SCREEN_WIDTH/2)-17; i < game_lives; i++, x+=10) {
+      gfx_renderSprite(game_scoreBoardFrameBuffer, 208, 176, x, 5, 16, 8);
+    }
+    
+    for (; i < 3; i++, x+= 10) {
+      gfx_renderSprite(game_scoreBoardFrameBuffer, 208, 184, x, 5, 16, 8);
+      }*/
+#ifdef DEBUG
+  }
+#endif
+}
+
 
 static void
 game_newGame(menu_command_t command)
@@ -262,6 +304,8 @@ game_newGame(menu_command_t command)
   }
 
   game_loadLevel(command);
+
+  game_refreshScoreboard();
 }
 
 
@@ -485,46 +529,6 @@ debug_mode(void)
   if (game_debugRenderFrame > 7) {
     game_debugRenderFrame = 0;
   }
-}
-
-static void
-game_refreshScoreboard(void)
-{
-  game_lastScore = 1;  
-
-#ifdef DEBUG
-  if (game_scoreBoardMode == 0) {
-#endif
-    /*
-#ifdef GAME_RECORDING    
-    switch (record_getState()) {
-    case RECORD_IDLE:
-      text_drawScoreBoard(" SCORE  " , SCREEN_WIDTH-(14*8));  
-      break;
-    case RECORD_RECORD:
-      text_drawScoreBoard("RECORD  " , SCREEN_WIDTH-(14*8));        
-      break;
-    case RECORD_PLAYBACK:
-      text_drawScoreBoard("REPLAY  " , SCREEN_WIDTH-(14*8));        
-      break;
-    }
-#else
-    text_drawScoreBoard(" SCORE  " , SCREEN_WIDTH-(14*8));
-#endif
-
-    text_drawScoreBoard("BONUS 0" , 8);  
-    game_renderScore(1);
-    uint32_t i, x;
-    for (i = 0, x = (SCREEN_WIDTH/2)-17; i < game_lives; i++, x+=10) {
-      gfx_renderSprite(game_scoreBoardFrameBuffer, 208, 176, x, 5, 16, 8);
-    }
-    
-    for (; i < 3; i++, x+= 10) {
-      gfx_renderSprite(game_scoreBoardFrameBuffer, 208, 184, x, 5, 16, 8);
-      }*/
-#ifdef DEBUG
-  }
-#endif
 }
 
 #ifdef DEBUG
@@ -834,9 +838,13 @@ game_loop()
     }
 #endif
 
+
+#ifdef DEBUG
+    if (!game_scoreBoardMode) {
+#endif
     if (game_player1 && game_lastPlayer1Health != ((fighter_data_t*)game_player1->data)->health) {
-      game_updatePlayerHealth(225, ((fighter_data_t*)game_player1->data)->health);
-      game_lastPlayer1Health = ((fighter_data_t*)game_player1->data)->health;
+	game_updatePlayerHealth(225, ((fighter_data_t*)game_player1->data)->health);
+	game_lastPlayer1Health = ((fighter_data_t*)game_player1->data)->health;
     }
 
     if (game_player2 && game_lastPlayer2Health != ((fighter_data_t*)game_player2->data)->health) {
@@ -850,6 +858,20 @@ game_loop()
       game_lastPlayer1Score = game_player1Score;
       custom->bltafwm = 0xffff;
     }
+
+    if (game_player2 && game_lastPlayer2Score != game_player2Score) {
+      frame_buffer_t fb = game_scoreBoardFrameBuffer;
+      text_drawText8(fb, itoan(game_player2Score, 6), 48, 8);
+      game_lastPlayer2Score = game_player2Score;
+      custom->bltafwm = 0xffff;
+    } else if (game_lastPlayer2Score != game_player2Score) {
+      text_drawText8(game_scoreBoardFrameBuffer, "GAME OVER", 48, 8);
+      game_lastPlayer2Score = game_player2Score;      
+    }
+
+#ifdef DEBUG
+    }
+#endif    
       
 #ifdef DEBUG
     debug_showRasterLine();

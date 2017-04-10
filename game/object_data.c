@@ -189,7 +189,7 @@ object_animation_t object_animations[] = {
   [OBJECT_ANIM_BOSS_RUN_RIGHT] = {
     .start = SPRITE_BOSS_RUN_RIGHT_1,
     .stop = SPRITE_BOSS_RUN_RIGHT_4,
-    .speed = 2,
+    .speed = ENEMY_BOSS_RUN_ANIM_SPEED,
     .facing = FACING_RIGHT
   },
   [OBJECT_ANIM_BOSS_STAND_RIGHT] = {
@@ -201,7 +201,7 @@ object_animation_t object_animations[] = {
   [OBJECT_ANIM_BOSS_RUN_LEFT] = {
     .start = SPRITE_BOSS_RUN_LEFT_1,
     .stop = SPRITE_BOSS_RUN_LEFT_4,
-    .speed = 2,
+    .speed = ENEMY_BOSS_RUN_ANIM_SPEED,
     .facing = FACING_LEFT
   },
   [OBJECT_ANIM_BOSS_STAND_LEFT] = {
