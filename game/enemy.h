@@ -9,6 +9,9 @@
 #define ENEMY_ATTACK_DURATION_TICS  20
 #define ENEMY_INITIAL_HEALTH        100
 
+#define ENEMY_BOSS_NUM_ATTACK_FRAMES 3
+#define ENEMY_BOSS_ATTACK_TICS_PER_FRAME 8
+
 // the following are temporary and will be refactored
 #define ENEMY_ATTACK_DAMMAGE        5
 

@@ -189,25 +189,40 @@ fighter_updatePositionUnderAttack(uint16_t deltaT, object_t* ptr, fighter_data_t
 
 
 void
+fighter_checkAttack(int16_t deltaT, object_t* ptr, fighter_data_t* data)
+{
+  if (!data->attackChecked && data->attackHitAnimTic == ptr->frameCounter) {
+    object_collision_t collision;
+    if (fighter_collision(deltaT, ptr, &collision, figher_attack_range[ptr->actionId], FIGHTER_Y_ATTACK_THRESHOLD)) {
+      if (ptr->anim->facing == FACING_RIGHT && collision.right) {
+	fighter_attack(ptr, collision.right, data->attackDammage, 1);
+      } else if (ptr->anim->facing == FACING_LEFT && collision.left) {
+	fighter_attack(ptr, collision.left, data->attackDammage, -1);
+      }
+    }
+    data->attackChecked = 1;
+  }
+}
+
+
+void
 fighter_doAttack(int16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
+  USE(deltaT);
   ptr->velocity.x = 0;
   ptr->velocity.y = 0;
   if (ptr->anim->facing == FACING_RIGHT) {
-    object_setAction(ptr, OBJECT_PUNCH_RIGHT1 + data->punchType);
+    object_setAction(ptr, OBJECT_PUNCH_RIGHT1 + data->attackType);
   } else {
-    object_setAction(ptr, OBJECT_PUNCH_LEFT1 + data->punchType);
+    object_setAction(ptr, OBJECT_PUNCH_LEFT1 + data->attackType);
   }
-  data->punchCount = data->attackDurationFrames;
-  data->punchType = !data->punchType;
-  object_collision_t collision;
-  if (fighter_collision(deltaT, ptr, &collision, figher_attack_range[ptr->actionId], FIGHTER_Y_ATTACK_THRESHOLD)) {
-    if (ptr->anim->facing == FACING_RIGHT && collision.right) {
-      fighter_attack(ptr, collision.right, data->attackDammage, 1);
-    } else if (ptr->anim->facing == FACING_LEFT && collision.left) {
-      fighter_attack(ptr, collision.left, data->attackDammage, -1);
-    }
+  data->attackCount = data->attackDurationFrames;
+  data->attackChecked = 0;
+  data->attackType++;
+  if (data->attackType >= data->numAttacks) {
+    data->attackType = 0;
   }
+  fighter_checkAttack(deltaT, ptr, data);
 }
 
 
@@ -221,18 +236,18 @@ fighter_update(uint16_t deltaT, object_t* ptr)
     data->attackQueued = 1;
   }
   
-  if (data->punchCount >= deltaT) {
-    data->punchCount-=deltaT;
+  if (data->attackCount >= deltaT) {
+    data->attackCount-=deltaT;
   } else {
-    data->punchCount = 0;
+    data->attackCount = 0;
   }      
   
-  if (data->attackQueued && data->punchCount == 0 && ptr->state == OBJECT_STATE_ALIVE) {
+  if (data->attackQueued && data->attackCount == 0 && ptr->state == OBJECT_STATE_ALIVE) {
     data->buttonReleased = 0;
     data->attackQueued = 0;
     fighter_doAttack(deltaT, ptr, data);
-  } else if (data->punchCount) {
-
+  } else if (data->attackCount) {
+    fighter_checkAttack(deltaT, ptr, data);
   } else {
     if (ptr->state == OBJECT_STATE_HIT) {
       fighter_updatePositionUnderAttack(deltaT, ptr, data);
@@ -301,8 +316,9 @@ fighter_add(uint16_t id, uint16_t animId, int16_t x, int16_t y, uint16_t initial
   data->buttonReleased = 0;
   data->attackQueued = 0;
   data->intelligence = intelligence;
-  data->punchType = 0;
-  data->punchCount = 0;
+  data->attackType = 0;
+  data->numAttacks = 0;  
+  data->attackCount = 0;
   data->walkAbout = 0;
   data->health = initialHealth;
   data->attackDammage = attackDammage;

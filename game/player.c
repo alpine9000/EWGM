@@ -74,6 +74,8 @@ player_init(uint16_t id, uint16_t animId, int16_t x)
   object_t* ptr = fighter_add(id, animId, x, 100, PLAYER_INITIAL_HEALTH, PLAYER_ATTACK_DAMMAGE, player_intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   data->attackDurationFrames = PLAYER_ATTACK_DURATION_TICS;
+  data->attackHitAnimTic = 0;
+  data->numAttacks = 2;
   uint16_t width;
   if (id == OBJECT_ID_PLAYER1) {
     width = PLAYER_PLAYER1_WIDTH;

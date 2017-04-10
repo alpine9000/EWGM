@@ -150,6 +150,22 @@ enemy_add(uint16_t x, uint16_t y)
   data->attackDurationFrames = ENEMY_ATTACK_DURATION_TICS;
   data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   data->enemyAttackWait = ENEMY_ATTACK_WAIT_TICS;
+  data->attackHitAnimTic = 0;
+  data->numAttacks = 2;
+  enemy_count++;
+}
+
+
+void
+enemy_addBoss(uint16_t x, uint16_t y)
+{
+  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_BOSS_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, ENEMY_ATTACK_DAMMAGE, enemy_intelligence);
+  fighter_data_t* data = (fighter_data_t*)ptr->data;
+  data->attackDurationFrames = ENEMY_ATTACK_DURATION_TICS;
+  data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
+  data->enemyAttackWait = ENEMY_BOSS_ATTACK_TICS_PER_FRAME*ENEMY_BOSS_NUM_ATTACK_FRAMES;
+  data->attackHitAnimTic = ENEMY_BOSS_ATTACK_TICS_PER_FRAME;
+  data->numAttacks = 1;
   enemy_count++;
 }
 
@@ -168,8 +184,10 @@ enemy_init(object_t* player1, object_t * player2)
     }
     ptr = next;
   }
+
+  enemy_addBoss(game_cameraX-64, 85);
   
-  if (1) {
+  if (0) {
     if (player1) {
       enemy_add(game_cameraX-64, 85);
       enemy_add(game_cameraX-132, 120);

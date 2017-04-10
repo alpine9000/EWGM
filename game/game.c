@@ -821,7 +821,6 @@ game_loop()
     if (game_paused && game_singleStep != 1) {
       goto skip;
     }
-    game_singleStep = 0;
 #endif
     
 
@@ -882,6 +881,14 @@ game_loop()
 
     uint32_t frame = hw_verticalBlankCount;
     game_deltaT = hw_verticalBlankCount-game_lastScrollFrame;
+
+#ifdef DEBUG
+    if (game_singleStep) {
+      game_deltaT = 1;
+      game_singleStep = 0;      
+    }
+#endif
+    
     game_lastScrollFrame = frame;
     for (uint32_t i = 0; i < game_deltaT; i++) {
       if (game_targetCameraX != game_cameraX) {
@@ -892,7 +899,7 @@ game_loop()
     //object_restoreBackground(game_offScreenBuffer);
 
     if (game_deltaT == 0 || game_deltaT > 2) {
-      PANIC("deltat");
+      //PANIC("deltat");
     }
     
     game_render(game_deltaT);    

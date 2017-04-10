@@ -10,8 +10,11 @@
 typedef struct fighter_data {
   struct fighter_data* prev;
   struct fighter_data* next;  
-  uint16_t punchCount;
-  uint16_t punchType;
+  uint16_t attackCount;
+  uint16_t attackHitAnimTic;
+  uint16_t attackChecked;
+  uint16_t attackType;
+  uint16_t numAttacks;
   int16_t attack_py;
   uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, struct fighter_data* data);
   int16_t walkAbout; // todo: move to enemy data  
