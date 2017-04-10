@@ -2,6 +2,7 @@
 	xdef	P61_Init
 	xdef	P61_Music
 	xdef	_P61_Master
+        xdef    _P61_InitPos
 	xdef	P61_Master	
 	xdef	P61_End
 	xdef	P61_VBR
@@ -4113,6 +4114,7 @@ P61_timeropen:
 P61_timerint:
 	dc.b 'P61_TimerInterrupt',0,0
 	endc
+_P61_InitPos:
 P61_InitPos:
 	dc.w 0		;P61_Init starts playing the song from this position.
 ;;    ---  optional declares  ---

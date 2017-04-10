@@ -1,6 +1,7 @@
 #include "game.h"
 
 extern uint16_t P61_Master;
+extern uint16_t P61_InitPos;
 extern uint16_t music_song1;
 
 extern void
@@ -26,12 +27,14 @@ static __section(section music) uint8_t music_level_c[] DISK_SECTOR_ALIGN = {
 typedef struct {
   uint8_t* data;
   uint32_t length;
+  uint16_t start;
 } music_song_t;
 
 static music_song_t music_songs[] = {
-  { music_level_a, sizeof(music_level_a)},
-  { music_level_b, sizeof(music_level_b)},
-  { music_level_c, sizeof(music_level_c)}
+  { music_level_a, sizeof(music_level_a), 0},
+  { music_level_b, sizeof(music_level_b), 0},
+  { music_level_c, sizeof(music_level_c), 33},
+  { music_level_c, sizeof(music_level_c), 0}, 
 };
 
 static void* music_current_ptr = music_module1;
@@ -46,6 +49,7 @@ music_play(uint16_t moduleIndex)
   }
   music_currentModule = moduleIndex;
   uint16_t p61_Target = P61_Target;
+  P61_InitPos = music_songs[moduleIndex].start;
   disk_loadData(music_spare_ptr, music_songs[moduleIndex].data, music_songs[moduleIndex].length);
   music_current_ptr = music_current_ptr == music_module1 ? music_module2 : music_module1;
   music_spare_ptr = music_spare_ptr == music_module1 ? music_module2 : music_module1;

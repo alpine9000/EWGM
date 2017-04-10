@@ -60,6 +60,10 @@ static uint32_t game_lastScore;
 static uint32_t game_lastScrollFrame;
 static uint16_t game_lastTileX;
 static uint16_t game_deltaT;
+static uint16_t game_levelCounter;
+static uint16_t game_levelTicCounter;
+static uint16_t game_lastLevelCounter;
+
 #ifdef DEBUG
 static int16_t game_turtle;
 static uint16_t game_rasterLines[GAME_RASTERAVERAGE_LENGTH];
@@ -296,7 +300,10 @@ game_newGame(menu_command_t command)
   game_player1Score = 0;
   game_player2Score = 0;
   game_lastPlayer1Score = 0xffffffff;
-  game_lastPlayer2Score = 0xffffffff;    
+  game_lastPlayer2Score = 0xffffffff;
+  game_levelCounter = 300;
+  game_lastLevelCounter = 0;
+  game_levelTicCounter = 0;  
 
   if (command >= MENU_COMMAND_LEVEL) {
     game_level = command - MENU_COMMAND_LEVEL;
@@ -852,6 +859,27 @@ game_loop()
       game_lastPlayer2Health = ((fighter_data_t*)game_player2->data)->health;
     }
 
+    if (game_levelCounter != game_lastLevelCounter) {
+      uint16_t minutes = game_levelCounter / 60;
+      uint16_t seconds = game_levelCounter - (minutes*60);
+      uint16_t s1 = seconds/10;
+      uint16_t s2 = seconds-(s1*10);
+      uint16_t x = 146;
+      uint16_t y = 19;
+
+      text_clrBlit(game_scoreBoardFrameBuffer, x, y, 9*3+5, 11);
+      
+      text_drawBigNumeral(game_scoreBoardFrameBuffer, s2, x+5+9+9, y, 11);
+      text_drawBigNumeral(game_scoreBoardFrameBuffer, s1, x+5+9, y, 11);
+      text_drawBigNumeral(game_scoreBoardFrameBuffer, minutes, x, y, 11);
+
+      text_drawBigNumeral(game_scoreBoardFrameBuffer, 10, x+7, y, 11);                  
+
+      
+
+      game_lastLevelCounter = game_levelCounter;
+    }
+    
     if (game_player1 && game_lastPlayer1Score != game_player1Score) {
       frame_buffer_t fb = game_scoreBoardFrameBuffer;
       text_drawText8(fb, itoan(game_player1Score, 6), 224, 8);
@@ -903,6 +931,11 @@ game_loop()
 
     uint32_t frame = hw_verticalBlankCount;
     game_deltaT = hw_verticalBlankCount-game_lastScrollFrame;
+    game_levelTicCounter += game_deltaT;
+    while (game_levelTicCounter >= 50) {
+      game_levelTicCounter-=50;
+      game_levelCounter--;
+    }
 
 #ifdef DEBUG
     if (game_singleStep) {

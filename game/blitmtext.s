@@ -2,6 +2,7 @@
 	xdef _text_drawMaskedText8Blitter
 	xdef _text_clearMaskedText8Blitter:
 	xref font
+	xdef _fontPtr
 	
 BLIT_LF_MINTERM		equ $ca		; cookie cut
 BLIT_WIDTH_WORDS	equ 2		; blit 2 words to allow shifting
@@ -334,3 +335,5 @@ staticBuffer:
 	endif
 font:
 	incbin	"out/font8x8.bin"
+_fontPtr:
+	dc.l	font

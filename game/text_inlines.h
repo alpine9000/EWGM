@@ -5,6 +5,7 @@
 #define SCOREBOARD_TEXT_Y   4
 
 extern char* fontAtlas[128];
+extern frame_buffer_t fontPtr;
 
 INLINE void
 text_drawCharScoreBoard(char c, int16_t x, int16_t y)
@@ -56,6 +57,85 @@ __text_drawChar8(frame_buffer_t frameBuffer, char c, int16_t x, int16_t y, int16
   }  
 }
 
+uint32_t bigNumAtlas[11] = {
+  (33*FONTMAP_WIDTH_BYTES*FONTMAP_BIT_DEPTH)+(0*2),
+  (33*FONTMAP_WIDTH_BYTES*FONTMAP_BIT_DEPTH)+(1*2),
+  (33*FONTMAP_WIDTH_BYTES*FONTMAP_BIT_DEPTH)+(2*2),
+  (33*FONTMAP_WIDTH_BYTES*FONTMAP_BIT_DEPTH)+(3*2),
+  (33*FONTMAP_WIDTH_BYTES*FONTMAP_BIT_DEPTH)+(4*2),
+  (33*FONTMAP_WIDTH_BYTES*FONTMAP_BIT_DEPTH)+(5*2),
+  (33*FONTMAP_WIDTH_BYTES*FONTMAP_BIT_DEPTH)+(6*2),
+  (33*FONTMAP_WIDTH_BYTES*FONTMAP_BIT_DEPTH)+(7*2),
+  (33*FONTMAP_WIDTH_BYTES*FONTMAP_BIT_DEPTH)+(8*2),
+  (33*FONTMAP_WIDTH_BYTES*FONTMAP_BIT_DEPTH)+(9*2),
+  (33*FONTMAP_WIDTH_BYTES*FONTMAP_BIT_DEPTH)+(10*2),
+};
+
+
+INLINE void
+text_clrBlit(frame_buffer_t dest, int16_t dx, int16_t dy, int16_t w, int16_t h)
+{
+  volatile struct Custom* _custom = CUSTOM;
+  uint32_t widthWords =  ((w+15)>>4)+1;
+  int32_t shift = (dx&0xf);
+  
+  dest += (dy * (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)) + (dx>>3);
+
+#define FONT_BIT_DEPTH 1
+  
+  hw_waitBlitter();   
+  //  _custom->bltafwm = 0xffff;
+  _custom->bltalwm = 0x0000;
+  _custom->bltcon0 = (DEST|0xf0|shift<<ASHIFTSHIFT);
+  _custom->bltcon1 = shift<<BSHIFTSHIFT;
+  _custom->bltadat = 0;
+  _custom->bltdmod = SCREEN_WIDTH_BYTES-(widthWords<<1)+(SCREEN_WIDTH_BYTES*(SCREEN_BIT_DEPTH-1));
+  
+  _custom->bltdpt = (uint8_t*)dest;
+  //  _custom->bltsize = (h*SCREEN_BIT_DEPTH)<<6 | widthWords;
+  _custom->bltsize = (h*FONT_BIT_DEPTH)<<6 | widthWords;
+
+}
+
+INLINE void
+text_bitBlit(frame_buffer_t source, frame_buffer_t dest, int16_t dx, int16_t dy, int16_t w, int16_t h)
+{
+  volatile struct Custom* _custom = CUSTOM;
+  uint32_t widthWords =  ((w+15)>>4)+1;
+  int32_t shift = (dx&0xf);
+  
+  dest += (dy * (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)) + (dx>>3);
+
+#define FONT_BIT_DEPTH 1
+  
+  hw_waitBlitter();   
+  //  _custom->bltafwm = 0xffff;
+  _custom->bltalwm = 0x0000;
+  _custom->bltcon0 = (SRCA|SRCB|SRCC|DEST|0xca|shift<<ASHIFTSHIFT);
+  _custom->bltcon1 = shift<<BSHIFTSHIFT;
+  _custom->bltamod = FONTMAP_WIDTH_BYTES-(widthWords<<1)+(FONTMAP_WIDTH_BYTES*(FONT_BIT_DEPTH-1));
+  _custom->bltbmod = FONTMAP_WIDTH_BYTES-(widthWords<<1)+(FONTMAP_WIDTH_BYTES*(FONT_BIT_DEPTH-1));
+  _custom->bltcmod = SCREEN_WIDTH_BYTES-(widthWords<<1)+(SCREEN_WIDTH_BYTES*(SCREEN_BIT_DEPTH-1));
+  _custom->bltdmod = SCREEN_WIDTH_BYTES-(widthWords<<1)+(SCREEN_WIDTH_BYTES*(SCREEN_BIT_DEPTH-1));
+  
+  _custom->bltapt = (uint8_t*)source;
+  _custom->bltbpt = (uint8_t*)source;
+  _custom->bltcpt = (uint8_t*)dest;
+  _custom->bltdpt = (uint8_t*)dest;
+  //  _custom->bltsize = (h*SCREEN_BIT_DEPTH)<<6 | widthWords;
+  _custom->bltsize = (h*FONT_BIT_DEPTH)<<6 | widthWords;
+
+}
+
+
+INLINE void
+text_drawBigNumeral(frame_buffer_t frameBuffer, uint16_t n, int16_t x, int16_t y, int16_t ny)
+{
+  USE(y);
+  frame_buffer_t src = fontPtr + bigNumAtlas[(int)n];
+  text_bitBlit(src, frameBuffer, x, y, 8, ny);
+}
+
 #if 0
 INLINE void
 text_drawChar8(frame_buffer_t fb, char c, int16_t x, int16_t y)
@@ -87,7 +167,6 @@ text_drawText8(frame_buffer_t frameBuffer, char* string, int32_t x, int32_t y)
     x += 8;
   } while (*ptr != 0);
 }
-
 
 
 INLINE void
