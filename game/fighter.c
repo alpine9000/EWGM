@@ -266,13 +266,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 	case OBJECT_ID_ENEMY:
 	  enemy_count--;
 	  if (enemy_count == 0) {
-	    game_wave += SCREEN_WIDTH;
-	    if (game_wave == WORLD_WIDTH-SCREEN_WIDTH) {
-	      game_wave = WORLD_WIDTH-SCREEN_WIDTH-1;
-	      hand_show();	      
-	    } else if (game_wave < WORLD_WIDTH-SCREEN_WIDTH) {
-	      hand_show();
-	    }
+	    hand_show();	      
 	  }
 	  break;	  
 	case OBJECT_ID_PLAYER1:

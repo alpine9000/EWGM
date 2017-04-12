@@ -193,17 +193,54 @@ object_updateAnimation(uint16_t deltaT, object_t *ptr)
   }
 }
 
+
+#ifndef OBJECT_BACKING_STORE
+void
+object_clear(frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t oh)
+{
+  if (ow) {
+    int16_t sx = ox>>4;
+    int16_t sy = (oy)>>4;
+    int16_t ex = (ox+ow)>>4;
+    int16_t ey = (oy+oh)>>4;  
+    for (int32_t x = sx; x <= ex; x++) {
+      for (int32_t y = sy; y <= ey; y++) {
+	uint16_t tile = level.tileAddresses[x][y];
+	int16_t screenX = 0xf+(x<<4)-game_cameraX-game_screenScrollX;
+	int16_t screenY = y << 4;
+	if (screenY >= 0 && screenX >= 0 && screenX <= SCREEN_WIDTH+TILE_WIDTH) {
+	  gfx_quickRenderTile(fb, screenX, screenY, level.tileBitplanes+tile);
+	}
+      }
+    }
+  }
+}
+#endif
+
          
 void
 object_renderObject(frame_buffer_t fb, object_t* ptr)
 {
+  if (!ptr->visible) {
+    return;
+  }
+  
+  int16_t w = ptr->image->w;
+  int16_t h = ptr->image->h;
+
+  if (ptr->tileRender) {
+    gfx_setupRenderTile();
+    object_clear(fb, object_x(ptr)+ptr->image->dx, object_y(ptr)-h, w, h);
+    return;
+  }
+  
+
   int16_t screenx = object_screenx(ptr);
   int16_t screeny = object_screeny(ptr);
   int16_t sx = ptr->image->x;
   int16_t sy = ptr->image->y;
-  int16_t w = ptr->image->w;
-  int16_t h = ptr->image->h;
-
+    
+    
   if (screenx < -TILE_WIDTH) {
     int16_t tiles = (-screenx>>4)<<4;
     sx += tiles;
@@ -223,12 +260,10 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
   }
 
   if (w > 0 && h > 0) {
-    if (ptr->visible) {
-      gfx_renderSprite(fb, sx, sy, screenx, screeny, w, h);
-    }
+    gfx_renderSprite(fb, sx, sy, screenx, screeny, w, h);
   }
-
 }
+
 
 static void
 object_update(uint16_t deltaT)
@@ -237,7 +272,9 @@ object_update(uint16_t deltaT)
 
   while (ptr) {
     object_t* next = ptr->next;
-    ptr->update(deltaT, ptr);
+    if (ptr->update) {
+      ptr->update(deltaT, ptr);
+    }
     if (ptr->state == OBJECT_STATE_REMOVED) {
       if (ptr->deadRenderCount == 2) {
 	object_free(ptr);
@@ -249,6 +286,7 @@ object_update(uint16_t deltaT)
   }
 }
 
+
 void
 object_render(frame_buffer_t fb, uint16_t deltaT)
 {
@@ -258,34 +296,11 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
 
   sort_z(object_count, object_zBuffer);
   
-  //  gfx_setupQuickRenderSprite();
-
   for (int16_t i = 0; i < object_count; i++) {
     object_t* ptr = object_zBuffer[i];
     if (ptr->state != OBJECT_STATE_REMOVED) {
       object_renderObject(fb, ptr);
-    }
-    object_updateAnimation(deltaT, ptr);
-  }
-
-  if (enemy_count == 0) {
-    if ((!game_player1 || object_x(game_player1)-game_cameraX > SCREEN_WIDTH/3) &&
-	(!game_player2 || object_x(game_player2)-game_cameraX > SCREEN_WIDTH/3)) {
-      if ((game_player1 && object_x(game_player1)-game_cameraX > (SCREEN_WIDTH-48)) ||
-	  (game_player2 && object_x(game_player2)-game_cameraX > (SCREEN_WIDTH-48))) {
-	if (game_cameraX < game_wave) {
-#define _object_min(x,y)(x<=y?x:y)
-	  game_requestCameraX(_object_min(game_wave, game_cameraX+(SCREEN_WIDTH/3)));
-	  hand_hide();
-	} else {
-	  if (game_wave < WORLD_WIDTH-SCREEN_WIDTH-1) {
-	    game_nextWave = 1;
-	  } else if (game_wave == WORLD_WIDTH-SCREEN_WIDTH-1) {
-	    game_nextWave = 1;	    
-	    game_wave += SCREEN_WIDTH;
-	  }
-	}
-      }
+      object_updateAnimation(deltaT, ptr);      
     }
   }
 }
@@ -321,28 +336,6 @@ object_saveBackground(frame_buffer_t fb)
   }
 }
 
-#ifndef OBJECT_BACKING_STORE
-void
-object_clear(frame_buffer_t fb, object_position_t* pos)
-{
-  if (pos->w) {
-    int16_t sx = pos->x>>4;
-    int16_t sy = (pos->y)>>4;
-    int16_t ex = (pos->x+pos->w)>>4;
-    int16_t ey = (pos->y+pos->h)>>4;  
-    for (int32_t x = sx; x <= ex; x++) {
-      for (int32_t y = sy; y <= ey; y++) {
-	uint16_t tile = level.tileAddresses[x][y];
-	int16_t screenX = 0xf+(x<<4)-game_cameraX-game_screenScrollX;
-	int16_t screenY = y << 4;
-	if (screenY >= 0 && screenX >= 0 && screenX <= SCREEN_WIDTH+TILE_WIDTH) {
-	  gfx_quickRenderTile(fb, screenX, screenY, level.tileBitplanes+tile);
-	}
-      }
-    }
-  }
-}
-#endif
 
 void
 object_restoreBackground(frame_buffer_t fb)
@@ -362,7 +355,9 @@ object_restoreBackground(frame_buffer_t fb)
       return;
     }
 #else
-    object_clear(fb, ptr->save.position);
+    if (!ptr->tileRender) {
+      object_clear(fb, ptr->save.position->x, ptr->save.position->y, ptr->save.position->w, ptr->save.position->h);
+    }
 #endif
 
     ptr = ptr->next;
@@ -405,12 +400,15 @@ object_add(uint16_t id, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*u
   ptr->image = &object_imageAtlas[ptr->imageIndex];
   ptr->_px = x*OBJECT_PHYSICS_FACTOR;
   ptr->_x = x;
-  object_set_py(ptr, y*OBJECT_PHYSICS_FACTOR);
+  ptr->_py = y*OBJECT_PHYSICS_FACTOR;
+  ptr->_y = y;
+  object_set_z(ptr, y);  
   ptr->frameCounter = 0;
   ptr->deadRenderCount = 0;
   ptr->update = update;
   ptr->data = data;
   ptr->freeData = freeData;
+  ptr->tileRender = 0;
   object_addToActive(ptr);
   return ptr;
 }

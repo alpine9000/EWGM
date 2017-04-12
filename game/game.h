@@ -8,6 +8,7 @@
 //#define DEBUG_SPEED                   1
 #define DEBUG                         1
 #define GAME_KEYBOARD_ENABLED         1
+//#define GAME_TIME_USE_COUNTER         1
 //#define GAME_RECORDING                1
 //#define GAME_BLITTER_WAIT_DEBUG       1
 
@@ -57,6 +58,7 @@
 #define GAME_RASTER_Y_STOP	    RASTER_Y_START+PLAYAREA_HEIGHT+SCOREBOARD_HEIGHT
 #define SCREEN_RASTER_Y_STOP  RASTER_Y_START+SCREEN_HEIGHT
 #define SCOREBOARD_HEIGHT   43
+#define GAME_PAVEMENT_START 66
 
 #define WORLD_HEIGHT        (MAP_TILE_HEIGHT*TILE_HEIGHT)
 #define WORLD_WIDTH         (MAP_TILE_WIDTH*TILE_WIDTH)
@@ -144,6 +146,7 @@ extern object_t* game_player2;
 #include "sort.h"
 #include "logo.h"
 #include "hand.h"
+#include "wave.h"
 
 #define game_fire() ((!(hw_lastJoystickButton&0x1) && (hw_joystickButton&0x1)) || \
 			(keyboard_key && keyboard_code == KEYBOARD_CODE_RETURN))

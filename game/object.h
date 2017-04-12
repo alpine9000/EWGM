@@ -2,7 +2,7 @@
 #define __OBJECT_H
 
 //#define OBJECT_BACKING_STORE 1
-#define OBJECT_MAX_OBJECTS    8
+#define OBJECT_MAX_OBJECTS    10
 #define OBJECT_PHYSICS_FACTOR 2
 #define OBJECT_WIDTH 32
 
@@ -82,7 +82,8 @@ typedef enum {
   SPRITE_BOSS_HIT_LEFT,
   SPRITE_BOSS_HIT_RIGHT,      
 
-  SPRITE_HAND
+  SPRITE_HAND,
+  SPRITE_DOOR
 } sprite_id_t;
 
 typedef enum {
@@ -90,7 +91,8 @@ typedef enum {
   OBJECT_ID_PLAYER1 = 1,
   OBJECT_ID_PLAYER2 = 2,
   OBJECT_ID_BOSS = 3,  
-  OBJECT_ID_HAND = 4
+  OBJECT_ID_HAND = 4,
+  OBJECT_ID_DOOR = 5
 } object_id_t;
 
 typedef enum {
@@ -151,7 +153,8 @@ typedef enum {
   OBJECT_ANIM_BOSS_HIT_LEFT  = OBJECT_ANIM_BOSS_STAND_RIGHT + OBJECT_HIT_LEFT,
   OBJECT_ANIM_BOSS_HIT_RIGHT  = OBJECT_ANIM_BOSS_STAND_RIGHT + OBJECT_HIT_RIGHT,  
 
-  OBJECT_ANIM_HAND = OBJECT_ANIM_BOSS_HIT_RIGHT + 1
+  OBJECT_ANIM_HAND = OBJECT_ANIM_BOSS_HIT_RIGHT + 1,
+  OBJECT_ANIM_DOOR = OBJECT_ANIM_HAND + 1,  
   
 } object_animation_id_t;
 
@@ -238,6 +241,7 @@ typedef struct object {
   void* data;
   void (*freeData)(void* data);
   uint16_t visible;
+  uint16_t tileRender;
 } object_t;
 
 
@@ -318,6 +322,7 @@ object_set_px(object_t* ptr, int16_t px)
 inline static void
 object_set_py(object_t* ptr, int16_t py)
 {
+  int16_t oldY = ptr->_y;
   ptr->_py = py;  
   ptr->_y = ptr->_py / OBJECT_PHYSICS_FACTOR;
 
@@ -326,8 +331,8 @@ object_set_py(object_t* ptr, int16_t py)
     ptr->_py = ptr->_y * OBJECT_PHYSICS_FACTOR;
   }
 
-  if (ptr->_y < 66) {
-    ptr->_y = 66;
+  if (oldY >= GAME_PAVEMENT_START && ptr->_y < GAME_PAVEMENT_START) {
+    ptr->_y = GAME_PAVEMENT_START;
     ptr->_py = ptr->_y * OBJECT_PHYSICS_FACTOR;
   }
 }

@@ -253,7 +253,14 @@ object_animation_t object_animations[] = {
     .stop = SPRITE_HAND,
     .speed = 0,
     .facing = FACING_RIGHT
-  },              
+  },
+  // =================================
+  [OBJECT_ANIM_DOOR] = {
+    .start = SPRITE_DOOR,
+    .stop = SPRITE_DOOR,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },                
 };
 
 
@@ -805,5 +812,15 @@ object_image_t object_imageAtlas[] = {
     .h = 50,
     .dx = 0,
     .dy = 0,    
-    },        
+    },
+
+  //==========================
+  [SPRITE_DOOR] = {
+    .x = 0,
+    .y = 0,
+    .w = 64,
+    .h = 64,
+    .dx = 0,
+    .dy = 0,    
+    },          
 };

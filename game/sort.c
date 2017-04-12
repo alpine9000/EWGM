@@ -101,6 +101,71 @@ static void sort8(object_t **d){
 }
 #endif
 
+#if OBJECT_MAX_OBJECTS > 8
+static void sort9(object_t **d){
+  SWAP(0,1);
+  SWAP(3,4);
+  SWAP(6,7);
+  SWAP(1,2);
+  SWAP(4,5);
+  SWAP(7,8);
+  SWAP(0,1);
+  SWAP(3,4);
+  SWAP(6,7);
+  SWAP(2,5);
+  SWAP(0,3);
+  SWAP(1,4);
+  SWAP(5,8);
+  SWAP(3,6);
+  SWAP(4,7);
+  SWAP(2,5);
+  SWAP(0,3);
+  SWAP(1,4);
+  SWAP(5,7);
+  SWAP(2,6);
+  SWAP(1,3);
+  SWAP(4,6);
+  SWAP(2,4);
+  SWAP(5,6);
+  SWAP(2,3);
+}
+#endif
+
+
+#if OBJECT_MAX_OBJECTS > 9
+static void sort10(object_t **d){
+  SWAP(4,9);
+  SWAP(3,8);
+  SWAP(2,7);
+  SWAP(1,6);
+  SWAP(0,5);  
+  SWAP(1,4);
+  SWAP(6,9);
+  SWAP(0,3);
+  SWAP(5,8);  
+  SWAP(0,2);
+  SWAP(3,6);
+  SWAP(7,9);  
+  SWAP(0,1);
+  SWAP(2,4);
+  SWAP(5,7);
+  SWAP(8,9);  
+  SWAP(1,2);
+  SWAP(4,6);
+  SWAP(7,8);
+  SWAP(3,5);  
+  SWAP(2,5);
+  SWAP(6,8);
+  SWAP(1,3);
+  SWAP(4,7);  
+  SWAP(2,3);
+  SWAP(6,7);  
+  SWAP(3,4);
+  SWAP(5,6);  
+  SWAP(4,5);
+}
+#endif
+
 static void(*sort_zs[OBJECT_MAX_OBJECTS+1])(object_t**) = {
   sort0,
   sort0,
@@ -113,8 +178,14 @@ static void(*sort_zs[OBJECT_MAX_OBJECTS+1])(object_t**) = {
   sort7,
 #endif
 #if OBJECT_MAX_OBJECTS > 7  
-  sort8
+  sort8,
 #endif
+#if OBJECT_MAX_OBJECTS > 8
+  sort9,
+#endif
+#if OBJECT_MAX_OBJECTS > 9
+  sort10
+#endif    
 };
   
 

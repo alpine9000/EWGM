@@ -5,6 +5,9 @@ static object_t* enemy_player2;
 
 uint16_t enemy_count;
 
+#define ENEMY_BOSS_START_Y (7+56)
+#define ENEMY_BOSS_START_X (WORLD_WIDTH-96)
+
 object_t*
 enemy_closestPlayer(object_t* ptr)
 {
@@ -156,10 +159,25 @@ enemy_add(uint16_t x, uint16_t y)
 }
 
 
+uint16_t
+enemy_bossIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
+{
+  if (object_y(ptr) == ENEMY_BOSS_START_Y && object_x(ptr) > WORLD_WIDTH-144) {
+    ptr->velocity.x = -1;
+  } else if (object_y(ptr) < GAME_PAVEMENT_START) {
+    ptr->velocity.x = 0;
+    ptr->velocity.y = 1;
+  } else {
+    return enemy_intelligence(deltaT, ptr, data);
+  }
+  
+  return 0;
+}
+
 void
 enemy_addBoss(uint16_t x, uint16_t y)
 {
-  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_BOSS_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, ENEMY_ATTACK_DAMMAGE, enemy_intelligence);
+  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_BOSS_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, ENEMY_ATTACK_DAMMAGE, enemy_bossIntelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   data->attackDurationFrames = ENEMY_ATTACK_DURATION_TICS;
   data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
@@ -176,6 +194,7 @@ enemy_init(object_t* player1, object_t * player2)
   enemy_player1 = player1;
   enemy_player2 = player2;
 
+  #if 0
   object_t* ptr = object_activeList;
   while (ptr) {
     object_t* next = ptr->next;
@@ -200,4 +219,41 @@ enemy_init(object_t* player1, object_t * player2)
       enemy_add(game_cameraX+SCREEN_WIDTH+160, 128);
     }
   }
+  #endif
+}
+
+void
+enemy_wave1(void)
+{
+  enemy_add(game_cameraX-64, 85);    
+}
+
+
+void
+enemy_wave2(void)
+{  
+  enemy_add(game_cameraX-64, 85);  
+}
+
+void
+enemy_wave3(void)
+{
+  uint16_t x = ENEMY_BOSS_START_X;
+
+  music_next();
+  
+  object_t* door = object_add(/*id*/OBJECT_ID_DOOR,
+			      /*x*/x,
+			      /*y*/64,
+			      /*dx*/0,
+			      ///*anim id*/OBJECT_ANIM_PLAYER3_STAND_RIGHT,
+			      /*anim id*/OBJECT_ANIM_DOOR,//OBJECT_ANIM_PLAYER3_STAND_RIGHT,			      
+			      /*update*/0,
+			      /*data*/0,
+			      /*freeData*/0);
+  door->tileRender = 1;
+
+
+  
+  enemy_addBoss(x, ENEMY_BOSS_START_Y);
 }

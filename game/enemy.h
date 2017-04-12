@@ -21,4 +21,10 @@ enemy_init(object_t* player1, object_t* player2);
 
 extern uint16_t enemy_count;
 
+void
+enemy_wave1(void);
+void
+enemy_wave2(void);
+void
+enemy_wave3(void);
 #endif
