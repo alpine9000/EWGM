@@ -1,7 +1,5 @@
 #include "game.h"
 
-static object_t* enemy_player1;
-static object_t* enemy_player2;
 
 uint16_t enemy_count;
 
@@ -11,32 +9,32 @@ uint16_t enemy_count;
 object_t*
 enemy_closestPlayer(object_t* ptr)
 {
-  if (enemy_player2 == 0) {
-    if (enemy_player1->state != OBJECT_STATE_REMOVED) {
-      return enemy_player1;
+  if (game_player2 == 0) {
+    if (game_player1->state != OBJECT_STATE_REMOVED) {
+      return game_player1;
     } else {
       return 0;
     }
   }
 
-  if (enemy_player1->state == OBJECT_STATE_REMOVED &&
-      enemy_player2->state != OBJECT_STATE_REMOVED) {
-    return enemy_player2;
-  } else  if (enemy_player2->state == OBJECT_STATE_REMOVED &&
-	      enemy_player1->state != OBJECT_STATE_REMOVED) {
-    return enemy_player1;
-  } else if (enemy_player2->state == OBJECT_STATE_REMOVED &&
-	      enemy_player1->state == OBJECT_STATE_REMOVED) {
+  if (game_player1->state == OBJECT_STATE_REMOVED &&
+      game_player2->state != OBJECT_STATE_REMOVED) {
+    return game_player2;
+  } else  if (game_player2->state == OBJECT_STATE_REMOVED &&
+	      game_player1->state != OBJECT_STATE_REMOVED) {
+    return game_player1;
+  } else if (game_player2->state == OBJECT_STATE_REMOVED &&
+	      game_player1->state == OBJECT_STATE_REMOVED) {
     return 0;
   }
 
-  int player1Diff = abs(object_x(ptr)-object_x(enemy_player1)) + abs(object_y(ptr)-object_y(enemy_player1));
-  int player2Diff = abs(object_x(ptr)-object_x(enemy_player2)) + abs(object_y(ptr)-object_y(enemy_player2));
+  int player1Diff = abs(object_x(ptr)-object_x(game_player1)) + abs(object_y(ptr)-object_y(game_player1));
+  int player2Diff = abs(object_x(ptr)-object_x(game_player2)) + abs(object_y(ptr)-object_y(game_player2));
 
   if (player1Diff < player2Diff) {
-    return enemy_player1;
+    return game_player1;
   } else {
-    return enemy_player2;
+    return game_player2;
   }
 }
 
@@ -200,18 +198,22 @@ enemy_addDoorEnemy(void)
 
 
 void
-enemy_init(object_t* player1, object_t * player2)
+enemy_init(void)
 {
   enemy_count = 0;
-  enemy_player1 = player1;
-  enemy_player2 = player2;
 }
 
 
 void
 enemy_wave1(void)
 {
-  enemy_add(game_cameraX-64, 85, 0);    
+  enemy_add(game_cameraX-64, 85, 0);
+  enemy_add(game_cameraX-64, 185, 0);
+  enemy_add(game_cameraX+SCREEN_WIDTH+64, 85, 0);
+  enemy_add(game_cameraX+SCREEN_WIDTH+64, 185, 0);
+  
+  enemy_add(game_cameraX+64, 85, 0);
+  enemy_add(game_cameraX+64, 185, 0);  
 }
 
 

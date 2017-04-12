@@ -275,7 +275,13 @@ object_update(uint16_t deltaT)
     }
     if (ptr->state == OBJECT_STATE_REMOVED) {
       if (ptr->deadRenderCount == 2) {
+	if (ptr == game_player1) {
+	  game_player1 = 0;
+	} else if (ptr == game_player2) {
+	  game_player2 = 0;
+	}
 	object_free(ptr);
+
       } else {
 	ptr->deadRenderCount++;
       }

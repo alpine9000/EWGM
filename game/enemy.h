@@ -17,7 +17,7 @@
 #define ENEMY_ATTACK_DAMMAGE        5
 
 void
-enemy_init(object_t* player1, object_t* player2);
+enemy_init(void);
 
 extern uint16_t enemy_count;
 

@@ -441,7 +441,7 @@ game_loadLevel(menu_command_t command)
     game_updatePlayerHealth(50, 0);
   }
 
-  enemy_init(game_player1, game_player2);
+  enemy_init();
 
   wave_init();  
 

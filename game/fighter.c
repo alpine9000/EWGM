@@ -87,9 +87,8 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
   collision->up = collision->down = collision->left = collision->right = 0;
 
   while (b) {
-    fighter_data_t* b_data = b->data;      
     if (b->id <= OBJECT_ID_BOSS && b != a && b->state == OBJECT_STATE_ALIVE) {
-
+      fighter_data_t* b_data = b->data;
       int16_t a_widthOffset = a_data->widthOffset;
       int16_t b_widthOffset = b_data->widthOffset;
       int16_t a_x1 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + a_widthOffset)-thresholdx;
