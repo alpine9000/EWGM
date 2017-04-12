@@ -147,6 +147,7 @@ extern object_t* game_player2;
 #include "logo.h"
 #include "hand.h"
 #include "wave.h"
+#include "alarm.h"
 
 #define game_fire() ((!(hw_lastJoystickButton&0x1) && (hw_joystickButton&0x1)) || \
 			(keyboard_key && keyboard_code == KEYBOARD_CODE_RETURN))

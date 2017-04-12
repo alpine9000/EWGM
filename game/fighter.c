@@ -88,7 +88,7 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
 
   while (b) {
     fighter_data_t* b_data = b->data;      
-    if (b != a && b->state == OBJECT_STATE_ALIVE) {
+    if (b->id <= OBJECT_ID_BOSS && b != a && b->state == OBJECT_STATE_ALIVE) {
 
       int16_t a_widthOffset = a_data->widthOffset;
       int16_t b_widthOffset = b_data->widthOffset;
@@ -231,6 +231,8 @@ void
 fighter_update(uint16_t deltaT, object_t* ptr)
 {
   fighter_data_t* data = (fighter_data_t*)ptr->data;
+  
+
   uint16_t attack = (ptr->state == OBJECT_STATE_ALIVE) ? data->intelligence(deltaT, ptr, data) : 0;
 
   if (!data->attackQueued && attack) {

@@ -146,9 +146,12 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 
 
 void
-enemy_add(uint16_t x, uint16_t y)
+enemy_add(uint16_t x, uint16_t y, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data))
 {
-  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_PLAYER1_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, ENEMY_ATTACK_DAMMAGE, enemy_intelligence);
+  if (intelligence == 0) {
+    intelligence = enemy_intelligence;
+  }
+  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_PLAYER1_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, ENEMY_ATTACK_DAMMAGE, intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   data->attackDurationFrames = ENEMY_ATTACK_DURATION_TICS;
   data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
@@ -160,7 +163,7 @@ enemy_add(uint16_t x, uint16_t y)
 
 
 uint16_t
-enemy_bossIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
+enemy_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
   if (object_y(ptr) == ENEMY_BOSS_START_Y && object_x(ptr) > WORLD_WIDTH-144) {
     ptr->velocity.x = -1;
@@ -174,10 +177,11 @@ enemy_bossIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   return 0;
 }
 
+
 void
 enemy_addBoss(uint16_t x, uint16_t y)
 {
-  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_BOSS_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, ENEMY_ATTACK_DAMMAGE, enemy_bossIntelligence);
+  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_BOSS_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, ENEMY_ATTACK_DAMMAGE, enemy_doorIntelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   data->attackDurationFrames = ENEMY_ATTACK_DURATION_TICS;
   data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
@@ -187,73 +191,54 @@ enemy_addBoss(uint16_t x, uint16_t y)
   enemy_count++;
 }
 
+
+void
+enemy_addDoorEnemy(void)
+{
+  enemy_add(ENEMY_BOSS_START_X, ENEMY_BOSS_START_Y, enemy_doorIntelligence);    
+}
+
+
 void
 enemy_init(object_t* player1, object_t * player2)
 {
   enemy_count = 0;
   enemy_player1 = player1;
   enemy_player2 = player2;
-
-  #if 0
-  object_t* ptr = object_activeList;
-  while (ptr) {
-    object_t* next = ptr->next;
-    if (ptr->id == OBJECT_ID_ENEMY) {
-      object_free(ptr);
-    }
-    ptr = next;
-  }
-
-  enemy_addBoss(game_cameraX-64, 85);
-  
-  if (0) {
-    if (player1) {
-      enemy_add(game_cameraX-64, 85);
-      enemy_add(game_cameraX-132, 120);
-      //      enemy_add(game_cameraX-160, 200);      
-    }
-    
-    if (player2) {
-      enemy_add(game_cameraX+SCREEN_WIDTH+64, 85);
-      enemy_add(game_cameraX+SCREEN_WIDTH+132, 200);
-      enemy_add(game_cameraX+SCREEN_WIDTH+160, 128);
-    }
-  }
-  #endif
 }
+
 
 void
 enemy_wave1(void)
 {
-  enemy_add(game_cameraX-64, 85);    
+  enemy_add(game_cameraX-64, 85, 0);    
 }
 
 
 void
 enemy_wave2(void)
 {  
-  enemy_add(game_cameraX-64, 85);  
+  enemy_add(game_cameraX-64, 85, 0);  
 }
+
 
 void
 enemy_wave3(void)
 {
   uint16_t x = ENEMY_BOSS_START_X;
 
-  music_next();
-  
-  object_t* door = object_add(/*id*/OBJECT_ID_DOOR,
-			      /*x*/x,
-			      /*y*/64,
-			      /*dx*/0,
-			      ///*anim id*/OBJECT_ANIM_PLAYER3_STAND_RIGHT,
-			      /*anim id*/OBJECT_ANIM_DOOR,//OBJECT_ANIM_PLAYER3_STAND_RIGHT,			      
-			      /*update*/0,
-			      /*data*/0,
-			      /*freeData*/0);
+  object_t* door =  object_add(/*id*/OBJECT_ID_DOOR,
+			       /*x*/x,
+			       /*y*/64,
+			       /*dx*/0,
+			       /*anim id*/OBJECT_ANIM_DOOR,
+			       /*update*/0,
+			       /*data*/0,
+			       /*freeData*/0);
   door->tileRender = 1;
-
-
   
   enemy_addBoss(x, ENEMY_BOSS_START_Y);
+
+  alarm_add(200, enemy_addDoorEnemy);
+  alarm_add(300, enemy_addDoorEnemy);  
 }

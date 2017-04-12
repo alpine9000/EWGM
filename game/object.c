@@ -228,13 +228,6 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
   int16_t w = ptr->image->w;
   int16_t h = ptr->image->h;
 
-  if (ptr->tileRender) {
-    gfx_setupRenderTile();
-    object_clear(fb, object_x(ptr)+ptr->image->dx, object_y(ptr)-h, w, h);
-    return;
-  }
-  
-
   int16_t screenx = object_screenx(ptr);
   int16_t screeny = object_screeny(ptr);
   int16_t sx = ptr->image->x;
@@ -260,6 +253,11 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
   }
 
   if (w > 0 && h > 0) {
+    if (ptr->tileRender) {
+      gfx_setupRenderTile();
+      object_clear(fb, object_x(ptr)+ptr->image->dx, object_y(ptr)-h, w, h);
+      return;
+    }
     gfx_renderSprite(fb, sx, sy, screenx, screeny, w, h);
   }
 }

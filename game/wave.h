@@ -7,7 +7,7 @@ typedef struct {
 } wave_instruction_t;
 
 void
-wave_init();
+wave_init(void);
 
 
 void

@@ -428,6 +428,7 @@ game_loadLevel(menu_command_t command)
   }
 #endif
 
+  alarm_init();
   object_init();
   fighter_init();
   hand_init();
@@ -1026,7 +1027,8 @@ game_loop()
     if (game_deltaT == 0 || game_deltaT > 2) {
       //PANIC("deltat");
     }
-    
+
+    alarm_process(game_deltaT);
     game_render(game_deltaT);    
 
 #ifdef DEBUG_SPEED
