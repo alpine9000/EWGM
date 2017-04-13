@@ -230,8 +230,9 @@ hiscore_prompt(char* message)
   return hiscore_promptBuffer;
 }
 
+
 void
-hiscore_addScore(uint32_t score)
+hiscore_addScore(char* prompt, uint32_t score)
 {
   int16_t i, dirty = 0;
   char* name;
@@ -243,7 +244,7 @@ hiscore_addScore(uint32_t score)
 	strcpy(hiscore.scores[i].name, hiscore.scores[i-1].name);
       } else if (i == 0) {
 	hiscore.scores[i].score = score;
-	name = hiscore_prompt("A NEW HIGH SCORE!!!");
+	name = hiscore_prompt(prompt);
 	strcpy(hiscore.scores[i].name, name);
 	dirty = 1;
       }

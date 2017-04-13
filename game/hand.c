@@ -42,6 +42,7 @@ hand_show(void)
   hand_hideNextAnimation = 0;
 }
 
+
 void
 hand_hide(void)
 {

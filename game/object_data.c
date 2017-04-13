@@ -260,7 +260,21 @@ object_animation_t object_animations[] = {
     .stop = SPRITE_DOOR,
     .speed = 0,
     .facing = FACING_RIGHT
-  },                
+  },
+  // =================================
+  [OBJECT_ANIM_JOYSTICK] = {
+    .start = SPRITE_JOYSTICK1,
+    .stop = SPRITE_JOYSTICK2,
+    .speed = 25,
+    .facing = FACING_RIGHT
+  },
+  // =================================
+  [OBJECT_ANIM_GAMEOVER] = {
+    .start = SPRITE_GAMEOVER,
+    .stop = SPRITE_GAMEOVER,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },                    
 };
 
 
@@ -822,5 +836,35 @@ object_image_t object_imageAtlas[] = {
     .h = 64,
     .dx = 0,
     .dy = 0,    
-    },          
+    },
+
+  //==========================
+  [SPRITE_JOYSTICK1] = {
+    .x = 240,
+    .y = 400,
+    .w = 32,
+    .h = 32,
+    .dx = 0,
+    .dy = 0,    
+    },
+
+  [SPRITE_JOYSTICK2] = {
+    .x = 240,
+    .y = 432,
+    .w = 32,
+    .h = 32,
+    .dx = 0,
+    .dy = 0,    
+    },
+
+  //==========================
+  [SPRITE_GAMEOVER] = {
+    .x = 0,
+    .y = 507,
+    .w = 80,
+    .h = 7,
+    .dx = 0,
+    .dy = 0,    
+    },
+  
 };

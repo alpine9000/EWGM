@@ -234,6 +234,10 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 
   uint16_t attack = (ptr->state == OBJECT_STATE_ALIVE) ? data->intelligence(deltaT, ptr, data) : 0;
 
+  if (game_over) {
+    return;
+  }
+
   if (!data->attackQueued && attack) {
     data->attackQueued = 1;
   }
@@ -267,14 +271,26 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 	case OBJECT_ID_ENEMY:
 	  enemy_count--;
 	  if (enemy_count == 0) {
-	    hand_show();	      
+	    if (wave_complete()) {
+	      game_setGameOver();
+	    } else {
+	      hand_show();
+	    }
 	  }
 	  break;	  
 	case OBJECT_ID_PLAYER1:
 	  game_player1 = 0;
+	  game_scoreBoardGameOver(OBJECT_ID_PLAYER1);
+	  if (!game_player2) {
+	    game_setGameOver();	    
+	  }
 	  break;
 	case OBJECT_ID_PLAYER2:
 	  game_player2 = 0;
+	  if (!game_player1) {
+	    game_setGameOver();	    
+	  }	  
+	  game_scoreBoardGameOver(OBJECT_ID_PLAYER2);	  	  
 	  break;
 	}
       }

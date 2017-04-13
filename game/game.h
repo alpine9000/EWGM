@@ -38,7 +38,7 @@
 #define FRAME_BUFFER_WIDTH  (SCREEN_WIDTH+64)
 
 #define SPRITE_SHEET_WIDTH  272
-#define SPRITE_SHEET_HEIGHT 507
+#define SPRITE_SHEET_HEIGHT 516
 #define SPRITE_SHEET_WIDTH_BYTES (SPRITE_SHEET_WIDTH/8)
 
 #define TILE_SHEET_WIDTH  272
@@ -100,12 +100,10 @@ typedef volatile struct Custom* custom_t;
 
 extern int16_t game_cameraX;
 extern int16_t game_screenScrollX;
-extern int16_t game_collisions;
 extern frame_buffer_t game_onScreenBuffer;
 extern frame_buffer_t game_offScreenBuffer;
 extern frame_buffer_t game_scoreBoardFrameBuffer;
 extern uint16_t game_over;
-extern uint16_t game_levelComplete;
 extern uint16_t game_numPlayers;
 extern uint16_t game_wave;
 extern uint16_t game_nextWave;
@@ -161,4 +159,8 @@ void
 game_setLevelComplete(void);
 void
 game_switchFrameBuffers(void);
+void
+game_scoreBoardGameOver(uint16_t playerId);
+void
+game_setGameOver(void);
 #endif /* __GAME_H */

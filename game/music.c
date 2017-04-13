@@ -20,10 +20,6 @@ static __section(section music) uint8_t music_level_b[] DISK_SECTOR_ALIGN = {
 #include "out/P61.jojo_boss.h"
  } ;
 
-static __section(section music) uint8_t music_level_c[] DISK_SECTOR_ALIGN = {
-#include "out/P61.switpiano.h"
- } ;
-
 typedef struct {
   uint8_t* data;
   uint32_t length;
@@ -32,9 +28,9 @@ typedef struct {
 
 static music_song_t music_songs[] = {
   { music_level_a, sizeof(music_level_a), 0},
-  { music_level_b, sizeof(music_level_b), 0},
-  { music_level_c, sizeof(music_level_c), 33},
-  { music_level_c, sizeof(music_level_c), 0}, 
+  { music_level_a, sizeof(music_level_a), 32},
+  { music_level_a, sizeof(music_level_a), 33},
+  { music_level_b, sizeof(music_level_b), 0}, 
 };
 
 static void* music_current_ptr = music_module1;
@@ -47,12 +43,14 @@ music_play(uint16_t moduleIndex)
   if (moduleIndex == music_currentModule) {
     return;
   }
-  music_currentModule = moduleIndex;
   uint16_t p61_Target = P61_Target;
   P61_InitPos = music_songs[moduleIndex].start;
-  disk_loadData(music_spare_ptr, music_songs[moduleIndex].data, music_songs[moduleIndex].length);
-  music_current_ptr = music_current_ptr == music_module1 ? music_module2 : music_module1;
-  music_spare_ptr = music_spare_ptr == music_module1 ? music_module2 : music_module1;
+  if (music_currentModule == 0xffff || music_songs[moduleIndex].data != music_songs[music_currentModule].data) {
+    disk_loadData(music_spare_ptr, music_songs[moduleIndex].data, music_songs[moduleIndex].length);
+    music_current_ptr = music_current_ptr == music_module1 ? music_module2 : music_module1;
+    music_spare_ptr = music_spare_ptr == music_module1 ? music_module2 : music_module1;
+  }
+  music_currentModule = moduleIndex;
   P61_Master = 0;
   P61_Target = 0;
   hw_waitVerticalBlank();

@@ -21,7 +21,7 @@ hiscore_t*
 hiscore_render(void);
 
 void
-hiscore_addScore(uint32_t score);
+hiscore_addScore(char* prompt, uint32_t score);
 
 void
 hiscore_default(void);

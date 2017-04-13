@@ -21,10 +21,8 @@ frame_buffer_t game_onScreenBuffer;
 uint16_t game_bplcon1;
 int16_t game_cameraX;
 int16_t game_screenScrollX;
-int16_t game_collisions;
 uint16_t game_level;
 uint16_t game_over;
-uint16_t game_levelComplete;
 uint32_t game_paused;
 uint16_t game_numPlayers;
 object_t* game_player1;
@@ -211,29 +209,29 @@ game_overCallback(void)
 }
 
 
-void
-game_finish(void)
+static void
+game_complete(void)
 {
-  game_collisions = 0;
-  game_over = 1;
-  //popup_off();
-  //popup("GAME OVER!", game_overCallback);
+  game_gotoMenu = 1;
 
+  hiscore_addScore("NEW HISCORE PLAYER1", game_player1Score);
+  hiscore_addScore("NEW HISCORE PLAYER2", game_player2Score);
+    
 #ifdef DEBUG
   game_checkCanary();
 #endif
 }
 
 
-/*void
-game_loseLife(void)
-{ 
-  if (game_lives > 1) {
-    game_lives--;
-  } else {
-    game_finish();
-  }
-  }*/
+void
+game_setGameOver(void)
+{
+  game_over = 1;
+  game_scoreBoardGameOver(OBJECT_ID_PLAYER1);
+  game_scoreBoardGameOver(OBJECT_ID_PLAYER2);
+  object_set_z(object_add(OBJECT_ID_JOYSTICK, game_cameraX+(SCREEN_WIDTH/2-16), (PLAYAREA_HEIGHT/2)+32, 0, OBJECT_ANIM_JOYSTICK, 0, 0, 0), 4096);   
+  object_set_z(object_add(OBJECT_ID_GAMEOVER, game_cameraX+(SCREEN_WIDTH/2-35), (PLAYAREA_HEIGHT/2)-32, 0, OBJECT_ANIM_GAMEOVER, 0, 0, 0), 4096);  
+}
 
 
 #ifdef DEBUG
@@ -258,6 +256,17 @@ game_refreshDebugScoreboard(void)
 }
 #endif
 
+void
+game_scoreBoardGameOver(uint16_t playerId)
+{
+  if (playerId == OBJECT_ID_PLAYER1) {
+    text_drawText8(game_scoreBoardFrameBuffer, "GAME OVER", 224-3*8, 17);
+  } else {
+    text_drawText8(game_scoreBoardFrameBuffer, "GAME OVER", 48, 17);
+  }
+}
+  
+
 static void
 game_refreshScoreboard(void)
 {
@@ -267,7 +276,9 @@ game_refreshScoreboard(void)
   if (game_scoreBoardMode == 0) {
 #endif
 
-    text_drawText8(game_scoreBoardFrameBuffer, "         ", 48, 8);    
+    text_drawText8(game_scoreBoardFrameBuffer, "         ", 48, 8);
+      text_drawText8(game_scoreBoardFrameBuffer, "         ", 224-3*8, 17);
+      text_drawText8(game_scoreBoardFrameBuffer, "         ", 48, 17);          
     /*
 #ifdef GAME_RECORDING    
     switch (record_getState()) {
@@ -328,9 +339,8 @@ game_newGame(menu_command_t command)
     command = MENU_COMMAND_PLAY;
   }
 
-  game_loadLevel(command);
-
   game_refreshScoreboard();
+  game_loadLevel(command);
 }
 
 
@@ -374,7 +384,6 @@ game_loadLevel(menu_command_t command)
   game_gotoMenu = 0;
   game_screenScrollX = 0xf;
   game_requestCameraX(0);
-  game_levelComplete = 0;
   game_lastScore = 1;
   game_lastScrollFrame = 0;
 #ifdef DEBUG
@@ -395,7 +404,6 @@ game_loadLevel(menu_command_t command)
   game_debugRenderFrame = 0;
 #endif
 
-  game_collisions = 1;
 
   //popup_off();
 
@@ -439,6 +447,7 @@ game_loadLevel(menu_command_t command)
     game_player2 = player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER3_STAND_RIGHT, SCREEN_WIDTH-80);
   } else {
     game_updatePlayerHealth(50, 0);
+    game_scoreBoardGameOver(OBJECT_ID_PLAYER2);
   }
 
   enemy_init();
@@ -565,7 +574,7 @@ static void
 debug_showRasterLine(void)
 {
   
-  if (((game_scoreBoardMode && ((hw_getRasterLine() < GAME_SCORE_RASTERLINE_CUTOFF))) || game_levelComplete)) {
+  if (game_scoreBoardMode && ((hw_getRasterLine() < GAME_SCORE_RASTERLINE_CUTOFF))) {
     debug_mode();
   }
 
@@ -685,17 +694,6 @@ game_finishLevel(void)
 
 
 void
-game_setLevelComplete(void)
-{
-  if (!game_levelComplete) {
-    //popup("LEVEL COMPLETE!", game_finishLevel);
-    game_levelComplete = 1;
-    game_collisions = 0;
-  }
-}
-
-
-void
 game_startPlayback(void)
 {
 
@@ -724,7 +722,7 @@ game_processKeyboard()
     break;
   case 'O':
     {
-      game_finish();
+      game_complete();
       break;
       
     }
@@ -732,10 +730,8 @@ game_processKeyboard()
   case 'D':
     game_scoreBoardMode = !game_scoreBoardMode;
     if (game_scoreBoardMode) {
-      game_collisions = 0;
       game_refreshDebugScoreboard();
     } else {
-      game_collisions = 1;
       //gfx_fillRect(game_scoreBoardFrameBuffer, 0, 0, FRAME_BUFFER_WIDTH, SCOREBOARD_HEIGHT, 0);
       game_refreshScoreboard();
     }
@@ -762,9 +758,6 @@ game_processKeyboard()
     game_lastVerticalBlankCount = hw_verticalBlankCount;
 #endif
     //game_startPlayback();
-    break;
-  case 'C':
-    game_setLevelComplete();
     break;
   case 'T':
     game_singleStep = 1;
@@ -820,7 +813,6 @@ game_updateScoreboard(void)
       game_lastPlayer2Health = ((fighter_data_t*)game_player2->data)->health;
     }
 
-
 #ifdef GAME_TIME_USE_COUNTER
     if (game_levelCounter != game_lastLevelCounter) {
       uint16_t minutes = game_levelCounter / 60;
@@ -850,21 +842,18 @@ game_updateScoreboard(void)
     }
 #endif
     
-    if (game_player1 && game_lastPlayer1Score != game_player1Score) {
+    if (game_lastPlayer1Score != game_player1Score) {
       frame_buffer_t fb = game_scoreBoardFrameBuffer;
       text_drawText8(fb, itoan(game_player1Score, 6), 224, 8);
       game_lastPlayer1Score = game_player1Score;
       custom->bltafwm = 0xffff;
     }
 
-    if (game_player2 && game_lastPlayer2Score != game_player2Score) {
+    if (game_lastPlayer2Score != game_player2Score) {
       frame_buffer_t fb = game_scoreBoardFrameBuffer;
       text_drawText8(fb, itoan(game_player2Score, 6), 48, 8);
       game_lastPlayer2Score = game_player2Score;
       custom->bltafwm = 0xffff;
-    } else if (game_lastPlayer2Score != game_player2Score) {
-      text_drawText8(game_scoreBoardFrameBuffer, "GAME OVER", 48, 8);
-      game_lastPlayer2Score = game_player2Score;      
     }
 
 #ifdef DEBUG
@@ -877,16 +866,21 @@ game_updateScoreboard(void)
 static void
 game_decrementTime(void)
 {
-  if (game_levelTime.sec == 0) {
-    game_levelTime.sec = 9;
-    if (game_levelTime.sec10 == 0) {
-      game_levelTime.sec10 = 5;
-      game_levelTime.min--;
+  if (!game_over) {
+    if (game_levelTime.sec == 0) {
+      game_levelTime.sec = 9;
+      if (game_levelTime.sec10 == 0) {
+	game_levelTime.sec10 = 5;
+	game_levelTime.min--;
+      } else {
+	game_levelTime.sec10--;
+      }
     } else {
-      game_levelTime.sec10--;
+      game_levelTime.sec--;
     }
-  } else {
-    game_levelTime.sec--;
+    if (game_levelTime.value == 0) {
+      game_setGameOver();      
+    }
   }
 }
 #endif
@@ -933,6 +927,10 @@ game_loop()
       hw_readJoystick2();
     }
 
+    if (game_over && game_fire()) {
+      game_complete();
+    }
+    
     if (!game_paused) {
       record_process();
     }
@@ -1002,6 +1000,10 @@ game_loop()
       game_levelTicCounter-=50;
 #ifdef GAME_TIME_USE_COUNTER
       game_levelCounter--;
+      if (game_levelCounter == 0) {
+	game_over = 1;
+	joystick_show();	    
+      }
 #else
       game_decrementTime();
 #endif

@@ -9,8 +9,9 @@ typedef struct {
 void
 wave_init(void);
 
-
 void
 wave_process();
 
+uint16_t
+wave_complete(void);
 #endif

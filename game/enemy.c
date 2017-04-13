@@ -10,12 +10,14 @@ object_t*
 enemy_closestPlayer(object_t* ptr)
 {
   if (game_player2 == 0) {
-    if (game_player1->state != OBJECT_STATE_REMOVED) {
+    if (game_player1) {
       return game_player1;
     } else {
       return 0;
     }
-  }
+  } else if (game_player1 == 0) {
+    return game_player2;
+  } 
 
   if (game_player1->state == OBJECT_STATE_REMOVED &&
       game_player2->state != OBJECT_STATE_REMOVED) {
@@ -208,12 +210,13 @@ void
 enemy_wave1(void)
 {
   enemy_add(game_cameraX-64, 85, 0);
+#if 0
   enemy_add(game_cameraX-64, 185, 0);
   enemy_add(game_cameraX+SCREEN_WIDTH+64, 85, 0);
-  enemy_add(game_cameraX+SCREEN_WIDTH+64, 185, 0);
-  
+  enemy_add(game_cameraX+SCREEN_WIDTH+64, 185, 0);  
   enemy_add(game_cameraX+64, 85, 0);
-  enemy_add(game_cameraX+64, 185, 0);  
+  enemy_add(game_cameraX+64, 185, 0);
+#endif
 }
 
 
@@ -238,7 +241,9 @@ enemy_wave3(void)
 			       /*data*/0,
 			       /*freeData*/0);
   door->tileRender = 1;
-  
+
+  music_play(2);
+    
   enemy_addBoss(x, ENEMY_BOSS_START_Y);
 
   alarm_add(200, enemy_addDoorEnemy);

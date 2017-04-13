@@ -27,3 +27,9 @@ wave_process(void)
     }
   }
 }
+
+uint16_t
+wave_complete(void)
+{
+  return wave_instructionIndex >= sizeof(wave_instructions)/sizeof(wave_instruction_t);
+}
