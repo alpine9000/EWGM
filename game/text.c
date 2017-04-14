@@ -136,32 +136,12 @@ text_drawBigNumeral(frame_buffer_t frameBuffer, uint16_t n, int16_t x, int16_t y
   text_bitBlit(src, frameBuffer, x, y, 8, ny);
 }
 
-#if 0
-INLINE void
-text_drawChar8(frame_buffer_t fb, char c, int16_t x, int16_t y)
-{
-  int16_t h = 8;
-  y = y-game_screenScrollY;
-  if (y >= 0) {
-    __text_drawChar8(fb, c, x, y, 0, 8);
-  } else {
-    if (y > -h) {
-      __text_drawChar8(fb, c, x, 0, -y, 8+y);
-      __text_drawChar8(fb, c, x, FRAME_BUFFER_HEIGHT+y, 0, -y);
-    } else {
-      __text_drawChar8(fb, c, x, FRAME_BUFFER_HEIGHT+y, 0, 8);
-    }
-  }
-}
-#endif
-
 
 INLINE void
 text_drawText8(frame_buffer_t frameBuffer, char* string, int32_t x, int32_t y)
 {
   char* ptr = &string[0]; 
   do {
-    //    text_drawChar8(frameBuffer, *ptr, x, y);
     __text_drawChar8(frameBuffer, *ptr, x, y, 0, 8);
     ptr++;
     x += 8;
@@ -178,4 +158,77 @@ text_drawScoreBoard(char* string, int32_t x, int32_t y)
     ptr++;
     x += 8;
   } while (*ptr != 0);
+}
+
+INLINE void
+__text_drawMaskedChar8(frame_buffer_t frameBuffer, char c, int16_t x, int16_t y, int16_t sx, int16_t ny, int16_t clear)
+{
+  USE(sx);
+  char* src = fontAtlas[(int)c];
+  char* dest = (char*)frameBuffer+(x>>3);
+  dest += (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)*y;
+
+  
+  volatile struct Custom* _custom = CUSTOM;
+  uint32_t widthWords = 2;
+  int32_t shift = (x&0xf);
+  
+#define FONT_BIT_DEPTH 1
+  
+  hw_waitBlitter();
+
+  int16_t index = c - '0';
+  if (index & 0x1) {
+    _custom->bltafwm = 0x00ff;
+    dest--;
+    shift += 8;
+  } else {
+    _custom->bltafwm = 0xff00;    
+  }
+  _custom->bltalwm = 0x0000;
+  _custom->bltadat = 0x0000;
+  _custom->bltbdat = 0x0;
+  _custom->bltcdat = 0x0;
+  
+  if (clear) {
+    _custom->bltcon0 = (SRCA|SRCB|SRCC|DEST|0x2a|shift<<ASHIFTSHIFT);
+  } else {
+    _custom->bltcon0 = (SRCA|SRCB|SRCC|DEST|0xca|shift<<ASHIFTSHIFT);
+
+  }
+
+  _custom->bltamod = FONTMAP_WIDTH_BYTES-(widthWords<<1)+(FONTMAP_WIDTH_BYTES*(FONT_BIT_DEPTH-1));
+  _custom->bltbmod = FONTMAP_WIDTH_BYTES-(widthWords<<1)+(FONTMAP_WIDTH_BYTES*(FONT_BIT_DEPTH-1));  
+  _custom->bltcmod = SCREEN_WIDTH_BYTES-(widthWords<<1)+(SCREEN_WIDTH_BYTES*(SCREEN_BIT_DEPTH-1));
+  _custom->bltdmod = SCREEN_WIDTH_BYTES-(widthWords<<1)+(SCREEN_WIDTH_BYTES*(SCREEN_BIT_DEPTH-1));
+  _custom->bltcon1 = shift<<BSHIFTSHIFT;  
+  _custom->bltapt = (uint8_t*)src;
+    _custom->bltbpt = (uint8_t*)src;      
+  _custom->bltcpt = (uint8_t*)dest;
+  _custom->bltdpt = (uint8_t*)dest;
+  _custom->bltsize = (ny*FONT_BIT_DEPTH)<<6 | widthWords;
+  
+}
+
+
+void
+text_drawMaskedText8Blitter(frame_buffer_t frameBuffer, char* string, int32_t x, int32_t y)
+{
+  char* ptr = &string[0]; 
+  do {
+    __text_drawMaskedChar8(frameBuffer, *ptr, x, y, 0, 8, 0);
+    ptr++;
+    x += 8;
+  } while (*ptr != 0); 
+}
+
+void
+text_clearMaskedText8Blitter(frame_buffer_t frameBuffer, char* string, int32_t x, int32_t y)
+{
+  char* ptr = &string[0]; 
+  do {
+    __text_drawMaskedChar8(frameBuffer, *ptr, x, y, 0, 8, 1);
+    ptr++;
+    x += 8;
+  } while (*ptr != 0); 
 }

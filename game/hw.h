@@ -17,7 +17,8 @@
 void 
 _hw_debugWaitBlitter(void);
 #else
-#define hw_waitBlitter()  while (((volatile struct Custom*)CUSTOM)->dmaconr & 1<<14);
+extern void _hw_waitBlitter();
+#define hw_waitBlitter()  _hw_waitBlitter();
 #endif
 
 void 
