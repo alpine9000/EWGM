@@ -1160,7 +1160,7 @@ DirBuffer:
 
 	ifne	WRITESUPPORT
 TrkWriteBuffer:
-	ds.b	SECT_PER_TRK*512
+	ds.b	0;SECT_PER_TRK*512
 	endif
 	endif
 

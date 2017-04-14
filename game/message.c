@@ -51,12 +51,14 @@ message_screenOn(char* message)
     return;
   }
 
+  hw_waitBlitter();
   hw_waitVerticalBlank();
   palette_black();
+  hw_waitVerticalBlank();  
 
   volatile uint16_t scratch;
 
-  custom->dmacon = DMAF_RASTER|DMAF_SPRITE;
+  custom->dmacon = DMAF_RASTER;
   custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_MASTER);
 
   uint16_t volatile* copperPtr = (uint16_t*)&message_copper;
@@ -77,12 +79,12 @@ message_screenOn(char* message)
   custom->bpl1mod = (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-SCREEN_WIDTH_BYTES;
   custom->bpl2mod = (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-SCREEN_WIDTH_BYTES;
 
+  message_pokeCopperList(game_offScreenBuffer);  
   /* install copper list, then enable dma and selected interrupts */
   custom->cop1lc = (uint32_t)copperPtr;
   scratch = custom->copjmp1;
   USE(scratch);
 
-  message_pokeCopperList(game_offScreenBuffer);
 
   custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
 
@@ -96,16 +98,17 @@ message_screenOn(char* message)
 void
 message_screenOff(void)
 {
+  hw_waitBlitter();
+  hw_waitVerticalBlank();
+  
   if (message_on) {
-    hw_waitVerticalBlank();
     palette_black();
-    
+    hw_waitVerticalBlank();    
     gfx_fillRectSmallScreen(game_onScreenBuffer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
-    hw_waitBlitter();
-    
+    hw_waitBlitter();    
     hw_waitVerticalBlank();
     screen_setup((uint16_t*)&copper);
-    
+    hw_waitVerticalBlank();    
     message_on = 0;
   }
 }
@@ -119,6 +122,9 @@ message_loading(char* message)
   USE(message);
   palette_black();
 #endif
+
+  hw_waitBlitter();
+  hw_waitVerticalBlank();  
 }
 
 uint16_t

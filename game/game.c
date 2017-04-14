@@ -18,13 +18,13 @@ game_scrollBackground(void);
 
 frame_buffer_t game_offScreenBuffer;
 frame_buffer_t game_onScreenBuffer;
+uint16_t game_numPlayers;
 uint16_t game_bplcon1;
 int16_t game_cameraX;
 int16_t game_screenScrollX;
 uint16_t game_level;
 uint16_t game_over;
 uint32_t game_paused;
-uint16_t game_numPlayers;
 object_t* game_player1;
 object_t* game_player2;
 uint32_t game_player1Score;
@@ -65,13 +65,8 @@ static uint32_t game_lastScore;
 static uint32_t game_lastScrollFrame;
 static uint16_t game_lastTileX;
 static uint16_t game_deltaT;
-#ifdef GAME_TIME_USE_COUNTER
-static uint16_t game_levelCounter;
-static uint16_t game_lastLevelCounter;
-#else
 static time_t game_levelTime;
 static time_t game_lastLevelTime;
-#endif
 static uint16_t game_levelTicCounter;
 
 
@@ -96,7 +91,7 @@ static int16_t game_debugRenderFrame;
 #endif
 
 
- __section(data_c)  copper_t copper  = {
+__section(data_c)  copper_t copper  = {
    .bplcon1 = {
      BPLCON1,0xff
    },
@@ -167,14 +162,14 @@ game_ctor(void)
 }
 
 
-__EXTERNAL void
+void
 game_init(menu_command_t command)
 {
   hw_waitVerticalBlank();
   palette_black();
 
+  screen_pokeCopperList(game_scoreBoardFrameBuffer, copper.sb_bpl, SCREEN_WIDTH_BYTES);  
   screen_setup((uint16_t*)&copper);
-  screen_pokeCopperList(game_scoreBoardFrameBuffer, copper.sb_bpl, SCREEN_WIDTH_BYTES);
 
 #ifdef DEBUG
   game_frameBufferData.canary1 = 0x55555555;
@@ -334,15 +329,10 @@ game_newGame(menu_command_t command)
   game_player2Score = 0;
   game_lastPlayer1Score = 0xffffffff;
   game_lastPlayer2Score = 0xffffffff;
-#ifdef GAME_TIME_USE_COUNTER
-  game_levelCounter = 300;
-  game_lastLevelCounter = 0;
-#else
   game_levelTime.min = 5;
   game_levelTime.sec10 = 0;
   game_levelTime.sec= 0;
   game_lastLevelTime.value = 0;
-#endif
   game_levelTicCounter = 0;  
 
   if (command >= MENU_COMMAND_LEVEL) {
@@ -620,10 +610,12 @@ debug_showRasterLine(void)
   if (game_collectTotal) {
     game_total += line;
     game_frame++;
+#ifdef SCRIPTING
     if (game_frame == script_breakpoint) {
       game_paused = 1;
       script_breakpoint = 0xffffffff;
     }
+#endif
   }
 
   return;  
@@ -818,31 +810,10 @@ game_updateScoreboard(void)
     if (game_player1 && game_lastPlayer1Health != ((fighter_data_t*)game_player1->data)->health) {
 	game_updatePlayerHealth(225, ((fighter_data_t*)game_player1->data)->health);
 	game_lastPlayer1Health = ((fighter_data_t*)game_player1->data)->health;
-    }
-
-    if (game_player2 && game_lastPlayer2Health != ((fighter_data_t*)game_player2->data)->health) {
+    } else if (game_player2 && game_lastPlayer2Health != ((fighter_data_t*)game_player2->data)->health) {
       game_updatePlayerHealth(50, ((fighter_data_t*)game_player2->data)->health);
       game_lastPlayer2Health = ((fighter_data_t*)game_player2->data)->health;
-    }
-
-#ifdef GAME_TIME_USE_COUNTER
-    if (game_levelCounter != game_lastLevelCounter) {
-      uint16_t minutes = game_levelCounter / 60;
-      uint16_t seconds = game_levelCounter - (minutes*60);
-      uint16_t s1 = seconds/10;
-      uint16_t s2 = seconds-(s1*10);
-      uint16_t x = 146;
-      uint16_t y = 19;
-
-      text_clrBlit(game_scoreBoardFrameBuffer, x, y, 9*3+5, 11);      
-      text_drawBigNumeral(game_scoreBoardFrameBuffer, s2, x+5+9+9, y, 11);
-      text_drawBigNumeral(game_scoreBoardFrameBuffer, s1, x+5+9, y, 11);
-      text_drawBigNumeral(game_scoreBoardFrameBuffer, minutes, x, y, 11);
-      text_drawBigNumeral(game_scoreBoardFrameBuffer, 10, x+7, y, 11);                       
-      game_lastLevelCounter = game_levelCounter;
-    }
-#else
-    if (game_levelTime.value != game_lastLevelTime.value) {
+    } else if (game_levelTime.value != game_lastLevelTime.value) {
       uint16_t x = 146;
       uint16_t y = 19;      
       text_clrBlit(game_scoreBoardFrameBuffer, x, y, 9*3+5, 11);      
@@ -851,17 +822,12 @@ game_updateScoreboard(void)
       text_drawBigNumeral(game_scoreBoardFrameBuffer, game_levelTime.min, x, y, 11);
       text_drawBigNumeral(game_scoreBoardFrameBuffer, 10, x+7, y, 11);
       game_lastLevelTime = game_levelTime;
-    }
-#endif
-    
-    if (game_lastPlayer1Score != game_player1Score) {
+    } else if (game_lastPlayer1Score != game_player1Score) {
       frame_buffer_t fb = game_scoreBoardFrameBuffer;
       text_drawText8(fb, itoan(game_player1Score, 6), 224, 8);
       game_lastPlayer1Score = game_player1Score;
       custom->bltafwm = 0xffff;
-    }
-
-    if (game_lastPlayer2Score != game_player2Score) {
+    } else if (game_lastPlayer2Score != game_player2Score) {
       frame_buffer_t fb = game_scoreBoardFrameBuffer;
       text_drawText8(fb, itoan(game_player2Score, 6), 48, 8);
       game_lastPlayer2Score = game_player2Score;
@@ -874,7 +840,6 @@ game_updateScoreboard(void)
 }
 
 
-#ifndef GAME_TIME_USE_COUNTER
 static void
 game_decrementTime(void)
 {
@@ -895,7 +860,7 @@ game_decrementTime(void)
     }
   }
 }
-#endif
+
 
 __EXTERNAL void
 game_loop()
@@ -948,7 +913,9 @@ game_loop()
     }
 
 #ifdef DEBUG
+#ifdef SCRIPTING
     script_process();
+#endif
 #endif
 
     if (game_processKeyboard()) {
@@ -1010,15 +977,7 @@ game_loop()
     game_levelTicCounter += game_deltaT;
     while (game_levelTicCounter >= 50) {
       game_levelTicCounter-=50;
-#ifdef GAME_TIME_USE_COUNTER
-      game_levelCounter--;
-      if (game_levelCounter == 0) {
-	game_over = 1;
-	joystick_show();	    
-      }
-#else
       game_decrementTime();
-#endif
     }
 
 #ifdef DEBUG

@@ -145,7 +145,7 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 }
 
 
-void
+static void
 enemy_add(uint16_t x, uint16_t y, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data))
 {
   if (intelligence == 0) {
@@ -162,7 +162,7 @@ enemy_add(uint16_t x, uint16_t y, uint16_t (*intelligence)(uint16_t deltaT, obje
 }
 
 
-uint16_t
+static uint16_t
 enemy_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
   if (object_y(ptr) == ENEMY_BOSS_START_Y && object_x(ptr) > WORLD_WIDTH-144) {
@@ -178,9 +178,12 @@ enemy_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 }
 
 
-void
-enemy_addBoss(uint16_t x, uint16_t y)
+static void
+enemy_addBoss(void)
 {
+  uint16_t x = ENEMY_BOSS_START_X;
+  uint16_t y = ENEMY_BOSS_START_Y;  
+  
   object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_BOSS_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, ENEMY_ATTACK_DAMMAGE, enemy_doorIntelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   data->attackDurationFrames = ENEMY_ATTACK_DURATION_TICS;
@@ -211,13 +214,10 @@ enemy_wave1(void)
 {
   enemy_add(game_cameraX-64, 85, 0);
   thing_add(OBJECT_ID_PHONEBOOTH, OBJECT_ANIM_PHONEBOOTH, 50, 80);
-#if 0
-  enemy_add(game_cameraX-64, 185, 0);
+
+  //  enemy_add(game_cameraX-64, 185, 0);
   enemy_add(game_cameraX+SCREEN_WIDTH+64, 85, 0);
-  enemy_add(game_cameraX+SCREEN_WIDTH+64, 185, 0);  
-  enemy_add(game_cameraX+64, 85, 0);
-  enemy_add(game_cameraX+64, 185, 0);
-#endif
+  //enemy_add(game_cameraX+SCREEN_WIDTH+64, 185, 0);  
 }
 
 
@@ -231,11 +231,9 @@ enemy_wave2(void)
 void
 enemy_wave3(void)
 {
-  uint16_t x = ENEMY_BOSS_START_X;
-
   object_t* door =  object_add(/*id*/OBJECT_ID_DOOR,
 			       /*class*/OBJECT_CLASS_DECORATION,
-			       /*x*/x,
+			       /*x*/ENEMY_BOSS_START_X,
 			       /*y*/64,
 			       /*dx*/0,
 			       /*anim id*/OBJECT_ANIM_DOOR,
@@ -244,10 +242,9 @@ enemy_wave3(void)
 			       /*freeData*/0);
   door->tileRender = 1;
 
-  music_play(3);
-    
-  enemy_addBoss(x, ENEMY_BOSS_START_Y);
+  music_play(3);    
 
+  alarm_add(100, enemy_addDoorEnemy);
   alarm_add(200, enemy_addDoorEnemy);
-  alarm_add(300, enemy_addDoorEnemy);  
+  alarm_add(300, enemy_addBoss);
 }

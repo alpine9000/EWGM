@@ -27,7 +27,8 @@ typedef struct {
   uint16_t end[2];
 } menu_copper_t;
 
-uint16_t menu_selected = 0;
+static uint16_t menu_selected = 0;
+static uint16_t menu_first = 0;
 
 #define MENU_TEXT_START (0x8bd1+((RASTER_Y_START-0x1d)*0x100))
 #define MENU_COPPER_WAIT_TOP(x)     { MENU_TEXT_START + (0x800*(x*2)), 0xfffe}
@@ -101,8 +102,9 @@ menu_showHiScores(void);
 static void
 menu_select(uint16_t i);
 
-//static 
+static 
 menu_mode_t menu_mode = MENU_MODE_INACTIVE;
+static
 menu_item_t menu_items[MENU_NUM_ITEMS+1] = {
   {
     .text = "PLAY NOW!",
@@ -242,6 +244,10 @@ menu_renderText(frame_buffer_t _fb, char* text, uint16_t y)
   frame_buffer_t fb = _fb;
   
   gfx_screenWidthBitBlitNoMask(fb, game_offScreenBuffer, 0, y, 0, y, SCREEN_WIDTH, 9);  
+
+  if (len == 0) {
+    return;
+  }
   
   text_drawMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2)+1, y+1);
   fb += MENU_SCREEN_WIDTH_BYTES;
@@ -344,7 +350,7 @@ menu_redraw(uint16_t i)
 
   hw_waitVerticalBlank();
 
-  if (menu_mode == MENU_MODE_MENU) {        
+  if (menu_mode == MENU_MODE_MENU) {
     menu_renderText(fb, menu_items[i].text, y);
   } else {
     if (i == 0) {
@@ -499,7 +505,6 @@ menu_down(void)
 __EXTERNAL menu_command_t
 menu_loop(menu_mode_t mode)
 {
-  static uint16_t first = 0;
   menu_command_t command;
   uint16_t done;
   volatile uint16_t scratch;
@@ -512,7 +517,7 @@ menu_loop(menu_mode_t mode)
 
   uint32_t startFrame = 0;
 
-  if (!first) {
+  if (!menu_first) {
     logo_clear();
     startFrame = hw_verticalBlankCount;
     message_screenOn("PRESENTS");
@@ -520,24 +525,23 @@ menu_loop(menu_mode_t mode)
     message_loading("LOADING...");
   }
 
-  hw_waitVerticalBlank();
   game_switchFrameBuffers();    
   
   disk_loadData((void*)game_offScreenBuffer, (void*)menu_frameBuffer, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
 
   //memset((void*)game_offScreenBuffer, 0, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
 
-  if (!first) {
+  if (!menu_first) {
     while (hw_verticalBlankCount < startFrame+200) {
       hw_waitVerticalBlank();
     }
-    first = 1;
+    menu_first = 1;
   }
-
+  
   message_screenOff();
 
-  hw_waitVerticalBlank();
-  custom->dmacon = DMAF_RASTER|DMAF_SPRITE;
+  custom->dmacon = DMAF_RASTER;
+
   game_switchFrameBuffers();  
 
   for (uint16_t y = 0; y < SCREEN_HEIGHT; y += SCREEN_HEIGHT/8) {
@@ -563,13 +567,12 @@ menu_loop(menu_mode_t mode)
   custom->bpl1mod = (MENU_SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-MENU_SCREEN_WIDTH_BYTES;
   custom->bpl2mod = (MENU_SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-MENU_SCREEN_WIDTH_BYTES;
 
+  menu_pokeCopperList(game_onScreenBuffer);  
   /* install copper list, then enable dma and selected interrupts */
   custom->cop1lc = (uint32_t)copperPtr;
   scratch = custom->copjmp1;
-
   USE(scratch);
 
-  menu_pokeCopperList(game_onScreenBuffer);
 
   hw_waitVerticalBlank();
 
@@ -588,7 +591,9 @@ menu_loop(menu_mode_t mode)
     hw_readJoystick();
     keyboard_read();
 #ifdef DEBUG
+#ifdef SCRIPTING
     script_process();
+#endif
 #endif
     if (game_fire()) {
       if (menu_mode == MENU_MODE_HISCORES) {

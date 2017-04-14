@@ -142,6 +142,8 @@ hiscore_render(void)
 void
 hiscore_saveData(uint16_t ignoreErrors)
 {
+  return;
+  
   hiscore.checksum = hiscore_checksum();
 
  retry:
@@ -186,7 +188,9 @@ hiscore_prompt(char* message)
     keyboard_read();
 
 #ifdef DEBUG
+#ifdef SCRIPTING
     script_process();
+#endif
 #endif
     
     if (keyboard_key) {            

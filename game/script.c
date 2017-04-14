@@ -1,6 +1,7 @@
 #include "game.h"
 
 #ifdef DEBUG
+#ifdef SCRIPTING
 __EXTERNAL uint16_t script_port = 0;
 uint32_t script_breakpoint = 0xffffffff;
 
@@ -24,4 +25,5 @@ script_process(void)
 
   script_port = 0;
 }
+#endif
 #endif

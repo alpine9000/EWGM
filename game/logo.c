@@ -57,7 +57,7 @@ logo_display(void)
   disk_loadData((void*)game_onScreenBuffer, (void*)logo_frameBuffer, SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*LOGO_BIT_DEPTH);
 
   hw_waitVerticalBlank();
-  custom->dmacon = DMAF_RASTER|DMAF_SPRITE;
+  custom->dmacon = DMAF_RASTER;
 
   palette_black();
 
@@ -76,13 +76,12 @@ logo_display(void)
   custom->bpl1mod = (MENU_SCREEN_WIDTH_BYTES*LOGO_BIT_DEPTH)-MENU_SCREEN_WIDTH_BYTES;
   custom->bpl2mod = (MENU_SCREEN_WIDTH_BYTES*LOGO_BIT_DEPTH)-MENU_SCREEN_WIDTH_BYTES;
 
+  logo_pokeCopperList(game_onScreenBuffer);    
   /* install copper list, then enable dma and selected interrupts */
   custom->cop1lc = (uint32_t)copperPtr;
   scratch = custom->copjmp1;
-
   USE(scratch);
 
-  logo_pokeCopperList(game_onScreenBuffer);
 
   hw_waitVerticalBlank();
 

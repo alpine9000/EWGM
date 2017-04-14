@@ -30,14 +30,8 @@ screen_setup(uint16_t volatile* copperPtr)
   /* install copper list, then enable dma and selected interrupts */
   custom->cop1lc = (uint32_t)copperPtr;
   scratch = custom->copjmp1;
-
   USE(scratch);
 
-#ifdef PLAYER_HARDWARE_SPRITE
-  custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER|DMAF_SPRITE);
-#else
   custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
-#endif
-
 }
 
