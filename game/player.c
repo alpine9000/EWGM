@@ -9,16 +9,20 @@ player_processJoystick(object_t * ptr, uint8_t joystickPos)
     ptr->velocity.y = 0;
     break;
   case JOYSTICK_POS_LEFT:
+    ptr->velocity.y = 0;    
     ptr->velocity.x = -PLAYER_SPEED_X*OBJECT_PHYSICS_FACTOR;
     break;
   case JOYSTICK_POS_RIGHT:
+    ptr->velocity.y = 0;
     ptr->velocity.x = PLAYER_SPEED_X*OBJECT_PHYSICS_FACTOR;
     break;
   case JOYSTICK_POS_UP:
     ptr->velocity.y = -PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
+    ptr->velocity.x = 0;    
     break;
   case JOYSTICK_POS_DOWN:
     ptr->velocity.y = PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
+    ptr->velocity.x = 0;    
     break;    
   case JOYSTICK_POS_UPRIGHT:
     ptr->velocity.y = -PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
