@@ -234,7 +234,7 @@ enemy_wave3(void)
   uint16_t x = ENEMY_BOSS_START_X;
 
   object_t* door =  object_add(/*id*/OBJECT_ID_DOOR,
-			       /*class*/OBJECT_CLASS_THING,
+			       /*class*/OBJECT_CLASS_DECORATION,
 			       /*x*/x,
 			       /*y*/64,
 			       /*dx*/0,
@@ -244,7 +244,7 @@ enemy_wave3(void)
 			       /*freeData*/0);
   door->tileRender = 1;
 
-  music_play(2);
+  music_play(3);
     
   enemy_addBoss(x, ENEMY_BOSS_START_Y);
 

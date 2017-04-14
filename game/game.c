@@ -230,9 +230,20 @@ game_setGameOver(void)
   game_scoreBoardGameOver(OBJECT_ID_PLAYER1);
   game_scoreBoardGameOver(OBJECT_ID_PLAYER2);
   object_set_z(object_add(OBJECT_ID_JOYSTICK, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-16), (PLAYAREA_HEIGHT/2)+32, 0, OBJECT_ANIM_JOYSTICK, 0, 0, 0), 4096);   
-  object_set_z(object_add(OBJECT_ID_GAMEOVER, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-35), (PLAYAREA_HEIGHT/2)-32, 0, OBJECT_ANIM_GAMEOVER, 0, 0, 0), 4096);  
+  object_set_z(object_add(OBJECT_ID_GAMEOVER, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-35), (PLAYAREA_HEIGHT/2)-30, 0, OBJECT_ANIM_GAMEOVER, 0, 0, 0), 4096);  
 }
 
+
+void
+game_setGameComplete(void)
+{
+  game_over = 1;
+  music_play(4);  
+  game_scoreBoardGameOver(OBJECT_ID_PLAYER1);
+  game_scoreBoardGameOver(OBJECT_ID_PLAYER2);
+  object_set_z(object_add(OBJECT_ID_JOYSTICK, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-16), (PLAYAREA_HEIGHT/2)+32, 0, OBJECT_ANIM_JOYSTICK, 0, 0, 0), 4096);   
+  object_set_z(object_add(OBJECT_ID_GAMECOMPLETE, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-55), (PLAYAREA_HEIGHT/2)-30, 0, OBJECT_ANIM_GAMECOMPLETE, 0, 0, 0), 4096);    
+}
 
 #ifdef DEBUG
 static void

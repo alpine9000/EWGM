@@ -276,6 +276,13 @@ object_animation_t object_animations[] = {
     .facing = FACING_RIGHT
   },
   // =================================
+  [OBJECT_ANIM_GAMECOMPLETE] = {
+    .start = SPRITE_GAMECOMPLETE,
+    .stop = SPRITE_GAMECOMPLETE,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },  
+  // =================================
   [OBJECT_ANIM_PHONEBOOTH] = {
     .start = SPRITE_PHONEBOOTH,
     .stop = SPRITE_PHONEBOOTH,
@@ -899,10 +906,19 @@ object_image_t object_imageAtlas[] = {
 
   //==========================
   [SPRITE_GAMEOVER] = {
-    .x = 0,
-    .y = 507,
+    .x = 144,
+    .y = 512,
     .w = 80,
-    .h = 7,
+    .h = 8,
+    .dx = 0,
+    .dy = 0,    
+    },
+
+    [SPRITE_GAMECOMPLETE] = {
+    .x = 144,
+    .y = 520,
+    .w = 110,
+    .h = 8,
     .dx = 0,
     .dy = 0,    
     },

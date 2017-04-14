@@ -86,6 +86,26 @@ thing_awardBonus(object_t* ptr, object_t* collision)
   }
 }
 
+void
+thing_updatePosition(uint16_t deltaT, object_t* ptr)
+{
+  int16_t vx = ptr->velocity.x;
+  int16_t vy = ptr->velocity.y;
+
+  if (deltaT == 2) {
+    vx *= 2;
+    vy *= 2;
+  }  
+  
+  int16_t lastX = object_px(ptr);
+  int16_t lastY = object_py(ptr);
+
+  object_set_px(ptr, lastX + vx);
+  object_set_py_no_checks(ptr, lastY + vy);
+    
+  ptr->velocity.vx = object_px(ptr) - lastX;
+  ptr->velocity.vy = object_py(ptr) - lastY;
+}
 
 void
 thing_update(uint16_t deltaT, object_t* ptr)
@@ -107,7 +127,7 @@ thing_update(uint16_t deltaT, object_t* ptr)
       ptr->velocity.y += deltaT;
     }
 
-    object_updatePosition(deltaT, ptr);
+    thing_updatePosition(deltaT, ptr);
   } else if (data->bonus) {
     object_collision_t collision;
     if (fighter_collision(deltaT, ptr, &collision, 0, 1)) {

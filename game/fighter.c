@@ -304,7 +304,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 	  enemy_count--;
 	  if (enemy_count == 0) {
 	    if (wave_complete()) {
-	      game_setGameOver();
+	      game_setGameComplete();
 	    } else {
 	      hand_show();
 	    }

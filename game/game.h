@@ -6,7 +6,7 @@
 #include <hardware/intbits.h>
 
 //#define DEBUG_SPEED                   1
-#define DEBUG                         1
+//#define DEBUG                         1
 #define GAME_KEYBOARD_ENABLED         1
 //#define GAME_TIME_USE_COUNTER         1
 //#define GAME_RECORDING                1
@@ -164,4 +164,6 @@ void
 game_scoreBoardGameOver(uint16_t playerId);
 void
 game_setGameOver(void);
+void
+game_setGameComplete(void);
 #endif /* __GAME_H */

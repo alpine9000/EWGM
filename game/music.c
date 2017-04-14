@@ -18,10 +18,6 @@ static __section(section music) uint8_t music_level_a[] DISK_SECTOR_ALIGN = {
 #include "out/P61.jojo_ingame.h"
  } ;
 
-static __section(section music) uint8_t music_level_b[] DISK_SECTOR_ALIGN = {
-#include "out/P61.jojo_boss.h"
- } ;
-
 typedef struct {
   uint8_t* data;
   uint32_t length;
@@ -29,10 +25,11 @@ typedef struct {
 } music_song_t;
 
 static music_song_t music_songs[] = {
-  { music_level_a, sizeof(music_level_a), 0},
-  { music_level_a, sizeof(music_level_a), 32},
-  { music_level_a, sizeof(music_level_a), 33},
-  { music_level_b, sizeof(music_level_b), 0}, 
+  { music_level_a, sizeof(music_level_a), 0},  // in game 
+  { music_level_a, sizeof(music_level_a), 32}, // ?
+  { music_level_a, sizeof(music_level_a), 33}, // ?
+  { music_level_a, sizeof(music_level_a), 35}, // boss
+  { music_level_a, sizeof(music_level_a), 39}, // boss complete
 };
 
 static void* music_current_ptr = music_module1;
