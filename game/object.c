@@ -79,7 +79,7 @@ object_removeFromActive(object_t* ptr)
 }
 
 
-static void
+void
 object_setAnim(object_t* ptr, int16_t anim)
 {
   if (ptr->animId != anim) {
@@ -128,9 +128,10 @@ object_updatePosition(uint16_t deltaT, object_t* ptr)
   object_set_px(ptr, lastX + vx);
   object_set_py(ptr, lastY + vy);
     
-  vx = object_px(ptr) - lastX;
-  vy = object_py(ptr) - lastY;
+  ptr->velocity.vx = object_px(ptr) - lastX;
+  ptr->velocity.vy = object_py(ptr) - lastY;
 
+  #if 0
   if (ptr->state == OBJECT_STATE_ALIVE) {
     object_set_z(ptr, object_y(ptr));
     if (vx || vy) {
@@ -153,6 +154,7 @@ object_updatePosition(uint16_t deltaT, object_t* ptr)
       }
     }
   }
+  #endif
 }
 
 
@@ -368,9 +370,8 @@ object_restoreBackground(frame_buffer_t fb)
   }
 }
 
-//static
 object_t*
-object_add(uint16_t id, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data, void (*freeData)(void*))
+object_add(uint16_t id, uint16_t class, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data, void (*freeData)(void*))
 {
 #ifdef DEBUG
   if (object_count >= OBJECT_MAX_OBJECTS) {
@@ -381,6 +382,7 @@ object_add(uint16_t id, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*u
 
   object_t* ptr = object_getFree();
   ptr->state = OBJECT_STATE_ALIVE;
+  ptr->class = class;
   ptr->visible = 1;
   ptr->id = id;
   ptr->velocity.x = dx;

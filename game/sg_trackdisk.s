@@ -21,8 +21,10 @@
 	include "../include/registers.i"
 	include	"../include/cia.i"
 
+	if MUSIC_PARALLEL_LOAD==1
 TrackBuffer     equ 	_music_spare_ptr
 Directory	equ	_music_spare_ptr
+	endif
 ;; TDWRITE         equ     1
 TDFORMAT        equ     1		
 
@@ -1102,11 +1104,9 @@ td_delay:
 
 
 
-	if 0
-	section	data_c
+	if MUSIC_PARALLEL_LOAD==0
+	;; 	section	data_c
 
-
-	; directory pointer
 Directory:
 	dc.l	DirBuffer
 
@@ -1154,7 +1154,7 @@ MotorOn:
 	; The directory from disk block 1 is cached here. It contains
 	; up to 255 start blocks for files. The file length is calculated
 	; by using the next start block.
-	if 0
+	if MUSIC_PARALLEL_LOAD=0
 DirBuffer:
 	ds.w	256
 

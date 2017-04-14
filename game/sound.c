@@ -3,7 +3,7 @@
 #define SOUND_LATCH_SCANLINES 5
 
 #if SFX==1
-extern UWORD sound_Terence_punch01, sound_Terence_punch02, sound_Bud_Punch01, sound_enemy01, sound_enemy02, sound_enemy03, sound_pop; //sound_coin
+extern UWORD sound_Terence_punch01, sound_Terence_punch02, sound_Bud_Punch01, sound_enemy01, sound_enemy02, sound_enemy03, sound_pop, sound_coin;
 
 static void 
 sound_playBud_Punch01(void);
@@ -17,10 +17,8 @@ static void
 sound_playEnemy02(void);
 static void
 sound_playEnemy03(void);
-#if 0
 static void
 sound_playPickup(void);
-#endif
 static void
 sound_playPop(void);
 
@@ -75,7 +73,6 @@ static sound_config_t sound_queue[] = {
     .loop = 0,
     .play = &sound_playTerence_punch02
   },    
-#if 0
   [SOUND_PICKUP] = {
     .count = 0,
     .delay = 1,
@@ -83,7 +80,6 @@ static sound_config_t sound_queue[] = {
     .loop = 0,
     .play = &sound_playPickup
   },
-  #endif
   [SOUND_MENU] = {
     .count = 0,
     .delay = 0,
@@ -189,7 +185,6 @@ sound_playPop(void)
   custom->dmacon = DMAF_AUD3|DMAF_SETCLR;
 }
 
-#if 0
 static void 
 sound_playPickup(void)
 {
@@ -201,7 +196,6 @@ sound_playPickup(void)
   aud->ac_len = 3919/2;
   custom->dmacon = DMAF_AUD3|DMAF_SETCLR;
 }
-#endif
 
 static void
 sound_resetSound(void)

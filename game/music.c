@@ -10,7 +10,9 @@ P61_Init(__REG("a0", void* module));
 __EXTERNAL uint16_t P61_Target = 0;
 
 __attribute__((aligned (4))) __section(random_c) uint32_t music_module1[(MAX_P61_SIZE+512)/4];
+#if MUSIC_PARALLEL_LOAD==1
 __attribute__((aligned (4))) __section(random_c) uint32_t music_module2[(MAX_P61_SIZE+512)/4];
+#endif
 
 static __section(section music) uint8_t music_level_a[] DISK_SECTOR_ALIGN = {
 #include "out/P61.jojo_ingame.h"
@@ -34,7 +36,9 @@ static music_song_t music_songs[] = {
 };
 
 static void* music_current_ptr = music_module1;
+#if MUSIC_PARALLEL_LOAD==1
 __EXTERNAL void* music_spare_ptr = music_module2;
+#endif
 static uint16_t music_currentModule = 0xFFFF;
 
 void 
@@ -46,9 +50,13 @@ music_play(uint16_t moduleIndex)
   uint16_t p61_Target = P61_Target;
   P61_InitPos = music_songs[moduleIndex].start;
   if (music_currentModule == 0xffff || music_songs[moduleIndex].data != music_songs[music_currentModule].data) {
+#if MUSIC_PARALLEL_LOAD==1
     disk_loadData(music_spare_ptr, music_songs[moduleIndex].data, music_songs[moduleIndex].length);
     music_current_ptr = music_current_ptr == music_module1 ? music_module2 : music_module1;
     music_spare_ptr = music_spare_ptr == music_module1 ? music_module2 : music_module1;
+#else
+    disk_loadData(music_current_ptr, music_songs[moduleIndex].data, music_songs[moduleIndex].length);
+#endif
   }
   music_currentModule = moduleIndex;
   P61_Master = 0;

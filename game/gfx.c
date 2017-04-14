@@ -1,7 +1,7 @@
 #include "game.h"
 
 __EXTERNAL uint16_t gfx_dyOffsetsLUT[FRAME_BUFFER_NUM_LINES];
-uint16_t gfx_heightLUT[65];
+uint16_t gfx_heightLUT[129];
 uint16_t gfx_renderSprite16NoShiftSetup;
 uint32_t gfx_dySpriteOffsetsLUT[SPRITE_SHEET_HEIGHT];
 
@@ -16,7 +16,7 @@ gfx_ctor()
     gfx_dySpriteOffsetsLUT[y] = (y * (SPRITE_SHEET_WIDTH_BYTES*SCREEN_BIT_DEPTH));
   }
 
-  for (uint16_t h = 0; h <= 64; h++) {
+  for (uint16_t h = 0; h <= 128; h++) {
     gfx_heightLUT[h] = (h*SCREEN_BIT_DEPTH)<<6;
   }
 }

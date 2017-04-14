@@ -3,6 +3,7 @@
 USE_BIG=1
 SFX=1
 PHOTON_TRACKLOADER=0
+MUSIC_PARALLEL_LOAD=0
 
 # programs and paths
 CC=/usr/local/amiga/vgcc/bin/m68k-amigaos-gcc
@@ -28,10 +29,10 @@ PROGRAM_BIN=out/main.bin
 
 
 # all the components that form the game
-C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text.c sound.c music.c keyboard.c menu.c message.c record.c  string.c hw.c hiscore.c dos.c panic.c script.c object.c object_data.c sort.c player.c enemy.c logo.c fighter.c hand.c wave.c alarm.c
+C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text.c sound.c music.c keyboard.c menu.c message.c record.c  string.c hw.c hiscore.c dos.c panic.c script.c object.c object_data.c sort.c player.c enemy.c logo.c fighter.c hand.c wave.c alarm.c thing.c
 SRCS=blitmtext.s hw_asm.s trackloader.s palette_asm.s  P6112-Play.s music_asm.s keyboard_asm.s sg_trackdisk.s
 MODULES=P61.jojo_ingame.bin P61.jojo_boss.bin
-SOUND_FILES=Terence_punch01.wav Terence_punch02.wav Bud_Punch01.wav enemy01.wav enemy02.wav enemy03.wav pop.wav #coin1.wav
+SOUND_FILES=Terence_punch01.wav Terence_punch02.wav Bud_Punch01.wav enemy01.wav enemy02.wav enemy03.wav pop.wav coin1.wav
 LEVELS=1
 IMAGES=font8x8.png menu.png scoreboard.png logo.png #popup.png
 
@@ -39,10 +40,10 @@ IMAGES=font8x8.png menu.png scoreboard.png logo.png #popup.png
 # program arguments
 LINKER_OPTIONS=-T link.script.x
 
-VASM_ARGS=-Fhunk -quiet -esc -DSFX=$(SFX) -allmp -DMAX_P61_SIZE=$(MAX_P61_SIZE) -DPHOTON_TRACKLOADER=$(PHOTON_TRACKLOADER)
+VASM_ARGS=-Fhunk -quiet -esc -DSFX=$(SFX) -allmp -DMAX_P61_SIZE=$(MAX_P61_SIZE) -DMUSIC_PARALLEL_LOAD=$(MUSIC_PARALLEL_LOAD) -DPHOTON_TRACKLOADER=$(PHOTON_TRACKLOADER)
 VASM_C_ARGS=-ldots -Fhunk -quiet -no-opt
 
-EXTRA_DEFINES=-DSFX=$(SFX) -DMAX_P61_SIZE=$(MAX_P61_SIZE) -DPHOTON_TRACKLOADER=$(PHOTON_TRACKLOADER)
+EXTRA_DEFINES=-DSFX=$(SFX) -DMAX_P61_SIZE=$(MAX_P61_SIZE) -DPHOTON_TRACKLOADER=$(PHOTON_TRACKLOADER) -DMUSIC_PARALLEL_LOAD=$(MUSIC_PARALLEL_LOAD)
 REGPARAM=-mregparm=2
 #VASM_OPTS=-Wa,-no-opt
 VASM_OPTS=-Wa,-opt-allbra -Wa,-opt-brajmp -Wa,-opt-lsl  -Wa,-opt-movem -Wa,-opt-mul -Wa,-opt-div -Wa,-opt-pea #-Wa,-opt-speed 
@@ -181,7 +182,7 @@ out/background_%-map.c: assets/background_%.tmx out
 	@rm background_$*-sprites.c
 
 out/sprite_%.h: assets/sprite_%.png palettes/palette_%.pal
-	$(CROPPA) --width=320 --height=515 --input=assets/sprite_$*.png --output=out/sprite_$*-resized.png
+	$(CROPPA) --width=320 --height=594 --input=assets/sprite_$*.png --output=out/sprite_$*-resized.png
 	$(IMAGECON) --quantize --colors=32 --full-color-palette --input=out/sprite_$*-resized.png --output=out/sprite_$* --output-bitplanes --output-png --output-palette --output-palette-asm --use-palette=palettes/palette_$*.pal --output-mask
 	cat out/sprite_$*.bin | $(BIN2C) > out/sprite_$*.h
 	cat out/sprite_$*-mask.bin | $(BIN2C) > out/sprite_$*-mask.h
@@ -337,6 +338,7 @@ endif
 	../tools/amitools/xdftool.py bin/vegeta.adf format "vegeta" + write bin/newgame
 	../tools/amitools/xdftool.py bin/vegeta.adf boot install
 	../tools/amitools/xdftool.py bin/vegeta.adf makedir s
+	../tools/amitools/xdftool.py bin/vegeta.adf write support/EndRun
 	../tools/amitools/xdftool.py bin/vegeta.adf write support/startup-sequence s
 
         #cp assets/BlockySkies.info bin

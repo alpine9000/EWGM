@@ -8,7 +8,7 @@ typedef enum {
   SOUND_DIE01,
   SOUND_DIE02,
   SOUND_DIE03,  
-  //SOUND_PICKUP,
+  SOUND_PICKUP,
   SOUND_MENU
 } sound_t;
 

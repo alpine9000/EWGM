@@ -86,7 +86,13 @@ typedef enum {
   SPRITE_DOOR,
   SPRITE_JOYSTICK1,
   SPRITE_JOYSTICK2,
-  SPRITE_GAMEOVER
+  SPRITE_GAMEOVER,
+  SPRITE_PHONEBOOTH,
+  SPRITE_PHONEBOOTH_BROKEN,
+  SPRITE_PHONEBOOTH_JUNK1,
+  SPRITE_PHONEBOOTH_JUNK2,
+  SPRITE_PHONEBOOTH_JUNK3,
+  SPRITE_BONUS_BURGER,
 } sprite_id_t;
 
 typedef enum {
@@ -97,7 +103,10 @@ typedef enum {
   OBJECT_ID_HAND = 4,
   OBJECT_ID_DOOR = 5,
   OBJECT_ID_JOYSTICK = 6,
-  OBJECT_ID_GAMEOVER
+  OBJECT_ID_GAMEOVER = 7,
+  OBJECT_ID_PHONEBOOTH = 8,
+  OBJECT_ID_JUNK = 9,
+  OBJECT_ID_BONUS = 10,
 } object_id_t;
 
 typedef enum {
@@ -161,8 +170,17 @@ typedef enum {
   OBJECT_ANIM_HAND = OBJECT_ANIM_BOSS_HIT_RIGHT + 1,
   OBJECT_ANIM_DOOR = OBJECT_ANIM_HAND + 1,
   OBJECT_ANIM_JOYSTICK = OBJECT_ANIM_DOOR + 1,
-  OBJECT_ANIM_GAMEOVER = OBJECT_ANIM_JOYSTICK + 1,      
+  OBJECT_ANIM_GAMEOVER = OBJECT_ANIM_JOYSTICK + 1,
 
+  OBJECT_ANIM_PHONEBOOTH = OBJECT_ANIM_GAMEOVER + 1,
+  OBJECT_ANIM_PHONEBOOTH_BROKEN = OBJECT_ANIM_PHONEBOOTH + 1,
+
+  OBJECT_ANIM_PHONEBOOTH_JUNK1 = OBJECT_ANIM_PHONEBOOTH_BROKEN + 1,
+  OBJECT_ANIM_PHONEBOOTH_JUNK2 = OBJECT_ANIM_PHONEBOOTH_JUNK1 + 1,
+  OBJECT_ANIM_PHONEBOOTH_JUNK3 = OBJECT_ANIM_PHONEBOOTH_JUNK2 + 1,
+
+  OBJECT_ANIM_BONUS_BURGER = OBJECT_ANIM_PHONEBOOTH_JUNK3 + 1,  
+  
 } object_animation_id_t;
 
 typedef enum {
@@ -197,7 +215,16 @@ typedef struct {
 typedef struct {
   int16_t x;
   int16_t y;
+  int16_t vx;
+  int16_t vy;
 } object_velocity_t;
+
+typedef enum {
+  OBJECT_CLASS_FIGHTER,
+  OBJECT_CLASS_THING,
+  OBJECT_CLASS_JUNK,  
+  OBJECT_CLASS_DECORATION
+} object_class_t;
 
 #ifdef OBJECT_BACKING_STORE
 typedef struct {
@@ -249,6 +276,7 @@ typedef struct object {
   void (*freeData)(void* data);
   uint16_t visible;
   uint16_t tileRender;
+  uint16_t class;
 } object_t;
 
 
@@ -268,7 +296,7 @@ extern int16_t object_count;
 void
 object_init(void);
 object_t*
-object_add(uint16_t id, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data, void (*freeData)(void*));
+object_add(uint16_t id, uint16_t class, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data, void (*freeData)(void*));
 void
 object_free(object_t* ptr);
 void
@@ -333,15 +361,19 @@ object_set_py(object_t* ptr, int16_t py)
   ptr->_py = py;  
   ptr->_y = ptr->_py / OBJECT_PHYSICS_FACTOR;
 
+
   if (ptr->_y >= PLAYAREA_HEIGHT) {
     ptr->_y = PLAYAREA_HEIGHT-2;
     ptr->_py = ptr->_y * OBJECT_PHYSICS_FACTOR;
   }
 
+  USE(oldY);
+  #if 0  
   if (oldY >= GAME_PAVEMENT_START && ptr->_y < GAME_PAVEMENT_START) {
     ptr->_y = GAME_PAVEMENT_START;
     ptr->_py = ptr->_y * OBJECT_PHYSICS_FACTOR;
   }
+  #endif
 }
 
 inline static void
@@ -350,4 +382,6 @@ object_set_z(object_t* ptr, int16_t z)
   ptr->_z = z;
 }
 
+void
+object_setAnim(object_t* ptr, int16_t anim);
 #endif

@@ -87,7 +87,7 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
   collision->up = collision->down = collision->left = collision->right = 0;
 
   while (b) {
-    if (b->id <= OBJECT_ID_BOSS && b != a && b->state == OBJECT_STATE_ALIVE) {
+    if ((b->class == OBJECT_CLASS_FIGHTER || b->class == OBJECT_CLASS_THING) && b != a && b->state == OBJECT_STATE_ALIVE) {
       fighter_data_t* b_data = b->data;
       int16_t a_widthOffset = a_data->widthOffset;
       int16_t b_widthOffset = b_data->widthOffset;
@@ -122,6 +122,10 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
 static void
 fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
 {
+  if (ptr->class == OBJECT_CLASS_THING) {
+    thing_attack(ptr, dx); 
+    return;
+  }
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   object_set_z(ptr, object_y(ptr));
   data->attack_py = object_py(ptr);
@@ -199,7 +203,7 @@ fighter_checkAttack(int16_t deltaT, object_t* ptr, fighter_data_t* data)
       } else if (ptr->anim->facing == FACING_LEFT && collision.left) {
 	fighter_attack(ptr, collision.left, data->attackDammage, -1);
       }
-    }
+    } 
     data->attackChecked = 1;
   }
 }
@@ -225,6 +229,33 @@ fighter_doAttack(int16_t deltaT, object_t* ptr, fighter_data_t* data)
   fighter_checkAttack(deltaT, ptr, data);
 }
 
+
+static void
+fighter_updateSprite(object_t* ptr)
+{
+    if (ptr->state == OBJECT_STATE_ALIVE) {
+    object_set_z(ptr, object_y(ptr));
+    if (ptr->velocity.vx || ptr->velocity.vy) {
+      if (ptr->velocity.vx > 0) {
+	object_setAction(ptr, OBJECT_RUN_RIGHT);
+      } else if (ptr->velocity.vx < 0) {
+	object_setAction(ptr, OBJECT_RUN_LEFT);
+      } else {
+	if (ptr->anim->facing == FACING_RIGHT) {
+	  object_setAction(ptr, OBJECT_RUN_RIGHT);
+	} else {
+	  object_setAction(ptr, OBJECT_RUN_LEFT);
+	}
+      }
+    } else {
+      if (ptr->anim->facing == FACING_RIGHT) {
+	object_setAction(ptr, OBJECT_STAND_RIGHT);
+      } else {
+	object_setAction(ptr, OBJECT_STAND_LEFT);
+      }
+    }
+  }
+}
 
 void
 fighter_update(uint16_t deltaT, object_t* ptr)
@@ -258,6 +289,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
     if (ptr->state == OBJECT_STATE_HIT) {
       fighter_updatePositionUnderAttack(deltaT, ptr, data);
       object_updatePosition(deltaT, ptr);
+      fighter_updateSprite(ptr);
     } else if (ptr->state == OBJECT_STATE_FLASHING) {
       if (data->flashCount <= 0) {
 	ptr->visible = !ptr->visible;
@@ -316,6 +348,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
       }
       
       object_updatePosition(deltaT, ptr);
+      fighter_updateSprite(ptr);      
     }
   }
 }
@@ -334,5 +367,5 @@ fighter_add(uint16_t id, uint16_t animId, int16_t x, int16_t y, uint16_t initial
   data->walkAbout = 0;
   data->health = initialHealth;
   data->attackDammage = attackDammage;
-  return object_add(id, x, y, 0, animId, fighter_update, data, fighter_addFree);
+  return object_add(id, OBJECT_CLASS_FIGHTER, x, y, 0, animId, fighter_update, data, fighter_addFree);
 }

@@ -274,7 +274,47 @@ object_animation_t object_animations[] = {
     .stop = SPRITE_GAMEOVER,
     .speed = 0,
     .facing = FACING_RIGHT
-  },                    
+  },
+  // =================================
+  [OBJECT_ANIM_PHONEBOOTH] = {
+    .start = SPRITE_PHONEBOOTH,
+    .stop = SPRITE_PHONEBOOTH,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PHONEBOOTH_BROKEN] = {
+    .start = SPRITE_PHONEBOOTH_BROKEN,
+    .stop = SPRITE_PHONEBOOTH_BROKEN,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  // =================================
+  [OBJECT_ANIM_PHONEBOOTH_JUNK1] = {
+    .start = SPRITE_PHONEBOOTH_JUNK1,
+    .stop = SPRITE_PHONEBOOTH_JUNK1,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PHONEBOOTH_JUNK2] = {
+    .start = SPRITE_PHONEBOOTH_JUNK2,
+    .stop = SPRITE_PHONEBOOTH_JUNK2,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PHONEBOOTH_JUNK3] = {
+    .start = SPRITE_PHONEBOOTH_JUNK3,
+    .stop = SPRITE_PHONEBOOTH_JUNK3,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  // =================================
+  [OBJECT_ANIM_BONUS_BURGER] = {
+    .start = SPRITE_BONUS_BURGER,
+    .stop = SPRITE_BONUS_BURGER,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  
 };
 
 
@@ -863,6 +903,59 @@ object_image_t object_imageAtlas[] = {
     .y = 507,
     .w = 80,
     .h = 7,
+    .dx = 0,
+    .dy = 0,    
+    },
+
+  //==========================
+  [SPRITE_PHONEBOOTH] = {
+    .x = 0,
+    .y = 514,
+    .w = 32,
+    .h = 80,
+    .dx = 0,
+    .dy = 0,    
+    },  
+  [SPRITE_PHONEBOOTH_BROKEN] = {
+    .x = 32,
+    .y = 514,
+    .w = 32,
+    .h = 80,
+    .dx = 0,
+    .dy = 0,    
+    },
+  //==========================
+  [SPRITE_PHONEBOOTH_JUNK1] = {
+    .x = 128,
+    .y = 514,
+    .w = 16,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_PHONEBOOTH_JUNK2] = {
+    .x = 128,
+    .y = 530,
+    .w = 16,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_PHONEBOOTH_JUNK3] = {
+    .x = 128,
+    .y = 546,
+    .w = 16,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,    
+    },      
+
+  //==========================
+  [SPRITE_BONUS_BURGER] = {
+    .x = 128,
+    .y = 560,
+    .w = 16,
+    .h = 16,
     .dx = 0,
     .dy = 0,    
     },

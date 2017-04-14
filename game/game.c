@@ -229,8 +229,8 @@ game_setGameOver(void)
   game_over = 1;
   game_scoreBoardGameOver(OBJECT_ID_PLAYER1);
   game_scoreBoardGameOver(OBJECT_ID_PLAYER2);
-  object_set_z(object_add(OBJECT_ID_JOYSTICK, game_cameraX+(SCREEN_WIDTH/2-16), (PLAYAREA_HEIGHT/2)+32, 0, OBJECT_ANIM_JOYSTICK, 0, 0, 0), 4096);   
-  object_set_z(object_add(OBJECT_ID_GAMEOVER, game_cameraX+(SCREEN_WIDTH/2-35), (PLAYAREA_HEIGHT/2)-32, 0, OBJECT_ANIM_GAMEOVER, 0, 0, 0), 4096);  
+  object_set_z(object_add(OBJECT_ID_JOYSTICK, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-16), (PLAYAREA_HEIGHT/2)+32, 0, OBJECT_ANIM_JOYSTICK, 0, 0, 0), 4096);   
+  object_set_z(object_add(OBJECT_ID_GAMEOVER, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-35), (PLAYAREA_HEIGHT/2)-32, 0, OBJECT_ANIM_GAMEOVER, 0, 0, 0), 4096);  
 }
 
 
@@ -440,6 +440,7 @@ game_loadLevel(menu_command_t command)
   object_init();
   fighter_init();
   hand_init();
+  thing_init();
     
   game_player1 = player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80);
   game_player2 = 0;

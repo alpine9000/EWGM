@@ -35,7 +35,7 @@ hand_init(void)
 void
 hand_show(void)
 {
-  hand = object_add(OBJECT_ID_HAND, HAND_X, 65, 0, OBJECT_ANIM_HAND, hand_update, 0, 0);
+  hand = object_add(OBJECT_ID_HAND, OBJECT_CLASS_DECORATION, HAND_X, 65, 0, OBJECT_ANIM_HAND, hand_update, 0, 0);
   object_set_z(hand, 4096);  
   hand->visible = 1;
   hand_frame = hw_verticalBlankCount;

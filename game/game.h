@@ -38,7 +38,7 @@
 #define FRAME_BUFFER_WIDTH  (SCREEN_WIDTH+64)
 
 #define SPRITE_SHEET_WIDTH  272
-#define SPRITE_SHEET_HEIGHT 516
+#define SPRITE_SHEET_HEIGHT 594
 #define SPRITE_SHEET_WIDTH_BYTES (SPRITE_SHEET_WIDTH/8)
 
 #define TILE_SHEET_WIDTH  272
@@ -146,6 +146,7 @@ extern object_t* game_player2;
 #include "hand.h"
 #include "wave.h"
 #include "alarm.h"
+#include "thing.h"
 
 #define game_fire() ((!(hw_lastJoystickButton&0x1) && (hw_joystickButton&0x1)) || \
 			(keyboard_key && keyboard_code == KEYBOARD_CODE_RETURN))

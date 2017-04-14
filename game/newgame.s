@@ -129,11 +129,10 @@ _sound_Terence_punch02:
 _sound_enemy03:	
 	incbin "out/enemy03.raw"
 
-	if 0
 	xdef _sound_coin
 _sound_coin:	
 	incbin "out/coin1.raw"
-	endif
+
 	
 	xdef _sound_pop
 _sound_pop:	
