@@ -209,8 +209,12 @@ game_complete(void)
 {
   game_gotoMenu = 1;
 
-  hiscore_addScore("NEW HISCORE PLAYER1", game_player1Score);
-  hiscore_addScore("NEW HISCORE PLAYER2", game_player2Score);
+  if (game_player1Score > 0) {
+    hiscore_addScore(1, game_player1Score);
+  }
+  if (game_player2Score > 0) {
+    hiscore_addScore(2, game_player2Score);
+  }
     
 #ifdef DEBUG
   game_checkCanary();

@@ -16,6 +16,13 @@ typedef struct {
 #endif
 } hiscore_buffer_t;
 
+#if TRACKLOADER==1
+typedef struct {
+  hiscore_t scores[HISCORE_NUM_SCORES];
+  uint32_t checksum;
+} hiscore_small_buffer_t;
+#endif
+
 __EXTERNAL __section(section lastTrack) 
 hiscore_storage_t hiscore_disk = {
   .scores = {
@@ -32,7 +39,7 @@ hiscore_storage_t hiscore_disk = {
 
 static hiscore_buffer_t hiscore;
 #if TRACKLOADER==1
-static hiscore_buffer_t hiscore2;
+static hiscore_small_buffer_t hiscore2;
 #endif
 static char hiscore_promptBuffer[4];
 
@@ -147,7 +154,7 @@ hiscore_saveData(uint16_t ignoreErrors)
 {
   hiscore.checksum = hiscore_checksum();
 
-  memcpy(&hiscore2, &hiscore, sizeof(hiscore));
+  memcpy(&hiscore2, &hiscore, sizeof(hiscore2));
 
  retry:
   message_loading("Saving hiscore...");
@@ -163,9 +170,9 @@ hiscore_saveData(uint16_t ignoreErrors)
   }
 
   hiscore_load(1);
-  if (memcmp(&hiscore2, &hiscore, sizeof(hiscore)) != 0) {
+  if (memcmp(&hiscore2, &hiscore, sizeof(hiscore2)) != 0) {
     if (message_ask("hiscore save fail, retry? y/n")) {
-      memcpy(&hiscore, &hiscore2, sizeof(hiscore));
+      memcpy(&hiscore, &hiscore2, sizeof(hiscore2));
       goto retry;
     }
   }
@@ -247,7 +254,7 @@ hiscore_prompt(char* message)
 
 
 void
-hiscore_addScore(char* prompt, uint32_t score)
+hiscore_addScore(uint16_t playerNumber, uint32_t score)
 {
   int16_t i, dirty = 0;
   char* name;
@@ -259,14 +266,22 @@ hiscore_addScore(char* prompt, uint32_t score)
 	strcpy(hiscore.scores[i].name, hiscore.scores[i-1].name);
       } else if (i == 0) {
 	hiscore.scores[i].score = score;
-	name = hiscore_prompt(prompt);
+	if (playerNumber == 1) {
+	  name = hiscore_prompt("PLAYER1 NEW HI SCORE!!!");
+	} else {
+	  name = hiscore_prompt("PLAYER2 NEW HI SCORE!!!");
+	}
 	strcpy(hiscore.scores[i].name, name);
 	dirty = 1;
       }
     } else {
       if (i < HISCORE_NUM_SCORES-1) {
 	hiscore.scores[i+1].score = score;
-	name = hiscore_prompt("YOU ARE ON THE SCORE BOARD!");
+	if (playerNumber == 1) {	
+	  name = hiscore_prompt("PLAYER1 GREAT SCORE!");
+	} else {
+	  name = hiscore_prompt("PLAYER2 GREAT SCORE!");
+	}
 	strcpy(hiscore.scores[i+1].name, name);
 	dirty = 1;
       }
