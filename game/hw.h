@@ -21,6 +21,8 @@ extern void _hw_waitBlitter();
 #define hw_waitBlitter()  _hw_waitBlitter();
 #endif
 
+uint32_t
+hw_getsp(void);
 void 
 hw_waitVerticalBlank(void);
 void

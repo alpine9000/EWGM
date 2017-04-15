@@ -1,5 +1,6 @@
 	include "includes.i"
 
+	xdef _hw_getsp
 	xdef __hw_waitBlitter
 	xdef _hw_waitVerticalBlank
 	xdef _hw_waitRaster
@@ -200,6 +201,10 @@ Level3InterruptHandler:
 	movem.l	(sp)+,d0-a6
 	rte
 
+_hw_getsp:
+	move.l	a7,d0
+	rts
+	
 	align 4
 
 _hw_lastJoystickButton
