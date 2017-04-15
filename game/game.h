@@ -14,6 +14,7 @@
 
 #define INLINE inline
 #define STATIC_INLINE static inline
+#define NOINLINE __attribute__ ((noinline))
 
 #define abs(a) ((a) >= 0 ? (a) : -(a))  
 #define max(a, b) ((a) > (b) ? (a) : (b))
@@ -38,7 +39,7 @@
 #define FRAME_BUFFER_WIDTH  (SCREEN_WIDTH+64)
 
 #define SPRITE_SHEET_WIDTH  272
-#define SPRITE_SHEET_HEIGHT 594
+#define SPRITE_SHEET_HEIGHT 570
 #define SPRITE_SHEET_WIDTH_BYTES (SPRITE_SHEET_WIDTH/8)
 
 #define TILE_SHEET_WIDTH  272
