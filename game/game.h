@@ -88,6 +88,7 @@ typedef ULONG size_t;
 
 extern void* memcpy(void* destination, void* source, size_t num);
 extern void* memset(void *dst, int c, size_t n);
+extern int memcmp(void *s1, void *s2, size_t n);
 
 #undef __chip
 #define __section(x) __attribute__ ((section (#x))) 

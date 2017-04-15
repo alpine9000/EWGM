@@ -525,6 +525,9 @@ td_format:
 	bsr	td_trackwrite
 	bne	.error
 
+	;; VEGETA!!!!!  - verify caused issues, so we skip it for now....
+	bra 	.exit
+	if 0
 	; verify the track
 	bsr	td_trackread		; force rereading it to MFMBuffer
 	bne	.error
@@ -546,7 +549,7 @@ td_format:
 	beq	.exit			; verified ok
 	moveq	#6,d0			; error code 6: verify error
 	bra	.error
-
+	endif
 .retry:
 	; seek track 0, then reposition and retry to format the target track
 	bsr	td_track0
@@ -1106,14 +1109,15 @@ td_delay:
 
 	if MUSIC_PARALLEL_LOAD==0
 	;; 	section	data_c
-
 Directory:
 	dc.l	DirBuffer
-
+	
 	ifne	WRITESUPPORT
+	if 0
 	; track buffer (when writing a track)
 TrackBuffer:
 	dc.l	TrkWriteBuffer
+	endif
 	endif
 	endif
 
@@ -1155,12 +1159,14 @@ MotorOn:
 	; up to 255 start blocks for files. The file length is calculated
 	; by using the next start block.
 	if MUSIC_PARALLEL_LOAD=0
+
 DirBuffer:
 	ds.w	256
-
+	if 0
 	ifne	WRITESUPPORT
 TrkWriteBuffer:
 	ds.b	SECT_PER_TRK*512
+	endif
 	endif
 	endif
 

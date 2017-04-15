@@ -31,6 +31,9 @@ hiscore_storage_t hiscore_disk = {
 
 
 static hiscore_buffer_t hiscore;
+#if TRACKLOADER==1
+static hiscore_buffer_t hiscore2;
+#endif
 static char hiscore_promptBuffer[4];
 
 static uint32_t
@@ -144,6 +147,8 @@ hiscore_saveData(uint16_t ignoreErrors)
 {
   hiscore.checksum = hiscore_checksum();
 
+  memcpy(&hiscore2, &hiscore, sizeof(hiscore));
+
  retry:
   message_loading("Saving hiscore...");
   if (disk_write(&hiscore_disk, &hiscore, 1) != 0) {
@@ -154,6 +159,14 @@ hiscore_saveData(uint16_t ignoreErrors)
       if (message_ask("hiscore save fail, retry? y/n")) {
 	goto retry;
       }
+    }
+  }
+
+  hiscore_load(1);
+  if (memcmp(&hiscore2, &hiscore, sizeof(hiscore)) != 0) {
+    if (message_ask("hiscore save fail, retry? y/n")) {
+      memcpy(&hiscore, &hiscore2, sizeof(hiscore));
+      goto retry;
     }
   }
   message_screenOff();
