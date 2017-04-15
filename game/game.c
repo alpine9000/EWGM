@@ -861,6 +861,19 @@ game_decrementTime(void)
   }
 }
 
+#ifdef DEBUG
+void
+game_checkStack(void)
+{
+#if TRACKLOADER==1
+  extern char startUserstack, userstack;
+  uint32_t sp = hw_getsp();
+  if (sp <= (uint32_t)&startUserstack || sp >= (uint32_t)&userstack) {
+    PANIC("STACK OVERFLOW");
+  }
+#endif
+}
+#endif
 
 __EXTERNAL void
 game_loop()
@@ -883,6 +896,9 @@ game_loop()
 
   menu_command_t menuCommand;
  menu:
+#ifdef DEBUG
+  game_checkStack();
+#endif
   game_level = 0;
   if ((menuCommand = menu_loop(game_over == 1 ? MENU_MODE_HISCORES : MENU_MODE_MENU)) == MENU_COMMAND_EXIT) {
 #if TRACKLOADER==0
@@ -897,7 +913,9 @@ game_loop()
   game_init(menuCommand);
 
   for (;;) {
-    
+#ifdef DEBUG
+    game_checkStack();
+#endif
     keyboard_read();
     hw_readJoystick();
     if (game_numPlayers == 2) {
