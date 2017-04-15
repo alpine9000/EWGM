@@ -146,8 +146,12 @@ _sound_pop:
 	endif
 	align 4
 	if TRACKLOADER=1
+	xdef _startUserstack
+_startUserstack:
 startUserstack:
 	ds.b	1000
+	xdef _userstack
+_userstack:
 userstack:
 	endif
 	end
