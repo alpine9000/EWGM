@@ -212,12 +212,10 @@ enemy_init(void)
 void
 enemy_wave1(void)
 {
-  enemy_add(game_cameraX-64, 85, 0);
   thing_add(OBJECT_ID_PHONEBOOTH, OBJECT_ANIM_PHONEBOOTH, 50, 80);
 
-  //  enemy_add(game_cameraX-64, 185, 0);
+  enemy_add(game_cameraX-64, 85, 0);
   enemy_add(game_cameraX+SCREEN_WIDTH+64, 85, 0);
-  //enemy_add(game_cameraX+SCREEN_WIDTH+64, 185, 0);  
 }
 
 
