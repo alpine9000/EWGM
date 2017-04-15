@@ -887,8 +887,8 @@ object_image_t object_imageAtlas[] = {
 
   //==========================
   [SPRITE_JOYSTICK1] = {
-    .x = 240,
-    .y = 400,
+    .x = 0,
+    .y = 507,
     .w = 32,
     .h = 32,
     .dx = 0,
@@ -896,8 +896,8 @@ object_image_t object_imageAtlas[] = {
     },
 
   [SPRITE_JOYSTICK2] = {
-    .x = 240,
-    .y = 432,
+    .x = 144,
+    .y = 507,
     .w = 32,
     .h = 32,
     .dx = 0,
@@ -907,7 +907,7 @@ object_image_t object_imageAtlas[] = {
   //==========================
   [SPRITE_GAMEOVER] = {
     .x = 144,
-    .y = 512,
+    .y = 544,
     .w = 80,
     .h = 8,
     .dx = 0,
@@ -916,7 +916,7 @@ object_image_t object_imageAtlas[] = {
 
     [SPRITE_GAMECOMPLETE] = {
     .x = 144,
-    .y = 520,
+    .y = 552,
     .w = 110,
     .h = 8,
     .dx = 0,
@@ -925,16 +925,16 @@ object_image_t object_imageAtlas[] = {
 
   //==========================
   [SPRITE_PHONEBOOTH] = {
-    .x = 0,
-    .y = 514,
+    .x = 240,
+    .y = 392,
     .w = 32,
     .h = 80,
     .dx = 0,
     .dy = 0,    
     },  
   [SPRITE_PHONEBOOTH_BROKEN] = {
-    .x = 32,
-    .y = 514,
+    .x = 240,
+    .y = 472,
     .w = 32,
     .h = 80,
     .dx = 0,
@@ -968,8 +968,8 @@ object_image_t object_imageAtlas[] = {
 
   //==========================
   [SPRITE_BONUS_BURGER] = {
-    .x = 128,
-    .y = 560,
+    .x = 96,
+    .y = 512,
     .w = 16,
     .h = 16,
     .dx = 0,
