@@ -6,8 +6,11 @@ memory_ctor(void)
 #if TRACKLOADER==1
   extern char startBSS;
   extern char endBSS;
+  //  extern char startRandom;
+  //  extern char endRandom;  
 
-  memset(&startBSS, 0, &endBSS-&startBSS);
+  memset(&startBSS, 0x0, &endBSS-&startBSS);
+  //  memset(&startRandom, 0x0, &endRandom-&startRandom);  
 #endif
 }
 
