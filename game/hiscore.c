@@ -142,8 +142,6 @@ hiscore_render(void)
 void
 hiscore_saveData(uint16_t ignoreErrors)
 {
-  return;
-  
   hiscore.checksum = hiscore_checksum();
 
  retry:

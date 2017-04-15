@@ -63,6 +63,7 @@ logo_display(void)
 
   uint16_t volatile* copperPtr = (uint16_t*)&logo_copper;
 
+  hw_waitBlitter();  
   custom->dmacon = (DMAF_BLITTER|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);  
   
   /* set up playfield */
@@ -79,11 +80,8 @@ logo_display(void)
   logo_pokeCopperList(game_onScreenBuffer);    
   /* install copper list, then enable dma and selected interrupts */
   custom->cop1lc = (uint32_t)copperPtr;
-  scratch = custom->copjmp1;
+  //  scratch = custom->copjmp1;
   USE(scratch);
-
-
-  hw_waitVerticalBlank();
 
   custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
 

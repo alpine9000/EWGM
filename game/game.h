@@ -6,7 +6,7 @@
 #include <hardware/intbits.h>
 
 //#define DEBUG_SPEED                   1
-//#define DEBUG                         1
+#define DEBUG                         1
 //#define SCRIPTING                     1
 #define GAME_KEYBOARD_ENABLED         1
 //#define GAME_RECORDING                1
@@ -110,6 +110,7 @@ extern uint16_t game_wave;
 extern uint16_t game_nextWave;
 extern uint32_t game_player1Score;
 extern uint32_t game_player2Score;
+
 
 #include "string.h"
 #include "registers.h"

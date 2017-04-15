@@ -58,15 +58,15 @@ message_screenOn(char* message)
 
   volatile uint16_t scratch;
 
-  custom->dmacon = (DMAF_BLITTER|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
-   custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_MASTER);
-  
-  uint16_t volatile* copperPtr = (uint16_t*)&message_copper;
+  hw_waitBlitter();  
+  custom->dmacon = (DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
 
   gfx_fillRectSmallScreen(game_offScreenBuffer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
   text_drawMaskedText8Blitter(game_offScreenBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)+4);
+
   hw_waitBlitter();
   custom->bltafwm = 0xffff;
+  custom->dmacon = (DMAF_BLITTER|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);  
 
   /* set up playfield */
   
@@ -81,10 +81,10 @@ message_screenOn(char* message)
 
   message_pokeCopperList(game_offScreenBuffer);  
   /* install copper list, then enable dma and selected interrupts */
+  uint16_t volatile* copperPtr = (uint16_t*)&message_copper;  
   custom->cop1lc = (uint32_t)copperPtr;
-  scratch = custom->copjmp1;
+  //  scratch = custom->copjmp1;
   USE(scratch);
-
 
   custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
 
