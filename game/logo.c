@@ -57,14 +57,11 @@ logo_display(void)
   disk_loadData((void*)game_onScreenBuffer, (void*)logo_frameBuffer, SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*LOGO_BIT_DEPTH);
 
   hw_waitVerticalBlank();
-  custom->dmacon = DMAF_RASTER;
+  custom->dmacon = DMAF_RASTER|DMAF_COPPER;;
 
   palette_black();
 
   uint16_t volatile* copperPtr = (uint16_t*)&logo_copper;
-
-  hw_waitBlitter();  
-  custom->dmacon = (DMAF_BLITTER|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);  
   
   /* set up playfield */
   
@@ -83,19 +80,9 @@ logo_display(void)
   //  scratch = custom->copjmp1;
   USE(scratch);
 
-  custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
+  custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
 
   palette_fadeTo(logoPalette, 1<<LOGO_BIT_DEPTH, 0);
-  
-#if 0
-  hw_waitVerticalBlank();
-  custom->dmacon = DMAF_RASTER;
-  palette_black();
-
-  menu_mode = MENU_MODE_INACTIVE;
-
-  return command;
-#endif
 }
 
 void

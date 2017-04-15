@@ -21,7 +21,7 @@ screen_setup(uint16_t volatile* copperPtr)
   volatile uint16_t scratch;
 
   hw_waitBlitter();  
-  custom->dmacon = (DMAF_BLITTER|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);  
+  custom->dmacon = (DMAF_COPPER|DMAF_RASTER);  
   /* set up playfield */
   
   custom->diwstrt = (RASTER_Y_START<<8)|RASTER_X_START;
@@ -34,12 +34,6 @@ screen_setup(uint16_t volatile* copperPtr)
   //scratch = custom->copjmp1;
   USE(scratch);
 
-#ifdef DEBUG
-  if (!game_copperListValid) {
-    PANIC("screen_setup: !game_copperListValid");
-  }
-#endif
-  
   custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
 }
 

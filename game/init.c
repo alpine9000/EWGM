@@ -35,6 +35,8 @@ init_amiga(void)
   custom->bplcon3 = 0xc00;
   custom->bplcon4 = 0x11;
 
+  custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_MASTER);  
+  
   memory_ctor();
   gfx_ctor();
   //  popup_ctor();

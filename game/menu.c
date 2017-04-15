@@ -525,7 +525,7 @@ menu_loop(menu_mode_t mode)
     message_loading("LOADING...");
   }
 
-  game_switchFrameBuffers();    
+  game_switchFrameBuffers();
   
   disk_loadData((void*)game_offScreenBuffer, (void*)menu_frameBuffer, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
 
@@ -553,7 +553,7 @@ menu_loop(menu_mode_t mode)
   uint16_t volatile* copperPtr = (uint16_t*)&menu_copper;
 
   hw_waitBlitter();  
-  custom->dmacon = (DMAF_BLITTER|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);    
+  custom->dmacon = (DMAF_COPPER|DMAF_RASTER);    
   
   /* set up playfield */
   
@@ -573,7 +573,7 @@ menu_loop(menu_mode_t mode)
   //  scratch = custom->copjmp1;
   USE(scratch);
 
-  custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
+  custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
 
   palette_fadeTo(menuPalette, 32, 0);
 

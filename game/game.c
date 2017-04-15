@@ -479,12 +479,14 @@ game_loadLevel(menu_command_t command)
 void
 game_switchFrameBuffers(void)
 {
+  custom->dmacon = (DMAF_COPPER);
   copper.bplcon1[1] = game_bplcon1;
   screen_pokeCopperList(game_offScreenBuffer, copper.bpl, FRAME_BUFFER_WIDTH_BYTES);
 
   frame_buffer_t save = game_onScreenBuffer;
   game_onScreenBuffer = game_offScreenBuffer;
   game_offScreenBuffer = save;
+  custom->dmacon = (DMAF_COPPER|DMAF_SETCLR);    
 }
 
 

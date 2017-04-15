@@ -59,14 +59,13 @@ message_screenOn(char* message)
   volatile uint16_t scratch;
 
   hw_waitBlitter();  
-  custom->dmacon = (DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
+  custom->dmacon = (DMAF_COPPER|DMAF_RASTER);
 
   gfx_fillRectSmallScreen(game_offScreenBuffer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
   text_drawMaskedText8Blitter(game_offScreenBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)+4);
 
   hw_waitBlitter();
   custom->bltafwm = 0xffff;
-  custom->dmacon = (DMAF_BLITTER|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);  
 
   /* set up playfield */
   
@@ -86,11 +85,10 @@ message_screenOn(char* message)
   //  scratch = custom->copjmp1;
   USE(scratch);
 
-  custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
-
-  hw_waitVerticalBlank();
-
+  custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
   custom->color[1] = 0xfff;
+  
+  hw_waitVerticalBlank();
 
   message_on = 1;
 }
