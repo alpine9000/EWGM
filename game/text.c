@@ -7,7 +7,7 @@
 extern char* fontAtlas[128];
 extern frame_buffer_t fontPtr;
 
-INLINE void
+NOINLINE void
 text_drawCharScoreBoard(char c, int16_t x, int16_t y)
 {
   char* src = fontAtlas[(int)c];
@@ -24,7 +24,7 @@ text_drawCharScoreBoard(char c, int16_t x, int16_t y)
 }
 
 
-INLINE void
+NOINLINE void
 _text_drawChar8(frame_buffer_t frameBuffer, char c, int16_t x, int16_t y)
 {
   USE(y);
@@ -40,7 +40,7 @@ _text_drawChar8(frame_buffer_t frameBuffer, char c, int16_t x, int16_t y)
 }
 
 
-INLINE void
+NOINLINE void
 __text_drawChar8(frame_buffer_t frameBuffer, char c, int16_t x, int16_t y, int16_t sy, int16_t ny)
 {
   USE(y);
@@ -72,7 +72,7 @@ uint32_t bigNumAtlas[11] = {
 };
 
 
-INLINE void
+NOINLINE void
 text_clrBlit(frame_buffer_t dest, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   volatile struct Custom* _custom = CUSTOM;
@@ -137,7 +137,7 @@ text_drawBigNumeral(frame_buffer_t frameBuffer, uint16_t n, int16_t x, int16_t y
 }
 
 
-INLINE void
+NOINLINE void
 text_drawText8(frame_buffer_t frameBuffer, char* string, int32_t x, int32_t y)
 {
   char* ptr = &string[0]; 
@@ -149,7 +149,7 @@ text_drawText8(frame_buffer_t frameBuffer, char* string, int32_t x, int32_t y)
 }
 
 
-INLINE void
+NOINLINE void
 text_drawScoreBoard(char* string, int32_t x, int32_t y)
 {
   char* ptr = &string[0]; 
@@ -160,7 +160,7 @@ text_drawScoreBoard(char* string, int32_t x, int32_t y)
   } while (*ptr != 0);
 }
 
-INLINE void
+NOINLINE void
 __text_drawMaskedChar8(frame_buffer_t frameBuffer, char c, int16_t x, int16_t y, int16_t sx, int16_t ny, int16_t clear)
 {
   USE(sx);
