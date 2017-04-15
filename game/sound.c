@@ -91,7 +91,7 @@ static sound_config_t sound_queue[] = {
 
 static int16_t sound_next = -1;
 static int16_t sound_loop = -1;
-
+static int16_t sound_triggered = 0;
 
 static void 
 sound_playBud_Punch01(void)
@@ -211,8 +211,10 @@ sound_resetSound(void)
 void
 sound_vbl(void)
 { 
-  if (sound_loop == -1) {
+  if (sound_loop == -1 && sound_triggered) {
+    sound_triggered = 0;
     sound_resetSound();
+    hw_waitScanLines(SOUND_LATCH_SCANLINES);    
   }
 }
 
@@ -220,6 +222,7 @@ sound_vbl(void)
 static void
 sound_interrupt(void)
 {
+  sound_triggered = 0;
   custom->dmacon = DMAF_AUD3;
   sound_resetSound();
   hw_waitScanLines(SOUND_LATCH_SCANLINES);
@@ -243,6 +246,7 @@ sound_schedule(void)
 	(*sound_queue[sound_loop].play)();
       }
       sound_next = -1;
+      sound_triggered = 1;
     }
   }
 }
