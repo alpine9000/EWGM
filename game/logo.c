@@ -63,8 +63,8 @@ logo_display(void)
 
   uint16_t volatile* copperPtr = (uint16_t*)&logo_copper;
 
-  custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_MASTER);
-
+  custom->dmacon = (DMAF_BLITTER|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);  
+  
   /* set up playfield */
   
   custom->diwstrt = (RASTER_Y_START<<8)|RASTER_X_START;

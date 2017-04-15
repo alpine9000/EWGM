@@ -552,8 +552,7 @@ menu_loop(menu_mode_t mode)
 
   uint16_t volatile* copperPtr = (uint16_t*)&menu_copper;
 
-  custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_MASTER);
-
+  custom->dmacon = (DMAF_BLITTER|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);    
   
   /* set up playfield */
   

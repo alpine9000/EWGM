@@ -20,6 +20,7 @@ screen_setup(uint16_t volatile* copperPtr)
 {
   volatile uint16_t scratch;
 
+  custom->dmacon = (DMAF_BLITTER|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);  
   /* set up playfield */
   
   custom->diwstrt = (RASTER_Y_START<<8)|RASTER_X_START;

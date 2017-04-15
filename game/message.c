@@ -58,9 +58,9 @@ message_screenOn(char* message)
 
   volatile uint16_t scratch;
 
-  custom->dmacon = DMAF_RASTER;
-  custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_MASTER);
-
+  custom->dmacon = (DMAF_BLITTER|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
+   custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_MASTER);
+  
   uint16_t volatile* copperPtr = (uint16_t*)&message_copper;
 
   gfx_fillRectSmallScreen(game_offScreenBuffer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
