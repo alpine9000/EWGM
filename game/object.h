@@ -255,9 +255,11 @@ typedef struct {
 } object_save_t;
 
 typedef struct object {
+  uint16_t id;
+  uint16_t class;
+  void* data;
   struct object* next;
   struct object* prev;
-  uint16_t id;
   int16_t _x;
   int16_t _y;
   int16_t _z;
@@ -275,11 +277,9 @@ typedef struct object {
   uint16_t deadRenderCount;
   uint16_t state;
   void (*update)(uint16_t deltaT, struct object* ptr);
-  void* data;
   void (*freeData)(void* data);
   uint16_t visible;
   uint16_t tileRender;
-  uint16_t class;
 } object_t;
 
 

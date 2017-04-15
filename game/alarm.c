@@ -4,7 +4,7 @@
 
 alarm_t* alarm_activeList;
 static alarm_t* alarm_freeList;
-static __section(random_c) alarm_t alarm_buffer[ALARM_MAX_ALARMS];
+static __attribute__((aligned (4))) __section(random_c) alarm_t alarm_buffer[ALARM_MAX_ALARMS];
 uint16_t alarm_count;
 uint32_t alarm_tic;
 

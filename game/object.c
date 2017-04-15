@@ -3,7 +3,7 @@
 int16_t object_count;
 object_t* object_activeList;
 static object_t* object_freeList;
-static __section(random_c) object_t object_buffer[OBJECT_MAX_OBJECTS];
+static __attribute__((aligned (4))) __section(random_c) object_t object_buffer[OBJECT_MAX_OBJECTS];
 static object_t* object_zBuffer[OBJECT_MAX_OBJECTS];
 
 
