@@ -186,7 +186,7 @@ thing_attack(object_t* ptr, int16_t dx)
 {
   thing_data_t* data = ptr->data;
   if (data->attackable) {
-    sound_queueSound(SOUND_DIE01);
+    sound_queueSound(SOUND_BUD_PUNCH01);
     if (ptr->animId != OBJECT_ANIM_PHONEBOOTH_BROKEN) {
       object_setAnim(ptr, OBJECT_ANIM_PHONEBOOTH_BROKEN);
       thing_addJunk(ptr, OBJECT_ANIM_PHONEBOOTH_JUNK1, dx, 0, 0);
