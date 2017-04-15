@@ -44,7 +44,7 @@ td_doInit(void)
 #endif
 
 
-uint16_t
+NOINLINE uint16_t
 disk_loadData(void* dest, void* src, int32_t size)
 {
 #if TRACKLOADER==1
@@ -110,6 +110,7 @@ disk_read(void* dest, void* src, int32_t size)
 
   return error;
 }
+
 
 uint16_t
 disk_write(void* dest, void* src, int16_t numBlocks)
