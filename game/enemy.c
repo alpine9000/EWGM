@@ -225,6 +225,12 @@ enemy_wave2(void)
   enemy_add(game_cameraX-64, 85, 0);  
 }
 
+void
+enemy_song3(void)
+{
+  music_play(3);
+  music_toggle();  
+}
 
 void
 enemy_wave3(void)
@@ -240,8 +246,9 @@ enemy_wave3(void)
 			       /*freeData*/0);
   door->tileRender = 1;
 
-  music_play(3);    
-
+  music_toggle();
+  
+  alarm_add(50, enemy_song3);
   alarm_add(100, enemy_addDoorEnemy);
   alarm_add(200, enemy_addDoorEnemy);
   alarm_add(300, enemy_addBoss);
