@@ -32,6 +32,7 @@ void
 level_load(uint16_t index)
 {
   if (index == level_current) {
+    music_play(level_levels[index].moduleIndex);        
     disk_loadData(&level, level_levels[index].levelData, sizeof(level.tileAddresses) /*+ sizeof(level.item_spriteIds)*/);
     return;
   }

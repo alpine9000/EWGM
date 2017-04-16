@@ -8,6 +8,8 @@
 typedef struct {
   uint8_t joystickPos;
   uint8_t joystickButton;
+  uint8_t joystick2Pos;
+  uint8_t joystick2Button;  
   uint16_t frame;
   uint16_t key;
 } record_item_t;
@@ -24,9 +26,13 @@ typedef struct {
   uint32_t index;
   uint32_t lastJoystickPos;
   uint32_t lastJoystickButton;
+  uint32_t lastJoystick2Pos;
+  uint32_t lastJoystick2Button;  
   uint16_t lastKey;
   uint8_t joystickPos;
   uint8_t joystickButton;
+  uint8_t joystick2Pos;
+  uint8_t joystick2Button;  
   uint16_t frame;
   record_item_t buffer[RECORD_MAX_RECORD];
 } record_t;

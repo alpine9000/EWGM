@@ -68,10 +68,13 @@ static uint16_t game_deltaT;
 static time_t game_levelTime;
 static time_t game_lastLevelTime;
 static uint16_t game_levelTicCounter;
+static uint32_t game_lastVerticalBlankCount;
 
+#ifdef GAME_TURTLE
+static int16_t game_turtle;
+#endif
 
 #ifdef DEBUG
-static int16_t game_turtle;
 static uint16_t game_rasterLines[GAME_RASTERAVERAGE_LENGTH];
 static uint16_t game_rasterLinesIndex;
 static uint16_t game_maxRasterLine;
@@ -85,7 +88,6 @@ static uint16_t game_lastMaxRasterLine;
 static int16_t game_lastEnemyCount;
 static int16_t game_lastItemCount;
 static int16_t game_lastMissedFrameCount;
-static uint32_t game_lastVerticalBlankCount;
 static int16_t game_scoreBoardMode = 0;
 static int16_t game_debugRenderFrame;
 #endif
@@ -395,9 +397,12 @@ game_loadLevel(menu_command_t command)
   game_requestCameraX(0);
   game_lastScore = 1;
   game_lastScrollFrame = 0;
+
+#ifdef GAME_TURTLE
+    game_turtle = 0;
+#endif
 #ifdef DEBUG
   game_collectTotal = 1;
-  game_turtle = 0;
   game_total = 0;
   game_frame  = 0;
   game_average = 0;
@@ -463,7 +468,7 @@ game_loadLevel(menu_command_t command)
   enemy_init();
 
   conductor_init(level.instructions);  
-
+    
   hw_waitBlitter();
 
   game_render(0);
@@ -478,9 +483,7 @@ game_loadLevel(menu_command_t command)
 
   hw_waitVerticalBlank();
   hw_verticalBlankCount = 0;
-#ifdef DEBUG
   game_lastVerticalBlankCount = 0;
-#endif
 }
 
 
@@ -718,8 +721,11 @@ game_startPlayback(void)
 {
 
   palette_black();
-  music_restart();
   game_loadLevel(MENU_COMMAND_REPLAY);
+  music_restart();
+  hw_waitVerticalBlank();
+  hw_verticalBlankCount = 0;
+  game_lastVerticalBlankCount = 0;
 }
 
 
@@ -729,6 +735,10 @@ game_startRecord(void)
   palette_black();
   game_loadLevel(MENU_COMMAND_REPLAY);
   record_setState(RECORD_RECORD);
+  music_restart();
+  hw_waitVerticalBlank();
+  hw_verticalBlankCount = 0;
+  game_lastVerticalBlankCount = 0;
 }
 
 
@@ -740,15 +750,8 @@ game_processKeyboard()
   case 'E':
     enemy_pause = !enemy_pause;
     break;
-  case 'L':
-    // game_requestCameraX(WORLD_WIDTH-SCREEN_WIDTH);
-    break;
   case 'O':
-    {
-      game_complete();
-      break;
-      
-    }
+    game_setGameOver();
     break;
   case 'D':
     game_scoreBoardMode = !game_scoreBoardMode;
@@ -776,11 +779,9 @@ game_processKeyboard()
     break;
 #endif
   case 'P':
-    game_paused = !game_paused;
-#ifdef DEBUG
-    game_lastVerticalBlankCount = hw_verticalBlankCount;
-#endif
-    //game_startPlayback();
+    //game_paused = !game_paused;
+    //game_lastVerticalBlankCount = hw_verticalBlankCount;
+    game_startPlayback();
     break;
   case 'T':
     game_singleStep = 1;
@@ -969,7 +970,7 @@ game_loop()
 #endif
     
 
-#ifdef DEBUG
+#ifdef GAME_TURTLE    
     if (game_turtle > 1) {
       custom->color[16] = 0xf00;
       game_turtle--;
@@ -997,17 +998,22 @@ game_loop()
 #endif
     
     sound_vbl();
-    
+
+    if (/*game_collectTotal &&*/ hw_verticalBlankCount-game_lastVerticalBlankCount > 2) {
 #ifdef DEBUG
-    if (game_collectTotal && hw_verticalBlankCount-game_lastVerticalBlankCount > 2) {
       game_missedFrameCount++;
+#endif
+#ifdef GAME_TURTLE
       game_turtle = 5;
-    } else if (hw_verticalBlankCount-game_lastVerticalBlankCount == 1) {
+#endif
+    }
+#ifdef GAME_25_FPS
+    else if (hw_verticalBlankCount-game_lastVerticalBlankCount == 1) {
       hw_waitVerticalBlank();
     }
+#endif
       
     game_lastVerticalBlankCount = hw_verticalBlankCount;
-#endif
 
     game_switchFrameBuffers();
 

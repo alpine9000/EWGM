@@ -68,6 +68,7 @@ fighter_init(void)
 }
 
 
+#if 1
 int16_t
 fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy)
 {
@@ -135,7 +136,91 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
   
   return _collision;
 }
+#else
+int16_t
+fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy)
+{
+  int16_t vx = a->velocity.x;
+  int16_t vy = a->velocity.y;
 
+  if (deltaT == 2) {
+    vx *= 2;
+    vy *= 2;
+  }
+  
+  int16_t _collision = 0;
+
+  
+  collision->up = collision->down = collision->left = collision->right = 0;
+
+  if (!object_zBufferValid) {
+    sort_z(object_count, object_zBuffer);
+    object_zBufferValid = 1;
+  }
+  
+  //  object_t* b = object_activeList;  
+    //  while (b) {  
+  for (int16_t i = 0; i < object_count; i++) {
+    object_t* b = object_zBuffer[i];  
+
+    if ((b->class == OBJECT_CLASS_FIGHTER || b->class == OBJECT_CLASS_THING) && b != a && b->state == OBJECT_STATE_ALIVE) {
+      
+      uint16_t a_width;
+      uint16_t b_width;
+      int16_t a_widthOffset;
+      int16_t b_widthOffset;
+
+      if (a->class != OBJECT_CLASS_FIGHTER) {
+	a_widthOffset = 0;
+	a_width = a->image->w;
+      } else {
+	fighter_data_t* a_data = a->data;	
+	a_widthOffset = a_data->widthOffset;
+	a_width = OBJECT_WIDTH;
+      }
+      if (b->class != OBJECT_CLASS_FIGHTER) {
+	b_widthOffset = 0;
+	b_width = b->image->w;
+      } else {
+        fighter_data_t* b_data = b->data;	
+	b_widthOffset = b_data->widthOffset;
+	b_width = OBJECT_WIDTH;
+      }
+
+      int16_t a_y = ((object_py(a) + vy) / OBJECT_PHYSICS_FACTOR);
+      int16_t b_y = ((object_py(b)) / OBJECT_PHYSICS_FACTOR);
+
+      if (abs(a_y - b_y) <= thresholdy) {
+	int16_t a_x1 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + a_widthOffset)-thresholdx;
+	int16_t a_x2 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + (a_width - a_widthOffset)) + thresholdx;
+	int16_t b_x1 = ((object_px(b)) / OBJECT_PHYSICS_FACTOR) + b_widthOffset;
+	int16_t b_x2 = ((object_px(b)) / OBJECT_PHYSICS_FACTOR) + (b_width - b_widthOffset);
+	
+	if (a_x1 < b_x2 && a_x2 > b_x1) {	
+	  if (b_y >= a_y) {
+	    collision->up = b;
+	  } else if (b_y < a_y) {
+	    collision->down = b;
+	  }
+	  if (b_x1 >= a_x1) {
+	    collision->right = b;
+	  } else if (b_x1 < a_x1) {
+	    collision->left = b;
+	  }
+	  _collision = 1;
+	}
+      }
+
+      if (b_y > a_y) {
+      	break;
+       }
+    }
+    //    b = b->next;
+  }
+  
+  return _collision;
+}
+#endif
 
 static void
 fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
@@ -288,8 +373,7 @@ fighter_updateSprite(object_t* ptr)
 void
 fighter_update(uint16_t deltaT, object_t* ptr)
 {
-  fighter_data_t* data = (fighter_data_t*)ptr->data;
-  
+  fighter_data_t* data = (fighter_data_t*)ptr->data;  
 
   uint16_t attack = (ptr->state == OBJECT_STATE_ALIVE) ? data->intelligence(deltaT, ptr, data) : 0;
 

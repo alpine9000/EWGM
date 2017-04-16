@@ -2,7 +2,7 @@
 #define __OBJECT_H
 
 //#define OBJECT_BACKING_STORE 1
-#define OBJECT_MAX_OBJECTS    10
+#define OBJECT_MAX_OBJECTS    12
 #define OBJECT_PHYSICS_FACTOR 2
 #define OBJECT_WIDTH 32
 
@@ -312,6 +312,8 @@ extern object_image_t object_imageAtlas[];
 extern object_animation_t object_animations[];
 extern object_t* object_activeList;
 extern int16_t object_count;
+extern object_t* object_zBuffer[OBJECT_MAX_OBJECTS];
+//extern uint16_t object_zBufferValid;
 
 void
 object_init(void);
@@ -403,6 +405,7 @@ object_set_py_no_checks(object_t* ptr, int16_t py)
 inline static void
 object_set_z(object_t* ptr, int16_t z)
 {
+  //  object_z_dirty = 1;
   ptr->_z = z;
 }
 

@@ -8,8 +8,10 @@
 //#define DEBUG_SPEED                   1
 #define DEBUG                         1
 //#define SCRIPTING                     1
+#define GAME_25_FPS                   1
+//#define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1
-//#define GAME_RECORDING                1
+#define GAME_RECORDING                1
 //#define GAME_BLITTER_WAIT_DEBUG       1
 
 #define INLINE inline

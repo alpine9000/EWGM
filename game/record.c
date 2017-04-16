@@ -34,9 +34,13 @@ record_setState(record_state_t state)
   level.record->index = 0;
   level.record->lastJoystickPos = 0xff;
   level.record->lastJoystickButton = 0xff;
+  level.record->lastJoystick2Pos = 0xff;
+  level.record->lastJoystick2Button = 0xff;  
   level.record->lastKey = 0xffff;
   level.record->joystickPos = 0;
   level.record->joystickButton = 0;
+  level.record->joystick2Pos = 0;
+  level.record->joystick2Button = 0;  
 }
 
 
@@ -46,15 +50,21 @@ record_process(void)
 #ifdef GAME_RECORDING
   if (level.record->state == RECORD_RECORD && 
       (level.record->lastJoystickPos != hw_joystickPos || 
-       level.record->lastJoystickButton != hw_joystickButton || 
+       level.record->lastJoystickButton != hw_joystickButton ||
+       level.record->lastJoystick2Pos != hw_joystick2Pos || 
+       level.record->lastJoystick2Button != hw_joystick2Button ||        
        level.record->lastKey != keyboard_key)) {
     if (level.record->index < RECORD_MAX_RECORD) {
       level.record->buffer[level.record->index].joystickPos = hw_joystickPos;
       level.record->buffer[level.record->index].joystickButton = hw_joystickButton;
+      level.record->buffer[level.record->index].joystick2Pos = hw_joystick2Pos;
+      level.record->buffer[level.record->index].joystick2Button = hw_joystick2Button;      
       level.record->buffer[level.record->index].key = keyboard_key;
       level.record->buffer[level.record->index].frame = level.record->frame;
       level.record->lastJoystickPos = hw_joystickPos;
       level.record->lastJoystickButton = hw_joystickButton;
+      level.record->lastJoystick2Pos = hw_joystick2Pos;
+      level.record->lastJoystick2Button = hw_joystick2Button;      
       level.record->lastKey = keyboard_key;
       level.record->index++;
     }
@@ -63,11 +73,15 @@ record_process(void)
       if (level.record->buffer[level.record->index].frame == level.record->frame) {
 	level.record->joystickPos = level.record->buffer[level.record->index].joystickPos;
 	level.record->joystickButton = level.record->buffer[level.record->index].joystickButton;
+	level.record->joystick2Pos = level.record->buffer[level.record->index].joystick2Pos;
+	level.record->joystick2Button = level.record->buffer[level.record->index].joystick2Button;	
 	keyboard_key = level.record->buffer[level.record->index].key;
 	level.record->index++;
       }
       hw_joystickPos = level.record->joystickPos;
       hw_joystickButton = level.record->joystickButton;
+      hw_joystick2Pos = level.record->joystick2Pos;
+      hw_joystick2Button = level.record->joystick2Button;      
     }
 
   }

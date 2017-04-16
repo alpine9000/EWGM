@@ -55,7 +55,7 @@ level_enemy_config_t level1_configs[] = {
   }, 
 };
   
-
+static object_t* level1_door;
 static int16_t
 level1_addPhoneBooth(uint16_t argument)
 {
@@ -169,12 +169,17 @@ level1_scroll(uint16_t argument)
   return 0;
 }
 
+static void
+level1_removeDoor(void)
+{
+  level1_door->state = OBJECT_STATE_REMOVED;
+}
 
 static int16_t
 level1_wave3(uint16_t argument)
 {
   USE(argument);
-  object_t* door =  object_add(/*id*/OBJECT_ID_DOOR,
+  level1_door =  object_add(/*id*/OBJECT_ID_DOOR,
 			       /*class*/OBJECT_CLASS_DECORATION,
 			       /*x*/LEVEL1_ENEMY_BOSS_START_X,
 			       /*y*/64,
@@ -183,7 +188,7 @@ level1_wave3(uint16_t argument)
 			       /*update*/0,
 			       /*data*/0,
 			       /*freeData*/0);
-  door->tileRender = 1;
+  level1_door->tileRender = 1;
 
   music_toggle();
   
@@ -191,6 +196,7 @@ level1_wave3(uint16_t argument)
   alarm_add(100, level1_addDoorEnemy);
   alarm_add(200, level1_addDoorEnemy);
   alarm_add(300, level1_addBoss);
+  alarm_add(400, level1_removeDoor);  
   return 1;
 }
 
@@ -215,10 +221,10 @@ level1_pause(uint16_t argument)
 
 
 conductor_instruction_t level1_instructions[] = {
-  
+
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_start},
 
-  //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_pause},  
+  //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_pause},    
     
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_1, level1_processEnemyConfig},    
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_2, level1_processEnemyConfig},
