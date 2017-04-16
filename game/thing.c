@@ -207,7 +207,7 @@ thing_attack(object_t* ptr, int16_t dx)
       if (data->hasBonus == 1) {
 	thing_addJunk(ptr, OBJECT_ANIM_BONUS_BURGER, -dx, 0, 1);
       } else if (data->hasBonus == 2) {
-	thing_addJunk(ptr, OBJECT_ANIM_BONUS_BURGER, dx, 0, 1);
+	thing_addJunk(ptr, OBJECT_ANIM_BONUS_COLA, dx, 0, 1);
       }
       data->hasBonus--;
     }

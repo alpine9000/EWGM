@@ -354,6 +354,13 @@ object_animation_t object_animations[] = {
     .speed = 0,
     .facing = FACING_RIGHT
   },
+  // =================================
+  [OBJECT_ANIM_BONUS_COLA] = {
+    .start = SPRITE_BONUS_COLA,
+    .stop = SPRITE_BONUS_COLA,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },  
   
 };
 
@@ -810,8 +817,8 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
   },
   [SPRITE_BOSS_RUN_LEFT_2] = {
-    .x = 208,
-    .y = 336,
+    .x = 48,
+    .y = 507,
     .w = 48,
     .h = 56,
     .dx = 0,
@@ -826,8 +833,8 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
   },
     [SPRITE_BOSS_RUN_LEFT_4] = {
-    .x = 208,
-    .y = 336,
+    .x = 48,
+    .y = 507,
     .w = 48,
     .h = 56,
     .dx = 0,
@@ -959,7 +966,7 @@ object_image_t object_imageAtlas[] = {
   //==========================
   [SPRITE_PHONEBOOTH] = {
     .x = 240,
-    .y = 392,
+    .y = 335,
     .w = 32,
     .h = 80,
     .dx = 0,
@@ -967,9 +974,9 @@ object_image_t object_imageAtlas[] = {
     },  
   [SPRITE_PHONEBOOTH_BROKEN] = {
     .x = 240,
-    .y = 472,
+    .y = 416,
     .w = 32,
-    .h = 80,
+    .h = 65,
     .dx = 0,
     .dy = 0,    
     },
@@ -1001,18 +1008,18 @@ object_image_t object_imageAtlas[] = {
 
   //==========================
   [SPRITE_POSTBOX] = {
-    .x = 32,
-    .y = 507,
+    .x = 240,
+    .y = 481,
     .w = 32,
     .h = 64,
     .dx = 0,
     .dy = 0,    
     },  
   [SPRITE_POSTBOX_BROKEN] = {
-    .x = 64,
-    .y = 507,
+    .x = 208,
+    .y = 335,
     .w = 32,
-    .h = 64,
+    .h = 37,
     .dx = 0,
     .dy = 0,    
     },
@@ -1052,5 +1059,13 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
+  [SPRITE_BONUS_COLA] = {
+    .x = 112,
+    .y = 512,
+    .w = 16,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,    
+    },  
   
 };

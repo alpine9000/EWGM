@@ -60,7 +60,7 @@ static int16_t
 level1_addPhoneBooth(uint16_t argument)
 {
   USE(argument);
-  thing_add(OBJECT_ID_PHONEBOOTH, OBJECT_ANIM_PHONEBOOTH, OBJECT_ANIM_PHONEBOOTH_BROKEN, OBJECT_ANIM_PHONEBOOTH_JUNK1, game_cameraX+SCREEN_WIDTH+1, 80);
+  thing_add(OBJECT_ID_PHONEBOOTH, OBJECT_ANIM_PHONEBOOTH, OBJECT_ANIM_PHONEBOOTH_BROKEN, OBJECT_ANIM_PHONEBOOTH_JUNK1, game_cameraX+argument, 80);
   return 1;
 }
 
@@ -205,7 +205,8 @@ int16_t
 level1_start(uint16_t argument)
 {
   USE(argument);
-  thing_add(OBJECT_ID_POSTBOX, OBJECT_ANIM_POSTBOX, OBJECT_ANIM_POSTBOX_BROKEN, OBJECT_ANIM_POSTBOX_JUNK1, 50, 80);
+  level1_addPostbox(50);
+  //  level1_addPhoneBooth(50);
   //  level1_doAddBoss(50);
   return 1;
 }
@@ -221,18 +222,17 @@ level1_pause(uint16_t argument)
 
 
 conductor_instruction_t level1_instructions[] = {
-
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_start},
 
-  //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_pause},    
-    
+  //   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_pause},      
+  
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_1, level1_processEnemyConfig},    
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_2, level1_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_3, level1_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH/2, level1_scroll},
 
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_addPhoneBooth},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH+1, level1_addPhoneBooth},
     
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL1_WAVE2_1, level1_processEnemyConfig},
 
