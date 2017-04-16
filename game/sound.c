@@ -93,6 +93,8 @@ static int16_t sound_next = -1;
 static int16_t sound_loop = -1;
 static int16_t sound_triggered = 0;
 
+static __section(data_c) UWORD sound_empty[2] = {0,0};
+
 static void 
 sound_playBud_Punch01(void)
 {
@@ -200,11 +202,10 @@ sound_playPickup(void)
 static void
 sound_resetSound(void)
 {
-  static UWORD empty[2] = {0,0};
   volatile struct AudChannel *aud = &custom->aud[3];    
   aud->ac_len = 2;
   //    aud->ac_per = 1;
-  aud->ac_ptr = &empty[0];
+  aud->ac_ptr = &sound_empty[0];
 }
 
 
