@@ -314,6 +314,39 @@ object_animation_t object_animations[] = {
     .speed = 0,
     .facing = FACING_RIGHT
   },
+
+  // =================================
+  [OBJECT_ANIM_POSTBOX] = {
+    .start = SPRITE_POSTBOX,
+    .stop = SPRITE_POSTBOX,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_POSTBOX_BROKEN] = {
+    .start = SPRITE_POSTBOX_BROKEN,
+    .stop = SPRITE_POSTBOX_BROKEN,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  // =================================
+  [OBJECT_ANIM_POSTBOX_JUNK1] = {
+    .start = SPRITE_POSTBOX_JUNK1,
+    .stop = SPRITE_POSTBOX_JUNK1,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_POSTBOX_JUNK2] = {
+    .start = SPRITE_POSTBOX_JUNK2,
+    .stop = SPRITE_POSTBOX_JUNK2,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_POSTBOX_JUNK3] = {
+    .start = SPRITE_POSTBOX_JUNK3,
+    .stop = SPRITE_POSTBOX_JUNK3,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },  
   // =================================
   [OBJECT_ANIM_BONUS_BURGER] = {
     .start = SPRITE_BONUS_BURGER,
@@ -966,6 +999,50 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },      
 
+  //==========================
+  [SPRITE_POSTBOX] = {
+    .x = 32,
+    .y = 507,
+    .w = 32,
+    .h = 64,
+    .dx = 0,
+    .dy = 0,    
+    },  
+  [SPRITE_POSTBOX_BROKEN] = {
+    .x = 64,
+    .y = 507,
+    .w = 32,
+    .h = 64,
+    .dx = 0,
+    .dy = 0,    
+    },
+  //==========================
+  [SPRITE_POSTBOX_JUNK1] = {
+    .x = 96,
+    .y = 528,
+    .w = 16,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_POSTBOX_JUNK2] = {
+    .x = 96,
+    .y = 544,
+    .w = 16,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_POSTBOX_JUNK3] = {
+    .x = 112,
+    .y = 528,
+    .w = 16,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,    
+    },      
+
+  
   //==========================
   [SPRITE_BONUS_BURGER] = {
     .x = 96,

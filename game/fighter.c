@@ -80,24 +80,43 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
   }
   
   int16_t _collision = 0;
-  fighter_data_t* a_data = a->data;  
   object_t* b = object_activeList;
   
   collision->up = collision->down = collision->left = collision->right = 0;
 
-  while (b) {
+  while (b) {  
     if ((b->class == OBJECT_CLASS_FIGHTER || b->class == OBJECT_CLASS_THING) && b != a && b->state == OBJECT_STATE_ALIVE) {
-      fighter_data_t* b_data = b->data;
-      int16_t a_widthOffset = a_data->widthOffset;
-      int16_t b_widthOffset = b_data->widthOffset;
-      int16_t a_x1 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + a_widthOffset)-thresholdx;
-      int16_t a_x2 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + (OBJECT_WIDTH - a_widthOffset)) + thresholdx;
-      int16_t b_x1 = ((object_px(b)) / OBJECT_PHYSICS_FACTOR) + b_widthOffset;
-      int16_t b_x2 = ((object_px(b)) / OBJECT_PHYSICS_FACTOR) + (OBJECT_WIDTH - b_widthOffset);
-      int16_t a_y = ((object_py(a) + vy) / OBJECT_PHYSICS_FACTOR);
-      int16_t b_y = ((object_py(b)) / OBJECT_PHYSICS_FACTOR);      
       
-      if (abs(a_y - b_y) <= thresholdy && a_x1 < b_x2 && a_x2 > b_x1) {
+      uint16_t a_width;
+      uint16_t b_width;
+      int16_t a_widthOffset;
+      int16_t b_widthOffset;
+
+      if (a->class != OBJECT_CLASS_FIGHTER) {
+	a_widthOffset = 0;
+	a_width = a->image->w;
+      } else {
+	fighter_data_t* a_data = a->data;	
+	a_widthOffset = a_data->widthOffset;
+	a_width = OBJECT_WIDTH;
+      }
+      if (b->class != OBJECT_CLASS_FIGHTER) {
+	b_widthOffset = 0;
+	b_width = b->image->w;
+      } else {
+        fighter_data_t* b_data = b->data;	
+	b_widthOffset = b_data->widthOffset;
+	b_width = OBJECT_WIDTH;
+      }
+
+      int16_t a_x1 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + a_widthOffset)-thresholdx;
+      int16_t a_x2 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + (a_width - a_widthOffset)) + thresholdx;
+      int16_t b_x1 = ((object_px(b)) / OBJECT_PHYSICS_FACTOR) + b_widthOffset;
+      int16_t b_x2 = ((object_px(b)) / OBJECT_PHYSICS_FACTOR) + (b_width - b_widthOffset);
+      int16_t a_y = ((object_py(a) + vy) / OBJECT_PHYSICS_FACTOR);
+      int16_t b_y = ((object_py(b)) / OBJECT_PHYSICS_FACTOR);
+
+      if (abs(a_y - b_y) <= thresholdy && a_x1 < b_x2 && a_x2 > b_x1) {	
 	if (b_y >= a_y) {
 	  collision->up = b;
 	} else if (b_y < a_y) {
@@ -107,7 +126,7 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
 	  collision->right = b;
 	} else if (b_x1 < a_x1) {
 	  collision->left = b;
-	}      
+	}
 	_collision = 1;
       }
     }
@@ -125,7 +144,15 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
     thing_attack(ptr, dx); 
     return;
   }
-  fighter_data_t* data = (fighter_data_t*)ptr->data;
+  
+  if (ptr->state == OBJECT_STATE_HIT) {
+    return;
+  }
+  
+  fighter_data_t* data = (fighter_data_t*)ptr->data;  
+  if (data->postAttackCount > 0) {
+    return;
+  }
   object_set_z(ptr, object_y(ptr));
   data->attack_py = object_py(ptr);
   data->health -= dammage;
@@ -184,6 +211,8 @@ fighter_updatePositionUnderAttack(uint16_t deltaT, object_t* ptr, fighter_data_t
       data->flashFrames = 75;
     } else {
       ptr->state = OBJECT_STATE_ALIVE;
+      //      data->attackQueued = 1;
+      data->postAttackCount = data->postAttackInvincibleTics;
     }
   } else {
     ptr->velocity.y += deltaT;
@@ -196,7 +225,7 @@ fighter_checkAttack(int16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
   if (!data->attackChecked && data->attackHitAnimTic == ptr->frameCounter) {
     object_collision_t collision;
-    if (fighter_collision(deltaT, ptr, &collision, figher_attack_range[ptr->actionId], FIGHTER_Y_ATTACK_THRESHOLD)) {
+    if (fighter_collision(deltaT, ptr, &collision, data->attackRange[ptr->actionId], data->attackRangeY)) {
       if (ptr->anim->facing == FACING_RIGHT && collision.right) {
 	fighter_attack(ptr, collision.right, data->attackDammage, 1);
       } else if (ptr->anim->facing == FACING_LEFT && collision.left) {
@@ -212,8 +241,8 @@ void
 fighter_doAttack(int16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
   USE(deltaT);
-  ptr->velocity.x = 0;
-  ptr->velocity.y = 0;
+  // ptr->velocity.x = 0;
+  //  ptr->velocity.y = 0;
   if (ptr->anim->facing == FACING_RIGHT) {
     object_setAction(ptr, OBJECT_PUNCH_RIGHT1 + data->attackType);
   } else {
@@ -276,7 +305,11 @@ fighter_update(uint16_t deltaT, object_t* ptr)
     data->attackCount-=deltaT;
   } else {
     data->attackCount = 0;
-  }      
+  }
+
+  if (data->postAttackCount > 0) {
+    data->postAttackCount--;
+  }
   
   if (data->attackQueued && data->attackCount == 0 && ptr->state == OBJECT_STATE_ALIVE) {
     data->buttonReleased = 0;
@@ -302,11 +335,12 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 	case OBJECT_ID_ENEMY:
 	  enemy_count--;
 	  if (enemy_count == 0) {
-	    if (wave_complete()) {
+	    if (conductor_complete()) {
 	      game_setGameComplete();
-	    } else {
-	      hand_show();
 	    }
+	    //else {
+	    //  hand_show();
+	    //}
 	  }
 	  break;	  
 	case OBJECT_ID_PLAYER1:
@@ -327,7 +361,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
       }
     } else {
       object_collision_t collision;
-      if (fighter_collision(deltaT, ptr, &collision, 0, 1)) {
+      if (fighter_collision(deltaT, ptr, &collision, 0, 2)) {
 	if (ptr->velocity.x > 0 && collision.right) {	  
 	  ptr->velocity.x = 0;
 	}
@@ -353,7 +387,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 }
 
 
-object_t*
+NOINLINE object_t*
 fighter_add(uint16_t id, uint16_t animId, int16_t x, int16_t y, uint16_t initialHealth,  uint16_t attackDammage, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, struct fighter_data* data))
 {
   fighter_data_t* data = fighter_getFree();
@@ -366,5 +400,10 @@ fighter_add(uint16_t id, uint16_t animId, int16_t x, int16_t y, uint16_t initial
   data->walkAbout = 0;
   data->health = initialHealth;
   data->attackDammage = attackDammage;
+  data->attackRange = figher_attack_range;
+  data->attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE;
+  data->postAttackInvincibleTics = 0;
+  data->postAttackCount = 0;
+  data->speed = 1;
   return object_add(id, OBJECT_CLASS_FIGHTER, x, y, 0, animId, fighter_update, data, fighter_addFree);
 }

@@ -1,6 +1,6 @@
 #include "game.h"
 
-#define THING_MAX_THINGS 5
+#define THING_MAX_THINGS 6
 
 typedef struct _thing{
   struct _thing* prev;
@@ -10,6 +10,8 @@ typedef struct _thing{
   int16_t attackable;
   int16_t bonus;
   int16_t hasBonus;
+  int16_t brokenId;
+  int16_t junkStartId;
 } thing_data_t;
 
 static int16_t thing_count;
@@ -78,11 +80,17 @@ void
 thing_awardBonus(object_t* ptr, object_t* collision)
 {
   if (collision->id == OBJECT_ID_PLAYER1) {
-    ptr->state = OBJECT_STATE_REMOVED;
+    ptr->state = OBJECT_STATE_REMOVED;    
     sound_queueSound(SOUND_PICKUP);
   } else if (collision->id == OBJECT_ID_PLAYER2) {
     ptr->state = OBJECT_STATE_REMOVED;
     sound_queueSound(SOUND_PICKUP);    
+  }
+
+  fighter_data_t* data = collision->data;
+  data->health += 40;
+  if (data->health > PLAYER_INITIAL_HEALTH) {
+    data->health = PLAYER_INITIAL_HEALTH;
   }
 }
 
@@ -153,13 +161,15 @@ thing_update(uint16_t deltaT, object_t* ptr)
 
 
 object_t*
-thing_add(uint16_t id, uint16_t animId, int16_t x, int16_t y)
+thing_add(uint16_t id, uint16_t animId, uint16_t brokenId, uint16_t junkStartId, int16_t x, int16_t y)
 {
   thing_data_t* data = thing_getFree();
   data->underAttack = 0;
   data->attackable = 1;
   data->hasBonus = 2;
   data->bonus = 0;
+  data->brokenId = brokenId;
+  data->junkStartId = junkStartId;
   return object_add(id, OBJECT_CLASS_THING, x, y, 0, animId, thing_update, data, thing_addFree);
 }
 
@@ -174,6 +184,7 @@ thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t yOffset, uint1
   junk->hasBonus = 0;
   junk->bonus = bonus;
   int16_t x = object_x(ptr) + (dx > 0 ? ptr->image->w : 0);
+ 
   object_t* jptr = object_add(OBJECT_ID_JUNK, OBJECT_CLASS_JUNK, x, yOffset+object_y(ptr)-40, 0, animId, thing_update, junk, thing_addFree);
   USE(jptr);
   jptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
@@ -187,11 +198,11 @@ thing_attack(object_t* ptr, int16_t dx)
   thing_data_t* data = ptr->data;
   if (data->attackable) {
     sound_queueSound(SOUND_BUD_PUNCH01);
-    if (ptr->animId != OBJECT_ANIM_PHONEBOOTH_BROKEN) {
-      object_setAnim(ptr, OBJECT_ANIM_PHONEBOOTH_BROKEN);
-      thing_addJunk(ptr, OBJECT_ANIM_PHONEBOOTH_JUNK1, dx, 0, 0);
-      thing_addJunk(ptr, OBJECT_ANIM_PHONEBOOTH_JUNK3, dx*2, 20, 0);        
-      thing_addJunk(ptr, OBJECT_ANIM_PHONEBOOTH_JUNK2, -dx, 0, 0);          
+    if (ptr->animId != data->brokenId) {
+      object_setAnim(ptr, data->brokenId);
+      thing_addJunk(ptr, data->junkStartId, dx, 0, 0);
+      thing_addJunk(ptr, data->junkStartId+1, dx*2, 20, 0);        
+      thing_addJunk(ptr, data->junkStartId+2, -dx, 0, 0);          
     } else if (data->hasBonus) {
       if (data->hasBonus == 1) {
 	thing_addJunk(ptr, OBJECT_ANIM_BONUS_BURGER, -dx, 0, 1);

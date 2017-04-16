@@ -4,8 +4,8 @@
 #define FIGHTER_MAX_FIGHTERS         8
 #define FIGHTER_LONG_PUNCH_RANGE     13
 #define FIGHTER_SHORT_PUNCH_RANGE    8
-#define FIGHTER_Y_ATTACK_THRESHOLD   6
-#define FIGHTER_ENEMY_Y_ATTACK_RANGE 3
+//#define FIGHTER_Y_ATTACK_THRESHOLD   6
+#define FIGHTER_ENEMY_Y_ATTACK_RANGE 6
 
 typedef struct fighter_data {
   struct fighter_data* prev;
@@ -27,6 +27,12 @@ typedef struct fighter_data {
   int16_t flashFrames;
   uint16_t widthOffset;
   int16_t enemyAttackWait;
+  int16_t enemyAttackWaitTics;  
+  uint16_t* attackRange;
+  uint16_t attackRangeY;
+  int16_t postAttackInvincibleTics;
+  int16_t postAttackCount;
+  int16_t speed;
 } fighter_data_t;
 
 

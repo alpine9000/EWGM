@@ -18,10 +18,11 @@
 
 #define abs(a) ((a) >= 0 ? (a) : -(a))  
 #define max(a, b) ((a) > (b) ? (a) : (b))
+#define min(a, b) ((a) < (b) ? (a) : (b))
 
 #define MENU_NUM_ITEMS      6
 
-#define MAP_TILE_WIDTH      60
+#define MAP_TILE_WIDTH      80
 #define MAP_TILE_HEIGHT     13
 #define TILE_WIDTH          16
 #define TILE_HEIGHT         16
@@ -39,7 +40,7 @@
 #define FRAME_BUFFER_WIDTH  (SCREEN_WIDTH+64)
 
 #define SPRITE_SHEET_WIDTH  272
-#define SPRITE_SHEET_HEIGHT 570
+#define SPRITE_SHEET_HEIGHT 571
 #define SPRITE_SHEET_WIDTH_BYTES (SPRITE_SHEET_WIDTH/8)
 
 #define TILE_SHEET_WIDTH  272
@@ -107,8 +108,6 @@ extern frame_buffer_t game_offScreenBuffer;
 extern frame_buffer_t game_scoreBoardFrameBuffer;
 extern uint16_t game_over;
 extern uint16_t game_numPlayers;
-extern uint16_t game_wave;
-extern uint16_t game_nextWave;
 extern uint32_t game_player1Score;
 extern uint32_t game_player2Score;
 
@@ -133,6 +132,8 @@ extern object_t* game_player2;
 #include "menu.h"
 #include "palette.h"
 #include "record.h"
+#include "conductor.h"
+#include "level1.h"
 #include "level.h"
 #include "mouse.h"
 #include "tile.h"
@@ -147,7 +148,6 @@ extern object_t* game_player2;
 #include "sort.h"
 #include "logo.h"
 #include "hand.h"
-#include "wave.h"
 #include "alarm.h"
 #include "thing.h"
 

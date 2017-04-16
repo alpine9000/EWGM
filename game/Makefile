@@ -29,7 +29,7 @@ PROGRAM_BIN=out/main.bin
 
 
 # all the components that form the game
-C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text.c sound.c music.c keyboard.c menu.c message.c record.c  string.c hw.c hiscore.c dos.c panic.c script.c object.c object_data.c sort.c player.c enemy.c logo.c fighter.c hand.c wave.c alarm.c thing.c
+C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text.c sound.c music.c keyboard.c menu.c message.c record.c  string.c hw.c hiscore.c dos.c panic.c script.c object.c object_data.c sort.c player.c enemy.c logo.c fighter.c hand.c conductor.c alarm.c thing.c level1.c
 SRCS=blitmtext.s hw_asm.s trackloader.s palette_asm.s  P6112-Play.s music_asm.s keyboard_asm.s sg_trackdisk.s
 MODULES=P61.jojo_ingame.bin P61.jojo_boss.bin
 SOUND_FILES=Terence_punch01.wav Terence_punch02.wav Bud_Punch01.wav enemy01.wav enemy02.wav enemy03.wav pop.wav coin1.wav
@@ -182,7 +182,7 @@ out/background_%-map.c: assets/background_%.tmx out
 	@rm background_$*-sprites.c
 
 out/sprite_%.h: assets/sprite_%.png palettes/palette_%.pal
-	$(CROPPA) --width=320 --height=570 --input=assets/sprite_$*.png --output=out/sprite_$*-resized.png
+	$(CROPPA) --width=320 --height=571 --input=assets/sprite_$*.png --output=out/sprite_$*-resized.png
 	$(IMAGECON) --quantize --colors=32 --full-color-palette --input=out/sprite_$*-resized.png --output=out/sprite_$* --output-bitplanes --output-png --output-palette --output-palette-asm --use-palette=palettes/palette_$*.pal --output-mask
 	cat out/sprite_$*.bin | $(BIN2C) > out/sprite_$*.h
 	cat out/sprite_$*-mask.bin | $(BIN2C) > out/sprite_$*-mask.h

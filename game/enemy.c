@@ -1,11 +1,10 @@
 #include "game.h"
 
-
 uint16_t enemy_count;
-
-#define ENEMY_BOSS_START_Y (7+56)
-#define ENEMY_BOSS_START_X (WORLD_WIDTH-96)
-
+#ifdef DEBUG
+uint16_t enemy_pause;
+#endif
+  
 object_t*
 enemy_closestPlayer(object_t* ptr)
 {
@@ -62,18 +61,18 @@ enemy_strikingDistanceX(object_t* a, object_t* b)
 {
   fighter_data_t* a_data = a->data;
   fighter_data_t* b_data = b->data;    
-  uint16_t thresholdx = FIGHTER_SHORT_PUNCH_RANGE;
+  uint16_t thresholdx = b_data->attackRange[OBJECT_PUNCH_LEFT2];
   int16_t a_widthOffset = a_data->widthOffset;
   int16_t b_widthOffset = b_data->widthOffset;
-  int16_t a_x1 = (((object_px(a)) / OBJECT_PHYSICS_FACTOR) + a_widthOffset)-thresholdx;
-  int16_t a_x2 = (((object_px(a)) / OBJECT_PHYSICS_FACTOR) + (OBJECT_WIDTH - a_widthOffset)) + thresholdx;
-  int16_t b_x1 = ((object_px(b)) / OBJECT_PHYSICS_FACTOR) + b_widthOffset;
-  int16_t b_x2 = ((object_px(b)) / OBJECT_PHYSICS_FACTOR) + (OBJECT_WIDTH - b_widthOffset);
+  int16_t a_x1 = (((object_px(a)) / OBJECT_PHYSICS_FACTOR) + a_widthOffset);
+  int16_t a_x2 = (((object_px(a)) / OBJECT_PHYSICS_FACTOR) + (OBJECT_WIDTH - a_widthOffset));
+  int16_t b_x1 = (((object_px(b)) / OBJECT_PHYSICS_FACTOR) + b_widthOffset) - thresholdx;
+  int16_t b_x2 = (((object_px(b)) / OBJECT_PHYSICS_FACTOR) + (OBJECT_WIDTH - b_widthOffset)) + thresholdx;
   
   if (a_x1 < b_x2 && a_x2 > b_x1) {
     return 0;
   } else {
-    return (object_x(a) > object_x(b)) ? 1 : -1;
+    return (object_x(a) > object_x(b)) ? b_data->speed : -b_data->speed;
   }
         
   return 0;
@@ -85,6 +84,14 @@ enemy_strikingDistanceX(object_t* a, object_t* b)
 uint16_t
 enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
+#ifdef DEBUG
+  if (enemy_pause) {
+    ptr->velocity.x = 0;
+    ptr->velocity.y = 0;    
+    return 0;
+  }
+#endif
+  
   uint16_t attack = 0;
   
   if (data->walkAbout > 0) {
@@ -122,10 +129,10 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
     } else {
       ptr->velocity.x = enemy_strikingDistanceX(player, ptr);
 
-      if (abs(object_y(ptr)-object_y(player)) <= FIGHTER_ENEMY_Y_ATTACK_RANGE) {
+      if (abs(object_y(ptr)-object_y(player)) <= data->attackRangeY) {
 	if (ptr->velocity.x == 0) {
 	  if (data->enemyAttackWait <= 0) {
-	    data->enemyAttackWait = ENEMY_ATTACK_WAIT_TICS;
+	    data->enemyAttackWait = data->enemyAttackWaitTics;
 	    attack = 1;
 	  } else {
 	    data->enemyAttackWait-=deltaT;
@@ -134,9 +141,9 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 	ptr->velocity.y = 0;
       }
       else if (object_y(ptr) < object_y(player)) {
-	ptr->velocity.y = 1;
+	ptr->velocity.y = data->speed;
       } else if (object_y(ptr) > object_y(player)) {
-	ptr->velocity.y = -1;
+	ptr->velocity.y = -data->speed;
       } 
     }
   }
@@ -145,111 +152,28 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 }
 
 
-static void
-enemy_add(uint16_t x, uint16_t y, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data))
+void NOINLINE
+enemy_add(uint16_t x, uint16_t y, uint16_t attackWait, uint16_t attackDuration, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data))
 {
   if (intelligence == 0) {
     intelligence = enemy_intelligence;
   }
   object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_PLAYER1_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, ENEMY_ATTACK_DAMMAGE, intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
-  data->attackDurationFrames = ENEMY_ATTACK_DURATION_TICS;
+  data->attackDurationFrames = attackDuration;
   data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
-  data->enemyAttackWait = ENEMY_ATTACK_WAIT_TICS;
+  data->enemyAttackWaitTics = attackWait;
+  data->enemyAttackWait = attackWait;
   data->attackHitAnimTic = 0;
   data->numAttacks = 2;
   enemy_count++;
 }
 
-
-static uint16_t
-enemy_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
-{
-  if (object_y(ptr) == ENEMY_BOSS_START_Y && object_x(ptr) > WORLD_WIDTH-144) {
-    ptr->velocity.x = -1;
-  } else if (object_y(ptr) < GAME_PAVEMENT_START) {
-    ptr->velocity.x = 0;
-    ptr->velocity.y = 1;
-  } else {
-    return enemy_intelligence(deltaT, ptr, data);
-  }
-  
-  return 0;
-}
-
-
-static void
-enemy_addBoss(void)
-{
-  uint16_t x = ENEMY_BOSS_START_X;
-  uint16_t y = ENEMY_BOSS_START_Y;  
-  
-  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_BOSS_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, ENEMY_ATTACK_DAMMAGE, enemy_doorIntelligence);
-  fighter_data_t* data = (fighter_data_t*)ptr->data;
-  data->attackDurationFrames = ENEMY_ATTACK_DURATION_TICS;
-  data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
-  data->enemyAttackWait = ENEMY_BOSS_ATTACK_TICS_PER_FRAME*ENEMY_BOSS_NUM_ATTACK_FRAMES;
-  data->attackHitAnimTic = ENEMY_BOSS_ATTACK_TICS_PER_FRAME;
-  data->numAttacks = 1;
-  enemy_count++;
-}
-
-
-void
-enemy_addDoorEnemy(void)
-{
-  enemy_add(ENEMY_BOSS_START_X, ENEMY_BOSS_START_Y, enemy_doorIntelligence);    
-}
-
-
 void
 enemy_init(void)
 {
   enemy_count = 0;
-}
-
-
-void
-enemy_wave1(void)
-{
-  thing_add(OBJECT_ID_PHONEBOOTH, OBJECT_ANIM_PHONEBOOTH, 50, 80);
-
-  enemy_add(game_cameraX-64, 85, 0);
-  enemy_add(game_cameraX+SCREEN_WIDTH+64, 85, 0);
-}
-
-
-void
-enemy_wave2(void)
-{  
-  enemy_add(game_cameraX-64, 85, 0);  
-}
-
-void
-enemy_song3(void)
-{
-  music_play(3);
-  music_toggle();  
-}
-
-void
-enemy_wave3(void)
-{
-  object_t* door =  object_add(/*id*/OBJECT_ID_DOOR,
-			       /*class*/OBJECT_CLASS_DECORATION,
-			       /*x*/ENEMY_BOSS_START_X,
-			       /*y*/64,
-			       /*dx*/0,
-			       /*anim id*/OBJECT_ANIM_DOOR,
-			       /*update*/0,
-			       /*data*/0,
-			       /*freeData*/0);
-  door->tileRender = 1;
-
-  music_toggle();
-  
-  alarm_add(50, enemy_song3);
-  alarm_add(100, enemy_addDoorEnemy);
-  alarm_add(200, enemy_addDoorEnemy);
-  alarm_add(300, enemy_addBoss);
+#ifdef DEBUG
+  enemy_pause = 0;
+#endif
 }

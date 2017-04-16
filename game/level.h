@@ -34,6 +34,7 @@ typedef struct {
   uint16_t palette[32];
   uint16_t clouds;
   uint16_t moduleIndex;
+  conductor_instruction_t* instructions;
 #ifdef GAME_RECORDING
   uint8_t recordData[sizeof(record_t)];
   record_t* record;

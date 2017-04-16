@@ -262,7 +262,11 @@ game_refreshDebugScoreboard(void)
   text_drawScoreBoard("asl:", 9*8, 9);
   text_drawScoreBoard("msl:", 18*8, 9);
   text_drawScoreBoard("dt:", 27*8, 9);
-  text_drawScoreBoard("obj:", 33*8, 9);    
+  text_drawScoreBoard("obj:", 33*8, 9);
+
+  text_drawScoreBoard("ec:", 0, 18);
+  text_drawScoreBoard("ci:", 5*8, 18);  
+  
 }
 #endif
 
@@ -458,7 +462,7 @@ game_loadLevel(menu_command_t command)
 
   enemy_init();
 
-  wave_init();  
+  conductor_init(level.instructions);  
 
   hw_waitBlitter();
 
@@ -567,12 +571,18 @@ debug_mode(void)
     break;
   case 7:
       text_drawScoreBoard(itoan(object_count, 2), 37*8, 9);
-    break;    
+    break;
+  case 8:
+      text_drawScoreBoard(itoan(enemy_count, 1), 3*8, 18);
+    break;
+  case 9:
+      text_drawScoreBoard(itoan(conductor_instructionIndex, 3), 8*8, 18);
+    break;           
   default:
     break;
   } 
   game_debugRenderFrame++;
-  if (game_debugRenderFrame > 7) {
+  if (game_debugRenderFrame > 9) {
     game_debugRenderFrame = 0;
   }
 }
@@ -632,13 +642,13 @@ debug_showRasterLine(void)
 static void
 game_updateWave(void)
 {
-    if (enemy_count == 0) {
+  if (game_cameraX < conductor_scrollTarget) {
     if ((!game_player1 || object_x(game_player1)-game_cameraX > SCREEN_WIDTH/3) &&
 	(!game_player2 || object_x(game_player2)-game_cameraX > SCREEN_WIDTH/3)) {
-      if ((game_player1 && object_x(game_player1)-game_cameraX > (SCREEN_WIDTH-48)) ||
-	  (game_player2 && object_x(game_player2)-game_cameraX > (SCREEN_WIDTH-48))) {
+      if ((game_player1 && object_x(game_player1)-game_cameraX > (SCREEN_WIDTH-128)) ||
+	  (game_player2 && object_x(game_player2)-game_cameraX > (SCREEN_WIDTH-128))) {
 #define _object_min(x,y)(x<=y?x:y)
-	game_requestCameraX(game_cameraX+(SCREEN_WIDTH/3));
+	game_requestCameraX(min(game_cameraX+(SCREEN_WIDTH/3), conductor_scrollTarget));
 	hand_hide();
       }
     }
@@ -727,6 +737,9 @@ game_processKeyboard()
 {
   switch (keyboard_key) {
 #ifdef DEBUG
+  case 'E':
+    enemy_pause = !enemy_pause;
+    break;
   case 'L':
     // game_requestCameraX(WORLD_WIDTH-SCREEN_WIDTH);
     break;
@@ -989,6 +1002,8 @@ game_loop()
     if (game_collectTotal && hw_verticalBlankCount-game_lastVerticalBlankCount > 2) {
       game_missedFrameCount++;
       game_turtle = 5;
+    } else if (hw_verticalBlankCount-game_lastVerticalBlankCount == 1) {
+      hw_waitVerticalBlank();
     }
       
     game_lastVerticalBlankCount = hw_verticalBlankCount;
@@ -998,6 +1013,8 @@ game_loop()
 
     uint32_t frame = hw_verticalBlankCount;
     game_deltaT = hw_verticalBlankCount-game_lastScrollFrame;
+
+    
     game_levelTicCounter += game_deltaT;
     while (game_levelTicCounter >= 50) {
       game_levelTicCounter-=50;
@@ -1015,15 +1032,13 @@ game_loop()
     for (uint32_t i = 0; i < game_deltaT; i++) {
       if (game_targetCameraX != game_cameraX) {
 	game_scrollBackground();
-	wave_process();
+	conductor_process();
       }
     }
+
+    conductor_process();
      
     //object_restoreBackground(game_offScreenBuffer);
-
-    if (game_deltaT == 0 || game_deltaT > 2) {
-      //PANIC("deltat");
-    }
 
     alarm_process(game_deltaT);
     game_render(game_deltaT);    

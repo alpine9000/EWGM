@@ -16,15 +16,18 @@
 // the following are temporary and will be refactored
 #define ENEMY_ATTACK_DAMMAGE        5
 
+extern uint16_t enemy_count;
+
+#ifdef DEBUG
+uint16_t enemy_pause;
+#endif
+
 void
 enemy_init(void);
 
-extern uint16_t enemy_count;
+void
+enemy_add(uint16_t x, uint16_t y, uint16_t attackWait, uint16_t attackDuration, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data));
 
-void
-enemy_wave1(void);
-void
-enemy_wave2(void);
-void
-enemy_wave3(void);
+uint16_t
+enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data);
 #endif

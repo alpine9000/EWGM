@@ -193,7 +193,7 @@ void
 sort_z(int16_t count, object_t **d)
 {
 #ifdef DEBUG
-  if (count > 8) {
+  if (count > OBJECT_MAX_OBJECTS) {
     PANIC("sort_z: out of bounds");
   }
 #endif

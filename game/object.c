@@ -370,7 +370,7 @@ object_restoreBackground(frame_buffer_t fb)
   }
 }
 
-object_t*
+NOINLINE object_t*
 object_add(uint16_t id, uint16_t class, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data, void (*freeData)(void*))
 {
 #ifdef DEBUG
