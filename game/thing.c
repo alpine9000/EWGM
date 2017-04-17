@@ -116,62 +116,39 @@ thing_updatePosition(uint16_t deltaT, object_t* ptr)
 }
 
 
-int16_t
-thing_collision(object_t* a, object_collision_t* collision)
+object_t*
+thing_collision(object_t* a)
 {
-  int16_t _collision = 0;
-  object_t* b = object_activeList;
-  
-  collision->up = collision->down = collision->left = collision->right = 0;
+  object_t* b = object_activeList; 
 
 #ifdef DEBUG
   if (!game_collisions) {
     return 0;
   }
 #endif
+
+  int16_t a_y = object_y(a);  
+  int16_t a_x1 = object_x(a) + a->widthOffset;
+  int16_t a_x2 = object_x(a) + (a->width - a->widthOffset);
   
   while (b) {  
-    if ((b->class == OBJECT_CLASS_FIGHTER) && b != a && b->state == OBJECT_STATE_ALIVE) {
+    if ((b->class == OBJECT_CLASS_FIGHTER) && b->state == OBJECT_STATE_ALIVE) {
       
-      int16_t a_y = object_y(a);
       int16_t b_y = object_y(b);
 
       if (abs(a_y - b_y) <= 1) {
-	uint16_t a_width;
-	uint16_t b_width;
-	int16_t a_widthOffset;
-	int16_t b_widthOffset;
-
-	
-	a_widthOffset = a->widthOffset;
-	a_width = a->width;
-	b_widthOffset = b->widthOffset;
-	b_width = b->width;		
-	
-	int16_t a_x1 = object_x(a) + a_widthOffset;
-	int16_t a_x2 = object_x(a) + (a_width - a_widthOffset);
-	int16_t b_x1 = object_x(b) + b_widthOffset;
-	int16_t b_x2 = object_x(b) + (b_width - b_widthOffset);
+	int16_t b_x1 = object_x(b) + b->widthOffset;
+	int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
 	
 	if (a_x1 < b_x2 && a_x2 > b_x1) {		  
-	  if (b_y >= a_y) {
-	    collision->up = b;
-	  } else if (b_y < a_y) {
-	    collision->down = b;
-	  }
-	  if (b_x1 >= a_x1) {
-	    collision->right = b;
-	  } else if (b_x1 < a_x1) {
-	    collision->left = b;
-	  }
-	  _collision = 1;
+	  return b;
 	}
       }
     }
     b = b->next;
   }
   
-  return _collision;
+  return 0;
 }
 
 void
@@ -196,17 +173,9 @@ thing_update(uint16_t deltaT, object_t* ptr)
 
     thing_updatePosition(deltaT, ptr);
   } else if (data->bonus) {
-    object_collision_t collision;
-    if (thing_collision(ptr, &collision)) {
-      if (collision.right) {
-	thing_awardBonus(ptr, collision.right);
-      } else if (collision.left) {
-	thing_awardBonus(ptr, collision.left);
-      } else if (collision.up) {
-	thing_awardBonus(ptr, collision.up);
-      } else  if (collision.down) {
-	thing_awardBonus(ptr, collision.down);
-      }
+    object_t* collision = thing_collision(ptr);
+    if (collision) {
+      thing_awardBonus(ptr, collision);
     }
   }
 

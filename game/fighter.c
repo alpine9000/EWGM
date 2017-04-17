@@ -73,8 +73,10 @@ int16_t
 fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy)
 {
   int16_t vy = a->velocity.y;
-
+  int16_t vx = a->velocity.x;
+  
   if (deltaT == 2) {
+    vx *= 2;
     vy *= 2;
   }
   
@@ -88,52 +90,19 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
     return 0;
   }
 #endif
+
+  int16_t a_y = ((object_py(a) + vy) / OBJECT_PHYSICS_FACTOR);  
+  int16_t a_x1 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + a->widthOffset)-thresholdx;
+  int16_t a_x2 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + (a->width - a->widthOffset)) + thresholdx;
   
   while (b) {  
     if ((b->class == OBJECT_CLASS_FIGHTER || b->class == OBJECT_CLASS_THING) && b != a && b->state == OBJECT_STATE_ALIVE) {
       
-      int16_t a_y = ((object_py(a) + vy) / OBJECT_PHYSICS_FACTOR);
       int16_t b_y = ((object_y(b)));
 
       if (abs(a_y - b_y) <= thresholdy) {
-	int16_t vx = a->velocity.x;
-	uint16_t a_width;
-	uint16_t b_width;
-	int16_t a_widthOffset;
-	int16_t b_widthOffset;
-
-	if (deltaT == 2) {
-	  vx *= 2;
-	}
-	
-#if 0
-	if (a->class != OBJECT_CLASS_FIGHTER) {
-	  a_widthOffset = 0;
-	  a_width = a->image->w;
-	} else {
-	  fighter_data_t* a_data = a->data;	
-	  a_widthOffset = a_data->widthOffset;
-	  a_width = OBJECT_WIDTH;
-	}
-	if (b->class != OBJECT_CLASS_FIGHTER) {
-	  b_widthOffset = 0;
-	  b_width = b->image->w;
-	} else {
-	  fighter_data_t* b_data = b->data;	
-	  b_widthOffset = b_data->widthOffset;
-	  b_width = OBJECT_WIDTH;
-	}
-#else
-	a_widthOffset = a->widthOffset;
-	a_width = a->width;
-	b_widthOffset = b->widthOffset;
-	b_width = b->width;		
-#endif
-	
-	int16_t a_x1 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + a_widthOffset)-thresholdx;
-	int16_t a_x2 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + (a_width - a_widthOffset)) + thresholdx;
-	int16_t b_x1 = ((object_x(b))) + b_widthOffset;
-	int16_t b_x2 = ((object_x(b))) + (b_width - b_widthOffset);
+	int16_t b_x1 = ((object_x(b))) + b->widthOffset;
+	int16_t b_x2 = ((object_x(b))) + (b->width - b->widthOffset);
 	
 	if (a_x1 < b_x2 && a_x2 > b_x1) {		  
 	  if (b_y >= a_y) {
