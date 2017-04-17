@@ -48,11 +48,9 @@ logo_pokeCopperList(frame_buffer_t frameBuffer)
 
 
 void
-logo_display(void)
+logo_load(void)
 {
   volatile uint16_t scratch;
-
-  logo_startFrame = hw_verticalBlankCount;
 
   disk_loadData((void*)game_onScreenBuffer, (void*)logo_frameBuffer, SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*LOGO_BIT_DEPTH);
 
@@ -82,6 +80,13 @@ logo_display(void)
 
   custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
 
+  //  palette_fadeTo(logoPalette, 1<<LOGO_BIT_DEPTH, 0);
+}
+
+void
+logo_display(void)
+{
+  logo_startFrame = hw_verticalBlankCount;
   palette_fadeTo(logoPalette, 1<<LOGO_BIT_DEPTH, 0);
 }
 
@@ -89,6 +94,11 @@ void
 logo_clear(void)
 {
   while (hw_verticalBlankCount < logo_startFrame+200) {
+    keyboard_read();
+    hw_readJoystick();
+    if (game_fire()) {
+      break;
+    }
     hw_waitVerticalBlank();
   }
   

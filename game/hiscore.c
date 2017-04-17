@@ -26,12 +26,12 @@ typedef struct {
 __EXTERNAL __section(section lastTrack) 
 hiscore_storage_t hiscore_disk = {
   .scores = {
-    {1000, "C.S", 0, ""},
-    {500, "L.K", 0, ""},
-    {250, "I.I", 0, ""},
-    {100, "M.E", 0, ""},
-    {50, "B.S", 0, ""},
-    {25, "Y.!", 0, ""}
+    {1000, "E.G", 0, ""},
+    {500, "L.E", 0, ""},
+    {250, "S.T", 0, ""},
+    {100, "E.M", 0, ""},
+    {50, "W.A", 0, ""},
+    {25, "E.D", 0, ""}
   },
   .checksum = 1925
 };

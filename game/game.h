@@ -6,12 +6,12 @@
 #include <hardware/intbits.h>
 
 //#define DEBUG_SPEED                   1
-#define DEBUG                         1
+//#define DEBUG                         1
 //#define SCRIPTING                     1
 #define GAME_25_FPS                   1
 //#define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1
-#define GAME_RECORDING                1
+//#define GAME_RECORDING                1
 //#define GAME_BLITTER_WAIT_DEBUG       1
 
 #define INLINE inline
@@ -24,7 +24,7 @@
 
 #define MENU_NUM_ITEMS      6
 
-#define MAP_TILE_WIDTH      80
+#define MAP_TILE_WIDTH      100
 #define MAP_TILE_HEIGHT     13
 #define TILE_WIDTH          16
 #define TILE_HEIGHT         16

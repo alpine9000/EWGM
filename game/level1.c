@@ -17,7 +17,15 @@ enum {
   LEVEL1_WAVE1_2,
   LEVEL1_WAVE1_3,
 
-  LEVEL1_WAVE2_1,    
+  LEVEL1_WAVE2_1,
+  LEVEL1_WAVE2_2,
+
+  LEVEL1_WAVE3_1,
+  LEVEL1_WAVE3_2,
+  LEVEL1_WAVE3_3,
+  LEVEL1_WAVE3_4,
+  LEVEL1_WAVE3_5,
+  LEVEL1_WAVE3_6,    
 };
 
 level_enemy_config_t level1_configs[] = {
@@ -52,7 +60,65 @@ level_enemy_config_t level1_configs[] = {
     .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 0,
     .intelligence = 0
-  }, 
+  },
+  [LEVEL1_WAVE2_2] = {
+    .x = SCREEN_WIDTH,
+    .y = 200,
+    .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
+    .enemyCount = 1,
+    .intelligence = 0
+  },
+
+  //=======================
+  [LEVEL1_WAVE3_1] = {
+    .x = SCREEN_WIDTH,
+    .y = 150,
+    .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
+    .enemyCount = 0,
+    .intelligence = 0
+  },
+  [LEVEL1_WAVE3_2] = {
+    .x = -48,
+    .y = 150,
+    .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
+    .enemyCount = 1,
+    .intelligence = 0
+  },
+  [LEVEL1_WAVE3_3] = {
+    .x = -48,
+    .y = 75,
+    .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
+    .enemyCount = 2,
+    .intelligence = 0
+  },
+  [LEVEL1_WAVE3_4] = {
+    .x = -48,
+    .y = 150,
+    .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
+    .enemyCount = 2,
+    .intelligence = 0
+  },
+  [LEVEL1_WAVE3_5] = {
+    .x = SCREEN_WIDTH+32,
+    .y = 75,
+    .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
+    .enemyCount = 3,
+    .intelligence = 0
+  },
+  [LEVEL1_WAVE3_6] = {
+    .x = SCREEN_WIDTH,
+    .y = 75,
+    .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
+    .enemyCount = 0,
+    .intelligence = 0
+  },               
 };
   
 static object_t* level1_door;
@@ -232,14 +298,21 @@ conductor_instruction_t level1_instructions[] = {
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH/2, level1_scroll},
 
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH+1, level1_addPhoneBooth},
-    
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH+1, level1_addPhoneBooth},    
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL1_WAVE2_1, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL1_WAVE2_2, level1_processEnemyConfig},  
 
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*3), level1_scroll},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH, level1_scroll},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL1_WAVE3_1, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL1_WAVE3_2, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL1_WAVE3_3, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL1_WAVE3_4, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL1_WAVE3_5, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL1_WAVE3_6, level1_processEnemyConfig},        
   
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+80, SCREEN_WIDTH, level1_addPostbox},    
   
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3)-1, 0, level1_wave3},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*4), level1_scroll},  
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3)+80, SCREEN_WIDTH, level1_addPostbox},      
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*4)-1, 0, level1_wave3},
   {CONDUCTOR_INSTRUCTION_END}
 };

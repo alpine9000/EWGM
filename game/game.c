@@ -777,17 +777,15 @@ game_processKeyboard()
   case 'S':
     record_setState(RECORD_IDLE);
     break;
-#endif
-  case 'P':
-    //game_paused = !game_paused;
-    //game_lastVerticalBlankCount = hw_verticalBlankCount;
+  case 'L':
     game_startPlayback();
     break;
+#endif
+  case 'P':
+    game_paused = !game_paused;
+    game_lastVerticalBlankCount = hw_verticalBlankCount;
   case 'T':
     game_singleStep = 1;
-    break;
-  case ' ':
-
     break;
   case 'Z':
     music_next();
@@ -906,9 +904,11 @@ game_loop()
   
   game_ctor();
 
-  logo_display();
+  logo_load();
 
   music_play(0);
+
+  logo_display();
 
   music_toggle();
   
