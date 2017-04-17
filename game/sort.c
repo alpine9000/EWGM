@@ -12,49 +12,50 @@ static void sort0(object_t **d){
 }
 
 static void sort2(object_t **d){
-    SWAP(0, 1);
+  SWAP(0,1);
 }
 
 static void sort3(object_t **d){
-    SWAP(1, 2);
-    SWAP(0, 2);
-    SWAP(0, 1);
+  SWAP(1,2);
+  SWAP(0,2);
+  SWAP(0,1);
 }
 
 static void sort4(object_t **d){
-    SWAP(0, 1);
-    SWAP(2, 3);
-    SWAP(0, 2);
-    SWAP(1, 3);
-    SWAP(1, 2);
+  SWAP(0,1);
+  SWAP(2,3);
+  SWAP(0,2);
+  SWAP(1,3);
+  SWAP(1,2);
 }
 
 static void sort5(object_t **d){
-    SWAP(0, 1);
-    SWAP(3, 4);
-    SWAP(2, 4);
-    SWAP(2, 3);
-    SWAP(1, 4);
-    SWAP(0, 3);
-    SWAP(0, 2);
-    SWAP(1, 3);
-    SWAP(1, 2);
+  SWAP(0,1);
+  SWAP(3,4);
+  SWAP(2,4);
+  SWAP(2,3);
+  SWAP(1,4);
+  SWAP(0,3);
+  SWAP(0,2);
+  SWAP(1,3);
+  SWAP(1,2);
 }
 
 static void sort6(object_t **d){
-    SWAP(1, 2);
-    SWAP(4, 5);
-    SWAP(0, 2);
-    SWAP(3, 5);
-    SWAP(0, 1);
-    SWAP(3, 4);
-    SWAP(1, 4);
-    SWAP(0, 3);
-    SWAP(2, 5);
-    SWAP(1, 3);
-    SWAP(2, 4);
-    SWAP(2, 3);
+  SWAP(1,2);
+  SWAP(4,5);
+  SWAP(0,2);
+  SWAP(3,5);
+  SWAP(0,1);
+  SWAP(3,4);
+  SWAP(2,5);
+  SWAP(0,3);
+  SWAP(1,4);
+  SWAP(2,4);
+  SWAP(1,3);
+  SWAP(2,3);
 }
+
 
 #if OBJECT_MAX_OBJECTS > 6
 static void sort7(object_t **d){
