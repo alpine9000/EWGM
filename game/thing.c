@@ -119,7 +119,7 @@ thing_updatePosition(uint16_t deltaT, object_t* ptr)
 object_t*
 thing_collision(object_t* a)
 {
-  object_t* b = object_activeList; 
+  object_t* b;
 
 #ifdef DEBUG
   if (!game_collisions) {
@@ -131,11 +131,10 @@ thing_collision(object_t* a)
   int16_t a_x1 = object_x(a) + a->widthOffset;
   int16_t a_x2 = object_x(a) + (a->width - a->widthOffset);
   
-  while (b) {  
-    if ((b->class == OBJECT_CLASS_FIGHTER) && b->state == OBJECT_STATE_ALIVE) {
-      
+  if (game_player1) {
+    b = game_player1;
+    if ((b->class == OBJECT_CLASS_FIGHTER) && b->state == OBJECT_STATE_ALIVE) {      
       int16_t b_y = object_y(b);
-
       if (abs(a_y - b_y) <= 1) {
 	int16_t b_x1 = object_x(b) + b->widthOffset;
 	int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
@@ -145,7 +144,21 @@ thing_collision(object_t* a)
 	}
       }
     }
-    b = b->next;
+  }
+
+  if (game_player2) {
+    b = game_player2;
+    if ((b->class == OBJECT_CLASS_FIGHTER) && b->state == OBJECT_STATE_ALIVE) {      
+      int16_t b_y = object_y(b);
+      if (abs(a_y - b_y) <= 1) {
+	int16_t b_x1 = object_x(b) + b->widthOffset;
+	int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
+	
+	if (a_x1 < b_x2 && a_x2 > b_x1) {		  
+	  return b;
+	}
+      }
+    }
   }
   
   return 0;
