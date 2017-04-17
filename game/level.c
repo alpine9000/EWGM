@@ -44,7 +44,7 @@ level_load(uint16_t index)
   }
 #endif
 
-  message_loading("Loading...");
+  message_loading(I18N_LOADING);
 
   music_play(level_levels[index].moduleIndex);
 

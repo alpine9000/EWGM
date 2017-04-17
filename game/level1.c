@@ -1,7 +1,7 @@
 #include "game.h"
 
 #define LEVEL1_ENEMY_BOSS_START_Y (7+56)
-#define LEVEL1_ENEMY_BOSS_START_X (WORLD_WIDTH-96)
+#define LEVEL1_ENEMY_BOSS_START_X (GAME_WORLD_WIDTH-96)
 
 typedef struct {
   int16_t x;
@@ -167,7 +167,7 @@ level1_song3(void)
 static uint16_t
 level1_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
-  if (object_y(ptr) == LEVEL1_ENEMY_BOSS_START_Y && object_x(ptr) > WORLD_WIDTH-144) {
+  if (object_y(ptr) == LEVEL1_ENEMY_BOSS_START_Y && object_x(ptr) > GAME_WORLD_WIDTH-144) {
     ptr->velocity.x = -1;
   } else if (object_y(ptr) < GAME_PAVEMENT_START) {
     ptr->velocity.x = 0;

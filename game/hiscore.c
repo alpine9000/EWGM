@@ -71,10 +71,10 @@ hiscore_load(uint16_t ignoreErrors)
 
    if (error) {
      if (ignoreErrors) {
-       message_loading("error loading hiscore...");
+       message_loading(I18N_HISCORE_LOAD_ERR);
        hw_waitScanLines(200);
      } else {
-       if (message_ask("hiscore load fail, retry? y/n")) {
+       if (message_ask(I18N_HISCORE_LOAD_RTRY)) {
 	 goto retry;
        }
      }
@@ -83,10 +83,10 @@ hiscore_load(uint16_t ignoreErrors)
     
     if (checksum != hiscore.checksum) {
       if (ignoreErrors) {
-	message_loading("hiscore checksum mismatch...");
+	message_loading(I18N_HISCORE_CHSM_BAD);
 	hw_waitScanLines(200);
       } else {
-	if (message_ask("hiscore chsm fail, retry? y/n")) {
+	if (message_ask(I18N_HISCORE_CHSM_RTRY)) {
 	  goto retry;
 	}
       }
@@ -157,13 +157,13 @@ hiscore_saveData(uint16_t ignoreErrors)
   memcpy(&hiscore2, &hiscore, sizeof(hiscore2));
 
  retry:
-  message_loading("Saving hiscore...");
+  message_loading(I18N_SAVING_HISCORE);
   if (disk_write(&hiscore_disk, &hiscore, 1) != 0) {
     if (ignoreErrors) {
-      message_loading("hiscore save failed...");
+      message_loading(I18N_HISCORE_SAVE_FAIL);
       hw_waitScanLines(200);
     } else {
-      if (message_ask("hiscore save fail, retry? y/n")) {
+      if (message_ask(I18N_HISCORE_SAVE_RTRY)) {
 	goto retry;
       }
     }
@@ -171,7 +171,7 @@ hiscore_saveData(uint16_t ignoreErrors)
 
   hiscore_load(1);
   if (memcmp(&hiscore2, &hiscore, sizeof(hiscore2)) != 0) {
-    if (message_ask("hiscore save fail, retry? y/n")) {
+    if (message_ask(I18N_HISCORE_SAVE_RTRY)) {
       memcpy(&hiscore, &hiscore2, sizeof(hiscore2));
       goto retry;
     }
@@ -185,13 +185,13 @@ static char*
 hiscore_prompt(char* message)
 {
   uint16_t bufferIndex = 0;
-  char* congrats = "CONGRATULATIONS!!";
+  char* congrats = I18N_CONGRATULATIONS;
 
   USE(congrats);
   USE(message);
   hiscore_promptBuffer[0] = 0;
 
-  message_screenOn("PLEASE ENTER YOUR NAME");
+  message_screenOn(I18N_PLEASE_ENTER_NAME);
   
   text_drawMaskedText8Blitter(game_offScreenBuffer, congrats, (SCREEN_WIDTH/2)-(strlen(congrats)*4), (SCREEN_HEIGHT/2)-22-16);
   text_drawMaskedText8Blitter(game_offScreenBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)-22);
@@ -267,9 +267,9 @@ hiscore_addScore(uint16_t playerNumber, uint32_t score)
       } else if (i == 0) {
 	hiscore.scores[i].score = score;
 	if (playerNumber == 1) {
-	  name = hiscore_prompt("PLAYER1 NEW HI SCORE!!!");
+	  name = hiscore_prompt(I18N_PLAYER1_HISCORE);
 	} else {
-	  name = hiscore_prompt("PLAYER2 NEW HI SCORE!!!");
+	  name = hiscore_prompt(I18N_PLAYER2_HISCORE);
 	}
 	strcpy(hiscore.scores[i].name, name);
 	dirty = 1;
@@ -278,9 +278,9 @@ hiscore_addScore(uint16_t playerNumber, uint32_t score)
       if (i < HISCORE_NUM_SCORES-1) {
 	hiscore.scores[i+1].score = score;
 	if (playerNumber == 1) {	
-	  name = hiscore_prompt("PLAYER1 GREAT SCORE!");
+	  name = hiscore_prompt(I18N_PLAYER1_ONBOARD);
 	} else {
-	  name = hiscore_prompt("PLAYER2 GREAT SCORE!");
+	  name = hiscore_prompt(I18N_PLAYER2_ONBOARD);
 	}
 	strcpy(hiscore.scores[i+1].name, name);
 	dirty = 1;

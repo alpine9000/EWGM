@@ -171,9 +171,11 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
   
   collision->up = collision->down = collision->left = collision->right = 0;
 
+#ifdef DEBUG
   if (!object_zBufferValid) {
     PANIC("INVALID ZBUFFER");
   }
+#endif
 
   for (int16_t i = 0; i < object_count; i++) {
     object_t* b = object_zBuffer[i];  
@@ -362,10 +364,10 @@ fighter_updateSprite(object_t* ptr)
 {
     if (ptr->state == OBJECT_STATE_ALIVE) {
     object_set_z(ptr, object_y(ptr));
-    if (ptr->velocity.vx || ptr->velocity.vy) {
-      if (ptr->velocity.vx > 0) {
+    if (ptr->velocity.dx || ptr->velocity.dy) {
+      if (ptr->velocity.dx > 0) {
 	object_setAction(ptr, OBJECT_RUN_RIGHT);
-      } else if (ptr->velocity.vx < 0) {
+      } else if (ptr->velocity.dx < 0) {
 	object_setAction(ptr, OBJECT_RUN_LEFT);
       } else {
 	if (ptr->anim->facing == FACING_RIGHT) {
@@ -375,10 +377,16 @@ fighter_updateSprite(object_t* ptr)
 	}
       }
     } else {
-      if (ptr->anim->facing == FACING_RIGHT) {
+      if (ptr->velocity.ix > 0) {
 	object_setAction(ptr, OBJECT_STAND_RIGHT);
-      } else {
+      } else if (ptr->velocity.ix < 0) {
 	object_setAction(ptr, OBJECT_STAND_LEFT);
+      } else {
+	if (ptr->anim->facing == FACING_RIGHT) {
+	  object_setAction(ptr, OBJECT_STAND_RIGHT);
+	} else {
+	  object_setAction(ptr, OBJECT_STAND_LEFT);
+	}
       }
     }
   }
@@ -408,6 +416,8 @@ fighter_update(uint16_t deltaT, object_t* ptr)
   if (data->postAttackCount > 0) {
     data->postAttackCount--;
   }
+
+  ptr->velocity.ix = 0;      
   
   if (data->attackQueued && data->attackCount == 0 && ptr->state == OBJECT_STATE_ALIVE) {
     data->buttonReleased = 0;
@@ -443,7 +453,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 	  break;	  
 	case OBJECT_ID_PLAYER1:
 	  game_player1 = 0;
-	  game_scoreBoardGameOver(OBJECT_ID_PLAYER1);
+	  game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
 	  if (!game_player2) {
 	    game_setGameOver();	    
 	  }
@@ -453,7 +463,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 	  if (!game_player1) {
 	    game_setGameOver();	    
 	  }	  
-	  game_scoreBoardGameOver(OBJECT_ID_PLAYER2);	  	  
+	  game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);	  	  
 	  break;
 	}
       }
@@ -461,9 +471,11 @@ fighter_update(uint16_t deltaT, object_t* ptr)
       object_collision_t collision;
       if (fighter_collision(deltaT, ptr, &collision, 0, 2)) {
 	if (ptr->velocity.x > 0 && collision.right) {	  
+	  ptr->velocity.ix = 1;
 	  ptr->velocity.x = 0;
 	}
 	if (ptr->velocity.x < 0 && collision.left) {
+	  ptr->velocity.ix = -1;	  
 	  ptr->velocity.x = 0;
 	}
 	if (ptr->velocity.y > 0 && collision.up) {
@@ -475,7 +487,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
       }
       
       if (object_x(ptr) - game_cameraX < -TILE_WIDTH && ptr->velocity.x < 0) {
-	ptr->velocity.x = 0;    
+	ptr->velocity.x = 0;
       }
       
       object_updatePosition(deltaT, ptr);

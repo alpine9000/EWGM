@@ -111,8 +111,8 @@ thing_updatePosition(uint16_t deltaT, object_t* ptr)
   object_set_px(ptr, lastX + vx);
   object_set_py_no_checks(ptr, lastY + vy);
     
-  ptr->velocity.vx = object_px(ptr) - lastX;
-  ptr->velocity.vy = object_py(ptr) - lastY;
+  ptr->velocity.dx = object_px(ptr) - lastX;
+  ptr->velocity.dy = object_py(ptr) - lastY;
 }
 
 
@@ -200,16 +200,13 @@ thing_update(uint16_t deltaT, object_t* ptr)
     if (thing_collision(ptr, &collision)) {
       if (collision.right) {
 	thing_awardBonus(ptr, collision.right);
-      }
-      if (collision.left) {
+      } else if (collision.left) {
 	thing_awardBonus(ptr, collision.left);
-      }
-      if (collision.up) {
+      } else if (collision.up) {
 	thing_awardBonus(ptr, collision.up);
-      }
-      if (collision.down) {
+      } else  if (collision.down) {
 	thing_awardBonus(ptr, collision.down);
-      }      
+      }
     }
   }
 

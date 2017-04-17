@@ -130,8 +130,8 @@ object_updatePosition(uint16_t deltaT, object_t* ptr)
   object_set_px(ptr, lastX + vx);
   object_set_py(ptr, lastY + vy);
     
-  ptr->velocity.vx = object_px(ptr) - lastX;
-  ptr->velocity.vy = object_py(ptr) - lastY;
+  ptr->velocity.dx = object_px(ptr) - lastX;
+  ptr->velocity.dy = object_py(ptr) - lastY;
 
   #if 0
   if (ptr->state == OBJECT_STATE_ALIVE) {

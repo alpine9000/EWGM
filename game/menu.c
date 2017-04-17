@@ -107,37 +107,37 @@ menu_mode_t menu_mode = MENU_MODE_INACTIVE;
 static
 menu_item_t menu_items[MENU_NUM_ITEMS+1] = {
   {
-    .text = "PLAY NOW!",
+    .text = I18N_PLAY_NOW,
     .command = MENU_COMMAND_PLAY,
     .done = 1,
     .callback = 0
   },
   {
-    .text = "SINGLE PLAYER",
+    .text = I18N_SINGLE_PLAYER,
     .command = MENU_COMMAND_NUM_PLAYERS,
     .done = 0,
     .callback = menu_toggleNumPlayers
   },
   {
-    .text = "PLAY RECORDING",
+    .text = I18N_PLAY_RECORDING,
     .command = MENU_COMMAND_REPLAY,
     .done = 1,
     .callback = 0
   },
   {
-    .text = "MUSIC - ON ",
+    .text = I18N_MUSIC_ON,
     .command = MENU_COMMAND_PLAY,
     .done = 0,
     .callback = menu_toggleMusic
   },
   {
-    .text = "HI SCORES",
+    .text = I18N_HI_SCORES,
     .command = MENU_COMMAND_PLAY,
     .done = 0,
     .callback = menu_showHiScores
   },
   {
-    .text = "CREDITS",
+    .text = I18N_CREDITS,
     .command = MENU_COMMAND_PLAY,
     .done = 0,
     .callback = 0
@@ -168,26 +168,6 @@ menu_pokeCopperList(frame_buffer_t frameBuffer)
   }
 }
 
-#if TRACKLOADER==1
-#ifdef DEBUG
-static inline void
-debug_hiscoreStress(void)
-{
-  for (int16_t i = 0; i < 100; i++) {
-    hiscore_saveData(1);
-    hw_waitVerticalBlank();
-    message_loading("Loading hiscore...");
-    if (hiscore_load(1)) {
-      message_loading("Loading failed...");
-      hw_waitScanLines(200);
-    }
-    hw_waitVerticalBlank();
-  }
-  
-  message_screenOff();
-}
-#endif
-#endif
 
 static int16_t
 menu_processKeyboard(void)
@@ -196,20 +176,6 @@ menu_processKeyboard(void)
   case 'Z':
     music_next();
     return -1;
-    break;
-#if TRACKLOADER==1
-#ifdef DEBUG
-  case 'Y':
-    debug_hiscoreStress();
-    return MENU_COMMAND_LEVEL;
-    break;
-#endif
-#endif
-  case 'A':
-    if (message_ask("ask test, menu? y/n")) {
-      return MENU_COMMAND_MENU;
-    }
-    return MENU_COMMAND_LEVEL;
     break;
   case 'P':
     return MENU_COMMAND_REPLAY;
@@ -354,7 +320,7 @@ menu_redraw(uint16_t i)
     menu_renderText(fb, menu_items[i].text, y);
   } else {
     if (i == 0) {
-      menu_renderText(fb, "HI SCORES", y);
+      menu_renderText(fb, I18N_HI_SCORES, y);
     } else {
       menu_renderText(fb, menu_hiscores[i-1].text, y);
     }
@@ -382,9 +348,9 @@ menu_update_music_menu(void)
   for (uint16_t i = 0; i < MENU_NUM_ITEMS; i++) {
     if (menu_items[i].callback == menu_toggleMusic) {
       if (music_enabled()) {
-	menu_items[i].text = "MUSIC - ON ";
+	menu_items[i].text = I18N_MUSIC_ON;
       } else {
-	menu_items[i].text = "MUSIC - OFF";
+	menu_items[i].text = I18N_MUSIC_OFF;
       }
       return;
     }
@@ -398,9 +364,9 @@ menu_updateNumPlayersMenu(void)
   for (uint16_t i = 0; i < MENU_NUM_ITEMS; i++) {
     if (menu_items[i].callback == menu_toggleNumPlayers) {
       if (game_numPlayers == 1) {
-	menu_items[i].text = "SINGLE PLAYER";
+	menu_items[i].text = I18N_SINGLE_PLAYER;
       } else {
-	menu_items[i].text = "  2 PLAYERS  ";
+	menu_items[i].text = I18N_2_PLAYERS;
       }
       return;
     }
@@ -412,9 +378,9 @@ static void
 menu_render(void)
 {
   menu_update_music_menu();
+  menu_updateNumPlayersMenu();  
 
   frame_buffer_t fb = game_onScreenBuffer;
-  //  fb += 2*MENU_SCREEN_WIDTH_BYTES;
   uint16_t y = MENU_START_Y;
 
   switch (menu_mode) {
@@ -425,7 +391,7 @@ menu_render(void)
     }
     break;
   case MENU_MODE_HISCORES:
-    menu_renderText(fb, "HI SCORES", y);
+    menu_renderText(fb, I18N_HI_SCORES, y);
     y+= 16;
     for (uint16_t i = 0; i < HISCORE_NUM_SCORES; i++) {
       menu_renderText(fb, menu_hiscores[i].text, y);
@@ -520,9 +486,9 @@ menu_loop(menu_mode_t mode)
   if (!menu_first) {
     logo_clear();
     startFrame = hw_verticalBlankCount;
-    message_screenOn("PRESENTS");
+    message_screenOn(I18N_PRESENTS);
   } else {
-    message_loading("LOADING...");
+    message_loading(I18N_LOADING);
   }
 
   game_switchFrameBuffers();

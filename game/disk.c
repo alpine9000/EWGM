@@ -103,7 +103,7 @@ disk_read(void* dest, void* src, int32_t size)
   error = disk_loadData(dest, src, size);
   
   if (error) {
-    if (message_ask("disk read fail, retry? y/n")) {
+    if (message_ask(I18N_DISK_READ_RTRY)) {
       goto retry;
     }
   }
