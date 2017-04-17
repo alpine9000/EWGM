@@ -59,11 +59,14 @@ enemy_strikingDistanceX(object_t* a, object_t* b)
 static int16_t
 enemy_strikingDistanceX(object_t* a, object_t* b)
 {
-  fighter_data_t* a_data = a->data;
+  //  fighter_data_t* a_data = a->data;
   fighter_data_t* b_data = b->data;    
-  uint16_t thresholdx = b_data->attackRange[OBJECT_PUNCH_LEFT2];
-  int16_t a_widthOffset = a_data->widthOffset;
-  int16_t b_widthOffset = b_data->widthOffset;
+  //  uint16_t thresholdx = b_data->attackRange[OBJECT_PUNCH_LEFT2];
+  uint16_t thresholdx = b_data->attackRange[OBJECT_PUNCH_LEFT2];  
+    //  int16_t a_widthOffset = a_data->widthOffset;
+  //int16_t b_widthOffset = b_data->widthOffset;
+  int16_t a_widthOffset = a->widthOffset;
+  int16_t b_widthOffset = b->widthOffset;  
   int16_t a_x1 = (((object_px(a)) / OBJECT_PHYSICS_FACTOR) + a_widthOffset);
   int16_t a_x2 = (((object_px(a)) / OBJECT_PHYSICS_FACTOR) + (OBJECT_WIDTH - a_widthOffset));
   int16_t b_x1 = (((object_px(b)) / OBJECT_PHYSICS_FACTOR) + b_widthOffset) - thresholdx;
@@ -161,7 +164,9 @@ enemy_add(uint16_t x, uint16_t y, uint16_t attackWait, uint16_t attackDuration, 
   object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_PLAYER1_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, ENEMY_ATTACK_DAMMAGE, intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   data->attackDurationFrames = attackDuration;
-  data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
+  //  data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
+  ptr->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
+  ptr->width = OBJECT_WIDTH;
   data->enemyAttackWaitTics = attackWait;
   data->enemyAttackWait = attackWait;
   data->attackHitAnimTic = 0;

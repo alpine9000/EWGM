@@ -75,6 +75,7 @@ static int16_t game_turtle;
 #endif
 
 #ifdef DEBUG
+uint16_t game_collisions;
 static uint16_t game_rasterLines[GAME_RASTERAVERAGE_LENGTH];
 static uint16_t game_rasterLinesIndex;
 static uint16_t game_maxRasterLine;
@@ -402,6 +403,7 @@ game_loadLevel(menu_command_t command)
     game_turtle = 0;
 #endif
 #ifdef DEBUG
+  game_collisions = 1;
   game_collectTotal = 1;
   game_total = 0;
   game_frame  = 0;
@@ -468,7 +470,11 @@ game_loadLevel(menu_command_t command)
   enemy_init();
 
   conductor_init(level.instructions);  
-    
+
+#ifdef OBJECT_Z_BUFFER_COLLISION
+  object_initZbuffer();
+#endif
+  
   hw_waitBlitter();
 
   game_render(0);
@@ -747,6 +753,9 @@ game_processKeyboard()
 {
   switch (keyboard_key) {
 #ifdef DEBUG
+  case 'C':
+    game_collisions = !game_collisions;
+    break;
   case 'E':
     enemy_pause = !enemy_pause;
     break;

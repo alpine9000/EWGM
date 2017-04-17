@@ -86,6 +86,8 @@ player_init(uint16_t id, uint16_t animId, int16_t x)
   } else {
     width = PLAYER_PLAYER2_WIDTH;
   }
-  data->widthOffset = (OBJECT_WIDTH-width)/2;  
+  //  data->widthOffset = (OBJECT_WIDTH-width)/2;
+  ptr->widthOffset = (OBJECT_WIDTH-width)/2;
+  ptr->width = OBJECT_WIDTH;
   return ptr;
 }

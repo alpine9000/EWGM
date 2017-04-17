@@ -115,6 +115,65 @@ thing_updatePosition(uint16_t deltaT, object_t* ptr)
   ptr->velocity.vy = object_py(ptr) - lastY;
 }
 
+
+int16_t
+thing_collision(object_t* a, object_collision_t* collision)
+{
+  int16_t _collision = 0;
+  object_t* b = object_activeList;
+  
+  collision->up = collision->down = collision->left = collision->right = 0;
+
+#ifdef DEBUG
+  if (!game_collisions) {
+    return 0;
+  }
+#endif
+  
+  while (b) {  
+    if ((b->class == OBJECT_CLASS_FIGHTER) && b != a && b->state == OBJECT_STATE_ALIVE) {
+      
+      int16_t a_y = object_y(a);
+      int16_t b_y = object_y(b);
+
+      if (abs(a_y - b_y) <= 1) {
+	uint16_t a_width;
+	uint16_t b_width;
+	int16_t a_widthOffset;
+	int16_t b_widthOffset;
+
+	
+	a_widthOffset = a->widthOffset;
+	a_width = a->width;
+	b_widthOffset = b->widthOffset;
+	b_width = b->width;		
+	
+	int16_t a_x1 = object_x(a) + a_widthOffset;
+	int16_t a_x2 = object_x(a) + (a_width - a_widthOffset);
+	int16_t b_x1 = object_x(b) + b_widthOffset;
+	int16_t b_x2 = object_x(b) + (b_width - b_widthOffset);
+	
+	if (a_x1 < b_x2 && a_x2 > b_x1) {		  
+	  if (b_y >= a_y) {
+	    collision->up = b;
+	  } else if (b_y < a_y) {
+	    collision->down = b;
+	  }
+	  if (b_x1 >= a_x1) {
+	    collision->right = b;
+	  } else if (b_x1 < a_x1) {
+	    collision->left = b;
+	  }
+	  _collision = 1;
+	}
+      }
+    }
+    b = b->next;
+  }
+  
+  return _collision;
+}
+
 void
 thing_update(uint16_t deltaT, object_t* ptr)
 {
@@ -138,7 +197,7 @@ thing_update(uint16_t deltaT, object_t* ptr)
     thing_updatePosition(deltaT, ptr);
   } else if (data->bonus) {
     object_collision_t collision;
-    if (fighter_collision(deltaT, ptr, &collision, 0, 1)) {
+    if (thing_collision(ptr, &collision)) {
       if (collision.right) {
 	thing_awardBonus(ptr, collision.right);
       }
@@ -170,7 +229,10 @@ thing_add(uint16_t id, uint16_t animId, uint16_t brokenId, uint16_t junkStartId,
   data->bonus = 0;
   data->brokenId = brokenId;
   data->junkStartId = junkStartId;
-  return object_add(id, OBJECT_CLASS_THING, x, y, 0, animId, thing_update, data, thing_addFree);
+  object_t* ptr = object_add(id, OBJECT_CLASS_THING, x, y, 0, animId, thing_update, data, thing_addFree);
+  ptr->width = ptr->image->w;
+  ptr->widthOffset = 0;
+  return ptr;
 }
 
 
@@ -187,6 +249,8 @@ thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t yOffset, uint1
  
   object_t* jptr = object_add(OBJECT_ID_JUNK, OBJECT_CLASS_JUNK, x, yOffset+object_y(ptr)-40, 0, animId, thing_update, junk, thing_addFree);
   USE(jptr);
+  jptr->widthOffset = 0;
+  jptr->width = jptr->image->w;
   jptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
   jptr->velocity.x = dx*4;
 }

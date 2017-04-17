@@ -284,6 +284,8 @@ typedef struct object {
   int16_t _z;
   int16_t _px;
   int16_t _py;
+  int16_t _nextX;
+  int16_t _nextY;  
   object_velocity_t velocity;
   int16_t imageIndex;
   object_image_t* image;
@@ -299,6 +301,9 @@ typedef struct object {
   void (*freeData)(void* data);
   uint16_t visible;
   uint16_t tileRender;
+
+  uint16_t widthOffset;
+  uint16_t width;
 } object_t;
 
 
@@ -413,4 +418,11 @@ object_set_z(object_t* ptr, int16_t z)
 
 void
 object_setAnim(object_t* ptr, int16_t anim);
+
+#ifdef OBEJCT_Z_BUFFER_COLLISION
+extern uint16_t object_zBufferValid;
+void
+object_initZbuffer(void);
+#endif
+
 #endif

@@ -2,11 +2,12 @@
 
 int16_t object_count;
 object_t* object_activeList;
-//uint16_t object_zBufferValid;
 static object_t* object_freeList;
 static __attribute__((aligned (4))) __section(random_c) object_t object_buffer[OBJECT_MAX_OBJECTS];
 object_t* object_zBuffer[OBJECT_MAX_OBJECTS];
-
+#ifdef OBEJCT_Z_BUFFER_COLLISION
+uint16_t object_zBufferValid;
+#endif
 
 static object_t*
 object_getFree(void)
@@ -163,8 +164,9 @@ void
 object_init(void)
 {
   USE(object_animations[0].start);
-
-  //  object_zBufferValid = 0;
+#ifdef OBEJCT_Z_BUFFER_COLLISION
+  object_zBufferValid = 0;
+#endif
   object_count = 0;
   object_activeList = 0;
   object_freeList = &object_buffer[0];
@@ -303,7 +305,9 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
   object_saveBackground(fb);  
 
   sort_z(object_count, object_zBuffer);
-  //  object_zBufferValid = 1;
+#ifdef OBEJCT_Z_BUFFER_COLLISION
+  object_zBufferValid = 1;
+#endif
   
   for (int16_t i = 0; i < object_count; i++) {
     object_t* ptr = object_zBuffer[i];
@@ -314,6 +318,21 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
   }
 }
 
+#ifdef OBEJCT_Z_BUFFER_COLLISION
+void
+object_initZbuffer(void)
+{
+  object_t* ptr = object_activeList;
+  int16_t i = 0;
+  while (ptr != 0) {
+    object_zBuffer[i] = ptr;
+    i++;
+    ptr = ptr->next;
+  }
+  sort_z(object_count, object_zBuffer);
+  object_zBufferValid = 1;
+}
+#endif
 
 void
 object_saveBackground(frame_buffer_t fb)

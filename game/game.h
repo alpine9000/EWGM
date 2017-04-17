@@ -6,13 +6,14 @@
 #include <hardware/intbits.h>
 
 //#define DEBUG_SPEED                   1
-//#define DEBUG                         1
+#define DEBUG                         1
 //#define SCRIPTING                     1
 #define GAME_25_FPS                   1
-//#define GAME_TURTLE                   1
+#define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1
-//#define GAME_RECORDING                1
+#define GAME_RECORDING                1
 //#define GAME_BLITTER_WAIT_DEBUG       1
+//#define GAME_Z_BUFFER_COLLISION   1
 
 #define INLINE inline
 #define STATIC_INLINE static inline
@@ -112,6 +113,10 @@ extern uint16_t game_over;
 extern uint16_t game_numPlayers;
 extern uint32_t game_player1Score;
 extern uint32_t game_player2Score;
+
+#ifdef DEBUG
+extern uint16_t game_collisions;
+#endif
 
 
 #include "string.h"

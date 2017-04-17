@@ -205,7 +205,9 @@ level1_doAddBoss(uint16_t x)
   data->attackRange = level1_boss_attack_range;
   data->attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE;
   data->attackDurationFrames = PLAYER_ATTACK_DURATION_TICS-2;
-  data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
+  //  data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
+  ptr->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
+  ptr->width = OBJECT_WIDTH;
   data->enemyAttackWait = 0;//ENEMY_BOSS_ATTACK_TICS_PER_FRAME*ENEMY_BOSS_NUM_ATTACK_FRAMES;
   data->attackDammage = 20;
   data->enemyAttackWaitTics = 0;//data->enemyAttackWait;
@@ -291,7 +293,15 @@ conductor_instruction_t level1_instructions[] = {
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_start},
 
   //   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_pause},      
-  
+#if 0
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE3_1, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE3_2, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE3_3, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE3_4, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE3_5, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE3_6, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_pause},        
+  #endif
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_1, level1_processEnemyConfig},    
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_2, level1_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_3, level1_processEnemyConfig},
