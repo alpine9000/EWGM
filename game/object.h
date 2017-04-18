@@ -285,8 +285,6 @@ typedef struct object {
   int16_t _z;
   int16_t _px;
   int16_t _py;
-  int16_t _nextX;
-  int16_t _nextY;  
   object_velocity_t velocity;
   int16_t imageIndex;
   object_image_t* image;
@@ -297,7 +295,7 @@ typedef struct object {
   object_save_t save;
   uint16_t frameCounter;
   uint16_t deadRenderCount;
-  uint16_t state;
+  uint16_t _state;
   void (*update)(uint16_t deltaT, struct object* ptr);
   void (*freeData)(void* data);
   uint16_t visible;
@@ -305,6 +303,8 @@ typedef struct object {
 
   uint16_t widthOffset;
   uint16_t width;
+
+  uint16_t collidable;
 } object_t;
 
 
@@ -363,6 +363,23 @@ object_px(object_t* ptr) {
 inline static int16_t
 object_py(object_t* ptr) {
   return ptr->_py;
+}
+
+inline static uint16_t
+object_get_state(object_t* ptr) {
+  return ptr->_state;
+}
+
+inline static void
+object_set_state(object_t* ptr, uint16_t state) {  
+  ptr->_state = state;
+  if (state == OBJECT_STATE_ALIVE) {
+    if (ptr->class == OBJECT_CLASS_FIGHTER || ptr->class == OBJECT_CLASS_THING) {
+      ptr->collidable = 1;
+      return;
+    }
+  } 
+  ptr->collidable = 0;
 }
 
 #define object_screenx(ptr) (ptr->image->dx + 0xf + ptr->_x-game_cameraX-game_screenScrollX)

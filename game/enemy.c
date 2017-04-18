@@ -18,14 +18,14 @@ enemy_closestPlayer(object_t* ptr)
     return game_player2;
   } 
 
-  if (game_player1->state == OBJECT_STATE_REMOVED &&
-      game_player2->state != OBJECT_STATE_REMOVED) {
+  if (object_get_state(game_player1) == OBJECT_STATE_REMOVED &&
+      object_get_state(game_player2) != OBJECT_STATE_REMOVED) {
     return game_player2;
-  } else  if (game_player2->state == OBJECT_STATE_REMOVED &&
-	      game_player1->state != OBJECT_STATE_REMOVED) {
+  } else  if (object_get_state(game_player2) == OBJECT_STATE_REMOVED &&
+	      object_get_state(game_player1) != OBJECT_STATE_REMOVED) {
     return game_player1;
-  } else if (game_player2->state == OBJECT_STATE_REMOVED &&
-	      game_player1->state == OBJECT_STATE_REMOVED) {
+  } else if (object_get_state(game_player2) == OBJECT_STATE_REMOVED &&
+	     object_get_state(game_player1) == OBJECT_STATE_REMOVED) {
     return 0;
   }
 

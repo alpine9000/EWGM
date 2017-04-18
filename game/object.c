@@ -279,7 +279,7 @@ object_update(uint16_t deltaT)
     if (ptr->update) {
       ptr->update(deltaT, ptr);
     }
-    if (ptr->state == OBJECT_STATE_REMOVED) {
+    if (object_get_state(ptr) == OBJECT_STATE_REMOVED) {
       if (ptr->deadRenderCount == 2) {
 	if (ptr == game_player1) {
 	  game_player1 = 0;
@@ -311,7 +311,7 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
 
   for (int16_t i = 0; i < object_count; i++) {
     object_t* ptr = object_zBuffer[i];
-    if (ptr->state != OBJECT_STATE_REMOVED) {
+    if (object_get_state(ptr) != OBJECT_STATE_REMOVED) {
       object_renderObject(fb, ptr);
       object_updateAnimation(deltaT, ptr);      
     }
@@ -403,7 +403,7 @@ object_add(uint16_t id, uint16_t class, int16_t x, int16_t y, int16_t dx, int16_
 #endif
 
   object_t* ptr = object_getFree();
-  ptr->state = OBJECT_STATE_ALIVE;
+  object_set_state(ptr, OBJECT_STATE_ALIVE);
   ptr->class = class;
   ptr->visible = 1;
   ptr->id = id;
@@ -437,6 +437,8 @@ object_add(uint16_t id, uint16_t class, int16_t x, int16_t y, int16_t dx, int16_
   ptr->data = data;
   ptr->freeData = freeData;
   ptr->tileRender = 0;
+
+  ptr->collidable = (ptr->class == OBJECT_CLASS_FIGHTER || ptr->class == OBJECT_CLASS_THING);
   object_addToActive(ptr);
   return ptr;
 }

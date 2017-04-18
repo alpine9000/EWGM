@@ -95,8 +95,9 @@ fighter_collision(int16_t deltaT, object_t* a, object_collision_t* collision, ui
   int16_t a_x1 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + a->widthOffset)-thresholdx;
   int16_t a_x2 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + (a->width - a->widthOffset)) + thresholdx;
   
-  while (b) {  
-    if ((b->class == OBJECT_CLASS_FIGHTER || b->class == OBJECT_CLASS_THING) && b != a && b->state == OBJECT_STATE_ALIVE) {
+  while (b) {
+    if (b->collidable && b != a) {
+    //    if ((b->class == OBJECT_CLASS_FIGHTER || b->class == OBJECT_CLASS_THING) && b != a && object_get_state(b) == OBJECT_STATE_ALIVE) {
       
       int16_t b_y = ((object_y(b)));
 
@@ -215,7 +216,7 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
     return;
   }
   
-  if (ptr->state == OBJECT_STATE_HIT) {
+  if (object_get_state(ptr) == OBJECT_STATE_HIT) {
     return;
   }
   
@@ -259,7 +260,7 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
     ptr->velocity.x = dx;
   }
   
-  ptr->state = OBJECT_STATE_HIT;
+  object_set_state(ptr, OBJECT_STATE_HIT);
   if (dx >= 0) {
     object_setAction(ptr, OBJECT_HIT_LEFT);
   } else {
@@ -276,11 +277,11 @@ fighter_updatePositionUnderAttack(uint16_t deltaT, object_t* ptr, fighter_data_t
     ptr->velocity.y = 0;
     ptr->velocity.x = 0;    
     if (data->health <= 0) {
-      ptr->state = OBJECT_STATE_FLASHING;
+      object_set_state(ptr, OBJECT_STATE_FLASHING);
       data->flashCount = 7;
       data->flashFrames = 75;
     } else {
-      ptr->state = OBJECT_STATE_ALIVE;
+      object_set_state(ptr, OBJECT_STATE_ALIVE);
       //      data->attackQueued = 1;
       data->postAttackCount = data->postAttackInvincibleTics;
     }
@@ -331,7 +332,7 @@ fighter_doAttack(int16_t deltaT, object_t* ptr, fighter_data_t* data)
 static void
 fighter_updateSprite(object_t* ptr)
 {
-    if (ptr->state == OBJECT_STATE_ALIVE) {
+  if (object_get_state(ptr) == OBJECT_STATE_ALIVE) {
     object_set_z(ptr, object_y(ptr));
     if (ptr->velocity.dx || ptr->velocity.dy) {
       if (ptr->velocity.dx > 0) {
@@ -366,7 +367,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 {
   fighter_data_t* data = (fighter_data_t*)ptr->data;  
 
-  uint16_t attack = (ptr->state == OBJECT_STATE_ALIVE) ? data->intelligence(deltaT, ptr, data) : 0;
+  uint16_t attack = (object_get_state(ptr) == OBJECT_STATE_ALIVE) ? data->intelligence(deltaT, ptr, data) : 0;
 
   if (game_over) {
     return;
@@ -388,18 +389,18 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 
   ptr->velocity.ix = 0;      
   
-  if (data->attackQueued && data->attackCount == 0 && ptr->state == OBJECT_STATE_ALIVE) {
+  if (data->attackQueued && data->attackCount == 0 && object_get_state(ptr) == OBJECT_STATE_ALIVE) {
     data->buttonReleased = 0;
     data->attackQueued = 0;
     fighter_doAttack(deltaT, ptr, data);
   } else if (data->attackCount) {
     fighter_checkAttack(deltaT, ptr, data);
   } else {
-    if (ptr->state == OBJECT_STATE_HIT) {
+    if (object_get_state(ptr) == OBJECT_STATE_HIT) {
       fighter_updatePositionUnderAttack(deltaT, ptr, data);
       object_updatePosition(deltaT, ptr);
       fighter_updateSprite(ptr);
-    } else if (ptr->state == OBJECT_STATE_FLASHING) {
+    } else if (object_get_state(ptr) == OBJECT_STATE_FLASHING) {
       if (data->flashCount <= 0) {
 	ptr->visible = !ptr->visible;
 	data->flashCount = 10;
@@ -407,7 +408,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
       data->flashCount-=deltaT;
       data->flashFrames -= deltaT;
       if (data->flashFrames <= 0) {
-	ptr->state = OBJECT_STATE_REMOVED;
+	object_set_state(ptr, OBJECT_STATE_REMOVED);
 	switch (ptr->id) {
 	case OBJECT_ID_ENEMY:
 	  enemy_count--;

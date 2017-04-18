@@ -766,7 +766,7 @@ game_processKeyboard()
       game_numPlayers = 2;
       game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
       game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_BLANK_GAME_OVER);
-      game_player2 = player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER3_STAND_RIGHT, SCREEN_WIDTH-80);
+      game_player2 = player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER3_STAND_RIGHT, game_cameraX+SCREEN_WIDTH-80);
     }
     break;    
   }

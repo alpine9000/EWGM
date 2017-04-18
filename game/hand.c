@@ -15,7 +15,7 @@ hand_update(uint16_t deltaT, object_t* ptr)
     if (hand_hideNextAnimation) {
       hand_frame = 0;
       //      ptr->visible = 0;
-      ptr->state = OBJECT_STATE_REMOVED;
+      object_set_state(ptr, OBJECT_STATE_REMOVED);
     } else {
       hand_frame = hw_verticalBlankCount;
       ptr->visible = !ptr->visible;

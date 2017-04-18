@@ -240,7 +240,7 @@ level1_scroll(uint16_t argument)
 static void
 level1_removeDoor(void)
 {
-  level1_door->state = OBJECT_STATE_REMOVED;
+  object_set_state(level1_door, OBJECT_STATE_REMOVED);
 }
 
 static int16_t

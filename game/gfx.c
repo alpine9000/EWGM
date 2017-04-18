@@ -36,7 +36,7 @@ gfx_ctor()
 INLINE void
 gfx_screenWidthBitBlit(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
-  static volatile struct Custom* _custom = CUSTOM;
+  volatile struct Custom* _custom = CUSTOM;
   frame_buffer_t source = level.spriteBitplanes;
   frame_buffer_t mask = level.spriteMask;
   uint32_t widthWords =  ((w+15)>>4)+1;
@@ -67,7 +67,7 @@ gfx_screenWidthBitBlit(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, 
 INLINE void
 gfx_screenWidthBitBlit(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
-  static volatile struct Custom* _custom = CUSTOM;
+  volatile struct Custom* _custom = CUSTOM;
   frame_buffer_t source = level.spriteBitplanes;
   frame_buffer_t mask = level.spriteMask;
   uint32_t widthWords =  ((w+15)>>4)+1;
@@ -121,7 +121,7 @@ gfx_screenWidthBitBlit(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, 
 void 
 gfx_screenWidthBitBlitNoMask(frame_buffer_t dest, frame_buffer_t src, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
-  static volatile struct Custom* _custom = CUSTOM;
+  volatile struct Custom* _custom = CUSTOM;
   uint32_t widthWords = ((w+15)>>4)+1;
   int32_t shift = (dx&0xf);
   
@@ -278,7 +278,7 @@ gfx_fillRectSmallScreen(frame_buffer_t fb, uint16_t x, uint16_t y, uint16_t w, u
 INLINE void
 gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
-  static volatile struct Custom* _custom = CUSTOM;
+  volatile struct Custom* _custom = CUSTOM;
   frame_buffer_t source = level.spriteBitplanes;
   frame_buffer_t mask = level.spriteMask;
   uint32_t widthWords =  ((w+15)>>4)+1;
@@ -311,7 +311,7 @@ gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_
 INLINE void
 gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
-  static volatile struct Custom* _custom = CUSTOM;
+  volatile struct Custom* _custom = CUSTOM;
   frame_buffer_t source = level.spriteBitplanes;
   frame_buffer_t mask = level.spriteMask;
   uint32_t widthWords =  ((w+15)>>4)+1;

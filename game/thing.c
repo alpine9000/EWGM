@@ -80,10 +80,10 @@ void
 thing_awardBonus(object_t* ptr, object_t* collision)
 {
   if (collision->id == OBJECT_ID_PLAYER1) {
-    ptr->state = OBJECT_STATE_REMOVED;    
+    object_set_state(ptr, OBJECT_STATE_REMOVED);    
     sound_queueSound(SOUND_PICKUP);
   } else if (collision->id == OBJECT_ID_PLAYER2) {
-    ptr->state = OBJECT_STATE_REMOVED;
+    object_set_state(ptr,  OBJECT_STATE_REMOVED);
     sound_queueSound(SOUND_PICKUP);    
   }
 
@@ -133,9 +133,11 @@ thing_collision(object_t* a)
   
   if (game_player1) {
     b = game_player1;
-    if ((b->class == OBJECT_CLASS_FIGHTER) && b->state == OBJECT_STATE_ALIVE) {      
+    //if ((b->class == OBJECT_CLASS_FIGHTER) && object_get_state(b) == OBJECT_STATE_ALIVE) {      
       int16_t b_y = object_y(b);
       if (abs(a_y - b_y) <= 1) {
+	a_x1 = object_x(a) + a->widthOffset;
+	a_x2 = object_x(a) + (a->width - a->widthOffset);	
 	int16_t b_x1 = object_x(b) + b->widthOffset;
 	int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
 	
@@ -143,12 +145,12 @@ thing_collision(object_t* a)
 	  return b;
 	}
       }
-    }
+    //}
   }
 
   if (game_player2) {
     b = game_player2;
-    if ((b->class == OBJECT_CLASS_FIGHTER) && b->state == OBJECT_STATE_ALIVE) {      
+    //if ((b->class == OBJECT_CLASS_FIGHTER) && object_get_state(b) == OBJECT_STATE_ALIVE) {      
       int16_t b_y = object_y(b);
       if (abs(a_y - b_y) <= 1) {
 	int16_t b_x1 = object_x(b) + b->widthOffset;
@@ -158,7 +160,7 @@ thing_collision(object_t* a)
 	  return b;
 	}
       }
-    }
+    //}
   }
   
   return 0;
@@ -176,7 +178,7 @@ thing_update(uint16_t deltaT, object_t* ptr)
       ptr->velocity.x = 0;    
       data->underAttack = 0;
       if (!data->bonus && !data->attackable) {
-	ptr->state = OBJECT_STATE_REMOVED;
+	object_set_state(ptr, OBJECT_STATE_REMOVED);
       } else {
 	object_set_z(ptr, object_y(ptr));
       }
@@ -193,7 +195,7 @@ thing_update(uint16_t deltaT, object_t* ptr)
   }
 
   if (object_screenx(ptr) < -ptr->image->w) {
-    ptr->state = OBJECT_STATE_REMOVED;
+    object_set_state(ptr, OBJECT_STATE_REMOVED);
   }
 }
 
