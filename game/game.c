@@ -71,6 +71,7 @@ static uint32_t game_lastVerticalBlankCount;
 
 #ifdef GAME_TURTLE
 static int16_t game_turtle;
+__EXTERNAL int16_t game_missedFrameCount;
 #endif
 
 #ifdef DEBUG
@@ -82,12 +83,10 @@ static uint16_t game_collectTotal;
 static uint32_t game_total;
 static uint32_t game_frame;
 static uint16_t game_average;
-static int16_t game_missedFrameCount;
 static uint16_t game_lastAverage;
 static uint16_t game_lastMaxRasterLine;
 static int16_t game_lastEnemyCount;
 static int16_t game_lastItemCount;
-static int16_t game_lastMissedFrameCount;
 static int16_t game_scoreBoardMode = 0;
 static int16_t game_debugRenderFrame;
 #endif
@@ -374,6 +373,7 @@ game_loadLevel(menu_command_t command)
 
 #ifdef GAME_TURTLE
   game_turtle = 0;
+  game_missedFrameCount = 0;
 #endif
 
 #ifdef DEBUG
@@ -384,8 +384,6 @@ game_loadLevel(menu_command_t command)
   game_average = 0;
   game_maxRasterLine = 0;
   game_rasterLinesIndex = 0;
-  game_lastMissedFrameCount = -1;
-  game_missedFrameCount = 0;
   game_lastAverage = -1;
   game_lastMaxRasterLine = -1;
   game_lastEnemyCount = -1;
@@ -532,7 +530,9 @@ debug_mode(void)
     }
     break;
   case 3:
+#ifdef GAME_TURTLE
     text_drawScoreBoard(itoan(game_missedFrameCount, 3),5*8, 9);
+#endif
     break;
   case 4:
     if (game_average != game_lastAverage) {
@@ -964,11 +964,9 @@ game_loop()
 	game_collectTotal &&
 #endif
 	hw_verticalBlankCount-game_lastVerticalBlankCount > 2) {
-#ifdef DEBUG
-      game_missedFrameCount++;
-#endif
 #ifdef GAME_TURTLE
       game_turtle = 5;
+      game_missedFrameCount++;      
 #endif
     }
 #ifdef GAME_25_FPS

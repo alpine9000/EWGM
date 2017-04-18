@@ -6,7 +6,13 @@
 typedef struct {
   uint16_t tileAddresses[MAP_TILE_WIDTH][MAP_TILE_HEIGHT];
   uint8_t spriteBitplanes[SPRITE_SHEET_WIDTH_BYTES*SCREEN_BIT_DEPTH*SPRITE_SHEET_HEIGHT];
+
+#ifndef GAME_ONE_BITPLANE_SPRITE_MASK
   uint8_t spriteMask[SPRITE_SHEET_WIDTH_BYTES*SCREEN_BIT_DEPTH*SPRITE_SHEET_HEIGHT];
+#else
+  uint8_t spriteMask[SPRITE_SHEET_WIDTH_BYTES*SPRITE_SHEET_HEIGHT];
+#endif
+
   uint8_t tileBitplanes[TILE_SHEET_WIDTH_BYTES*SCREEN_BIT_DEPTH*TILE_SHEET_HEIGHT];
   uint16_t palette[32];
   uint16_t clouds;

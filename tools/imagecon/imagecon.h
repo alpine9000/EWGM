@@ -31,6 +31,7 @@ typedef struct {
   int outputPaletteAsm;
   int outputPaletteGrey;
   int outputMask;
+  int oneBitplaneMask;
   int outputBitplanes;
   int outputCopperList;
   int outputAttachedSprite;

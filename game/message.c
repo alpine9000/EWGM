@@ -40,7 +40,7 @@ message_pokeCopperList(frame_buffer_t frameBuffer)
 }
 
 
-void
+NOINLINE void
 message_screenOn(char* message)
 {
   if (message_on) {
@@ -93,7 +93,7 @@ message_screenOn(char* message)
   message_on = 1;
 }
 
-void
+NOINLINE void
 message_screenOff(void)
 {
   hw_waitBlitter();
@@ -111,7 +111,7 @@ message_screenOff(void)
   }
 }
 
-void
+NOINLINE void
 message_loading(char* message)
 {
 #if TRACKLOADER==1
@@ -125,7 +125,7 @@ message_loading(char* message)
   hw_waitVerticalBlank();  
 }
 
-uint16_t
+NOINLINE uint16_t
 message_ask(char* message)
 {
   uint16_t result = 0;

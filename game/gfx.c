@@ -5,6 +5,10 @@ uint16_t gfx_heightLUT[129];
 uint16_t gfx_renderSprite16NoShiftSetup;
 uint32_t gfx_dySpriteOffsetsLUT[SPRITE_SHEET_HEIGHT];
 
+#ifdef GAME_ONE_BITPLANE_SPRITE_MASK
+uint32_t gfx_dySpriteMaskOffsetsLUT[SPRITE_SHEET_HEIGHT];
+#endif
+
 void 
 gfx_ctor()
 {
@@ -16,11 +20,19 @@ gfx_ctor()
     gfx_dySpriteOffsetsLUT[y] = (y * (SPRITE_SHEET_WIDTH_BYTES*SCREEN_BIT_DEPTH));
   }
 
+#ifdef GAME_ONE_BITPLANE_SPRITE_MASK
+  for (uint16_t y = 0; y < SPRITE_SHEET_HEIGHT; y++) {
+    gfx_dySpriteMaskOffsetsLUT[y] = (y * (SPRITE_SHEET_WIDTH_BYTES));
+  }
+#endif
+
   for (uint16_t h = 0; h <= 128; h++) {
     gfx_heightLUT[h] = (h*SCREEN_BIT_DEPTH)<<6;
   }
 }
 
+
+#ifndef GAME_ONE_BITPLANE_SPRITE_MASK
 INLINE void
 gfx_screenWidthBitBlit(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
@@ -50,8 +62,61 @@ gfx_screenWidthBitBlit(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, 
   _custom->bltdpt = (uint8_t*)dest;
   //  _custom->bltsize = (h*SCREEN_BIT_DEPTH)<<6 | widthWords;
   _custom->bltsize = gfx_heightLUT[h] | widthWords;
+}
+#else
+INLINE void
+gfx_screenWidthBitBlit(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
+{
+  static volatile struct Custom* _custom = CUSTOM;
+  frame_buffer_t source = level.spriteBitplanes;
+  frame_buffer_t mask = level.spriteMask;
+  uint32_t widthWords =  ((w+15)>>4)+1;
+  int32_t shift = (dx&0xf);
+  
+  dest += (dy * (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)) + (dx>>3);
+  source += gfx_dySpriteOffsetsLUT[sy] + (sx>>3);
+  mask += gfx_dySpriteMaskOffsetsLUT[sy] + (sx>>3);
+
+  uint16_t bltsize = (h)<<6 | widthWords;
+
+  uint16_t bltamod = (SPRITE_SHEET_WIDTH_BYTES-(widthWords<<1));
+  uint16_t bltbmod = (SPRITE_SHEET_WIDTH_BYTES*(SCREEN_BIT_DEPTH-1))+(SPRITE_SHEET_WIDTH_BYTES-(widthWords<<1));
+  uint16_t bltdmod = (SCREEN_WIDTH_BYTES*(SCREEN_BIT_DEPTH-1))+(SCREEN_WIDTH_BYTES-(widthWords<<1));
+  
+  hw_waitBlitter();   
+  //  _custom->bltafwm = 0xffff;
+  _custom->bltalwm = 0x0000;
+  _custom->bltcon0 = (SRCA|SRCB|SRCC|DEST|0xca|shift<<ASHIFTSHIFT);
+  _custom->bltcon1 = shift<<BSHIFTSHIFT;
+
+  _custom->bltamod = bltamod;
+  _custom->bltbmod = bltbmod;
+  _custom->bltcmod = bltdmod;
+  _custom->bltdmod = bltdmod;
+  
+  _custom->bltapt = (uint8_t*)mask;
+  _custom->bltbpt = (uint8_t*)source;
+  _custom->bltcpt = (uint8_t*)dest;
+  _custom->bltdpt = (uint8_t*)dest;
+  _custom->bltsize = bltsize;
+
+  frame_buffer_t s = source;
+  frame_buffer_t d = dest;
+  
+  for (uint16_t i = 0; i < SCREEN_BIT_DEPTH-1; i++) {
+    s += SPRITE_SHEET_WIDTH_BYTES;
+    d += SCREEN_WIDTH_BYTES;
+    hw_waitBlitter();    
+    _custom->bltapt = (uint8_t*)mask;
+    _custom->bltbpt = (uint8_t*)s;
+    _custom->bltcpt = (uint8_t*)d;
+    _custom->bltdpt = (uint8_t*)d;
+    _custom->bltsize = bltsize;    
+  }
+
 
 }
+#endif
 
 void 
 gfx_screenWidthBitBlitNoMask(frame_buffer_t dest, frame_buffer_t src, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
@@ -209,6 +274,7 @@ gfx_fillRectSmallScreen(frame_buffer_t fb, uint16_t x, uint16_t y, uint16_t w, u
   }
 }
 
+#ifndef GAME_ONE_BITPLANE_SPRITE_MASK
 INLINE void
 gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
@@ -241,94 +307,55 @@ gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_
 
 }
 
-#if 0
-uint32_t _gfx_quickRenderSpriteBlitSize;
-void
-gfx_setupQuickRenderSprite(void)
-{
-  static volatile struct Custom* _custom = CUSTOM;
-  uint16_t widthWords = (OBJECT_WIDTH/16)+1;//((w+15)>>4)+1;
-  _gfx_quickRenderSpriteBlitSize = (OBJECT_HEIGHT*SCREEN_BIT_DEPTH)<<6 | 3;//gfx_heightLUT[h] | widthWords;
-  
-  hw_waitBlitter();
-  //  _custom->bltafwm = 0xffff;
-  _custom->bltalwm = 0x0000;
-  _custom->bltamod = (SPRITE_SHEET_WIDTH_BYTES-(widthWords<<1));
-  _custom->bltbmod = (SPRITE_SHEET_WIDTH_BYTES-(widthWords<<1));
-  _custom->bltcmod = (FRAME_BUFFER_WIDTH_BYTES-(widthWords<<1));
-  _custom->bltdmod = (FRAME_BUFFER_WIDTH_BYTES-(widthWords<<1));
-}
-
-void
-gfx_quickRenderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy)
+#else
+INLINE void
+gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   static volatile struct Custom* _custom = CUSTOM;
   frame_buffer_t source = level.spriteBitplanes;
   frame_buffer_t mask = level.spriteMask;
-
+  uint32_t widthWords =  ((w+15)>>4)+1;
   int32_t shift = (dx&0xf);
   
   dest += gfx_dyOffsetsLUT[dy] + (dx>>3);
   source += gfx_dySpriteOffsetsLUT[sy] + (sx>>3);
-  mask += gfx_dySpriteOffsetsLUT[sy] + (sx>>3);
+  mask += gfx_dySpriteMaskOffsetsLUT[sy] + (sx>>3);
 
-  hw_waitBlitter();
-  
+  uint16_t bltsize = (h)<<6 | widthWords;
+
+  uint16_t bltamod = (SPRITE_SHEET_WIDTH_BYTES-(widthWords<<1));
+  uint16_t bltbmod = (SPRITE_SHEET_WIDTH_BYTES*(SCREEN_BIT_DEPTH-1))+(SPRITE_SHEET_WIDTH_BYTES-(widthWords<<1));
+  uint16_t bltdmod = (FRAME_BUFFER_WIDTH_BYTES*(SCREEN_BIT_DEPTH-1))+(FRAME_BUFFER_WIDTH_BYTES-(widthWords<<1));
+  hw_waitBlitter();   
+  //  _custom->bltafwm = 0xffff;
+  _custom->bltalwm = 0x0000;
   _custom->bltcon0 = (SRCA|SRCB|SRCC|DEST|0xca|shift<<ASHIFTSHIFT);
   _custom->bltcon1 = shift<<BSHIFTSHIFT;
+  _custom->bltamod = bltamod;
+  _custom->bltbmod = bltbmod;
+  _custom->bltcmod = bltdmod;
+  _custom->bltdmod = bltdmod;
   _custom->bltapt = (uint8_t*)mask;
   _custom->bltbpt = (uint8_t*)source;
   _custom->bltcpt = (uint8_t*)dest;
   _custom->bltdpt = (uint8_t*)dest;
-  _custom->bltsize = _gfx_quickRenderSpriteBlitSize;
-
+  _custom->bltsize = bltsize;
+  
+  frame_buffer_t s = source;
+  frame_buffer_t d = dest;
+  
+  for (uint16_t i = 0; i < SCREEN_BIT_DEPTH-1; i++) {
+    s += SPRITE_SHEET_WIDTH_BYTES;
+    d += FRAME_BUFFER_WIDTH_BYTES;
+    hw_waitBlitter();    
+    _custom->bltapt = (uint8_t*)mask;
+    _custom->bltbpt = (uint8_t*)s;
+    _custom->bltcpt = (uint8_t*)d;
+    _custom->bltdpt = (uint8_t*)d;
+    _custom->bltsize = bltsize;    
+  }
 }
 #endif
-
-INLINE void
-gfx_saveSprite(frame_buffer_t source, frame_buffer_t dest, gfx_blit_t* blit, int16_t dx, int16_t dy, int16_t w, int16_t h)
-{
-  static volatile struct Custom* _custom = CUSTOM;
-  blit->dest = dest;
-  uint32_t widthWords =  ((w+15)>>4)+1;
-  
-  source += gfx_dyOffsetsLUT[dy] + (dx>>3);
-
-  blit->source = source;
-  blit->size = gfx_heightLUT[h] | widthWords;
-  blit->mod = (FRAME_BUFFER_WIDTH_BYTES-(widthWords<<1));
-
-  hw_waitBlitter();
-
-  _custom->bltcon0 = (SRCA|DEST|0xf0);
-  _custom->bltcon1 = 0;
-  //  _custom->bltafwm = 0xffff;
-  _custom->bltalwm = 0xffff;
-  _custom->bltamod = blit->mod;
-  _custom->bltdmod = 0;
-  _custom->bltapt = (uint8_t*)blit->source;
-  _custom->bltdpt = (uint8_t*)blit->dest;
-  _custom->bltsize = blit->size;
-}
-
-
-INLINE void
-gfx_restoreSprite(gfx_blit_t* blit)
-{
-  static volatile struct Custom* _custom = CUSTOM;
-
-  hw_waitBlitter();
-
-  _custom->bltcon0 = (SRCA|DEST|0xf0);
-  _custom->bltcon1 = 0;
-  //_custom->bltafwm = 0xffff;
-  _custom->bltalwm = 0xffff;
-  _custom->bltamod = 0;
-  _custom->bltdmod = blit->mod;
-  _custom->bltapt = (uint8_t*)blit->dest;
-  _custom->bltdpt = (uint8_t*)blit->source;
-  _custom->bltsize = blit->size;
-}
 
 
 INLINE void
@@ -374,27 +401,3 @@ gfx_quickRenderTile(frame_buffer_t dest, int16_t x, int16_t y, frame_buffer_t ti
   _custom->bltdpt = (uint8_t*)dest;
   _custom->bltsize = (16*SCREEN_BIT_DEPTH)<<6 | 1;
 }
-
-
-INLINE void
-gfx_renderPartialTile(frame_buffer_t dest, int16_t x, int16_t y, uint16_t h, frame_buffer_t tile)
-{
-  static volatile struct Custom* _custom = CUSTOM;
-  if (y < 0) {
-    return;
-  }
-  dest += gfx_dyOffsetsLUT[y] + (x>>3);
-
-  hw_waitBlitter();
-
-  _custom->bltcon0 = (SRCA|DEST|0xf0);
-  _custom->bltcon1 = 0;
-  //  _custom->bltafwm = 0xffff;
-  _custom->bltalwm = 0xffff;
-  _custom->bltamod = SPRITE_SHEET_WIDTH_BYTES-2;
-  _custom->bltdmod = FRAME_BUFFER_WIDTH_BYTES-2;
-  _custom->bltapt = (uint8_t*)tile;
-  _custom->bltdpt = (uint8_t*)dest;
-  _custom->bltsize = gfx_heightLUT[h] | 1;
-}
-

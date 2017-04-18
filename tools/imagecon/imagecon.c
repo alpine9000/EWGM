@@ -9,6 +9,7 @@ imagecon_config_t config = {
   .maxColors = MAX_PALETTE, 
   .outputPalette = 0, 
   .outputMask = 0,
+  .oneBitplaneMask = 0,
   .outputPaletteAsm = 0,
   .outputPaletteGrey = 0,
   .outputBitplanes = 0,
@@ -38,9 +39,10 @@ usage()
 	  "  --set-color <index,r,g,b>\n"\
 	  "  --output <output prefix>\n"\
 	  "  --colors <max colors>\n"\
-	  "  --quantize\n  --output-mask\n"\
+	  "  --quantize\n"\
 	  "  --output-bitplanes\n"\
 	  "  --output-copperlist\n"\
+	  "  --onebitplane-mask\n"\
 	  "  --output-mask\n"\
 	  "  --output-palette-asm\n"\
 	  "  --output-grey-palette-asm\n"\
@@ -381,6 +383,10 @@ outputMask(imagecon_image_t* ic, char* outFilename)
     printf("outputMask...\n");
   }
   int numBitPlanes = (int)(log(ic->numColors-1) / log(2))+1;
+
+  if (config.oneBitplaneMask) {
+    numBitPlanes = 1;
+  }
   
   int byteWidth = (ic->width + 7) / 8;
 
@@ -585,6 +591,7 @@ main(int argc, char **argv)
       {"output-palette-asm", no_argument, &config.outputPaletteAsm, 1},
       {"output-grey-palette-asm", no_argument, &config.outputPaletteGrey, 1},
       {"output-mask", no_argument, &config.outputMask, 1},
+      {"onebitplane-mask", no_argument, &config.oneBitplaneMask, 1},      
       {"output-png", no_argument, &config.outputPng, 1},
       {"extra-half-brite", no_argument, &config.ehbMode, 1},
       {"ham", no_argument, &config.hamMode, 1},

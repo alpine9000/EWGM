@@ -1,6 +1,6 @@
 #include "game.h"
 
-void 
+NOINLINE void 
 screen_pokeCopperList(frame_buffer_t frameBuffer, uint16_t volatile* copperPtr, uint16_t screenWidthBytes)
 {
   /* poke bitplane pointers into copper list */
@@ -15,7 +15,7 @@ screen_pokeCopperList(frame_buffer_t frameBuffer, uint16_t volatile* copperPtr, 
 }
 
 
-void 
+NOINLINE void 
 screen_setup(uint16_t volatile* copperPtr)
 {
   volatile uint16_t scratch;

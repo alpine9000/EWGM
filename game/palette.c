@@ -10,7 +10,7 @@
 uint16_t palette_background = 0;
 
 void
-palette_black(void)
+NOINLINE palette_black(void)
 {
   for (int16_t i = 0; i < SCREEN_NUM_COLORS; i++) {
     custom->color[i] = 0x000;
@@ -19,7 +19,7 @@ palette_black(void)
   palette_background = 0;
 }
 
-void
+NOINLINE void
 palette_fadeTo(uint16_t* palette, uint16_t colors, uint16_t color)
 {
   int fr = _PALETTE_RED(color) << 4;
@@ -50,7 +50,7 @@ palette_fadeTo(uint16_t* palette, uint16_t colors, uint16_t color)
   palette_background = palette[0];
 }
 
-void
+NOINLINE void
 palette_fadeFrom(uint16_t* palette, uint16_t colors, uint16_t color)
 {
   int tr = _PALETTE_RED(color) << 4;

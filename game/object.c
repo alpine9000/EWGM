@@ -308,7 +308,7 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
 #ifdef OBEJCT_Z_BUFFER_COLLISION
   object_zBufferValid = 1;
 #endif
-  
+
   for (int16_t i = 0; i < object_count; i++) {
     object_t* ptr = object_zBuffer[i];
     if (ptr->state != OBJECT_STATE_REMOVED) {
