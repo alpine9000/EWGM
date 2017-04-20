@@ -19,7 +19,7 @@
 extern uint16_t enemy_count;
 
 #ifdef DEBUG
-uint16_t enemy_pause;
+extern uint16_t enemy_pause;
 #endif
 
 void
