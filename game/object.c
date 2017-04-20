@@ -132,31 +132,6 @@ object_updatePosition(uint16_t deltaT, object_t* ptr)
     
   ptr->velocity.dx = object_px(ptr) - lastX;
   ptr->velocity.dy = object_py(ptr) - lastY;
-
-  #if 0
-  if (ptr->state == OBJECT_STATE_ALIVE) {
-    object_set_z(ptr, object_y(ptr));
-    if (vx || vy) {
-      if (vx > 0) {
-	object_setAction(ptr, OBJECT_RUN_RIGHT);
-      } else if (vx < 0) {
-	object_setAction(ptr, OBJECT_RUN_LEFT);
-      } else {
-	if (ptr->anim->facing == FACING_RIGHT) {
-	  object_setAction(ptr, OBJECT_RUN_RIGHT);
-	} else {
-	  object_setAction(ptr, OBJECT_RUN_LEFT);
-	}
-      }
-    } else {
-      if (ptr->anim->facing == FACING_RIGHT) {
-	object_setAction(ptr, OBJECT_STAND_RIGHT);
-      } else {
-	object_setAction(ptr, OBJECT_STAND_LEFT);
-      }
-    }
-  }
-  #endif
 }
 
 

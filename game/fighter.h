@@ -6,6 +6,10 @@
 #define FIGHTER_SHORT_PUNCH_RANGE    8
 //#define FIGHTER_Y_ATTACK_THRESHOLD   6
 #define FIGHTER_ENEMY_Y_ATTACK_RANGE 6
+#define FIGHTER_SPAWN_FLASH_COUNT_TICS 5
+#define FIGHTER_SPAWN_FLASH_DURATION_TICS 100
+#define FIGHTER_HIT_FLASH_COUNT_TICS 5
+#define FIGHTER_HIT_FLASH_DURATION_TICS 75
 
 typedef struct fighter_data {
   struct fighter_data* prev;
@@ -21,10 +25,10 @@ typedef struct fighter_data {
   int16_t health;
   uint16_t buttonReleased;
   uint16_t attackQueued;
-  uint16_t attackDurationFrames;
+  uint16_t attackDurationTics;
   uint16_t attackDammage;
   int16_t flashCount;
-  int16_t flashFrames;
+  int16_t flashDurationTics;
   int16_t enemyAttackWait;
   int16_t enemyAttackWaitTics;  
   uint16_t* attackRange;

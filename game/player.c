@@ -47,10 +47,19 @@ player_processJoystick(object_t * ptr, uint8_t joystickPos)
 uint16_t
 player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
+  if (object_get_state(ptr) != OBJECT_STATE_ALIVE) {
+    if (object_get_state(ptr) == OBJECT_STATE_FLASHING && data->health > 0) {
+      goto ok;
+    }
+    return 0;
+  }
+
+ ok:
   USE(data);
   USE(deltaT);
   uint16_t attack = 0;
   uint16_t buttonDown = 0;
+
   
   if (ptr->id == OBJECT_ID_PLAYER1) {
     player_processJoystick(ptr, hw_joystickPos);
@@ -77,9 +86,11 @@ player_init(uint16_t id, uint16_t animId, int16_t x)
 {
   object_t* ptr = fighter_add(id, animId, x, 100, PLAYER_INITIAL_HEALTH, PLAYER_ATTACK_DAMMAGE, player_intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
-  data->attackDurationFrames = PLAYER_ATTACK_DURATION_TICS;
+  data->attackDurationTics = PLAYER_ATTACK_DURATION_TICS;
   data->attackHitAnimTic = 0;
   data->numAttacks = 2;
+  data->flashCount = FIGHTER_SPAWN_FLASH_COUNT_TICS;
+  data->flashDurationTics = FIGHTER_SPAWN_FLASH_DURATION_TICS;
   uint16_t width;
   if (id == OBJECT_ID_PLAYER1) {
     width = PLAYER_PLAYER1_WIDTH;
@@ -89,5 +100,6 @@ player_init(uint16_t id, uint16_t animId, int16_t x)
   //  data->widthOffset = (OBJECT_WIDTH-width)/2;
   ptr->widthOffset = (OBJECT_WIDTH-width)/2;
   ptr->width = OBJECT_WIDTH;
+  object_set_state(ptr, OBJECT_STATE_FLASHING);  
   return ptr;
 }

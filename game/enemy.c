@@ -87,6 +87,10 @@ enemy_strikingDistanceX(object_t* a, object_t* b)
 uint16_t
 enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
+  if (object_get_state(ptr) != OBJECT_STATE_ALIVE) {
+    return 0;
+  }
+  
 #ifdef DEBUG
   if (enemy_pause) {
     ptr->velocity.x = 0;
@@ -163,7 +167,7 @@ enemy_add(uint16_t x, uint16_t y, uint16_t attackWait, uint16_t attackDuration, 
   }
   object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_PLAYER1_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, ENEMY_ATTACK_DAMMAGE, intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
-  data->attackDurationFrames = attackDuration;
+  data->attackDurationTics = attackDuration;
   //  data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->width = OBJECT_WIDTH;

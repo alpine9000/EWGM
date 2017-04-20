@@ -204,7 +204,7 @@ level1_doAddBoss(uint16_t x)
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   data->attackRange = level1_boss_attack_range;
   data->attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE;
-  data->attackDurationFrames = PLAYER_ATTACK_DURATION_TICS-2;
+  data->attackDurationTics = PLAYER_ATTACK_DURATION_TICS-2;
   //  data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->width = OBJECT_WIDTH;

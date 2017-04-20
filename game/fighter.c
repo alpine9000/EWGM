@@ -278,8 +278,8 @@ fighter_updatePositionUnderAttack(uint16_t deltaT, object_t* ptr, fighter_data_t
     ptr->velocity.x = 0;    
     if (data->health <= 0) {
       object_set_state(ptr, OBJECT_STATE_FLASHING);
-      data->flashCount = 7;
-      data->flashFrames = 75;
+      data->flashCount = FIGHTER_HIT_FLASH_COUNT_TICS;
+      data->flashDurationTics = FIGHTER_HIT_FLASH_DURATION_TICS;
     } else {
       object_set_state(ptr, OBJECT_STATE_ALIVE);
       //      data->attackQueued = 1;
@@ -319,7 +319,7 @@ fighter_doAttack(int16_t deltaT, object_t* ptr, fighter_data_t* data)
   } else {
     object_setAction(ptr, OBJECT_PUNCH_LEFT1 + data->attackType);
   }
-  data->attackCount = data->attackDurationFrames;
+  data->attackCount = data->attackDurationTics;
   data->attackChecked = 0;
   data->attackType++;
   if (data->attackType >= data->numAttacks) {
@@ -332,7 +332,7 @@ fighter_doAttack(int16_t deltaT, object_t* ptr, fighter_data_t* data)
 static void
 fighter_updateSprite(object_t* ptr)
 {
-  if (object_get_state(ptr) == OBJECT_STATE_ALIVE) {
+  //  if (object_get_state(ptr) == OBJECT_STATE_ALIVE) {
     object_set_z(ptr, object_y(ptr));
     if (ptr->velocity.dx || ptr->velocity.dy) {
       if (ptr->velocity.dx > 0) {
@@ -358,20 +358,45 @@ fighter_updateSprite(object_t* ptr)
 	  object_setAction(ptr, OBJECT_STAND_LEFT);
 	}
       }
-    }
+      //    }
   }
 }
 
+
+void
+fighter_die(object_t* ptr)
+{
+  object_set_state(ptr, OBJECT_STATE_REMOVED);
+  switch (ptr->id) {
+  case OBJECT_ID_ENEMY:
+    enemy_count--;
+    if (enemy_count == 0) {
+      if (conductor_complete()) {
+	game_setGameComplete();
+      }
+    }
+    break;	  
+  case OBJECT_ID_PLAYER1:
+    game_player1 = 0;
+    game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
+    if (!game_player2) {
+      game_setGameOver();	    
+    }
+    break;
+  case OBJECT_ID_PLAYER2:
+    game_player2 = 0;
+    if (!game_player1) {
+      game_setGameOver();	    
+    }	  
+    game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);	  	  
+    break;
+  }
+}
 void
 fighter_update(uint16_t deltaT, object_t* ptr)
 {
   fighter_data_t* data = (fighter_data_t*)ptr->data;  
-
-  uint16_t attack = (object_get_state(ptr) == OBJECT_STATE_ALIVE) ? data->intelligence(deltaT, ptr, data) : 0;
-
-  if (game_over) {
-    return;
-  }
+  uint16_t attack = data->intelligence(deltaT, ptr, data);
 
   if (!data->attackQueued && attack) {
     data->attackQueued = 1;
@@ -387,7 +412,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
     data->postAttackCount--;
   }
 
-  ptr->velocity.ix = 0;      
+  //  ptr->velocity.ix = 0;      
   
   if (data->attackQueued && data->attackCount == 0 && object_get_state(ptr) == OBJECT_STATE_ALIVE) {
     data->buttonReleased = 0;
@@ -399,61 +424,49 @@ fighter_update(uint16_t deltaT, object_t* ptr)
     if (object_get_state(ptr) == OBJECT_STATE_HIT) {
       fighter_updatePositionUnderAttack(deltaT, ptr, data);
       object_updatePosition(deltaT, ptr);
-      fighter_updateSprite(ptr);
-    } else if (object_get_state(ptr) == OBJECT_STATE_FLASHING) {
+    } else if (object_get_state(ptr) == OBJECT_STATE_FLASHING && data->health <= 0) {
       if (data->flashCount <= 0) {
 	ptr->visible = !ptr->visible;
-	data->flashCount = 10;
+	data->flashCount = FIGHTER_HIT_FLASH_COUNT_TICS;
       }
-      data->flashCount-=deltaT;
-      data->flashFrames -= deltaT;
-      if (data->flashFrames <= 0) {
-	object_set_state(ptr, OBJECT_STATE_REMOVED);
-	switch (ptr->id) {
-	case OBJECT_ID_ENEMY:
-	  enemy_count--;
-	  if (enemy_count == 0) {
-	    if (conductor_complete()) {
-	      game_setGameComplete();
-	    }
-	    //else {
-	    //  hand_show();
-	    //}
-	  }
-	  break;	  
-	case OBJECT_ID_PLAYER1:
-	  game_player1 = 0;
-	  game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
-	  if (!game_player2) {
-	    game_setGameOver();	    
-	  }
-	  break;
-	case OBJECT_ID_PLAYER2:
-	  game_player2 = 0;
-	  if (!game_player1) {
-	    game_setGameOver();	    
-	  }	  
-	  game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);	  	  
-	  break;
-	}
+      data->flashCount -= deltaT;
+      data->flashDurationTics -= deltaT;
+      if (data->flashDurationTics <= 0) {
+	fighter_die(ptr);
       }
     } else {
-      object_collision_t collision;
-      if (fighter_collision(deltaT, ptr, &collision, 0, 2)) {
-	if (ptr->velocity.x > 0 && collision.right) {	  
-	  ptr->velocity.ix = 1;
-	  ptr->velocity.x = 0;
+      if (object_get_state(ptr) == OBJECT_STATE_FLASHING) {
+	if (data->flashCount <= 0) {
+	  ptr->visible = !ptr->visible;
+	  data->flashCount = FIGHTER_SPAWN_FLASH_COUNT_TICS;
 	}
-	if (ptr->velocity.x < 0 && collision.left) {
-	  ptr->velocity.ix = -1;	  
-	  ptr->velocity.x = 0;
+	data->flashCount-=deltaT;
+	data->flashDurationTics -= deltaT;
+
+	if (data->flashDurationTics <= 0) {
+	  object_set_state(ptr, OBJECT_STATE_ALIVE);
+	  ptr->visible = 1;	  
 	}
-	if (ptr->velocity.y > 0 && collision.up) {
-	  ptr->velocity.y = 0;
+      }
+      ptr->velocity.ix = 0;      
+      if (ptr->collidable && (ptr->velocity.x || ptr->velocity.y)) {
+	object_collision_t collision;	
+	if (fighter_collision(deltaT, ptr, &collision, 0, 2)) {
+	  if (ptr->velocity.x > 0 && collision.right) {	  
+	    ptr->velocity.ix = 1;
+	    ptr->velocity.x = 0;
+	  }
+	  if (ptr->velocity.x < 0 && collision.left) {
+	    ptr->velocity.ix = -1;	  
+	    ptr->velocity.x = 0;
+	  }
+	  if (ptr->velocity.y > 0 && collision.up) {
+	    ptr->velocity.y = 0;
+	  }
+	  if (ptr->velocity.y < 0 && collision.down) {
+	    ptr->velocity.y = 0;
+	  }    
 	}
-	if (ptr->velocity.y < 0 && collision.down) {
-	  ptr->velocity.y = 0;
-	}    
       }
       
       if (object_x(ptr) - game_cameraX < -TILE_WIDTH && ptr->velocity.x < 0) {
