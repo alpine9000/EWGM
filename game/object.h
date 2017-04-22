@@ -1,15 +1,9 @@
 #ifndef __OBJECT_H
 #define __OBJECT_H
 
-//#define OBJECT_BACKING_STORE 1
 #define OBJECT_MAX_OBJECTS    12
 #define OBJECT_PHYSICS_FACTOR 2
 #define OBJECT_WIDTH 32
-
-#ifdef OBJECT_BACKING_STORE
-#define OBJECT_MAX_BLIT_WIDTH 48+16
-#define OBJECT_MAX_HEIGHT     60
-#endif
 
 typedef enum {
   SPRITE_PLAYER1_STAND_RIGHT,
@@ -280,29 +274,16 @@ typedef enum {
   OBJECT_CLASS_DECORATION
 } object_class_t;
 
-#ifdef OBJECT_BACKING_STORE
-typedef struct {
-  uint8_t fb[(OBJECT_MAX_BLIT_WIDTH/8)*SCREEN_BIT_DEPTH*OBJECT_MAX_HEIGHT];
-} object_backing_store_t;
-#else
 typedef struct {
   int16_t x;
   int16_t y;
   int16_t w;
   int16_t h;
 } object_position_t;
-#endif
 
 typedef struct {
-#ifdef OBJECT_BACKING_STORE
-  object_backing_store_t buffers[2];
-  frame_buffer_t buffer;
-  gfx_blit_t blits[2];
-  gfx_blit_t* blit;
-#else
   object_position_t positions[2];
   object_position_t* position;
-#endif
 } object_save_t;
 
 typedef struct object {
@@ -362,8 +343,6 @@ void
 object_free(object_t* ptr);
 void
 object_render(frame_buffer_t fb, uint16_t deltaT);
-void
-object_saveBackground(frame_buffer_t fb);
 void
 object_restoreBackground(frame_buffer_t fb);
 void

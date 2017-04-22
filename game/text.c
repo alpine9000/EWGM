@@ -7,6 +7,17 @@
 extern char* fontAtlas[128];
 extern frame_buffer_t fontPtr;
 
+static uint16_t screenWidthDestLUT[SCOREBOARD_HEIGHT];
+
+void
+text_ctor(void)
+{
+  for (int16_t i = 0; i < SCOREBOARD_HEIGHT; i++) {
+    screenWidthDestLUT[i] = (i*SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH);
+  }
+}
+
+
 NOINLINE void
 text_drawCharScoreBoard(char c, int16_t x, int16_t y)
 {
@@ -46,8 +57,14 @@ __text_drawChar8(frame_buffer_t frameBuffer, char c, int16_t x, int16_t y, int16
   USE(y);
   char* src = fontAtlas[(int)c];
   char* dest = (char*)frameBuffer+(x>>3);
-  dest += (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)*y;
 
+#ifdef DEBUG
+  if (y >= SCOREBOARD_HEIGHT) {
+    PANIC("__text_drawChar8: y > LUT");
+  }
+#endif
+
+  dest += screenWidthDestLUT[y];//(SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)*y;
   src += (FONTMAP_WIDTH_BYTES*FONTMAP_BIT_DEPTH)*sy;
 
   for (y = sy; y < ny; y++) {

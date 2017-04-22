@@ -1,6 +1,8 @@
 #ifndef __TEXT_H
 #define __TEXT_H
 
+void
+text_ctor(void);
 void 
 text_drawMaskedText8Blitter(frame_buffer_t frameBuffer, char* string, int32_t x, int32_t y);
 void

@@ -562,6 +562,7 @@ menu_loop(menu_mode_t mode)
     script_process();
 #endif
 #endif
+#if 1
     if (game_fire()) {
       if (menu_mode == MENU_MODE_HISCORES) {
 	menu_mode = MENU_MODE_MENU;
@@ -574,6 +575,11 @@ menu_loop(menu_mode_t mode)
 	}
       }
     }
+#else
+    game_numPlayers = 2;
+    command = MENU_COMMAND_REPLAY;
+    done = 1;
+#endif
     if (JOYSTICK_DOWN()) {
       menu_down();
     } else if (JOYSTICK_UP()) {

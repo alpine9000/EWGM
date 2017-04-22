@@ -5,12 +5,12 @@
 #include <hardware/dmabits.h>
 #include <hardware/intbits.h>
 
-//#define DEBUG                         1
+#define DEBUG                         1
 //#define SCRIPTING                     1
 #define GAME_25_FPS                   1
-//#define GAME_TURTLE                   1
+#define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1
-//#define GAME_RECORDING                1
+#define GAME_RECORDING                1
 #define GAME_ONE_BITPLANE_SPRITE_MASK 1
 #define GAME_STARS                    1
 //#define GAME_BLITTER_WAIT_DEBUG       1
@@ -63,6 +63,9 @@
 #define GAME_WORLD_HEIGHT        (MAP_TILE_HEIGHT*TILE_HEIGHT)
 #define GAME_WORLD_WIDTH         (MAP_TILE_WIDTH*TILE_WIDTH)
 
+#define GAME_PLAYER1_HEALTH_SCOREBOARD_X 225
+#define GAME_PLAYER2_HEALTH_SCOREBOARD_X 50
+  
 typedef UBYTE uint8_t;
 typedef SHORT int16_t;
 typedef USHORT uint16_t;
@@ -158,4 +161,6 @@ void
 game_setGameOver(void);
 void
 game_setGameComplete(void);
+void
+game_updatePlayerHealth(uint16_t x, uint16_t health);
 #endif /* __GAME_H */

@@ -138,7 +138,6 @@ object_updatePosition(uint16_t deltaT, object_t* ptr)
 void
 object_init(void)
 {
-  USE(object_animations[0].start);
 #ifdef OBEJCT_Z_BUFFER_COLLISION
   object_zBufferValid = 0;
 #endif
@@ -153,10 +152,6 @@ object_init(void)
       ptr = ptr->next;
   }
   ptr->next = 0;
-  
-#if 0
-
-#endif
 }
 
 static void
@@ -175,7 +170,6 @@ object_updateAnimation(uint16_t deltaT, object_t *ptr)
 }
 
 
-#ifndef OBJECT_BACKING_STORE
 void
 object_clear(frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t oh)
 {
@@ -196,7 +190,6 @@ object_clear(frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t oh)
     }
   }
 }
-#endif
 
          
 void
@@ -272,12 +265,31 @@ object_update(uint16_t deltaT)
 }
 
 
+static void
+object_saveBackground(void)
+{
+  object_t* ptr = object_activeList;
+
+  int16_t i = 0;
+  while (ptr != 0) {
+    object_zBuffer[i] = ptr;
+    i++;
+    ptr->save.position->x = object_x(ptr)+ptr->image->dx;
+    ptr->save.position->y = object_y(ptr)-ptr->image->h;
+    ptr->save.position->w = ptr->image->w;
+    ptr->save.position->h = ptr->image->h;    
+    ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];    
+    ptr = ptr->next;
+  }
+}
+
+
 void
 object_render(frame_buffer_t fb, uint16_t deltaT)
 {
   object_update(deltaT);
   object_restoreBackground(fb);
-  object_saveBackground(fb);  
+  object_saveBackground();  
 
   sort_z(object_count, object_zBuffer);
 #ifdef OBEJCT_Z_BUFFER_COLLISION
@@ -309,59 +321,18 @@ object_initZbuffer(void)
 }
 #endif
 
-void
-object_saveBackground(frame_buffer_t fb)
-{
-  object_t* ptr = object_activeList;
-
-  int16_t i = 0;
-  while (ptr != 0) {
-    object_zBuffer[i] = ptr;
-    i++;
-    USE(fb);
-#ifdef OBJECT_BACKING_STORE
-      gfx_saveSprite(fb, ptr->save.buffer, ptr->save.blit, object_screenx(ptr), object_screeny(ptr), ptr->image->w, ptr->image->h);
-      ptr->save.blit = ptr->save.blit == &ptr->save.blits[0] ? &ptr->save.blits[1] : &ptr->save.blits[0];
-      ptr->save.buffer = ptr->save.buffer == ptr->save.buffers[0].fb ? ptr->save.buffers[1].fb : ptr->save.buffers[0].fb;
-#else
-      //      if (ptr->x >= 0) {
-	ptr->save.position->x = object_x(ptr)+ptr->image->dx;
-	ptr->save.position->y = object_y(ptr)-ptr->image->h;
-	ptr->save.position->w = ptr->image->w;
-	ptr->save.position->h = ptr->image->h;    
-	ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];
-	//      } else {
-	//	ptr->save.position->w = 0;
-	//      }
-#endif
-    
-    ptr = ptr->next;
-  }
-}
-
 
 void
 object_restoreBackground(frame_buffer_t fb)
 {
   object_t* ptr = object_activeList;
 
-#ifndef OBJECT_BACKING_STORE  
-    gfx_setupRenderTile();
-#endif
+  gfx_setupRenderTile();
   
   while (ptr != 0) {
-#ifdef OBJECT_BACKING_STORE
-    USE(fb);
-    if (ptr->save.blit->size > 0) {
-      gfx_restoreSprite(ptr->save.blit);
-    } else {
-      return;
-    }
-#else
     if (!ptr->tileRender) {
       object_clear(fb, ptr->save.position->x, ptr->save.position->y, ptr->save.position->w, ptr->save.position->h);
     }
-#endif
 
     ptr = ptr->next;
   }
@@ -384,18 +355,9 @@ object_add(uint16_t id, uint16_t class, int16_t x, int16_t y, int16_t dx, int16_
   ptr->id = id;
   ptr->velocity.x = dx;
   ptr->velocity.y = 0;
-#ifdef OBJECT_BACKING_STORE
-  ptr->save.blit = &ptr->save.blits[0];
-  ptr->save.buffer = ptr->save.buffers[0].fb;
-  //ptr->sprite.saveBufferHeightOffset = ((48/8)*SCREEN_BIT_DEPTH);
-  ptr->save.blits[0].size = 0;
-  ptr->save.blits[1].size = 0;
-#else
   ptr->save.position = &ptr->save.positions[0];  
   ptr->save.positions[0].w = 0;
   ptr->save.positions[1].w = 0;  
-#endif
-
   ptr->anim = &object_animations[anim];
   ptr->animId = anim;
   ptr->baseId = anim;

@@ -39,7 +39,7 @@ init_amiga(void)
   
   memory_ctor();
   gfx_ctor();
-  //  popup_ctor();
+  text_ctor();
   
 #ifdef GAME_KEYBOARD_ENABLED
   keyboard_ctor();

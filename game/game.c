@@ -53,8 +53,6 @@ typedef union {
   uint32_t value;
 } time_t;
 
-static uint16_t game_lastPlayer1Health;
-static uint16_t game_lastPlayer2Health;
 static uint32_t game_lastPlayer1Score;
 static uint32_t game_lastPlayer2Score;
 static int16_t game_scroll;
@@ -321,6 +319,8 @@ game_refreshScoreboard(void)
     }
     game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_BLANK_GAME_OVER);
     game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_BLANK_GAME_OVER);
+    game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);
+    game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);        
 #ifdef DEBUG
   }
 #endif
@@ -332,8 +332,6 @@ game_newGame(menu_command_t command)
 {
   game_level = 0;
   game_deltaT = 0;
-  game_lastPlayer1Health = 0;
-  game_lastPlayer2Health = 0;
   game_player1Score = 0;
   game_player2Score = 0;
   game_lastPlayer1Score = 0xffffffff;
@@ -351,10 +349,11 @@ game_newGame(menu_command_t command)
 
   game_refreshScoreboard();
   game_loadLevel(command);
+  game_refreshScoreboard();  
 }
 
 
-static void
+void
 game_updatePlayerHealth(uint16_t x, uint16_t health)
 {
   uint16_t score;
@@ -458,7 +457,7 @@ game_loadLevel(menu_command_t command)
   if (game_numPlayers == 2) {
     game_player2 = player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER3_STAND_RIGHT, SCREEN_WIDTH-80);
   } else {
-    game_updatePlayerHealth(50, 0);
+    game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, 0);
     game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_TO_PLAY);
   }
 
@@ -817,13 +816,7 @@ game_updateScoreboard(void)
 #ifdef DEBUG
     if (!game_scoreBoardMode) {
 #endif
-    if (game_player1 && game_lastPlayer1Health != ((fighter_data_t*)game_player1->data)->health) {
-	game_updatePlayerHealth(225, ((fighter_data_t*)game_player1->data)->health);
-	game_lastPlayer1Health = ((fighter_data_t*)game_player1->data)->health;
-    } else if (game_player2 && game_lastPlayer2Health != ((fighter_data_t*)game_player2->data)->health) {
-      game_updatePlayerHealth(50, ((fighter_data_t*)game_player2->data)->health);
-      game_lastPlayer2Health = ((fighter_data_t*)game_player2->data)->health;
-    } else if (game_levelTime.value != game_lastLevelTime.value) {
+    if (game_levelTime.value != game_lastLevelTime.value) {
       uint16_t x = 146;
       uint16_t y = 19;      
       text_clrBlit(game_scoreBoardFrameBuffer, x, y, 9*3+5, 11);      
@@ -832,7 +825,10 @@ game_updateScoreboard(void)
       text_drawBigNumeral(game_scoreBoardFrameBuffer, game_levelTime.min, x, y, 11);
       text_drawBigNumeral(game_scoreBoardFrameBuffer, 10, x+7, y, 11);
       game_lastLevelTime = game_levelTime;
-    } else if (game_lastPlayer1Score != game_player1Score) {
+    }
+
+#if 1
+    else if (game_lastPlayer1Score != game_player1Score) {
       frame_buffer_t fb = game_scoreBoardFrameBuffer;
       text_drawText8(fb, itoan(game_player1Score, 6), 224, 8);
       game_lastPlayer1Score = game_player1Score;
@@ -845,6 +841,7 @@ game_updateScoreboard(void)
 	custom->bltafwm = 0xffff;
       }
     }
+#endif
 
 #ifdef DEBUG
     }
@@ -897,7 +894,7 @@ game_loop()
   
   custom->color[0] = 0;
   hw_interruptsInit(); // Don't enable interrupts until music is set up
-  
+
   game_ctor();
 
   logo_load();

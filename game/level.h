@@ -4,7 +4,7 @@
 #define LEVEL_NUM_LEVELS 1
 
 typedef struct {
-  uint16_t tileAddresses[MAP_TILE_WIDTH][MAP_TILE_HEIGHT];
+  uint16_t tileAddresses[MAP_TILE_WIDTH][16];
   uint8_t spriteBitplanes[SPRITE_SHEET_WIDTH_BYTES*SCREEN_BIT_DEPTH*SPRITE_SHEET_HEIGHT];
 
 #ifndef GAME_ONE_BITPLANE_SPRITE_MASK

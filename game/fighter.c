@@ -237,10 +237,14 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
     switch (attacker->id) {
     case OBJECT_ID_PLAYER1:
       game_player1Score += 1000;
+      //      text_drawText8(game_scoreBoardFrameBuffer, itoan(game_player1Score, 6), 224, 8);
+      //      custom->bltafwm = 0xffff;
       sound_queueSound(SOUND_DIE01);
       break;
     case OBJECT_ID_PLAYER2:
-      game_player2Score += 1000;      
+      game_player2Score += 1000;
+      //      text_drawText8(game_scoreBoardFrameBuffer, itoan(game_player2Score, 6), 48, 8);
+      //      custom->bltafwm = 0xffff;
       sound_queueSound(SOUND_DIE02);
       break;
     default:
@@ -259,11 +263,22 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
       break;
     default:
       sound_queueSound(SOUND_ENEMY_PUNCH01);
+      
       break;
     }
     ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
     ptr->velocity.x = dx;
   }
+
+  switch(ptr->id) {
+  case OBJECT_ID_PLAYER1:        
+    game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player1->data)->health);    
+    break;
+  case OBJECT_ID_PLAYER2:        
+    game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player2->data)->health);    
+    break;
+  }
+
   
   object_set_state(ptr, OBJECT_STATE_HIT);
   if (dx >= 0) {
@@ -316,7 +331,6 @@ fighter_checkAttack(int16_t deltaT, object_t* ptr, fighter_data_t* data)
 void
 fighter_doAttack(int16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
-  USE(deltaT);
   // ptr->velocity.x = 0;
   //  ptr->velocity.y = 0;
   if (ptr->anim->facing == FACING_RIGHT) {
