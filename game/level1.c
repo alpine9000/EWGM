@@ -6,9 +6,11 @@
 typedef struct {
   int16_t x;
   int16_t y;
+  uint16_t attackDammage;
   uint16_t attackWait;
   uint16_t attackDuration;
   int16_t enemyCount;
+  uint16_t animId;
   uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data);
 } level_enemy_config_t;
 
@@ -25,13 +27,18 @@ enum {
   LEVEL1_WAVE3_3,
   LEVEL1_WAVE3_4,
   LEVEL1_WAVE3_5,
-  LEVEL1_WAVE3_6,    
+  LEVEL1_WAVE3_6,
+
+  LEVEL1_WAVE4_1,
+  LEVEL1_WAVE4_2,  
 };
 
 level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE1_1] = {
     .x = -64,
     .y = 85,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .attackDammage = ENEMY_ATTACK_DAMMAGE,
     .attackWait = ENEMY_ATTACK_WAIT_TICS,
     .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 0,
@@ -39,7 +46,10 @@ level_enemy_config_t level1_configs[] = {
   },
   [LEVEL1_WAVE1_2] = {
     .x = SCREEN_WIDTH+64,
-    .y = 85, .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .y = 85,
+    .attackDammage = ENEMY_ATTACK_DAMMAGE,
+    .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,    
     .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 1,
     .intelligence = 0   
@@ -47,6 +57,8 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE1_3] = {
     .x = SCREEN_WIDTH,
     .y = 185,
+    .attackDammage = ENEMY_ATTACK_DAMMAGE,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS,
     .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 1,
@@ -56,6 +68,8 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE2_1] = {
     .x = -64,
     .y = 85,
+    .attackDammage = ENEMY_ATTACK_DAMMAGE,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS,
     .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 0,
@@ -64,6 +78,8 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE2_2] = {
     .x = SCREEN_WIDTH,
     .y = 200,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .attackDammage = ENEMY_ATTACK_DAMMAGE,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS,
     .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 1,
@@ -74,7 +90,9 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE3_1] = {
     .x = SCREEN_WIDTH,
     .y = 150,
-    .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .attackDammage = ENEMY_ATTACK_DAMMAGE,    
+    .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 0,
     .intelligence = 0
@@ -82,7 +100,9 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE3_2] = {
     .x = -48,
     .y = 150,
-    .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .attackDammage = ENEMY_ATTACK_DAMMAGE,    
+    .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 1,
     .intelligence = 0
@@ -90,7 +110,9 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE3_3] = {
     .x = -48,
     .y = 75,
-    .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .attackDammage = ENEMY_ATTACK_DAMMAGE,    
+    .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 2,
     .intelligence = 0
@@ -98,7 +120,9 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE3_4] = {
     .x = -48,
     .y = 150,
-    .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .attackDammage = ENEMY_ATTACK_DAMMAGE,    
+    .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 2,
     .intelligence = 0
@@ -106,7 +130,9 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE3_5] = {
     .x = SCREEN_WIDTH+32,
     .y = 75,
-    .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .attackDammage = ENEMY_ATTACK_DAMMAGE,
+    .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 3,
     .intelligence = 0
@@ -114,11 +140,34 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE3_6] = {
     .x = SCREEN_WIDTH,
     .y = 75,
-    .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .attackDammage = ENEMY_ATTACK_DAMMAGE,    
+    .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 0,
     .intelligence = 0
-  },               
+  },
+  //=======================
+  [LEVEL1_WAVE4_1] = {
+    .x = SCREEN_WIDTH,
+    .y = 150,
+    .animId = OBJECT_ANIM_PLAYER4_STAND_RIGHT,
+    .attackDammage = ENEMY_ATTACK_DAMMAGE*2,    
+    .attackWait = 0,
+    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
+    .enemyCount = 0,
+    .intelligence = 0
+  },
+  [LEVEL1_WAVE4_2] = {
+    .x = -48,
+    .y = 150,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .attackDammage = ENEMY_ATTACK_DAMMAGE,    
+    .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
+    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
+    .enemyCount = 1,
+    .intelligence = 0
+  },  
 };
   
 static object_t* level1_door;
@@ -147,7 +196,7 @@ level1_processEnemyConfig(uint16_t argument)
   level_enemy_config_t* ptr = &level1_configs[argument];
   if (ptr->enemyCount >= 0) {
     if (ptr->enemyCount == enemy_count) {
-      enemy_add(game_cameraX + ptr->x, ptr->y, ptr->attackWait, ptr->attackDuration, ptr->intelligence);
+      enemy_add(ptr->animId, game_cameraX + ptr->x, ptr->y, ptr->attackDammage, ptr->attackWait, ptr->attackDuration, ptr->intelligence);
       return 1;
     }
     return 0;
@@ -183,7 +232,7 @@ level1_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 static void
 level1_addDoorEnemy(void)
 {
-  enemy_add(LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, ENEMY_ATTACK_WAIT_TICS, ENEMY_ATTACK_DURATION_TICS, level1_doorIntelligence);    
+  enemy_add(OBJECT_ANIM_PLAYER1_STAND_RIGHT, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, ENEMY_ATTACK_DAMMAGE, ENEMY_ATTACK_WAIT_TICS, ENEMY_ATTACK_DURATION_TICS, level1_doorIntelligence);    
 }
 
 
@@ -308,7 +357,6 @@ conductor_instruction_t level1_instructions[] = {
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH/2, level1_scroll},
 
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH+1, level1_addPhoneBooth},    
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL1_WAVE2_1, level1_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL1_WAVE2_2, level1_processEnemyConfig},  
 
@@ -318,7 +366,13 @@ conductor_instruction_t level1_instructions[] = {
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL1_WAVE3_3, level1_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL1_WAVE3_4, level1_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL1_WAVE3_5, level1_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL1_WAVE3_6, level1_processEnemyConfig},        
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL1_WAVE3_6, level1_processEnemyConfig},
+
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH+(SCREEN_WIDTH/2), level1_scroll},
+  
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH+1, level1_addPhoneBooth},    
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+(SCREEN_WIDTH/2), LEVEL1_WAVE4_1, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+(SCREEN_WIDTH/2), LEVEL1_WAVE4_2, level1_processEnemyConfig},    
   
   
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*4), level1_scroll},  

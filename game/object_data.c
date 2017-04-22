@@ -184,6 +184,68 @@ object_animation_t object_animations[] = {
     .facing = FACING_RIGHT
   },
 
+  // =================================
+  [OBJECT_ANIM_PLAYER4_RUN_RIGHT] = {
+    .start = SPRITE_PLAYER4_RUN_RIGHT_1,
+    .stop = SPRITE_PLAYER4_RUN_RIGHT_4,
+    .speed = 2,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PLAYER4_STAND_RIGHT] = {
+    .start = SPRITE_PLAYER4_STAND_RIGHT,
+    .stop = SPRITE_PLAYER4_STAND_RIGHT,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PLAYER4_RUN_LEFT] = {
+    .start = SPRITE_PLAYER4_RUN_LEFT_1,
+    .stop = SPRITE_PLAYER4_RUN_LEFT_4,
+    .speed = 2,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PLAYER4_STAND_LEFT] = {
+    .start = SPRITE_PLAYER4_STAND_LEFT,
+    .stop = SPRITE_PLAYER4_STAND_LEFT,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PLAYER4_PUNCH_LEFT1] = {
+    .start = SPRITE_PLAYER4_PUNCH_LEFT_1,
+    .stop = SPRITE_PLAYER4_PUNCH_LEFT_1,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PLAYER4_PUNCH_LEFT2] = {
+    .start = SPRITE_PLAYER4_PUNCH_LEFT_2,
+    .stop = SPRITE_PLAYER4_PUNCH_LEFT_2,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },      
+  [OBJECT_ANIM_PLAYER4_PUNCH_RIGHT1] = {
+    .start = SPRITE_PLAYER4_PUNCH_RIGHT_1,
+    .stop = SPRITE_PLAYER4_PUNCH_RIGHT_1,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PLAYER4_PUNCH_RIGHT2] = {
+    .start = SPRITE_PLAYER4_PUNCH_RIGHT_2,
+    .stop = SPRITE_PLAYER4_PUNCH_RIGHT_2,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PLAYER4_HIT_LEFT] = {
+    .start = SPRITE_PLAYER4_HIT_LEFT,
+    .stop = SPRITE_PLAYER4_HIT_LEFT,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PLAYER4_HIT_RIGHT] = {
+    .start = SPRITE_PLAYER4_HIT_RIGHT,
+    .stop = SPRITE_PLAYER4_HIT_RIGHT,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },  
+
 
   // =================================
   [OBJECT_ANIM_BOSS_RUN_RIGHT] = {
@@ -765,6 +827,138 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
+
+  //==============================
+  [SPRITE_PLAYER4_STAND_RIGHT] = {
+    .x = 0,
+    .y = 563,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_PLAYER4_RUN_RIGHT_1] = {
+    .x = 48,
+    .y = 563,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_PLAYER4_RUN_RIGHT_2] = {
+    .x = 96,
+    .y = 563,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_PLAYER4_RUN_RIGHT_3] = {
+    .x = 144,
+    .y = 563,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+  },
+    [SPRITE_PLAYER4_RUN_RIGHT_4] = {
+    .x = 96,
+    .y = 563,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER4_STAND_LEFT] = {
+    .x = 192,
+    .y = 675,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_PLAYER4_RUN_LEFT_1] = {
+    .x = 144,
+    .y = 675,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_PLAYER4_RUN_LEFT_2] = {
+    .x = 96,
+    .y = 675,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,   
+  },
+  [SPRITE_PLAYER4_RUN_LEFT_3] = {
+    .x = 48,
+    .y = 675,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+  },
+    [SPRITE_PLAYER4_RUN_LEFT_4] = {
+    .x = 96,
+    .y = 675,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+    },
+
+  [SPRITE_PLAYER4_PUNCH_LEFT_1] = {
+    .x = 144,
+    .y = 619,
+    .w = 48,
+    .h = 56,
+    .dx = -3,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER4_PUNCH_LEFT_2] = {
+    .x = 0,
+    .y = 675,
+    .w = 48,
+    .h = 56,
+    .dx = -2,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER4_PUNCH_RIGHT_1] = {
+    .x = 192,
+    .y = 563,
+    .w = 48,
+    .h = 56,
+    .dx = 2,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER4_PUNCH_RIGHT_2] = {
+    .x = 0,
+    .y = 619,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+    },  
+  [SPRITE_PLAYER4_HIT_LEFT] = {
+    .x = 96,
+    .y = 619,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER4_HIT_RIGHT] = {
+    .x = 48,
+    .y = 619,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+    },
+
 
   
   //==============================

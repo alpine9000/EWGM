@@ -798,7 +798,7 @@ game_processKeyboard()
     game_init(MENU_COMMAND_PLAY);
     break;
   case '2':
-    if (game_player2 == 0 && game_numPlayers == 1) {
+    if (!game_over && game_player2 == 0 && game_numPlayers == 1) {
       game_numPlayers = 2;
       game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
       game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_BLANK_GAME_OVER);

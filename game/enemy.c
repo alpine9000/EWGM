@@ -160,12 +160,12 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 
 
 void NOINLINE
-enemy_add(uint16_t x, uint16_t y, uint16_t attackWait, uint16_t attackDuration, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data))
+enemy_add(uint16_t animId, uint16_t x, uint16_t y, uint16_t attackDammage, uint16_t attackWait, uint16_t attackDuration, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data))
 {
   if (intelligence == 0) {
     intelligence = enemy_intelligence;
   }
-  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_PLAYER1_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, ENEMY_ATTACK_DAMMAGE, intelligence);
+  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, animId, x, y, ENEMY_INITIAL_HEALTH, attackDammage, intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   data->attackDurationTics = attackDuration;
   //  data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;

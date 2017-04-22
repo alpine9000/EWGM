@@ -26,7 +26,7 @@ void
 enemy_init(void);
 
 void
-enemy_add(uint16_t x, uint16_t y, uint16_t attackWait, uint16_t attackDuration, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data));
+enemy_add(uint16_t animId, uint16_t x, uint16_t y, uint16_t attackDammage, uint16_t attackWait, uint16_t attackDuration, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data));
 
 uint16_t
 enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data);
