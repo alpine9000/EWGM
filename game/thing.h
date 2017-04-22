@@ -10,4 +10,10 @@ thing_add(uint16_t id, uint16_t animId, uint16_t brokenId, uint16_t junkStartId,
 
 void
 thing_attack(object_t* thing, int16_t dx);
+
+void
+thing_addStar(object_t* ptr, int16_t dx, int16_t yOffset);
+
+void
+thing_updatePosition(uint16_t deltaT, object_t* ptr);
 #endif 

@@ -182,6 +182,7 @@ Level3InterruptHandler:
 	sub.w	#1,P61_Master
 	bra	.ok
 .ok:
+	jsr	_star_resetSprpt
 	cmp.w	#0,P61_Master
 	bne	.playMusic
 	move.w  #0,AUD0VOL(a6)

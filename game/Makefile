@@ -30,7 +30,7 @@ PROGRAM_BIN=out/main.bin
 
 
 # all the components that form the game
-C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text.c sound.c music.c keyboard.c menu.c message.c record.c  string.c hw.c hiscore.c dos.c panic.c script.c object.c object_data.c sort.c player.c enemy.c logo.c fighter.c hand.c conductor.c alarm.c thing.c level1.c
+C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text.c sound.c music.c keyboard.c menu.c message.c record.c  string.c hw.c hiscore.c dos.c panic.c script.c object.c object_data.c sort.c player.c enemy.c logo.c fighter.c hand.c conductor.c alarm.c thing.c level1.c star.c
 SRCS=blitmtext.s hw_asm.s trackloader.s palette_asm.s  P6112-Play.s music_asm.s keyboard_asm.s sg_trackdisk.s
 MODULES=P61.jojo_ingame.bin P61.jojo_boss.bin
 SOUND_FILES=Terence_punch01.wav Terence_punch02.wav Bud_Punch01.wav enemy01.wav enemy02.wav enemy03.wav pop.wav coin1.wav
@@ -139,6 +139,7 @@ $(ADF): out/bootblock.bin
 
 wb: | out version libgcc/out/gcc.lib $(ALL_TOOLS) bin/$(GAME_NAME)
 
+out/adf/star.o: star.c out/star-sprite.h
 out/adf/level.o: level.c $(LEVEL_FILES)
 out/workbench/level.o: level.c $(LEVEL_FILES)
 
@@ -166,8 +167,10 @@ out/coin1.raw: assets/coin1.wav
 
 #http://opengameart.org/content/bubbles-pop
 out/pop.raw: assets/pop.wav
-	sox -R -v 1.0 $<  -b 8 -c 1 -r 11025 $@	
+	sox -R -v 1.0 $<  -b 8 -c 1 -r 11025 $@
 
+out/star-sprite.h: assets/star.png
+	$(IMAGECON) --input $< --colors=4 --output=out/star --output-sprite --output-png
 
 out/adf/sprite.o: $(HSPRITE_HEADERS)
 
@@ -187,6 +190,7 @@ out/sprite_%.h: assets/sprite_%.png palettes/palette_%.pal
 	$(IMAGECON) $(ONEBITPLANE_MASK) --quantize --colors=32 --full-color-palette --input=out/sprite_$*-resized.png --output=out/sprite_$* --output-bitplanes --output-png --output-palette --output-palette-asm --use-palette=palettes/palette_$*.pal --output-mask
 	cat out/sprite_$*.bin | $(BIN2C) > out/sprite_$*.h
 	cat out/sprite_$*-mask.bin | $(BIN2C) > out/sprite_$*-mask.h
+
 
 out/tile_%.h: assets/tile_%.png palettes/palette_%.pal
 	$(IMAGECON) --quantize --colors=32 --full-color-palette --input=assets/tile_$*.png --output=out/tile_$* --output-bitplanes --output-png --output-palette --output-palette-asm --use-palette=palettes/palette_$*.pal

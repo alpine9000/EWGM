@@ -56,7 +56,9 @@ level_load(uint16_t index)
   level.record = (record_t*)&level.recordData;
 #endif
   level.initFunctor = level_levels[index].initFunctor;
+#if 0
   level.effectFunctor = level_levels[index].effectFunctor;
+#endif
 
 #if TRACKLOADER==1
   message_screenOff();

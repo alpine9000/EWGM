@@ -5,14 +5,14 @@
 #include <hardware/dmabits.h>
 #include <hardware/intbits.h>
 
-//#define DEBUG_SPEED                   1
-//#define DEBUG                         1
+#define DEBUG                         1
 //#define SCRIPTING                     1
 #define GAME_25_FPS                   1
-//#define GAME_TURTLE                   1
+#define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1
 #define GAME_RECORDING                1
 #define GAME_ONE_BITPLANE_SPRITE_MASK 1
+#define GAME_STARS                    1
 //#define GAME_BLITTER_WAIT_DEBUG       1
 //#define GAME_Z_BUFFER_COLLISION   1
 
@@ -20,7 +20,6 @@
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
-#define MENU_NUM_ITEMS           6
 
 #define MAP_TILE_WIDTH           100
 #define MAP_TILE_HEIGHT          13
@@ -39,7 +38,7 @@
 #define FRAME_BUFFER_WIDTH       (SCREEN_WIDTH+64)
 
 #define SPRITE_SHEET_WIDTH       272
-#define SPRITE_SHEET_HEIGHT      563
+#define SPRITE_SHEET_HEIGHT      672
 #define SPRITE_SHEET_WIDTH_BYTES (SPRITE_SHEET_WIDTH/8)
 
 #define TILE_SHEET_WIDTH         272
@@ -81,7 +80,6 @@ extern void* memcpy(void* destination, void* source, size_t num);
 extern void* memset(void *dst, int c, size_t n);
 extern int memcmp(void *s1, void *s2, size_t n);
 
-#undef __chip
 #define __section(x) __attribute__ ((section (#x))) 
 #define __REG(reg, arg) register arg asm(reg)
 #define USE(x) do { x = x; } while(0);
@@ -122,8 +120,8 @@ extern object_t* game_player2;
 #include "player.h"
 #include "enemy.h"
 #include "screen.h"
-#include "hiscore.h"
 #include "menu.h"
+#include "hiscore.h"
 #include "palette.h"
 #include "record.h"
 #include "conductor.h"
@@ -144,6 +142,7 @@ extern object_t* game_player2;
 #include "hand.h"
 #include "alarm.h"
 #include "thing.h"
+#include "star.h"
 
 #define game_fire() ((!(hw_lastJoystickButton&0x1) && (hw_joystickButton&0x1)) || \
 			(keyboard_key && keyboard_code == KEYBOARD_CODE_RETURN))

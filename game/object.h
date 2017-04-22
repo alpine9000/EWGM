@@ -102,7 +102,8 @@ typedef enum {
   SPRITE_POSTBOX_JUNK3,  
 
   SPRITE_BONUS_BURGER,
-  SPRITE_BONUS_COLA,  
+  SPRITE_BONUS_COLA,
+  SPRITE_STAR,  
 } sprite_id_t;
 
 typedef enum {
@@ -201,7 +202,9 @@ typedef enum {
 
   
   OBJECT_ANIM_BONUS_BURGER = OBJECT_ANIM_POSTBOX_JUNK3 + 1,
-  OBJECT_ANIM_BONUS_COLA = OBJECT_ANIM_BONUS_BURGER + 1,    
+  OBJECT_ANIM_BONUS_COLA = OBJECT_ANIM_BONUS_BURGER + 1,
+
+  OBJECT_ANIM_STAR = OBJECT_ANIM_BONUS_COLA + 1,      
   
 } object_animation_id_t;
 
@@ -442,5 +445,8 @@ extern uint16_t object_zBufferValid;
 void
 object_initZbuffer(void);
 #endif
+
+void
+object_clear(frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t oh);
 
 #endif

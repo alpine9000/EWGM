@@ -360,7 +360,15 @@ object_animation_t object_animations[] = {
     .stop = SPRITE_BONUS_COLA,
     .speed = 0,
     .facing = FACING_RIGHT
-  },  
+  },
+
+  // =================================
+  [OBJECT_ANIM_STAR] = {
+    .start = SPRITE_STAR,
+    .stop = SPRITE_STAR,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },    
   
 };
 
@@ -1066,6 +1074,16 @@ object_image_t object_imageAtlas[] = {
     .h = 16,
     .dx = 0,
     .dy = 0,    
-    },  
+    },
+
+  //========================== 
+  [SPRITE_STAR] = {
+    .x = 112,
+    .y = 547,
+    .w = 16,
+    .h = 3,
+    .dx = 0,
+    .dy = 0,    
+    },   
   
 };

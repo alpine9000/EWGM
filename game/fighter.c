@@ -224,6 +224,11 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
   if (data->postAttackCount > 0) {
     return;
   }
+
+#ifdef GAME_STARS
+  star_add(ptr, dx);
+#endif
+  
   object_set_z(ptr, object_y(ptr));
   data->attack_py = object_py(ptr);
   data->health -= dammage;

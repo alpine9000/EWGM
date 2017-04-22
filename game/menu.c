@@ -475,6 +475,10 @@ menu_loop(menu_mode_t mode)
   uint16_t done;
   volatile uint16_t scratch;
 
+#ifdef GAME_STARS
+  custom->dmacon = DMAF_SPRITE;
+#endif
+  
   menu_mode = mode;
 
   menu_hiscores = hiscore_render();

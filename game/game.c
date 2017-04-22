@@ -150,7 +150,28 @@ __section(data_c)  copper_t copper  = {
     BPL5PTL,0x0000,
     BPL5PTH,0x0000,
    },
-  .end = {0xFFFF, 0xFFFE}
+
+#ifdef GAME_STARS
+ .sprpt = {
+    SPR0PTL,0x0000,
+    SPR0PTH,0x0000,
+    SPR1PTL,0x0000,
+    SPR1PTH,0x0000,
+    SPR2PTL,0x0000,
+    SPR2PTH,0x0000,
+    SPR3PTL,0x0000,
+    SPR3PTH,0x0000,
+    SPR4PTL,0x0000,
+    SPR4PTH,0x0000,
+    SPR5PTL,0x0000,
+    SPR5PTH,0x0000,
+    SPR6PTL,0x0000,
+    SPR6PTH,0x0000,
+    SPR7PTL,0x0000,
+    SPR7PTH,0x0000
+  },
+#endif
+   .end = {0xFFFF, 0xFFFE}
 };
 
 
@@ -264,7 +285,10 @@ game_refreshDebugScoreboard(void)
   text_drawScoreBoard("obj:", 33*8, 9);
 
   text_drawScoreBoard("ec:", 0, 18);
-  text_drawScoreBoard("ci:", 5*8, 18);  
+  text_drawScoreBoard("ci:", 5*8, 18);
+#ifdef GAME_STARS
+  text_drawScoreBoard("sc:", 12*8, 18);
+#endif
   
 }
 #endif
@@ -425,6 +449,9 @@ game_loadLevel(menu_command_t command)
   fighter_init();
   hand_init();
   thing_init();
+#ifdef GAME_STARS
+  star_init();
+#endif
     
   game_player1 = player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80);
   game_player2 = 0;
@@ -556,12 +583,17 @@ debug_mode(void)
     break;
   case 9:
       text_drawScoreBoard(itoan(conductor_instructionIndex, 3), 8*8, 18);
-    break;           
+    break;
+#ifdef GAME_STARS
+  case 10:
+      text_drawScoreBoard(itoan(star_count, 3), 15*8, 18);
+    break;
+#endif
   default:
     break;
   } 
   game_debugRenderFrame++;
-  if (game_debugRenderFrame > 9) {
+  if (game_debugRenderFrame > 10) {
     game_debugRenderFrame = 0;
   }
 }
@@ -633,11 +665,15 @@ static void
 game_render(uint16_t deltaT)
 {
   object_render(game_offScreenBuffer, deltaT);
+#ifdef GAME_STARS
+  star_update(deltaT);
+#endif
   game_updateWave();
-  
+#if 0  
   if (level.effectFunctor) {
     level.effectFunctor(game_offScreenBuffer);
-  }  
+  }
+#endif
 }
 
 
@@ -932,10 +968,10 @@ game_loop()
 
 #ifdef GAME_TURTLE    
     if (game_turtle > 1) {
-      custom->color[16] = 0xf00;
+      custom->color[21] = 0xf00;
       game_turtle--;
     } else if (game_turtle == 1) {
-      custom->color[16] = level.palette[16];
+      custom->color[21] = level.palette[21];
       game_turtle--;
     }
 #endif
@@ -953,9 +989,6 @@ game_loop()
     }
 
     hw_waitVerticalBlank();    
-#ifdef DEBUG_SPEED
-    custom->color[0] = 0xf00;
-#endif
     
     sound_vbl();
 
@@ -1008,9 +1041,6 @@ game_loop()
     alarm_process(game_deltaT);
     game_render(game_deltaT);    
 
-#ifdef DEBUG_SPEED
-    custom->color[0] = 0;
-#endif
 #ifdef DEBUG
   skip:;
 #endif

@@ -17,7 +17,9 @@ typedef struct {
   uint16_t sb_bpl[SCREEN_BIT_DEPTH*2*2];
   uint16_t sb_bpl1mod[2];
   uint16_t sb_bpl2mod[2];
-
+#ifdef GAME_STARS
+  uint16_t sprpt[8*4];
+#endif
 
   uint16_t end[2];
 } copper_t;

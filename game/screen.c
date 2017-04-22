@@ -34,6 +34,7 @@ screen_setup(uint16_t volatile* copperPtr)
   //scratch = custom->copjmp1;
   USE(scratch);
 
+  custom->dmacon = (DMAF_SPRITE);  
   custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);
 }
 

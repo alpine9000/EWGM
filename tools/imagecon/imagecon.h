@@ -35,6 +35,7 @@ typedef struct {
   int outputBitplanes;
   int outputCopperList;
   int outputAttachedSprite;
+  int outputSprite;  
   int ehbMode;
   int hamMode;
   int hamBruteForce;

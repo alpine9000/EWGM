@@ -23,7 +23,9 @@ typedef struct {
   record_t* record;
 #endif
   void (*initFunctor)(void);
+#if 0
   void (*effectFunctor)(frame_buffer_t fb);
+#endif
 } level_t DISK_SECTOR_ALIGN;
 
 extern level_t level;
