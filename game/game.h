@@ -38,7 +38,7 @@
 #define FRAME_BUFFER_WIDTH       (SCREEN_WIDTH+64)
 
 #define SPRITE_SHEET_WIDTH       272
-#define SPRITE_SHEET_HEIGHT      731
+#define SPRITE_SHEET_HEIGHT      791
 #define SPRITE_SHEET_WIDTH_BYTES (SPRITE_SHEET_WIDTH/8)
 
 #define TILE_SHEET_WIDTH         272
@@ -65,7 +65,9 @@
 
 #define GAME_PLAYER1_HEALTH_SCOREBOARD_X 225
 #define GAME_PLAYER2_HEALTH_SCOREBOARD_X 50
-  
+
+#define GAME_BIG_FONT_HEIGHT 9
+
 typedef UBYTE uint8_t;
 typedef SHORT int16_t;
 typedef USHORT uint16_t;
@@ -162,5 +164,5 @@ game_setGameOver(void);
 void
 game_setGameComplete(void);
 void
-game_updatePlayerHealth(uint16_t x, uint16_t health);
+game_updatePlayerHealth(uint16_t x, int16_t health);
 #endif /* __GAME_H */

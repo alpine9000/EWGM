@@ -5,9 +5,6 @@ object_t* object_activeList;
 static object_t* object_freeList;
 static __section(random_c) object_t object_buffer[OBJECT_MAX_OBJECTS];
 object_t* object_zBuffer[OBJECT_MAX_OBJECTS];
-#ifdef OBEJCT_Z_BUFFER_COLLISION
-uint16_t object_zBufferValid;
-#endif
 
 static object_t*
 object_getFree(void)
@@ -138,9 +135,6 @@ object_updatePosition(uint16_t deltaT, object_t* ptr)
 void
 object_init(void)
 {
-#ifdef OBEJCT_Z_BUFFER_COLLISION
-  object_zBufferValid = 0;
-#endif
   object_count = 0;
   object_activeList = 0;
   object_freeList = &object_buffer[0];
@@ -153,6 +147,7 @@ object_init(void)
   }
   ptr->next = 0;
 }
+
 
 static void
 object_updateAnimation(uint16_t deltaT, object_t *ptr)
@@ -292,9 +287,6 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
   object_saveBackground();  
 
   sort_z(object_count, object_zBuffer);
-#ifdef OBEJCT_Z_BUFFER_COLLISION
-  object_zBufferValid = 1;
-#endif
 
   for (int16_t i = 0; i < object_count; i++) {
     object_t* ptr = object_zBuffer[i];
@@ -304,22 +296,6 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
     }
   }
 }
-
-#ifdef OBEJCT_Z_BUFFER_COLLISION
-void
-object_initZbuffer(void)
-{
-  object_t* ptr = object_activeList;
-  int16_t i = 0;
-  while (ptr != 0) {
-    object_zBuffer[i] = ptr;
-    i++;
-    ptr = ptr->next;
-  }
-  sort_z(object_count, object_zBuffer);
-  object_zBufferValid = 1;
-}
-#endif
 
 
 void
@@ -337,6 +313,63 @@ object_restoreBackground(frame_buffer_t fb)
     ptr = ptr->next;
   }
 }
+
+
+int16_t
+object_collision(int16_t deltaT, object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy)
+{
+  int16_t vy = a->velocity.y;
+  int16_t vx = a->velocity.x;
+  
+  if (deltaT == 2) {
+    vx *= 2;
+    vy *= 2;
+  }
+  
+  int16_t _collision = 0;
+  object_t* b = object_activeList;
+  
+  collision->up = collision->down = collision->left = collision->right = 0;
+
+#ifdef DEBUG
+  if (!game_collisions) {
+    return 0;
+  }
+#endif
+
+  int16_t a_y = ((object_py(a) + vy) / OBJECT_PHYSICS_FACTOR);
+  int16_t a_x1 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + a->widthOffset)-thresholdx;
+  int16_t a_x2 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + (a->width - a->widthOffset)) + thresholdx;
+  
+  while (b) {
+    if (b->collidable && b != a) {
+      int16_t b_y = ((object_y(b)));
+
+      if (abs(a_y - b_y) <= thresholdy) {
+	int16_t b_x1 = ((object_x(b))) + b->widthOffset;
+	int16_t b_x2 = ((object_x(b))) + (b->width - b->widthOffset);
+	
+	if (a_x1 < b_x2 && a_x2 > b_x1) {		  
+	  if (b_y >= a_y) {
+	    collision->up = b;
+	  } else if (b_y < a_y) {
+	    collision->down = b;
+	  }
+	  if (b_x1 >= a_x1) {
+	    collision->right = b;
+	  } else if (b_x1 < a_x1) {
+	    collision->left = b;
+	  }
+	  _collision = 1;
+	}
+      }
+    }
+    b = b->next;
+  }
+  
+  return _collision;
+}
+
 
 NOINLINE object_t*
 object_add(uint16_t id, uint16_t class, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data, void (*freeData)(void*))

@@ -6,9 +6,8 @@
 typedef struct {
   int16_t x;
   int16_t y;
-  uint16_t attackDammage;
+  fighter_attack_config_t* attackConfig;
   uint16_t attackWait;
-  uint16_t attackDuration;
   int16_t enemyCount;
   uint16_t animId;
   uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data);
@@ -38,29 +37,26 @@ level_enemy_config_t level1_configs[] = {
     .x = -64,
     .y = 85,
     .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
-    .attackDammage = ENEMY_ATTACK_DAMMAGE,
+    .attackConfig = enemy_attackConfig1,
     .attackWait = ENEMY_ATTACK_WAIT_TICS,
-    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 0,
     .intelligence = 0
   },
   [LEVEL1_WAVE1_2] = {
     .x = SCREEN_WIDTH+64,
     .y = 85,
-    .attackDammage = ENEMY_ATTACK_DAMMAGE,
+    .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS,
     .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,    
-    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 1,
     .intelligence = 0   
   },
   [LEVEL1_WAVE1_3] = {
     .x = SCREEN_WIDTH,
     .y = 185,
-    .attackDammage = ENEMY_ATTACK_DAMMAGE,
+    .attackConfig = enemy_attackConfig1,
     .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS,
-    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 1,
     .intelligence = 0
   },
@@ -68,10 +64,9 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE2_1] = {
     .x = -64,
     .y = 85,
-    .attackDammage = ENEMY_ATTACK_DAMMAGE,
+    .attackConfig = enemy_attackConfig1,
     .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS,
-    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 0,
     .intelligence = 0
   },
@@ -79,9 +74,8 @@ level_enemy_config_t level1_configs[] = {
     .x = SCREEN_WIDTH,
     .y = 200,
     .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
-    .attackDammage = ENEMY_ATTACK_DAMMAGE,    
+    .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS,
-    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 1,
     .intelligence = 0
   },
@@ -91,9 +85,8 @@ level_enemy_config_t level1_configs[] = {
     .x = SCREEN_WIDTH,
     .y = 150,
     .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
-    .attackDammage = ENEMY_ATTACK_DAMMAGE,    
+    .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
-    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 0,
     .intelligence = 0
   },
@@ -101,9 +94,8 @@ level_enemy_config_t level1_configs[] = {
     .x = -48,
     .y = 150,
     .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
-    .attackDammage = ENEMY_ATTACK_DAMMAGE,    
+    .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
-    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 1,
     .intelligence = 0
   },
@@ -111,9 +103,8 @@ level_enemy_config_t level1_configs[] = {
     .x = -48,
     .y = 75,
     .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
-    .attackDammage = ENEMY_ATTACK_DAMMAGE,    
+    .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
-    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 2,
     .intelligence = 0
   },
@@ -121,9 +112,8 @@ level_enemy_config_t level1_configs[] = {
     .x = -48,
     .y = 150,
     .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
-    .attackDammage = ENEMY_ATTACK_DAMMAGE,    
+    .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
-    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 2,
     .intelligence = 0
   },
@@ -131,9 +121,8 @@ level_enemy_config_t level1_configs[] = {
     .x = SCREEN_WIDTH+32,
     .y = 75,
     .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
-    .attackDammage = ENEMY_ATTACK_DAMMAGE,
+    .attackConfig = enemy_attackConfig1,
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
-    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 3,
     .intelligence = 0
   },
@@ -141,9 +130,8 @@ level_enemy_config_t level1_configs[] = {
     .x = SCREEN_WIDTH,
     .y = 75,
     .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
-    .attackDammage = ENEMY_ATTACK_DAMMAGE,    
+    .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
-    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 0,
     .intelligence = 0
   },
@@ -152,9 +140,8 @@ level_enemy_config_t level1_configs[] = {
     .x = SCREEN_WIDTH,
     .y = 150,
     .animId = OBJECT_ANIM_PLAYER4_STAND_RIGHT,
-    .attackDammage = ENEMY_ATTACK_DAMMAGE*2,    
+    .attackConfig = enemy_attackConfig2,    
     .attackWait = 0,
-    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 0,
     .intelligence = 0
   },
@@ -162,9 +149,8 @@ level_enemy_config_t level1_configs[] = {
     .x = -48,
     .y = 150,
     .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
-    .attackDammage = ENEMY_ATTACK_DAMMAGE,    
+    .attackConfig = enemy_attackConfig2,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
-    .attackDuration = ENEMY_ATTACK_DURATION_TICS,
     .enemyCount = 1,
     .intelligence = 0
   },  
@@ -196,7 +182,7 @@ level1_processEnemyConfig(uint16_t argument)
   level_enemy_config_t* ptr = &level1_configs[argument];
   if (ptr->enemyCount >= 0) {
     if (ptr->enemyCount == enemy_count) {
-      enemy_add(ptr->animId, game_cameraX + ptr->x, ptr->y, ptr->attackDammage, ptr->attackWait, ptr->attackDuration, ptr->intelligence);
+      enemy_add(ptr->animId, game_cameraX + ptr->x, ptr->y, ptr->attackConfig, ptr->attackWait, ptr->intelligence);
       return 1;
     }
     return 0;
@@ -232,35 +218,31 @@ level1_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 static void
 level1_addDoorEnemy(void)
 {
-  enemy_add(OBJECT_ANIM_PLAYER1_STAND_RIGHT, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, ENEMY_ATTACK_DAMMAGE, ENEMY_ATTACK_WAIT_TICS, ENEMY_ATTACK_DURATION_TICS, level1_doorIntelligence);    
+  enemy_add(OBJECT_ANIM_PLAYER1_STAND_RIGHT, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, enemy_attackConfig1, ENEMY_ATTACK_WAIT_TICS, level1_doorIntelligence);    
 }
 
-
+/*
 static uint16_t level1_boss_attack_range[] = {
   [OBJECT_PUNCH_LEFT1] = 20,
   [OBJECT_PUNCH_LEFT2] = 20,
   [OBJECT_PUNCH_RIGHT1] = 20,
   [OBJECT_PUNCH_RIGHT2] = 20,
 };
-
+*/
 
 static void
 level1_doAddBoss(uint16_t x)
 {
   uint16_t y = LEVEL1_ENEMY_BOSS_START_Y;  
   
-  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_BOSS_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, ENEMY_ATTACK_DAMMAGE, level1_doorIntelligence);
+  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_BOSS_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, enemy_bossAttackConfig, level1_doorIntelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
-  data->attackRange = level1_boss_attack_range;
   data->attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE;
-  data->attackDurationTics = PLAYER_ATTACK_DURATION_TICS-2;
   //  data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->width = OBJECT_WIDTH;
   data->enemyAttackWait = 0;//ENEMY_BOSS_ATTACK_TICS_PER_FRAME*ENEMY_BOSS_NUM_ATTACK_FRAMES;
-  data->attackDammage = 20;
   data->enemyAttackWaitTics = 0;//data->enemyAttackWait;
-  data->attackHitAnimTic = ENEMY_BOSS_ATTACK_TICS_PER_FRAME;
   data->postAttackInvincibleTics = 50;
   data->speed = 2;
   data->numAttacks = 1;

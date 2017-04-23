@@ -92,6 +92,12 @@ thing_awardBonus(object_t* ptr, object_t* collision)
   if (data->health > PLAYER_INITIAL_HEALTH) {
     data->health = PLAYER_INITIAL_HEALTH;
   }
+
+  if (collision->id == OBJECT_ID_PLAYER1) {
+    game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player1->data)->health);
+  } else {
+    game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player2->data)->health);
+  }
 }
 
 void

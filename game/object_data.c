@@ -121,7 +121,19 @@ object_animation_t object_animations[] = {
     .stop = SPRITE_PLAYER2_HIT_RIGHT,
     .speed = 0,
     .facing = FACING_RIGHT
-  },            
+  },
+  [OBJECT_ANIM_PLAYER2_KICK_LEFT] = {
+    .start = SPRITE_PLAYER2_KICK_LEFT_1,
+    .stop = SPRITE_PLAYER2_KICK_LEFT_3,
+    .speed = 8,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PLAYER2_KICK_RIGHT] = {
+    .start = SPRITE_PLAYER2_KICK_RIGHT_1,
+    .stop = SPRITE_PLAYER2_KICK_RIGHT_3,
+    .speed = 8,
+    .facing = FACING_RIGHT
+  },              
   // =================================
   [OBJECT_ANIM_PLAYER3_RUN_RIGHT] = {
     .start = SPRITE_PLAYER3_RUN_RIGHT_1,
@@ -183,6 +195,18 @@ object_animation_t object_animations[] = {
     .speed = 0,
     .facing = FACING_RIGHT
   },
+  [OBJECT_ANIM_PLAYER3_KICK_LEFT] = {
+    .start = SPRITE_PLAYER3_KICK_LEFT_1,
+    .stop = SPRITE_PLAYER3_KICK_LEFT_3,
+    .speed = 8,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PLAYER3_KICK_RIGHT] = {
+    .start = SPRITE_PLAYER3_KICK_RIGHT_1,
+    .stop = SPRITE_PLAYER3_KICK_RIGHT_3,
+    .speed = 8,
+    .facing = FACING_RIGHT
+  },                
 
   // =================================
   [OBJECT_ANIM_PLAYER4_RUN_RIGHT] = {
@@ -695,7 +719,57 @@ object_image_t object_imageAtlas[] = {
     .h = 53,
     .dx = 0,
     .dy = 0,    
-    },      
+    },
+
+  [SPRITE_PLAYER2_KICK_LEFT_1] = {
+    .x = 80,
+    .y = 731,
+    .w = 32,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER2_KICK_LEFT_2] = {
+    .x = 192,
+    .y = 619,
+    .w = 48,
+    .h = 56,
+    .dx = -6,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER2_KICK_LEFT_3] = {
+    .x = 80,
+    .y = 731,
+    .w = 32,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+    },
+
+  [SPRITE_PLAYER2_KICK_RIGHT_1] = {
+    .x = 0,
+    .y = 731,
+    .w = 32,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER2_KICK_RIGHT_2] = {
+    .x = 32,
+    .y = 731,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER2_KICK_RIGHT_3] = {
+    .x = 0,
+    .y = 731,
+    .w = 32,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+    },            
 
   //==============================
   [SPRITE_PLAYER3_STAND_RIGHT] = {
@@ -828,6 +902,56 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
 
+  [SPRITE_PLAYER3_KICK_LEFT_1] = {
+    .x = 240,
+    .y = 560,
+    .w = 32,
+    .h = 60,
+    .dx = -2,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER3_KICK_LEFT_2] = {
+    .x = 160,
+    .y = 731,
+    .w = 48,
+    .h = 60,
+    .dx = -8,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER3_KICK_LEFT_3] = {
+    .x = 240,
+    .y = 560,
+    .w = 32,
+    .h = 60,
+    .dx = -2,
+    .dy = 0,    
+    },
+
+  [SPRITE_PLAYER3_KICK_RIGHT_1] = {
+    .x = 240,
+    .y = 621,
+    .w = 32,
+    .h = 60,
+    .dx = 1,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER3_KICK_RIGHT_2] = {
+    .x = 112,
+    .y = 731,
+    .w = 48,
+    .h = 60,
+    .dx = -3,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER3_KICK_RIGHT_3] = {
+    .x = 240,
+    .y = 621,
+    .w = 32,
+    .h = 60,
+    .dx = 1,
+    .dy = 0,    
+    },            
+  
   //==============================
   [SPRITE_PLAYER4_STAND_RIGHT] = {
     .x = 0,

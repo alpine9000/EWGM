@@ -62,7 +62,7 @@ enemy_strikingDistanceX(object_t* a, object_t* b)
   //  fighter_data_t* a_data = a->data;
   fighter_data_t* b_data = b->data;    
   //  uint16_t thresholdx = b_data->attackRange[OBJECT_PUNCH_LEFT2];
-  uint16_t thresholdx = b_data->attackRange[OBJECT_PUNCH_LEFT2];  
+  uint16_t thresholdx = b_data->attackConfig[OBJECT_PUNCH_LEFT2].rangeX;
     //  int16_t a_widthOffset = a_data->widthOffset;
   //int16_t b_widthOffset = b_data->widthOffset;
   int16_t a_widthOffset = a->widthOffset;
@@ -118,7 +118,7 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
     } else if (object_x(ptr)-game_cameraX >= SCREEN_WIDTH) {
       data->walkAbout = ENEMY_WALKABOUT_TICS;
       ptr->velocity.x = -1;      
-    } else if ((fighter_collision(deltaT, ptr, &collision, ENEMY_INTERCEPT_X_RANGE, ENEMY_INTERCEPT_Y_THRESHOLD))) {
+    } else if ((object_collision(deltaT, ptr, &collision, ENEMY_INTERCEPT_X_RANGE, ENEMY_INTERCEPT_Y_THRESHOLD))) {
       if (collision.left) {
 	ptr->velocity.x = 1;
 	ptr->velocity.y = 0;
@@ -160,20 +160,17 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 
 
 void NOINLINE
-enemy_add(uint16_t animId, uint16_t x, uint16_t y, uint16_t attackDammage, uint16_t attackWait, uint16_t attackDuration, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data))
+enemy_add(uint16_t animId, uint16_t x, uint16_t y, fighter_attack_config_t* attackConfig, uint16_t attackWait, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data))
 {
   if (intelligence == 0) {
     intelligence = enemy_intelligence;
   }
-  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, animId, x, y, ENEMY_INITIAL_HEALTH, attackDammage, intelligence);
+  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, animId, x, y, ENEMY_INITIAL_HEALTH, attackConfig, intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
-  data->attackDurationTics = attackDuration;
-  //  data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->width = OBJECT_WIDTH;
   data->enemyAttackWaitTics = attackWait;
   data->enemyAttackWait = attackWait;
-  data->attackHitAnimTic = 0;
   data->numAttacks = 2;
   enemy_count++;
 }
@@ -186,3 +183,107 @@ enemy_init(void)
   enemy_pause = 0;
 #endif
 }
+
+
+fighter_attack_config_t enemy_attackConfig1[] = {
+  [OBJECT_PUNCH_LEFT1] = {
+    .rangeX = FIGHTER_LONG_PUNCH_RANGE,
+    .dammage = ENEMY_ATTACK_DAMMAGE,
+    .durationTics = ENEMY_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  },
+  [OBJECT_PUNCH_LEFT2] =  {
+    .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
+    .dammage = ENEMY_ATTACK_DAMMAGE,
+    .durationTics = ENEMY_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0    
+  },
+  [OBJECT_PUNCH_RIGHT1] =  {
+    .rangeX = FIGHTER_LONG_PUNCH_RANGE,
+    .dammage = ENEMY_ATTACK_DAMMAGE,
+    .durationTics = ENEMY_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0    
+  },
+  [OBJECT_PUNCH_RIGHT2] =  {
+    .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
+    .dammage = ENEMY_ATTACK_DAMMAGE,
+    .durationTics = ENEMY_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0    
+  }
+};
+
+
+fighter_attack_config_t enemy_attackConfig2[] = {
+  [OBJECT_PUNCH_LEFT1] = {
+    .rangeX = FIGHTER_LONG_PUNCH_RANGE,
+    .dammage = ENEMY_ATTACK_DAMMAGE*2,
+    .durationTics = ENEMY_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  },
+  [OBJECT_PUNCH_LEFT2] =  {
+    .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
+    .dammage = ENEMY_ATTACK_DAMMAGE*2,
+    .durationTics = ENEMY_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0    
+  },
+  [OBJECT_PUNCH_RIGHT1] =  {
+    .rangeX = FIGHTER_LONG_PUNCH_RANGE,
+    .dammage = ENEMY_ATTACK_DAMMAGE*2,
+    .durationTics = ENEMY_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0    
+  },
+  [OBJECT_PUNCH_RIGHT2] =  {
+    .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
+    .dammage = ENEMY_ATTACK_DAMMAGE*2,
+    .durationTics = ENEMY_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0    
+  }
+};
+
+
+fighter_attack_config_t enemy_bossAttackConfig[] = {
+  [OBJECT_PUNCH_LEFT1] = {
+    .rangeX = ENEMY_BOSS_ATTACK_RANGE,
+    .dammage = ENEMY_BOSS_ATTACK_DAMMAGE,
+    .durationTics = ENEMY_ATTACK_DURATION_TICS,
+    .hitAnimTic = ENEMY_BOSS_ATTACK_TICS_PER_FRAME,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  },
+
+  [OBJECT_PUNCH_RIGHT1] =  {
+    .rangeX = ENEMY_BOSS_ATTACK_RANGE,
+    .dammage = ENEMY_BOSS_ATTACK_DAMMAGE,
+    .durationTics = ENEMY_ATTACK_DURATION_TICS,
+    .hitAnimTic = ENEMY_BOSS_ATTACK_TICS_PER_FRAME,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0    
+  },
+
+};

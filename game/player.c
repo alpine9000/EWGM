@@ -47,6 +47,10 @@ player_processJoystick(object_t * ptr, uint8_t joystickPos)
 uint16_t
 player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
+  if (data->attackCount > 0 && data->attackJump) {
+    return 0;
+  }
+      
   if (object_get_state(ptr) != OBJECT_STATE_ALIVE) {
     if (object_get_state(ptr) == OBJECT_STATE_FLASHING && data->health > 0) {
       goto ok;
@@ -59,17 +63,24 @@ player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   USE(deltaT);
   uint16_t attack = 0;
   uint16_t buttonDown = 0;
+  uint16_t joyUp = 0;
 
   
   if (ptr->id == OBJECT_ID_PLAYER1) {
     player_processJoystick(ptr, hw_joystickPos);
     buttonDown = hw_joystickButton & 0x1;
+    joyUp = hw_joystickPos  == JOYSTICK_POS_UP || hw_joystickPos == JOYSTICK_POS_UPRIGHT || hw_joystickPos == JOYSTICK_POS_UPLEFT;
   } else if (ptr->id == OBJECT_ID_PLAYER2) {
     player_processJoystick(ptr, hw_joystick2Pos);
     buttonDown = hw_joystick2Button & 0x1;
+    joyUp = hw_joystick2Pos  == JOYSTICK_POS_UP || hw_joystick2Pos == JOYSTICK_POS_UPRIGHT || hw_joystick2Pos == JOYSTICK_POS_UPLEFT;    
   }
 
   if (buttonDown && data->buttonReleased) {
+    if (joyUp) {
+      data->attackType = 2;
+    }
+      
     attack = 1;
   }
 
@@ -79,15 +90,70 @@ player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 
   return attack;
 }
+    
 
-
+fighter_attack_config_t player_attackConfig[] = {
+  [OBJECT_PUNCH_LEFT1] = {
+    .rangeX = FIGHTER_LONG_PUNCH_RANGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE,
+    .durationTics = PLAYER_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  },
+  [OBJECT_PUNCH_LEFT2] =  {
+    .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE,
+    .durationTics = PLAYER_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0    
+  },
+  [OBJECT_PUNCH_RIGHT1] =  {
+    .rangeX = FIGHTER_LONG_PUNCH_RANGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE,
+    .durationTics = PLAYER_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0    
+  },
+  [OBJECT_PUNCH_RIGHT2] =  {
+    .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE,
+    .durationTics = PLAYER_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0    
+  } ,
+  [OBJECT_KICK_LEFT] =  {
+    .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE*2,
+    .durationTics = ENEMY_ATTACK_DURATION_TICS,
+    .hitAnimTic = ENEMY_BOSS_ATTACK_TICS_PER_FRAME,
+    .vx = -(PLAYER_SPEED_X/2)*OBJECT_PHYSICS_FACTOR,
+    .vy = -4*OBJECT_PHYSICS_FACTOR,
+    .jump = 1    
+  } ,
+  [OBJECT_KICK_RIGHT] =  {
+    .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE*2,
+    .durationTics = ENEMY_ATTACK_DURATION_TICS,
+    .hitAnimTic = ENEMY_BOSS_ATTACK_TICS_PER_FRAME,
+    .vx = (PLAYER_SPEED_X/2)*OBJECT_PHYSICS_FACTOR,
+    .vy = -4*OBJECT_PHYSICS_FACTOR,
+    .jump = 1    
+  } 
+};
+    
 object_t*
 player_init(uint16_t id, uint16_t animId, int16_t x)
 {
-  object_t* ptr = fighter_add(id, animId, x, 100, PLAYER_INITIAL_HEALTH, PLAYER_ATTACK_DAMMAGE, player_intelligence);
+  object_t* ptr = fighter_add(id, animId, x, 100, PLAYER_INITIAL_HEALTH, player_attackConfig, player_intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
-  data->attackDurationTics = PLAYER_ATTACK_DURATION_TICS;
-  data->attackHitAnimTic = 0;
   data->numAttacks = 2;
   data->flashCount = FIGHTER_SPAWN_FLASH_COUNT_TICS;
   data->flashDurationTics = FIGHTER_SPAWN_FLASH_DURATION_TICS;
