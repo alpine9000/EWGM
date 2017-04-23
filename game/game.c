@@ -258,6 +258,14 @@ game_setGameOver(void)
   game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
   game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);
 
+  if (game_player1) {
+    ((fighter_data_t*)(game_player1->data))->intelligence = fighter_nullIntelligence;
+  }
+
+  if (game_player2) {
+    ((fighter_data_t*)(game_player2->data))->intelligence = fighter_nullIntelligence;
+  }  
+  
   if (game_numPlayers == 1) {
     game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
   }
@@ -270,12 +278,14 @@ game_setGameOver(void)
 void
 game_setGameComplete(void)
 {
-  game_over = 1;
-  music_play(4);  
-  game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
-  game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);
-  object_set_z(object_add(OBJECT_ID_JOYSTICK, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-16), (PLAYAREA_HEIGHT/2)+32, 0, OBJECT_ANIM_JOYSTICK, 0, 0, 0), 4096);   
-  object_set_z(object_add(OBJECT_ID_GAMECOMPLETE, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-55), (PLAYAREA_HEIGHT/2)-30, 0, OBJECT_ANIM_GAMECOMPLETE, 0, 0, 0), 4096);    
+  if (!game_over) {
+    game_over = 1;
+    music_play(4);  
+    game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
+    game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);
+    object_set_z(object_add(OBJECT_ID_JOYSTICK, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-16), (PLAYAREA_HEIGHT/2)+32, 0, OBJECT_ANIM_JOYSTICK, 0, 0, 0), 4096);   
+    object_set_z(object_add(OBJECT_ID_GAMECOMPLETE, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-55), (PLAYAREA_HEIGHT/2)-30, 0, OBJECT_ANIM_GAMECOMPLETE, 0, 0, 0), 4096);
+  }
 }
 
 
@@ -375,7 +385,7 @@ game_newGame(menu_command_t command)
   game_player2Score = 0;
   game_lastPlayer1Score = 0xffffffff;
   game_lastPlayer2Score = 0xffffffff;
-  game_levelTime.min = 5;
+  game_levelTime.min = 2;
   game_levelTime.sec10 = 0;
   game_levelTime.sec= 0;
   game_lastLevelTime.value = 0;
@@ -839,13 +849,14 @@ game_updateScoreboard(void)
 	return;
     }
     if (game_levelTime.value != game_lastLevelTime.value) {
-      uint16_t x = 146;
+      uint16_t x = (SCREEN_WIDTH/2)-(((GAME_BIG_FONT_GAP*3)+GAME_BIG_FONT_COLON_GAP)/2);
       uint16_t y = 19;      
-      text_clrBlit(game_scoreBoardFrameBuffer, x, y, 9*3+5, GAME_BIG_FONT_HEIGHT);      
-      text_drawBigNumeral(game_scoreBoardFrameBuffer, game_levelTime.sec, x+5+9+9, y, GAME_BIG_FONT_HEIGHT);
-      text_drawBigNumeral(game_scoreBoardFrameBuffer, game_levelTime.sec10, x+5+9, y, GAME_BIG_FONT_HEIGHT);
-      text_drawBigNumeral(game_scoreBoardFrameBuffer, game_levelTime.min, x, y, GAME_BIG_FONT_HEIGHT);
-      text_drawBigNumeral(game_scoreBoardFrameBuffer, 10, x+7, y, GAME_BIG_FONT_HEIGHT);
+      frame_buffer_t fb = game_scoreBoardFrameBuffer+(SCREEN_WIDTH_BYTES*3);
+      text_clrBlit(fb, x, y, (GAME_BIG_FONT_GAP*3), GAME_BIG_FONT_HEIGHT);      
+      text_drawBigNumeral(fb, game_levelTime.sec, x+GAME_BIG_FONT_COLON_GAP+GAME_BIG_FONT_GAP+GAME_BIG_FONT_GAP, y, GAME_BIG_FONT_WIDTH, GAME_BIG_FONT_HEIGHT);
+      text_drawBigNumeral(fb, game_levelTime.sec10, x+GAME_BIG_FONT_COLON_GAP+GAME_BIG_FONT_GAP, y, GAME_BIG_FONT_WIDTH, GAME_BIG_FONT_HEIGHT);
+      text_drawBigNumeral(fb, game_levelTime.min, x, y, GAME_BIG_FONT_WIDTH, GAME_BIG_FONT_HEIGHT);
+      text_drawBigNumeral(fb, 10, x+GAME_BIG_FONT_GAP, y, GAME_BIG_FONT_WIDTH, GAME_BIG_FONT_HEIGHT);
       game_lastLevelTime = game_levelTime;
      } else if (game_lastPlayer1Score != game_player1Score) {
       frame_buffer_t fb = game_scoreBoardFrameBuffer;
@@ -882,6 +893,10 @@ game_decrementTime(void)
     }
     if (game_levelTime.value == 0) {
       game_setGameOver();      
+    } else if (game_levelTime.min == 0 &&
+	       game_levelTime.sec10 == 3 &&
+	       game_levelTime.sec == 0) {
+      custom->color[28] = 0xc00;
     }
   }
 }
@@ -1044,8 +1059,10 @@ game_loop()
     game_lastScrollFrame = frame;
     for (uint32_t i = 0; i < game_deltaT; i++) {
       if (game_targetCameraX != game_cameraX) {
-	game_scrollBackground();
-	conductor_process();
+	if (!game_over) {
+	  game_scrollBackground();
+	  conductor_process();
+	}
       }
     }
 

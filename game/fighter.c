@@ -329,6 +329,16 @@ fighter_die(object_t* ptr)
     break;
   }
 }
+
+uint16_t
+fighter_nullIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
+{
+  USE(deltaT);
+  USE(ptr);
+  USE(data);
+  return 0;
+}
+
 void
 fighter_update(uint16_t deltaT, object_t* ptr)
 {

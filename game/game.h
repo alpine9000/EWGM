@@ -5,12 +5,12 @@
 #include <hardware/dmabits.h>
 #include <hardware/intbits.h>
 
-#define DEBUG                         1
+//#define DEBUG                         1
 //#define SCRIPTING                     1
 #define GAME_25_FPS                   1
-#define GAME_TURTLE                   1
+//#define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1
-#define GAME_RECORDING                1
+//#define GAME_RECORDING                1
 #define GAME_ONE_BITPLANE_SPRITE_MASK 1
 #define GAME_STARS                    1
 //#define GAME_BLITTER_WAIT_DEBUG       1
@@ -66,7 +66,11 @@
 #define GAME_PLAYER1_HEALTH_SCOREBOARD_X 225
 #define GAME_PLAYER2_HEALTH_SCOREBOARD_X 50
 
-#define GAME_BIG_FONT_HEIGHT 9
+#define GAME_BIG_FONT_HEIGHT         12
+#define GAME_BIG_FONT_WIDTH          12
+#define GAME_BIG_FONT_WIDTH_SPACING  1
+#define GAME_BIG_FONT_GAP            (GAME_BIG_FONT_WIDTH_SPACING+GAME_BIG_FONT_WIDTH)
+#define GAME_BIG_FONT_COLON_GAP      7
 
 typedef UBYTE uint8_t;
 typedef SHORT int16_t;

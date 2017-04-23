@@ -55,8 +55,9 @@ fighter_init(void);
 object_t*
 fighter_add(uint16_t id, uint16_t animId, int16_t x, int16_t y, uint16_t initialHealth, fighter_attack_config_t* attackConfig, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, struct fighter_data* data));
 
-
 void
 fighter_update(uint16_t deltaT, object_t* ptr);
 
+uint16_t
+fighter_nullIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data);
 #endif

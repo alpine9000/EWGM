@@ -146,11 +146,11 @@ text_bitBlit(frame_buffer_t source, frame_buffer_t dest, int16_t dx, int16_t dy,
 
 
 void
-text_drawBigNumeral(frame_buffer_t frameBuffer, uint16_t n, int16_t x, int16_t y, int16_t ny)
+text_drawBigNumeral(frame_buffer_t frameBuffer, uint16_t n, int16_t x, int16_t y, int16_t nx, int16_t ny)
 {
   USE(y);
   frame_buffer_t src = fontPtr + bigNumAtlas[(int)n];
-  text_bitBlit(src, frameBuffer, x, y, 8, ny);
+  text_bitBlit(src, frameBuffer, x, y, nx, ny);
 }
 
 
