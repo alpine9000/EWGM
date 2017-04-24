@@ -43,7 +43,10 @@ static hiscore_small_buffer_t hiscore2;
 #endif
 static char hiscore_promptBuffer[4];
 
-static uint32_t
+#ifdef GAME_HISCORE_SAVE_ENABLE
+static
+#endif
+uint32_t
 hiscore_checksum(void)
 {
   uint32_t checksum = 0;
@@ -100,7 +103,8 @@ __EXTERNAL uint16_t
 hiscore_load(uint16_t ignoreErrors)
 {
   USE(ignoreErrors);
-  int16_t loaded = 0;
+  int16_t loaded = 0;  
+#ifdef GAME_HISCORE_SAVE_ENABLE
   dos_init();
 
   BPTR file = Open("PROGDIR:hiscore.bin", MODE_OLDFILE);
@@ -114,7 +118,7 @@ hiscore_load(uint16_t ignoreErrors)
     }
     Close(file);
   }
-
+#endif
   if (!loaded) {
     disk_loadData(&hiscore, &hiscore_disk, sizeof(hiscore_disk));
   }
@@ -306,6 +310,7 @@ hiscore_save(void)
 { 
   //extern BPTR startupDirLock;
 
+#ifdef GAME_HISCORE_SAVE_ENABLE  
   dos_init();
 
   hiscore.checksum = hiscore_checksum();
@@ -315,6 +320,7 @@ hiscore_save(void)
     Write(file, &hiscore, sizeof(hiscore));
     Close(file);
   }
+#endif
 }
 
 #endif
