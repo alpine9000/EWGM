@@ -8,7 +8,7 @@
 #define I18N_PLAY_NOW          "PLAY NOW!"
 #define I18N_SINGLE_PLAYER     "SINGLE PLAYER"
 #define I18N_2_PLAYERS         "  2 PLAYERS  "
-#define I18N_PLAY_RECORDING    "PLAY RECORDING"
+#define I18N_PLAY_RECORDING    "WATCH DEMO"
 #define I18N_MUSIC_ON          "MUSIC - ON "
 #define I18N_MUSIC_OFF         "MUSIC - OFF"
 #define I18N_HI_SCORES         "HI SCORES"

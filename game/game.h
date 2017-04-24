@@ -8,9 +8,9 @@
 //#define DEBUG                         1
 //#define SCRIPTING                     1
 #define GAME_25_FPS                   1
-//#define GAME_TURTLE                   1
+#define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1
-//#define GAME_RECORDING                1
+#define GAME_RECORDING                1
 #define GAME_ONE_BITPLANE_SPRITE_MASK 1
 #define GAME_STARS                    1
 //#define GAME_BLITTER_WAIT_DEBUG       1
@@ -71,6 +71,11 @@
 #define GAME_BIG_FONT_WIDTH_SPACING  1
 #define GAME_BIG_FONT_GAP            (GAME_BIG_FONT_WIDTH_SPACING+GAME_BIG_FONT_WIDTH)
 #define GAME_BIG_FONT_COLON_GAP      7
+
+#define GAME_COUNTDOWN_COLOR_TOP_OK      0x0b0
+#define GAME_COUNTDOWN_COLOR_BOTTOM_OK   0x090
+#define GAME_COUNTDOWN_COLOR_TOP_WARN    0xb00
+#define GAME_COUNTDOWN_COLOR_BOTTOM_WARN 0x900
 
 typedef UBYTE uint8_t;
 typedef SHORT int16_t;

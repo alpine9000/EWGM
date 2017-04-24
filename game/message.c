@@ -21,6 +21,7 @@ static  __section(data_c)  message_copper_t message_copper  = {
     BPL5PTL,0x0000,
     BPL5PTH,0x0000,
   },
+
   .end = {0xFFFF, 0xFFFE}
 };
 

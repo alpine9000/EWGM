@@ -119,16 +119,16 @@ menu_item_t menu_items[MENU_NUM_ITEMS+1] = {
     .callback = menu_toggleNumPlayers
   },
   {
-    .text = I18N_PLAY_RECORDING,
-    .command = MENU_COMMAND_REPLAY,
-    .done = 1,
-    .callback = 0
-  },
-  {
     .text = I18N_MUSIC_ON,
     .command = MENU_COMMAND_PLAY,
     .done = 0,
     .callback = menu_toggleMusic
+  },
+  {
+    .text = I18N_PLAY_RECORDING,
+    .command = MENU_COMMAND_REPLAY,
+    .done = 1,
+    .callback = 0
   },
   {
     .text = I18N_HI_SCORES,

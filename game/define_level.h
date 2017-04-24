@@ -13,7 +13,11 @@
 #define __LEVEL_TILE(x)              __LEVEL_TILE2(x)
 #define __LEVEL_FADE_IN2(x)          __LEVEL_STRINGIFY(out/palette_sprite_ ##x.h)
 #define __LEVEL_FADE_IN(x)           __LEVEL_FADE_IN2(x)
+#ifdef DEBUG
 #define __LEVEL_RECORDING2(x)        __LEVEL_STRINGIFY(out/level_recording_ ##x.h)
+#else
+#define __LEVEL_RECORDING2(x)        __LEVEL_STRINGIFY(out/demo.h)
+#endif
 #define __LEVEL_RECORDING(x)         __LEVEL_RECORDING2(x)
 #define __LEVEL_DEFINITION2(x)       level_level##x
 #define __LEVEL_DEFINITION(x)        __LEVEL_DEFINITION2(x)

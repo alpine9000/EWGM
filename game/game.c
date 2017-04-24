@@ -169,9 +169,43 @@ __section(data_c)  copper_t copper  = {
     SPR7PTH,0x0000
   },
 #endif
+
+   .fontColorWait = {
+    0xffdf, 0xfffe,
+    0xffff, 0xfffe,
+  },
+   .fontColor = {
+    COLOR28,GAME_COUNTDOWN_COLOR_BOTTOM_OK
+  },
+   .fontColorWaitEnd = {
+    ((28)<<8)|0xe1, 0xfffe,
+  },
+   .fontResetColor = {
+    COLOR28,GAME_COUNTDOWN_COLOR_TOP_OK
+  },   
+   
    .end = {0xFFFF, 0xFFFE}
 };
 
+static void
+game_enableCopperEffects(void)
+{
+  copper.fontColorWait[2] = ((14)<<8)|0xe1;
+}
+
+static void
+game_disableCopperEffects(void)
+{
+  hw_waitVerticalBlank();
+  copper.fontColorWait[2] = 0xffff;
+}
+
+static void
+game_setBigFontColor(uint16_t topColor, uint16_t bottomColor)
+{
+  copper.fontResetColor[1] = topColor;
+  copper.fontColor[1] = bottomColor;
+}
 
 void
 game_ctor(void)
@@ -226,6 +260,8 @@ game_complete(void)
 {
   game_gotoMenu = 1;
 
+  game_disableCopperEffects();  
+  
   if (game_player1Score > 0) {
     hiscore_addScore(1, game_player1Score);
   }
@@ -356,6 +392,7 @@ game_refreshScoreboard(void)
     game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_BLANK_GAME_OVER);    
     game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_BLANK_GAME_OVER);
     game_scoreBoardPlayer1Score(I18N_BLANK_GAME_OVER);
+    text_drawText8(game_scoreBoardFrameBuffer, itoan(game_player1Score, 6), 224, 8);
     game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
     
     if (game_numPlayers == 1) {
@@ -514,6 +551,8 @@ game_loadLevel(menu_command_t command)
   palette_fadeTo(level.palette, 32, 0);
 
   hw_waitVerticalBlank();
+  game_setBigFontColor(GAME_COUNTDOWN_COLOR_TOP_OK, GAME_COUNTDOWN_COLOR_BOTTOM_OK);  
+  game_enableCopperEffects();
   hw_verticalBlankCount = 0;
   game_lastVerticalBlankCount = 0;
 }
@@ -896,7 +935,7 @@ game_decrementTime(void)
     } else if (game_levelTime.min == 0 &&
 	       game_levelTime.sec10 == 3 &&
 	       game_levelTime.sec == 0) {
-      custom->color[28] = 0xc00;
+      game_setBigFontColor(GAME_COUNTDOWN_COLOR_TOP_WARN, GAME_COUNTDOWN_COLOR_BOTTOM_WARN);
     }
   }
 }
@@ -944,6 +983,7 @@ game_loop()
   game_checkStack();
 #endif
   game_level = 0;
+  game_disableCopperEffects();
   if ((menuCommand = menu_loop(game_over == 1 ? MENU_MODE_HISCORES : MENU_MODE_MENU)) == MENU_COMMAND_EXIT) {
 #if TRACKLOADER==0
     goto done;

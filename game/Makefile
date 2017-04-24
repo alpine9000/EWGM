@@ -8,7 +8,7 @@ ONEBITPLANE_MASK=--onebitplane-mask
 
 # programs and paths
 CC=/usr/local/amiga/vgcc/bin/m68k-amigaos-gcc
-#CC=/usr/local/amiga/bgcc/bin/m68k-amigaosvasm-gcc -fbbb=-
+#CC=/usr/local/amiga/bgcc/bin/m68k-amigaos-gcc -fbbb=- #aefm #rcp
 VASM=/usr/local/amiga/vgcc/bin/vasmm68k_mot
 LD=/usr/local/amiga/vgcc/bin/vlink
 NDK=/usr/local/amiga/vgcc/ndk/
@@ -141,7 +141,8 @@ $(ADF): out/bootblock.bin
 wb: | out version libgcc/out/gcc.lib $(ALL_TOOLS) bin/$(GAME_NAME)
 
 out/adf/star.o: star.c out/star-sprite.h
-out/adf/level.o: level.c $(LEVEL_FILES)
+out/adf/level.o: level.c $(LEVEL_FILES) out/demo.h
+out/workbench/star.o: star.c out/star-sprite.h
 out/workbench/level.o: level.c $(LEVEL_FILES)
 
 out/Terence_punch01.raw: assets/Terence_punch01.wav
@@ -201,6 +202,10 @@ out/tile_%.h: assets/tile_%.png palettes/palette_%.pal
 out/level_recording_%.h: recordings/level%.raw
 	echo recordings/level$*.raw 
 	cat recordings/level$*.raw | $(BIN2C) > out/level_recording_$*.h
+
+out/demo.h: recordings/demo.raw
+	echo recordings/demo.raw 
+	cat recordings/demo.raw | $(BIN2C) > out/demo.h
 
 out/%.h: assets/%.bin
 	cat assets/$*.bin | $(BIN2C) > out/$*.h

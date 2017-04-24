@@ -51,6 +51,9 @@
 #define COLOR09 0x0192
 #define COLOR10 0x0194
 #define COLOR11 0x0196
+#define COLOR28 0x01B8
+#define COLOR29 0x01BA
+#define COLOR30 0x01BC
 #define COLOR31 0x01BE
 
 #define COP2LCH 0x084
