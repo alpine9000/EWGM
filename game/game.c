@@ -384,6 +384,19 @@ game_updatePlayerHealth(uint16_t x, int16_t health)
 
 
 static void
+game_renderCounter(void)
+{
+  uint16_t x = (SCREEN_WIDTH/2)-(((GAME_BIG_FONT_GAP*3)+GAME_BIG_FONT_COLON_GAP)/2);
+  uint16_t y = 19;      
+  frame_buffer_t fb = game_scoreBoardFrameBuffer+(SCREEN_WIDTH_BYTES*3);
+  text_clrBlit(fb, x, y, (GAME_BIG_FONT_GAP*3), GAME_BIG_FONT_HEIGHT);      
+  text_drawBigNumeral(fb, game_levelTime.sec, x+GAME_BIG_FONT_COLON_GAP+GAME_BIG_FONT_GAP+GAME_BIG_FONT_GAP, y, GAME_BIG_FONT_WIDTH, GAME_BIG_FONT_HEIGHT);
+  text_drawBigNumeral(fb, game_levelTime.sec10, x+GAME_BIG_FONT_COLON_GAP+GAME_BIG_FONT_GAP, y, GAME_BIG_FONT_WIDTH, GAME_BIG_FONT_HEIGHT);
+  text_drawBigNumeral(fb, game_levelTime.min, x, y, GAME_BIG_FONT_WIDTH, GAME_BIG_FONT_HEIGHT);
+  text_drawBigNumeral(fb, 10, x+GAME_BIG_FONT_GAP, y, GAME_BIG_FONT_WIDTH, GAME_BIG_FONT_HEIGHT);
+}
+
+static void
 game_refreshScoreboard(void)
 {
 #ifdef DEBUG
@@ -402,10 +415,12 @@ game_refreshScoreboard(void)
       game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_TO_PLAY);            
       game_lastPlayer2Score = game_player2Score;
     } else {
+      text_drawText8(game_scoreBoardFrameBuffer, itoan(game_player2Score, 6), 48, 8);
       game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);
       game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);              
     }
 
+    game_renderCounter();
 
 #ifdef DEBUG
   }
@@ -433,9 +448,9 @@ game_newGame(menu_command_t command)
     command = MENU_COMMAND_PLAY;
   }
 
-  game_refreshScoreboard();
+  //  game_refreshScoreboard();
   game_loadLevel(command);
-  game_refreshScoreboard();  
+  //game_refreshScoreboard();  
 }
 
 
@@ -484,7 +499,7 @@ game_loadLevel(menu_command_t command)
   game_scoreBoardMode = 0;
   game_debugRenderFrame = 0;
 #endif
-
+  
   game_switchFrameBuffers();
 
   sound_init();
@@ -498,6 +513,8 @@ game_loadLevel(menu_command_t command)
   tile_init();
   tile_renderScreen(game_offScreenBuffer, game_onScreenBuffer);
 
+  game_refreshScoreboard();  
+  
 #ifdef GAME_RECORDING
   switch (command) {
   case MENU_COMMAND_REPLAY:
@@ -550,9 +567,11 @@ game_loadLevel(menu_command_t command)
 
   palette_fadeTo(level.palette, 32, 0);
 
-  hw_waitVerticalBlank();
+  hw_waitVerticalBlank();  
   game_setBigFontColor(GAME_COUNTDOWN_COLOR_TOP_OK, GAME_COUNTDOWN_COLOR_BOTTOM_OK);  
   game_enableCopperEffects();
+  
+  hw_waitVerticalBlank();
   hw_verticalBlankCount = 0;
   game_lastVerticalBlankCount = 0;
 }
@@ -890,14 +909,7 @@ game_updateScoreboard(void)
 	return;
     }
     if (game_levelTime.value != game_lastLevelTime.value) {
-      uint16_t x = (SCREEN_WIDTH/2)-(((GAME_BIG_FONT_GAP*3)+GAME_BIG_FONT_COLON_GAP)/2);
-      uint16_t y = 19;      
-      frame_buffer_t fb = game_scoreBoardFrameBuffer+(SCREEN_WIDTH_BYTES*3);
-      text_clrBlit(fb, x, y, (GAME_BIG_FONT_GAP*3), GAME_BIG_FONT_HEIGHT);      
-      text_drawBigNumeral(fb, game_levelTime.sec, x+GAME_BIG_FONT_COLON_GAP+GAME_BIG_FONT_GAP+GAME_BIG_FONT_GAP, y, GAME_BIG_FONT_WIDTH, GAME_BIG_FONT_HEIGHT);
-      text_drawBigNumeral(fb, game_levelTime.sec10, x+GAME_BIG_FONT_COLON_GAP+GAME_BIG_FONT_GAP, y, GAME_BIG_FONT_WIDTH, GAME_BIG_FONT_HEIGHT);
-      text_drawBigNumeral(fb, game_levelTime.min, x, y, GAME_BIG_FONT_WIDTH, GAME_BIG_FONT_HEIGHT);
-      text_drawBigNumeral(fb, 10, x+GAME_BIG_FONT_GAP, y, GAME_BIG_FONT_WIDTH, GAME_BIG_FONT_HEIGHT);
+      game_renderCounter();
       game_lastLevelTime = game_levelTime;
      } else if (game_lastPlayer1Score != game_player1Score) {
       frame_buffer_t fb = game_scoreBoardFrameBuffer;
