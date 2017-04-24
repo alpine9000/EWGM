@@ -855,6 +855,8 @@ game_processKeyboard()
     music_toggle();
     break;
   case 'Q':
+    game_disableCopperEffects();    
+    palette_fadeFrom(level.palette, 32, 0, 32);
     return 1;
     break;
   case '1':

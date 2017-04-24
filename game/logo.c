@@ -102,5 +102,5 @@ logo_clear(void)
     hw_waitVerticalBlank();
   }
   
-  palette_fadeFrom(logoPalette, 16, 0);
+  palette_fadeFrom(logoPalette, 16, 0, 16);
 }

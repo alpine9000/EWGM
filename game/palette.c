@@ -50,6 +50,7 @@ palette_fadeTo(uint16_t* palette, uint16_t colors, uint16_t color)
   palette_background = palette[0];
 }
 
+#if 0
 NOINLINE void
 palette_fadeFrom(uint16_t* palette, uint16_t colors, uint16_t color)
 {
@@ -80,5 +81,37 @@ palette_fadeFrom(uint16_t* palette, uint16_t colors, uint16_t color)
 
   palette_background = palette[0];
 }
+#else
 
+NOINLINE void
+palette_fadeFrom(uint16_t* palette, uint16_t colors, uint16_t color, uint16_t steps)
+{
+  int tr = _PALETTE_RED(color) << 4;
+  int tg = _PALETTE_GREEN(color) << 4;
+  int tb = _PALETTE_BLUE(color) << 4;
+  
+  for (int i = 0; i < steps; i++) {
+    for (int c = 0; c < colors; c++) {
+
+      int fr = _PALETTE_RED(palette[c]);
+      int fg = _PALETTE_GREEN(palette[c]);
+      int fb = _PALETTE_BLUE(palette[c]);            
+      
+      int nr = ((fr<<_PALETTE_FIXED)+((((tr<<_PALETTE_FIXED)-(fr<<_PALETTE_FIXED))/steps)*i))>>_PALETTE_FIXED;
+      int ng = ((fg<<_PALETTE_FIXED)+((((tg<<_PALETTE_FIXED)-(fg<<_PALETTE_FIXED))/steps)*i))>>_PALETTE_FIXED;
+      int nb = ((fb<<_PALETTE_FIXED)+((((tb<<_PALETTE_FIXED)-(fb<<_PALETTE_FIXED))/steps)*i))>>_PALETTE_FIXED;      
+
+      custom->color[c] = (nr<<8)|(ng<<4)|nb;
+    }
+
+    hw_waitVerticalBlank();
+  }
+
+  for (int c = 0; c < colors; c++) {
+    custom->color[c] = color;
+  }
+
+  palette_background = palette[0];
+}
+#endif
 

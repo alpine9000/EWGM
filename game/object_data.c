@@ -272,6 +272,69 @@ object_animation_t object_animations[] = {
 
 
   // =================================
+  [OBJECT_ANIM_PLAYER5_RUN_RIGHT] = {
+    .start = SPRITE_PLAYER5_RUN_RIGHT_1,
+    .stop = SPRITE_PLAYER5_RUN_RIGHT_4,
+    .speed = 2,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PLAYER5_STAND_RIGHT] = {
+    .start = SPRITE_PLAYER5_STAND_RIGHT,
+    .stop = SPRITE_PLAYER5_STAND_RIGHT,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PLAYER5_RUN_LEFT] = {
+    .start = SPRITE_PLAYER5_RUN_LEFT_1,
+    .stop = SPRITE_PLAYER5_RUN_LEFT_4,
+    .speed = 2,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PLAYER5_STAND_LEFT] = {
+    .start = SPRITE_PLAYER5_STAND_LEFT,
+    .stop = SPRITE_PLAYER5_STAND_LEFT,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PLAYER5_PUNCH_LEFT1] = {
+    .start = SPRITE_PLAYER5_PUNCH_LEFT_1,
+    .stop = SPRITE_PLAYER5_PUNCH_LEFT_1,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PLAYER5_PUNCH_LEFT2] = {
+    .start = SPRITE_PLAYER5_PUNCH_LEFT_2,
+    .stop = SPRITE_PLAYER5_PUNCH_LEFT_2,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },      
+  [OBJECT_ANIM_PLAYER5_PUNCH_RIGHT1] = {
+    .start = SPRITE_PLAYER5_PUNCH_RIGHT_1,
+    .stop = SPRITE_PLAYER5_PUNCH_RIGHT_1,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PLAYER5_PUNCH_RIGHT2] = {
+    .start = SPRITE_PLAYER5_PUNCH_RIGHT_2,
+    .stop = SPRITE_PLAYER5_PUNCH_RIGHT_2,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PLAYER5_HIT_LEFT] = {
+    .start = SPRITE_PLAYER5_HIT_LEFT,
+    .stop = SPRITE_PLAYER5_HIT_LEFT,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PLAYER5_HIT_RIGHT] = {
+    .start = SPRITE_PLAYER5_HIT_RIGHT,
+    .stop = SPRITE_PLAYER5_HIT_RIGHT,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },  
+  
+
+  // =================================
   [OBJECT_ANIM_BOSS_RUN_RIGHT] = {
     .start = SPRITE_BOSS_RUN_RIGHT_1,
     .stop = SPRITE_BOSS_RUN_RIGHT_4,
@@ -1084,6 +1147,136 @@ object_image_t object_imageAtlas[] = {
     },
 
 
+  //==============================
+  [SPRITE_PLAYER5_STAND_RIGHT] = {
+    .x = 0,
+    .y = 787,
+    .w = 32,
+    .h = 53,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_PLAYER5_RUN_RIGHT_1] = {
+    .x = 32,
+    .y = 787,
+    .w = 32,
+    .h = 53,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_PLAYER5_RUN_RIGHT_2] = {
+    .x = 64,
+    .y = 787,
+    .w = 32,
+    .h = 53,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_PLAYER5_RUN_RIGHT_3] = {
+    .x = 240,
+    .y = 682,
+    .w = 32,
+    .h = 53,
+    .dx = -2,
+    .dy = 0,    
+  },
+  [SPRITE_PLAYER5_RUN_RIGHT_4] = {
+    .x = 64,
+    .y = 787,
+    .w = 32,
+    .h = 53,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER5_STAND_LEFT] = {
+    .x = 192,
+    .y = 792,
+    .w = 32,
+    .h = 53,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_PLAYER5_RUN_LEFT_1] = {
+    .x = 160,
+    .y = 792,
+    .w = 32,
+    .h = 53,
+    .dx = -2,
+    .dy = 0,    
+  },
+  [SPRITE_PLAYER5_RUN_LEFT_2] = {
+    .x = 128,
+    .y = 792,
+    .w = 32,
+    .h = 53,
+    .dx = -2,
+    .dy = 0,   
+  },
+  [SPRITE_PLAYER5_RUN_LEFT_3] = {
+    .x = 96,
+    .y = 792,
+    .w = 32,
+    .h = 53,
+    .dx = 0,
+    .dy = 0,    
+  },
+    [SPRITE_PLAYER5_RUN_LEFT_4] = {
+    .x = 128,
+    .y = 792,
+    .w = 32,
+    .h = 53,
+    .dx = -2,
+    .dy = 0,    
+    },
+
+  [SPRITE_PLAYER5_PUNCH_LEFT_1] = {
+    .x = 32,
+    .y = 840,
+    .w = 32,
+    .h = 53,
+    .dx = -5,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER5_PUNCH_LEFT_2] = {
+    .x = 64,
+    .y = 840,
+    .w = 32,
+    .h = 53,
+    .dx = -4,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER5_PUNCH_RIGHT_1] = {
+    .x = 208,
+    .y = 735,
+    .w = 32,
+    .h = 53,
+    .dx = 3,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER5_PUNCH_RIGHT_2] = {
+    .x = 240,
+    .y = 735,
+    .w = 32,
+    .h = 53,
+    .dx = 2,
+    .dy = 0,    
+    },  
+  [SPRITE_PLAYER5_HIT_LEFT] = {
+    .x = 240,
+    .y = 788,
+    .w = 32,
+    .h = 53,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_PLAYER5_HIT_RIGHT] = {
+    .x = 0,
+    .y = 840,
+    .w = 32,
+    .h = 53,
+    .dx = -2,
+    .dy = 0,    
+    },
   
   //==============================
   [SPRITE_BOSS_STAND_RIGHT] = {

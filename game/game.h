@@ -5,10 +5,10 @@
 #include <hardware/dmabits.h>
 #include <hardware/intbits.h>
 
-//#define DEBUG                         1
+#define DEBUG                         1
 //#define SCRIPTING                     1
 #define GAME_25_FPS                   1
-//#define GAME_TURTLE                   1
+#define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1
 #define GAME_RECORDING                1
 #define GAME_ONE_BITPLANE_SPRITE_MASK 1
@@ -38,7 +38,7 @@
 #define FRAME_BUFFER_WIDTH       (SCREEN_WIDTH+64)
 
 #define SPRITE_SHEET_WIDTH       272
-#define SPRITE_SHEET_HEIGHT      791
+#define SPRITE_SHEET_HEIGHT      893
 #define SPRITE_SHEET_WIDTH_BYTES (SPRITE_SHEET_WIDTH/8)
 
 #define TILE_SHEET_WIDTH         272

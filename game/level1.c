@@ -73,7 +73,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE2_2] = {
     .x = SCREEN_WIDTH,
     .y = 200,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
     .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS,
     .enemyCount = 1,
@@ -93,7 +93,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE3_2] = {
     .x = -48,
     .y = 150,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
     .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .enemyCount = 1,
@@ -111,7 +111,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE3_4] = {
     .x = -48,
     .y = 150,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
     .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .enemyCount = 2,
@@ -129,7 +129,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE3_6] = {
     .x = SCREEN_WIDTH,
     .y = 75,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
     .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .enemyCount = 0,
@@ -221,6 +221,13 @@ level1_addDoorEnemy(void)
   enemy_add(OBJECT_ANIM_PLAYER1_STAND_RIGHT, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, enemy_attackConfig1, ENEMY_ATTACK_WAIT_TICS, level1_doorIntelligence);    
 }
 
+
+static void
+level1_addDoorEnemy2(void)
+{
+  enemy_add(OBJECT_ANIM_PLAYER5_STAND_RIGHT, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, enemy_attackConfig1, ENEMY_ATTACK_WAIT_TICS, level1_doorIntelligence);    
+}
+
 /*
 static uint16_t level1_boss_attack_range[] = {
   [OBJECT_PUNCH_LEFT1] = 20,
@@ -293,7 +300,7 @@ level1_wave3(uint16_t argument)
   
   alarm_add(50, level1_song3);
   alarm_add(100, level1_addDoorEnemy);
-  alarm_add(200, level1_addDoorEnemy);
+  alarm_add(200, level1_addDoorEnemy2);
   alarm_add(300, level1_addBoss);
   alarm_add(400, level1_removeDoor);  
   return 1;
