@@ -65,7 +65,7 @@ cd lib
 make
 sudo mkdir /usr/local/include/pngquant
 sudo cp *.h /usr/local/include/pngquant/
-cp *.a /usr/local/lib
+sudo cp *.a /usr/local/lib
 cd ../../..
 ```
 
