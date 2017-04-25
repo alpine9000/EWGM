@@ -87,9 +87,10 @@ message_screenOn(char* message)
   USE(scratch);
 
   custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
-  custom->color[1] = 0xfff;
   
   hw_waitVerticalBlank();
+
+  custom->color[1] = 0xfff;  
 
   message_on = 1;
 }
