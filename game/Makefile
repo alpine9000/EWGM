@@ -344,8 +344,8 @@ bin/$(GAME_NAME): bin $(ALL_TOOLS)  $(ALL_WORKBENCH_OBJS)
 ifeq ($(USE_BIG), 1)	
 	-@#rm out/workbench/big.o
 endif
-	cp $@ ~/A1200/BlockySkies
-	cp $@ ~/A4000/BlockySkies
+	-cp $@ ~/A1200/BlockySkies
+	-cp $@ ~/A4000/BlockySkies
 	rm -f bin/vegeta.adf
 	../tools/amitools/xdftool.py bin/vegeta.adf format "vegeta" + write bin/newgame
 	../tools/amitools/xdftool.py bin/vegeta.adf boot install
