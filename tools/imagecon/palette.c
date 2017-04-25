@@ -69,7 +69,7 @@ void
 palette_output(imagecon_image_t* ic, char* outFilename)
 {
   if (config.verbose) {
-    printf("outputPalette...%d colors\n", ic->numColors);
+    printf("outputPalette...%d colors -> %s\n", ic->numColors, outFilename);
   }
 
   FILE* fp = 0;
@@ -89,7 +89,7 @@ palette_output(imagecon_image_t* ic, char* outFilename)
 
   if (config.outputPalette) {
     paletteFP = file_openWrite("%s.pal", outFilename);
-    paletteC = file_openWrite("%s/palette_%s.h", dirname(outFilename), basename(outFilename));    
+    paletteC = file_openWrite("%s/palette_%s.h", dirname(strdup(outFilename)), basename(strdup(outFilename)));    
   }
 
   if (config.outputPaletteGrey) {
@@ -101,6 +101,9 @@ palette_output(imagecon_image_t* ic, char* outFilename)
   }
 
   if (config.outputPaletteAsm) {
+     if (config.verbose) {
+       printf("outputPaletteAsm: %s\n", outFilename);
+     }
     paletteAsmFP = file_openWrite("%s-palette.s", outFilename);
     //  fprintf(paletteAsmFP, "\tmovem.l d0-a6,-(sp)\n\tlea CUSTOM,a6\n");
   }
@@ -162,6 +165,7 @@ palette_output(imagecon_image_t* ic, char* outFilename)
     }
   }
 
+
   if (paletteGreyTableFP) {
     fclose(paletteGreyTableFP);
   }
@@ -190,7 +194,7 @@ palette_output(imagecon_image_t* ic, char* outFilename)
 
   if (paletteAsmFP) {
     //   fprintf(paletteAsmFP, "\tmovem.l (sp)+,d0-a6\n");
-    fclose(paletteFP);
+    fclose(paletteAsmFP);
   }
 
   if (fp) {

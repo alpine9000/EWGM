@@ -266,7 +266,7 @@ outputBitplanes(imagecon_image_t* ic, char* outFilename)
 	}
 	int _numBitPlanes = config.ehbMode ? numBitPlanes-1 : numBitPlanes;
 
-	for (int plane_index = 0; plane_index < _numBitPlanes; plane_index++) {
+	for (int32_t plane_index = 0; plane_index < _numBitPlanes; plane_index++) {
 	  char* plane = bitplanes[plane_index];
 	  plane[writeIndex] |= ((palette_index >> plane_index) & 1) << bit;
 	}
@@ -541,6 +541,9 @@ processFile(imagecon_image_t* ic, char* outFilename)
       } else {
 	if (config.overridePalette) {
 	  palette_loadFile(ic);
+	}
+	if (config.verbose) {
+	  printf("generateQuantizedImage\n");
 	}
 	generateQuantizedImage(ic, config.overridePalette != 0);
       }

@@ -8,7 +8,7 @@ ONEBITPLANE_MASK=--onebitplane-mask
 
 # programs and paths
 CC=/usr/local/amiga/vgcc/bin/m68k-amigaos-gcc
-#CC=/usr/local/amiga/bgcc/bin/m68k-amigaos-gcc -fbbb=- #aefm #rcp
+#CC=/usr/local/amiga/vgcc/bin/m68k-amigaosvasm-gcc -fbbb=- #aefm #rcp
 VASM=/usr/local/amiga/vgcc/bin/vasmm68k_mot
 LD=/usr/local/amiga/vgcc/bin/vlink
 NDK=/usr/local/amiga/vgcc/ndk/
@@ -331,8 +331,9 @@ out/main.bin: out/adf/main.o $(ADF_OBJS)
 	$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@ 
 	@$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@  -M -o /tmp/main.bin > out/adf/main.txt
 	@$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -M -o /tmp/main.bin | grep ", value " | cut -d " " -f3,7 | cut -d "," -f1 > $@.symbols
-	@cp $@.symbols ~/Projects/amiga/debugger.syms
-	@echo "RAM USAGE:" $$((16#`cat ~/Projects/amiga/debugger.syms | grep endRam | sed 's/0x//' | sed 's/endRam: //'`)) bytes
+	@cp $@.symbols debugger.syms
+	-#@echo "RAM USAGE:" $$((16#`cat debugger.syms | grep endRam | sed 's/0x//' | sed 's/endRam: //'`)) bytes
+	./ram_usage.sh
 ifeq ($(USE_BIG), 1)	
 	-@#rm out/adf/big.o
 endif
