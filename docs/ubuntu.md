@@ -1,4 +1,4 @@
-
+```
 mkdir ~/project
 mkdir ~/project/downloads
 mkdir ~/project/build
@@ -11,7 +11,9 @@ mkdir /usr/local/amiga/vgcc/ndk/include
 mkdir /usr/local/amiga/vgcc/ndk/lib
 cd ~/project
 sudo chown user.user /usr/local/amiga
+```
 
+```
 sudo apt-get install python
 sudo apt-get install gcc
 sudo apt-get install flex
@@ -26,8 +28,9 @@ sudo apt-get install cmake
 sudo apt-get install libxml2-dev
 sudo apt-get install sox
 sudo apt-get install libwebp-dev
+```
 
-
+```
 cd repos
 git clone https://github.com/jca02266/lha.git
 cd lha
@@ -39,8 +42,9 @@ autoconf
 make
 sudo make install
 cd ../../
+```
 
-
+```
 cd downloads
 curl -O http://www.haage-partner.de/download/AmigaOS/NDK39.lha
 cd ../build
@@ -49,8 +53,9 @@ cp -r NDK_3.9/Include/include_i/* /usr/local/amiga/vgcc/ndk/include/
 cp -r NDK_3.9/Include/include_h/* /usr/local/amiga/vgcc/ndk/include/
 cp -r NDK_3.9/Include/linker_libs/* /usr/local/amiga/vgcc/ndk/lib
 cd ..
+```
 
-
+```
 cd repos
 git clone git://github.com/pornel/pngquant.git
 cd pngquant
@@ -62,8 +67,9 @@ sudo mkdir /usr/local/include/pngquant
 sudo cp *.h /usr/local/include/pngquant/
 cp *.a /usr/local/lib
 cd ../../..
+```
 
-
+```
 cd repos
 git clone https://github.com/baylej/tmx.git
 cd tmx
@@ -72,8 +78,9 @@ cd build
 cmake ..
 sudo make install
 cd ../../..
+```
 
-
+```
 cd downloads
 curl -OL http://sun.hasenbraten.de/vlink/release/vlink.tar.gz
 cd ../build
@@ -83,8 +90,9 @@ mkdir objects
 make
 sudo cp vlink /usr/local/amiga/vgcc/bin
 cd ../../
+```
 
-
+```
 cd downloads
 curl -OL http://sun.hasenbraten.de/vasm/release/vasm.tar.gz
 cd ../build
@@ -93,8 +101,9 @@ cd vasm
 make CPU=m68k SYNTAX=mot
 sudo cp vasmm68k_mot /usr/local/amiga/vgcc/bin/
 cd ../../
+```
 
-
+```
 cd repos
 https://github.com/bebbo/gcc.git
 cd gcc
@@ -107,3 +116,4 @@ cd gcc
 make -j4 all-gcc
 make -j4 install-gcc
 cd ../../
+```
