@@ -105,7 +105,7 @@ cd ../../
 
 ```
 cd repos
-https://github.com/bebbo/gcc.git
+git clone https://github.com/bebbo/gcc.git
 cd gcc
 git apply --apply -3 ~/bebbo-gcc-6-branch-vasm4.patch
 ./contrib/download_prerequisites
