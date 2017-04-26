@@ -8,7 +8,7 @@ ONEBITPLANE_MASK=--onebitplane-mask
 
 # programs and paths
 CC=/usr/local/amiga/vgcc/bin/m68k-amigaos-gcc
-#CC=/usr/local/amiga/vgcc/bin/m68k-amigaosvasm-gcc -fbbb=- #aefm #rcp
+#CC=/usr/local/amiga/bgcc/bin/m68k-amigaosvasm-gcc #-fbbb=c #raefms #cp
 VASM=/usr/local/amiga/vgcc/bin/vasmm68k_mot
 LD=/usr/local/amiga/vgcc/bin/vlink
 NDK=/usr/local/amiga/vgcc/ndk/
@@ -119,6 +119,7 @@ test: testadf
 	@grep PASSED lua.log
 
 go: testadf
+	cp debugger.syms ~/Projects/amiga/debugger.syms
 	@rm -f default.lua
 	 $(RUN_SCRIPT)
 
