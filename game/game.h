@@ -7,14 +7,12 @@
 
 #define DEBUG                         1
 //#define SCRIPTING                     1
-#define GAME_25_FPS                   1
 #define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1
 #define GAME_RECORDING                1
 #define GAME_ONE_BITPLANE_SPRITE_MASK 1
 #define GAME_STARS                    1
 //#define GAME_BLITTER_WAIT_DEBUG       1
-//#define GAME_Z_BUFFER_COLLISION   1
 
 #define abs(a) ((a) >= 0 ? (a) : -(a))  
 #define max(a, b) ((a) > (b) ? (a) : (b))
