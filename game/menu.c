@@ -4,14 +4,19 @@
 extern void palette_menuInstall(void);
 extern frame_buffer_t menu_frameBuffer;
 
-#define MENU_START_Y               110
+#define MENU_START_Y               102
 #define MENU_TOP_COLOR             0xfb5
 #define MENU_BOTTOM_COLOR          0xb72
 #define MENU_TOP_COLOR_SELECTED    0xffb
 #define MENU_BOTTOM_COLOR_SELECTED 0xfb5
 
 static uint8_t menu_offscreenBuffer[SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH*9];
-frame_buffer_t menu_offscreen = &menu_offscreenBuffer[0];
+static frame_buffer_t menu_offscreen = &menu_offscreenBuffer[0];
+static frame_buffer_t menu_creditsFB;
+static uint16_t menu_creditsCounter;
+static char* menu_creditsPtr;
+static uint16_t menu_creditsMode;
+static uint8_t menu_lastJoystick;
 
 typedef struct {
   uint16_t wait1[2];
@@ -23,15 +28,15 @@ typedef struct {
 typedef struct {
   uint16_t bpl1[SCREEN_BIT_DEPTH*2*2];
   menu_line_copper_t lines[MENU_MAX_ITEMS];
-  /*uint16_t wrap[2];
-    menu_line_copper_t overflowLine;*/
+  uint16_t wrap[2];
+  menu_line_copper_t creditsLine;
   uint16_t end[2];
 } menu_copper_t;
 
 static uint16_t menu_selected = 0;
 static uint16_t menu_first = 0;
 
-#define MENU_TEXT_START (0x8bd1+((RASTER_Y_START-0x1d)*0x100))
+#define MENU_TEXT_START (0x83d1+((RASTER_Y_START-0x1d)*0x100))
 #define MENU_COPPER_WAIT_TOP(x)     { MENU_TEXT_START + (0x800*(x*2)), 0xfffe}
 #define MENU_COPPER_WAIT_BOTTOM(x)  { MENU_TEXT_START + 0x400 + (0x800*(x*2)), 0xfffe}
 #define MENU_COPPER_LINE(c1, c2, x) [x] = {	\
@@ -66,16 +71,21 @@ static  __section(data_c)  menu_copper_t menu_copper  = {
     MENU_COPPER_LINE(MENU_TOP_COLOR, MENU_BOTTOM_COLOR, 3),
     MENU_COPPER_LINE(MENU_TOP_COLOR, MENU_BOTTOM_COLOR, 4),
     MENU_COPPER_LINE(MENU_TOP_COLOR, MENU_BOTTOM_COLOR, 5),
-    MENU_COPPER_LINE(MENU_TOP_COLOR, MENU_BOTTOM_COLOR, 6),    
+    MENU_COPPER_LINE(MENU_TOP_COLOR, MENU_BOTTOM_COLOR, 6),
+#if TRACKLOADER==0
+    MENU_COPPER_LINE(MENU_TOP_COLOR, MENU_BOTTOM_COLOR, 7),
+#endif
   },
 
-  /*  .wrap = {0xffdf,0xfffe},
-  .overflowLine = {
-    .wait1 =  {0x0001, 0xfffe},
+  .wrap = {0xffdf,0xfffe},
+
+  .creditsLine = {
+    .wait1 =  {0x1adf, 0xfffe},
     .color1 = { COLOR01, MENU_TOP_COLOR},
-    .wait2 =  {0x03df, 0xfffe},
-   .color2 = { COLOR01, MENU_BOTTOM_COLOR}, 
-   },*/
+    .wait2 =  {0x1edf, 0xfffe},
+    .color2 = { COLOR01, MENU_BOTTOM_COLOR},
+  },
+
   .end = {0xFFFF, 0xFFFE}
 };
 
@@ -99,6 +109,10 @@ static void
 menu_showHiScores(void);
 static void
 menu_select(uint16_t i);
+static void
+menu_credits(void);
+static void
+menu_creditsRender(void);
 
 static 
 menu_mode_t menu_mode = MENU_MODE_INACTIVE;
@@ -138,8 +152,17 @@ menu_item_t menu_items[MENU_MAX_ITEMS] = {
     .text = I18N_CREDITS,
     .command = MENU_COMMAND_PLAY,
     .done = 0,
+    .callback = menu_credits
+  },
+
+#if TRACKLOADER==0
+  {
+    .text = "QUIT",
+    .command = MENU_COMMAND_EXIT,
+    .done = 1,
     .callback = 0
-  },  
+  },
+#endif
   {
     .text = "",
     .command = MENU_COMMAND_PLAY,
@@ -190,6 +213,7 @@ menu_processKeyboard(void)
     return MENU_COMMAND_LEVEL;
     break;
 #if TRACKLOADER==0
+  case 27:
   case 'Q':
     return MENU_COMMAND_EXIT;
     break;
@@ -319,7 +343,7 @@ menu_redraw(uint16_t i)
   int16_t y = MENU_START_Y + (i*16);
 
 
-  hw_waitVerticalBlank();
+  //  hw_waitVerticalBlank();
 
   if (menu_mode == MENU_MODE_MENU) {
     menu_renderText(fb, menu_items[i].text, y);
@@ -458,7 +482,7 @@ menu_toggleMode(void)
 static void
 menu_select(uint16_t i)
 {
-  hw_waitVerticalBlank();
+  //  hw_waitVerticalBlank();
   menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR;
   menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR;
   menu_selected = i;
@@ -471,33 +495,26 @@ menu_up(void)
 {
   if (menu_mode == MENU_MODE_MENU && menu_selected > 0) {
     sound_playSound(SOUND_MENU);
-    hw_waitVerticalBlank();
+    //    hw_waitVerticalBlank();
     menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR;
     menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR;
     menu_selected--;
     menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR_SELECTED;
     menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR_SELECTED;    
-    do {
-      hw_readJoystick();
-    } while (JOYSTICK_UP());
   }
 }
 
 static void
 menu_down(void)
 {
-  if (menu_mode == MENU_MODE_MENU && menu_selected < MENU_NUM_ITEMS-2) {
+  if (menu_mode == MENU_MODE_MENU && menu_selected < MENU_NUM_ITEMS-1) {
     sound_playSound(SOUND_MENU);    
-    hw_waitVerticalBlank();
+    //    hw_waitVerticalBlank();
     menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR;
     menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR;
     menu_selected++;
     menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR_SELECTED;
     menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR_SELECTED;    
-
-    do {
-      hw_readJoystick();
-    } while (JOYSTICK_DOWN());
   }
 }
 
@@ -509,6 +526,8 @@ menu_loop(menu_mode_t mode)
   uint16_t done;
   volatile uint16_t scratch;
 
+  menu_lastJoystick = 0;  
+  menu_creditsMode = 0;
 #ifdef GAME_STARS
   custom->dmacon = DMAF_SPRITE;
 #endif
@@ -562,14 +581,14 @@ menu_loop(menu_mode_t mode)
   /* set up playfield */
   
   custom->diwstrt = (RASTER_Y_START<<8)|RASTER_X_START;
-  custom->diwstop = ((SCREEN_RASTER_Y_STOP-256)<<8)|(RASTER_X_STOP-256);
+  custom->diwstop = ((SCREEN_RASTER_Y_STOP-256)<<8)|((RASTER_X_START+SCREEN_WIDTH-16)-256);
 
   custom->ddfstrt = (RASTER_X_START/2-SCREEN_RES);
-  custom->ddfstop = (RASTER_X_START/2-SCREEN_RES)+(8*((MENU_SCREEN_WIDTH/16)-1));
+  custom->ddfstop = (RASTER_X_START/2-SCREEN_RES)+(8*(((MENU_SCREEN_WIDTH)/16)-1));
   custom->bplcon0 = (SCREEN_BIT_DEPTH<<12)|0x200;
   custom->bplcon1 = 0;
-  custom->bpl1mod = (MENU_SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-MENU_SCREEN_WIDTH_BYTES;
-  custom->bpl2mod = (MENU_SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-MENU_SCREEN_WIDTH_BYTES;
+  custom->bpl1mod = (MENU_SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-(MENU_SCREEN_WIDTH_BYTES);
+  custom->bpl2mod = (MENU_SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-(MENU_SCREEN_WIDTH_BYTES);
 
   menu_pokeCopperList(game_onScreenBuffer);  
   /* install copper list, then enable dma and selected interrupts */
@@ -617,26 +636,102 @@ menu_loop(menu_mode_t mode)
 	  menu_items[menu_selected].callback();
 	}
       }
+    }    
+
+    
+    if (JOYSTICK_DOWN()) {
+      if (menu_lastJoystick != JOYSTICK_POS_DOWN) {
+	menu_down();
+      }
+    } else if (JOYSTICK_UP()) {
+      if (menu_lastJoystick != JOYSTICK_POS_UP) {      
+	menu_up();
+      }
     }
 
-    if (JOYSTICK_DOWN()) {
-      menu_down();
-    } else if (JOYSTICK_UP()) {
-      menu_up();
-    }
+    menu_lastJoystick = hw_joystickPos;
+    
     int16_t kbCommand;
     if ((kbCommand = menu_processKeyboard()) != -1) {
       command = kbCommand;
       done = 1;
     }
-    hw_waitVerticalBlank();
+
+    if (menu_creditsMode == 0) {
+      hw_waitVerticalBlank();
+    } else {
+      menu_creditsRender();      
+    }
   }
 
   hw_waitVerticalBlank();
-  custom->dmacon = DMAF_RASTER;
   palette_black();
+  custom->dmacon = DMAF_RASTER|DMAF_COPPER;
+
 
   menu_mode = MENU_MODE_INACTIVE;
 
   return command;
+}
+
+static char* menu_creditsText =
+  "ELSE WE GET MAD!...  MUSIC/ART/SFX COPYRIGHT (c) 2017 AMIGA WAVE...  GAME ENGINE COPYRIGHT (c) 2017 ENABLE SOFTWARE PTY LTD...  ALL RIGHTS RESERVED...   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE....           ";
+
+
+static void
+menu_credits(void)
+{
+  switch (menu_creditsMode) {
+  case 0:
+  case 2:
+    menu_creditsMode = 1;
+    menu_creditsFB = game_onScreenBuffer;  
+    menu_creditsFB += (((SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)*256));
+    menu_creditsCounter = 0;
+    menu_creditsPtr = menu_creditsText;
+    break;
+  case 1:
+    menu_creditsMode = 2;
+    break;
+  } 
+}
+
+static void
+menu_creditsRender(void)
+{
+  volatile struct Custom* _custom = CUSTOM;    
+  int32_t shift = 1;
+
+  if (menu_creditsMode == 2) {
+    shift = 15;
+  }
+  
+  if (menu_creditsCounter == 7) {
+    char buffer[2] = {0, 0};
+    if (*menu_creditsPtr == 0) {
+      menu_creditsPtr = menu_creditsText;
+    }
+    buffer[0] = *menu_creditsPtr;
+    menu_creditsPtr++;
+    if (menu_creditsMode == 1) {
+      text_drawMaskedText8Blitter(game_onScreenBuffer, buffer, SCREEN_WIDTH-8, SCREEN_HEIGHT-11);
+    }
+    menu_creditsCounter = 0;
+  } else {
+    menu_creditsCounter++;
+  }
+  
+  hw_waitBlitter();   
+  _custom->bltafwm = 0x0;
+  _custom->bltalwm = 0xffff;
+  _custom->bltcon0 = (SRCA|DEST|0xf0|shift<<ASHIFTSHIFT);
+  _custom->bltcon1 = shift<<BSHIFTSHIFT|BC1F_DESC;
+  _custom->bltamod = 0;
+  _custom->bltdmod = 0;
+  
+  _custom->bltapt = (uint8_t*)menu_creditsFB;
+  _custom->bltdpt = (uint8_t*)menu_creditsFB;
+  
+  hw_waitVerticalBlank();    
+  _custom->bltsize = ((10*SCREEN_BIT_DEPTH)<<6) | (SCREEN_WIDTH_WORDS);
 }

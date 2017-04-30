@@ -1,8 +1,13 @@
 #ifndef __MENU_H
 #define __MENU_H
 
+#if TRACKLOADER==0
 #define MENU_NUM_ITEMS          7
 #define MENU_MAX_ITEMS          8
+#else
+#define MENU_NUM_ITEMS          6
+#define MENU_MAX_ITEMS          7
+#endif
 #define MENU_SCREEN_WIDTH       320
 #define MENU_SCREEN_WIDTH_BYTES (MENU_SCREEN_WIDTH/8)
 

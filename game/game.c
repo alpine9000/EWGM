@@ -910,6 +910,7 @@ game_processKeyboard()
   case 'M':
     music_toggle();
     break;
+  case 27:
   case 'Q':
     if (game_paused) {
       game_pauseToggle();
