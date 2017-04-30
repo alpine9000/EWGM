@@ -195,13 +195,17 @@ static void
 level1_song3(void)
 {
   music_play(3);
-  music_toggle();  
+  music_toggle();
 }
 
 
 static uint16_t
 level1_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
+  if (object_get_state(ptr) != OBJECT_STATE_ALIVE) {
+    return 0;
+  }
+  
   if (object_y(ptr) == LEVEL1_ENEMY_BOSS_START_Y && object_x(ptr) > GAME_WORLD_WIDTH-144) {
     ptr->velocity.x = -1;
   } else if (object_y(ptr) < GAME_PAVEMENT_START) {
@@ -210,8 +214,23 @@ level1_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   } else {
     return enemy_intelligence(deltaT, ptr, data);
   }
+
+  uint16_t attack = 0;
+  object_t* player = enemy_closestPlayer(ptr);
+  if (player) {
+    if (abs(object_y(ptr)-object_y(player)) <= data->attackRangeY) {
+      if (ptr->velocity.x == 0) {
+	if (data->enemyAttackWait <= 0) {
+	  data->enemyAttackWait = data->enemyAttackWaitTics;
+	  attack = 1;
+	} else {
+	  data->enemyAttackWait-=deltaT;
+	}
+      }
+    }
+  }
   
-  return 0;
+  return attack;
 }
 
 
@@ -296,9 +315,11 @@ level1_wave3(uint16_t argument)
 			       /*freeData*/0);
   level1_door->tileRender = 1;
 
-  music_toggle();
+  if (music_enabled()) {
+    music_toggle();
+    alarm_add(50, level1_song3);    
+  }
   
-  alarm_add(50, level1_song3);
   alarm_add(100, level1_addDoorEnemy);
   alarm_add(200, level1_addDoorEnemy2);
   alarm_add(300, level1_addBoss);

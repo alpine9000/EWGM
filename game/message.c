@@ -44,11 +44,17 @@ message_pokeCopperList(frame_buffer_t frameBuffer)
 NOINLINE void
 message_screenOn(char* message)
 {
+  custom->dmacon = DMAF_SPRITE;
+  
   if (message_on) {
+    hw_waitVerticalBlank();    
+    palette_black();
     gfx_fillRectSmallScreen(game_offScreenBuffer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     text_drawMaskedText8Blitter(game_offScreenBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)+4);
     hw_waitBlitter();
     custom->bltafwm = 0xffff;
+    custom->color[1] = 0xfff;  
+    custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
     return;
   }
 
@@ -120,7 +126,7 @@ message_loading(char* message)
   message_screenOn(message);
 #else
   USE(message);
-  palette_black();
+  message_screenOn(" ");  
 #endif
 
   hw_waitBlitter();

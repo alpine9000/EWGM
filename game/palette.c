@@ -19,6 +19,38 @@ NOINLINE palette_black(void)
   palette_background = 0;
 }
 
+
+NOINLINE void
+palette_fade(uint16_t* from, uint16_t* to, uint16_t colors, uint16_t steps)
+{  
+  for (int i = 0; i < steps; i++) {
+    for (int c = 0; c < colors; c++) {
+      int tr = _PALETTE_RED(to[c]);
+      int tg = _PALETTE_GREEN(to[c]);
+      int tb = _PALETTE_BLUE(to[c]);      
+      
+      int fr = _PALETTE_RED(from[c]);
+      int fg = _PALETTE_GREEN(from[c]);
+      int fb = _PALETTE_BLUE(from[c]);            
+      
+      int nr = ((fr<<_PALETTE_FIXED)+((((tr<<_PALETTE_FIXED)-(fr<<_PALETTE_FIXED))/steps)*i))>>_PALETTE_FIXED;
+      int ng = ((fg<<_PALETTE_FIXED)+((((tg<<_PALETTE_FIXED)-(fg<<_PALETTE_FIXED))/steps)*i))>>_PALETTE_FIXED;
+      int nb = ((fb<<_PALETTE_FIXED)+((((tb<<_PALETTE_FIXED)-(fb<<_PALETTE_FIXED))/steps)*i))>>_PALETTE_FIXED;      
+
+      custom->color[c] = (nr<<8)|(ng<<4)|nb;
+    }
+
+    hw_waitVerticalBlank();
+  }
+
+  for (int c = 0; c < colors; c++) {
+    custom->color[c] = to[c];
+  }
+
+  palette_background = to[0];
+}
+
+
 NOINLINE void
 palette_fadeTo(uint16_t* palette, uint16_t colors, uint16_t color)
 {

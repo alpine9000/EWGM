@@ -399,6 +399,8 @@ object_restoreBackground(frame_buffer_t fb);
 void
 object_updatePosition(uint16_t deltaT, object_t* ptr);
 void
+object_updatePositionNoChecks(uint16_t deltaT, object_t* ptr);
+void
 object_setAction(object_t* ptr, object_action_t action);
 
 inline static int16_t

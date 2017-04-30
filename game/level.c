@@ -60,9 +60,7 @@ level_load(uint16_t index)
   level.effectFunctor = level_levels[index].effectFunctor;
 #endif
 
-#if TRACKLOADER==1
   message_screenOff();
-#endif
 
   level_current = index;
 }

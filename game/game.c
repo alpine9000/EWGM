@@ -269,6 +269,7 @@ game_complete(void)
   game_gotoMenu = 1;
 
   game_disableCopperEffects();  
+  palette_fadeFrom(level.palette, 32, 0, 32);  
   
   if (game_player1Score > 0) {
     hiscore_addScore(1, game_player1Score);
@@ -276,7 +277,14 @@ game_complete(void)
   if (game_player2Score > 0) {
     hiscore_addScore(2, game_player2Score);
   }
-    
+
+  hw_waitVerticalBlank();
+  palette_black();
+  hw_waitVerticalBlank();
+  
+  custom->dmacon = (DMAF_COPPER|DMAF_RASTER);  
+  //  message_screenOn(" "); // disables game copper list, prevents any artifacts during last exit loop
+
 #ifdef DEBUG
   game_checkCanary();
 #endif
@@ -819,6 +827,29 @@ game_updateScoreboard(void)
 }
 
 
+static NOINLINE void
+game_pauseToggle(void)
+{
+  static uint16_t music;
+  if (!game_paused) {
+    music = music_enabled();
+    if (music) {
+      music_toggle();
+    }
+    game_disableCopperEffects();  
+    palette_fade(level.palette, level.greyPalette, 32, 16);
+    game_paused = 1;
+  } else {
+    if (music) {
+      music_toggle();
+    }
+    palette_fade(level.greyPalette, level.palette, 32, 16);
+    game_enableCopperEffects();
+    game_paused = 0;
+    game_lastVerticalBlankCount = hw_verticalBlankCount;
+  }
+}
+
 static int16_t
 game_processKeyboard()
 {
@@ -861,8 +892,8 @@ game_processKeyboard()
     break;
 #endif
   case 'P':
-    game_paused = !game_paused;
-    game_lastVerticalBlankCount = hw_verticalBlankCount;
+    game_pauseToggle();
+    break;
   case 'T':
     game_singleStep = 1;
     break;
@@ -876,6 +907,9 @@ game_processKeyboard()
     music_toggle();
     break;
   case 'Q':
+    if (game_paused) {
+      game_pauseToggle();
+    }
     game_disableCopperEffects();    
     palette_fadeFrom(level.palette, 32, 0, 32);
     return 1;
@@ -1046,6 +1080,7 @@ game_decrementTime(void)
       game_levelTime.sec--;
     }
     if (game_levelTime.value == 0) {
+      game_renderCounter();
       game_setGameOver();      
     } else if (game_levelTime.min == 0 &&
 	       game_levelTime.sec10 == 3 &&
@@ -1098,7 +1133,7 @@ game_loop()
   game_checkStack();
 #endif
   game_level = 0;
-  game_disableCopperEffects();
+  game_disableCopperEffects();  
   if ((menuCommand = menu_loop(game_over == 1 ? MENU_MODE_HISCORES : MENU_MODE_MENU)) == MENU_COMMAND_EXIT) {
 #if TRACKLOADER==0
     goto done;

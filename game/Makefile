@@ -190,7 +190,7 @@ out/background_%-map.c: assets/background_%.tmx out
 
 out/sprite_%.h: assets/sprite_%.png palettes/palette_%.pal
 	$(CROPPA) --width=320 --height=893 --input=assets/sprite_$*.png --output=out/sprite_$*-resized.png
-	$(IMAGECON) $(ONEBITPLANE_MASK) --quantize --colors=32 --full-color-palette --input=out/sprite_$*-resized.png --output=out/sprite_$* --output-bitplanes --output-png --output-palette --output-palette-asm --use-palette=palettes/palette_$*.pal --output-mask
+	$(IMAGECON) $(ONEBITPLANE_MASK) --quantize --colors=32 --full-color-palette --input=out/sprite_$*-resized.png --output=out/sprite_$* --output-bitplanes --output-png --output-palette --output-grey-palette-asm --output-palette-asm --use-palette=palettes/palette_$*.pal --output-mask
 	cat out/sprite_$*.bin | $(BIN2C) > out/sprite_$*.h
 	cat out/sprite_$*-mask.bin | $(BIN2C) > out/sprite_$*-mask.h
 

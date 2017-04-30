@@ -198,7 +198,7 @@ void
 fighter_updatePositionUnderAttack(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
   if (object_py(ptr) >= data->attack_py && ptr->velocity.y > 0) {
-    object_set_py(ptr, data->attack_py);
+    object_set_py_no_checks(ptr, data->attack_py);
     ptr->velocity.y = 0;
     ptr->velocity.x = 0;    
     if (data->health <= 0) {
@@ -382,7 +382,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
   } else {
     if (object_get_state(ptr) == OBJECT_STATE_HIT) {
       fighter_updatePositionUnderAttack(deltaT, ptr, data);
-      object_updatePosition(deltaT, ptr);
+      object_updatePositionNoChecks(deltaT, ptr);
     } else if (object_get_state(ptr) == OBJECT_STATE_FLASHING && data->health <= 0) {
       if (data->flashCount <= 0) {
 	ptr->visible = !ptr->visible;

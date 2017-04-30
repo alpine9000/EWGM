@@ -12,6 +12,7 @@
 #define GAME_RECORDING                1
 #define GAME_ONE_BITPLANE_SPRITE_MASK 1
 #define GAME_STARS                    1
+#define GAME_HISCORE_SAVE_ENABLE      1
 //#define GAME_BLITTER_WAIT_DEBUG       1
 
 #define abs(a) ((a) >= 0 ? (a) : -(a))  

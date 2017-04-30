@@ -180,7 +180,7 @@ hiscore_saveData(uint16_t ignoreErrors)
       goto retry;
     }
   }
-  message_screenOff();
+  //  message_screenOff();
 }
 #endif
 
