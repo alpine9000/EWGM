@@ -169,8 +169,15 @@ enemy_add(uint16_t animId, uint16_t x, uint16_t y, fighter_attack_config_t* atta
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   ptr->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->width = OBJECT_WIDTH;
-  data->enemyAttackWaitTics = attackWait;
-  data->enemyAttackWait = attackWait;
+
+  if (game_difficulty == GAME_DIFFICULTY_EASY) {
+    data->enemyAttackWaitTics = ENEMY_ATTACK_WAIT_TICS;
+    data->enemyAttackWait = ENEMY_ATTACK_WAIT_TICS;  
+  } else {
+    data->enemyAttackWaitTics = attackWait;
+    data->enemyAttackWait = attackWait;
+  }
+  
   data->numAttacks = 2;
   enemy_count++;
 }

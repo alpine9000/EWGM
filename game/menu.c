@@ -4,12 +4,14 @@
 extern void palette_menuInstall(void);
 extern frame_buffer_t menu_frameBuffer;
 
-#define MENU_NUM_ITEMS             6
 #define MENU_START_Y               110
 #define MENU_TOP_COLOR             0xfb5
 #define MENU_BOTTOM_COLOR          0xb72
 #define MENU_TOP_COLOR_SELECTED    0xffb
 #define MENU_BOTTOM_COLOR_SELECTED 0xfb5
+
+static uint8_t menu_offscreenBuffer[SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH*9];
+frame_buffer_t menu_offscreen = &menu_offscreenBuffer[0];
 
 typedef struct {
   uint16_t wait1[2];
@@ -20,8 +22,7 @@ typedef struct {
 
 typedef struct {
   uint16_t bpl1[SCREEN_BIT_DEPTH*2*2];
-  menu_line_copper_t lines[MENU_NUM_ITEMS];
-  menu_line_copper_t lastLine;
+  menu_line_copper_t lines[MENU_MAX_ITEMS];
   /*uint16_t wrap[2];
     menu_line_copper_t overflowLine;*/
   uint16_t end[2];
@@ -65,14 +66,9 @@ static  __section(data_c)  menu_copper_t menu_copper  = {
     MENU_COPPER_LINE(MENU_TOP_COLOR, MENU_BOTTOM_COLOR, 3),
     MENU_COPPER_LINE(MENU_TOP_COLOR, MENU_BOTTOM_COLOR, 4),
     MENU_COPPER_LINE(MENU_TOP_COLOR, MENU_BOTTOM_COLOR, 5),
+    MENU_COPPER_LINE(MENU_TOP_COLOR, MENU_BOTTOM_COLOR, 6),    
   },
 
-  .lastLine = {
-    .wait1 = MENU_COPPER_WAIT_TOP(6),
-   .color1 = { COLOR01, MENU_TOP_COLOR},
-    .wait2 =  MENU_COPPER_WAIT_BOTTOM(6),
-    .color2 = { COLOR01, MENU_BOTTOM_COLOR},
-  },
   /*  .wrap = {0xffdf,0xfffe},
   .overflowLine = {
     .wait1 =  {0x0001, 0xfffe},
@@ -98,6 +94,8 @@ menu_toggleMusic(void);
 static void
 menu_toggleNumPlayers(void);
 static void
+menu_toggleMode(void);
+static void
 menu_showHiScores(void);
 static void
 menu_select(uint16_t i);
@@ -105,7 +103,7 @@ menu_select(uint16_t i);
 static 
 menu_mode_t menu_mode = MENU_MODE_INACTIVE;
 static
-menu_item_t menu_items[MENU_NUM_ITEMS+1] = {
+menu_item_t menu_items[MENU_MAX_ITEMS] = {
   {
     .text = I18N_PLAY_NOW,
     .command = MENU_COMMAND_PLAY,
@@ -125,10 +123,10 @@ menu_item_t menu_items[MENU_NUM_ITEMS+1] = {
     .callback = menu_toggleMusic
   },
   {
-    .text = I18N_PLAY_RECORDING,
-    .command = MENU_COMMAND_REPLAY,
-    .done = 1,
-    .callback = 0
+    .text = I18N_MODE_HARD,
+    .command = MENU_COMMAND_MODE,
+    .done = 0,
+    .callback = menu_toggleMode
   },
   {
     .text = I18N_HI_SCORES,
@@ -141,7 +139,7 @@ menu_item_t menu_items[MENU_NUM_ITEMS+1] = {
     .command = MENU_COMMAND_PLAY,
     .done = 0,
     .callback = 0
-  },
+  },  
   {
     .text = "",
     .command = MENU_COMMAND_PLAY,
@@ -207,37 +205,44 @@ menu_renderText(frame_buffer_t _fb, char* text, uint16_t y)
 {
   uint16_t len = strlen(text);
 
-  frame_buffer_t fb = _fb;
+  frame_buffer_t fb = _fb; 
   
-  gfx_screenWidthBitBlitNoMask(fb, game_offScreenBuffer, 0, y, 0, y, SCREEN_WIDTH, 9);  
-
+  
   if (len == 0) {
+    gfx_screenWidthBitBlitNoMask(fb, game_offScreenBuffer, 0, y, 0, y, SCREEN_WIDTH, 9);    
     return;
   }
+
+  gfx_screenWidthBitBlitNoMask(menu_offscreen, game_offScreenBuffer, 0, y, 0, 0, SCREEN_WIDTH, 9);    
+
+  fb = menu_offscreen;
+  int16_t _y = 0;
   
-  text_drawMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2)+1, y+1);
+  text_drawMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2)+1, _y+1);
   fb += MENU_SCREEN_WIDTH_BYTES;
-  text_drawMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2)+1, y+1);
+  text_drawMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2)+1, _y+1);
   fb += MENU_SCREEN_WIDTH_BYTES;
-  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2)+1, y+1);
+  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2)+1, _y+1);
   fb += MENU_SCREEN_WIDTH_BYTES;
-  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2)+1, y+1);
+  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2)+1, _y+1);
   fb += MENU_SCREEN_WIDTH_BYTES;
-  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2)+1, y+1);
+  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2)+1, _y+1);
 
 
-  fb = _fb;
+  fb = menu_offscreen;
   
-  text_drawMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), y);
+  text_drawMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), _y);
   fb += MENU_SCREEN_WIDTH_BYTES;
-  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), y);  
+  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), _y);  
   fb += MENU_SCREEN_WIDTH_BYTES;
-  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), y);  
+  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), _y);  
   fb += MENU_SCREEN_WIDTH_BYTES;
-  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), y);  
+  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), _y);  
   fb += MENU_SCREEN_WIDTH_BYTES;
-  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), y);
+  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), _y);
 
+
+  gfx_screenWidthBitBlitNoMask(_fb, menu_offscreen, 0, 0, 0, y, SCREEN_WIDTH, 9);    
 }
 
 
@@ -329,7 +334,7 @@ menu_redraw(uint16_t i)
 
 static void menu_refresh(void)
 {
-  for (uint16_t i = 0; i < MENU_NUM_ITEMS+1; i++) {
+  for (uint16_t i = 0; i < MENU_MAX_ITEMS; i++) {
     menu_redraw(i);
   }    
 }
@@ -345,7 +350,7 @@ menu_showHiScores(void)
 static void
 menu_update_music_menu(void)
 {
-  for (uint16_t i = 0; i < MENU_NUM_ITEMS; i++) {
+  for (uint16_t i = 0; i < MENU_MAX_ITEMS; i++) {
     if (menu_items[i].callback == menu_toggleMusic) {
       if (music_enabled()) {
 	menu_items[i].text = I18N_MUSIC_ON;
@@ -361,7 +366,7 @@ menu_update_music_menu(void)
 static void
 menu_updateNumPlayersMenu(void)
 {
-  for (uint16_t i = 0; i < MENU_NUM_ITEMS; i++) {
+  for (uint16_t i = 0; i < MENU_MAX_ITEMS; i++) {
     if (menu_items[i].callback == menu_toggleNumPlayers) {
       if (game_numPlayers == 1) {
 	menu_items[i].text = I18N_SINGLE_PLAYER;
@@ -375,10 +380,27 @@ menu_updateNumPlayersMenu(void)
 
 
 static void
+menu_updateModeMenu(void)
+{
+  for (uint16_t i = 0; i < MENU_MAX_ITEMS; i++) {
+    if (menu_items[i].callback == menu_toggleMode) {
+      if (game_difficulty == GAME_DIFFICULTY_EASY) {
+	menu_items[i].text = I18N_MODE_EASY;
+      } else {
+	menu_items[i].text = I18N_MODE_HARD;
+      }
+      return;
+    }
+  }
+}
+
+
+static void
 menu_render(void)
 {
   menu_update_music_menu();
-  menu_updateNumPlayersMenu();  
+  menu_updateNumPlayersMenu();
+  menu_updateModeMenu();
 
   frame_buffer_t fb = game_onScreenBuffer;
   uint16_t y = MENU_START_Y;
@@ -409,6 +431,7 @@ menu_toggleMusic(void)
 {
   music_toggle();
   menu_update_music_menu();
+  sound_playSound(SOUND_MENU);  
   menu_redraw(menu_selected);
 }
 
@@ -417,6 +440,17 @@ menu_toggleNumPlayers(void)
 {
   game_numPlayers = game_numPlayers == 1 ? 2 : 1;
   menu_updateNumPlayersMenu();
+  sound_playSound(SOUND_MENU);  
+  menu_redraw(menu_selected);
+}
+
+
+static void
+menu_toggleMode(void)
+{
+  game_difficulty = game_difficulty == GAME_DIFFICULTY_HARD ? GAME_DIFFICULTY_EASY : GAME_DIFFICULTY_HARD;
+  menu_updateModeMenu();
+  sound_playSound(SOUND_MENU);  
   menu_redraw(menu_selected);
 }
 
@@ -452,7 +486,7 @@ menu_up(void)
 static void
 menu_down(void)
 {
-  if (menu_mode == MENU_MODE_MENU && menu_selected < MENU_NUM_ITEMS-1) {
+  if (menu_mode == MENU_MODE_MENU && menu_selected < MENU_NUM_ITEMS-2) {
     sound_playSound(SOUND_MENU);    
     hw_waitVerticalBlank();
     menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR;
@@ -567,7 +601,6 @@ menu_loop(menu_mode_t mode)
     static uint16_t first = 1;
     if (first) {
       first = 0;
-      game_numPlayers = 2;
       command = MENU_COMMAND_REPLAY;
       done = 1;
     }

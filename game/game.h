@@ -5,7 +5,7 @@
 #include <hardware/dmabits.h>
 #include <hardware/intbits.h>
 
-#define DEBUG                         1
+//#define DEBUG                         1
 //#define SCRIPTING                     1
 #define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1
@@ -111,10 +111,16 @@ extern uint16_t game_over;
 extern uint16_t game_numPlayers;
 extern uint32_t game_player1Score;
 extern uint32_t game_player2Score;
+extern uint16_t game_difficulty;
 
 #ifdef DEBUG
 extern uint16_t game_collisions;
 #endif
+
+enum {
+  GAME_DIFFICULTY_EASY,
+  GAME_DIFFICULTY_HARD
+};
 
 #include "i18n.h"
 #include "string.h"

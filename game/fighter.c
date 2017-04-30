@@ -444,7 +444,12 @@ fighter_add(uint16_t id, uint16_t animId, int16_t x, int16_t y, uint16_t initial
 {
   fighter_data_t* data = fighter_getFree();
   data->buttonReleased = 0;
-  data->attackConfig = attackConfig;
+
+  if (id == OBJECT_ID_ENEMY && game_difficulty == GAME_DIFFICULTY_EASY) {
+    data->attackConfig = enemy_attackConfig1;
+  } else {
+    data->attackConfig = attackConfig;
+  }
   data->attackQueued = 0;
   data->intelligence = intelligence;
   data->attackType = 0;

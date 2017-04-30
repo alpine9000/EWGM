@@ -30,6 +30,19 @@ enum {
 
   LEVEL1_WAVE4_1,
   LEVEL1_WAVE4_2,  
+
+  LEVEL1_WAVE5_1,
+  LEVEL1_WAVE5_2,
+  LEVEL1_WAVE5_3,
+  LEVEL1_WAVE5_4,
+  LEVEL1_WAVE5_5,
+  LEVEL1_WAVE5_6,
+
+  LEVEL1_WAVE6_1,
+  LEVEL1_WAVE6_2,
+  LEVEL1_WAVE6_3,    
+
+  
 };
 
 level_enemy_config_t level1_configs[] = {
@@ -61,6 +74,7 @@ level_enemy_config_t level1_configs[] = {
     .intelligence = 0
   },
 
+  //======================
   [LEVEL1_WAVE2_1] = {
     .x = -64,
     .y = 85,
@@ -153,11 +167,99 @@ level_enemy_config_t level1_configs[] = {
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .enemyCount = 1,
     .intelligence = 0
+  },
+
+
+  //=======================
+  [LEVEL1_WAVE5_1] = {
+    .x = SCREEN_WIDTH,
+    .y = 100,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .attackConfig = enemy_attackConfig1,    
+    .attackWait = 0,
+    .enemyCount = 0,
+    .intelligence = 0
+  },
+  [LEVEL1_WAVE5_2] = {
+    .x = -48,
+    .y = 120,
+    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
+    .attackConfig = enemy_attackConfig2,    
+    .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
+    .enemyCount = 1,
+    .intelligence = 0
+  },
+  [LEVEL1_WAVE5_3] = {
+    .x = SCREEN_WIDTH,
+    .y = 160,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .attackConfig = enemy_attackConfig1,    
+    .attackWait = 0,
+    .enemyCount = 2,
+    .intelligence = 0
+  },
+  [LEVEL1_WAVE5_4] = {
+    .x = -48,
+    .y = 180,
+    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
+    .attackConfig = enemy_attackConfig2,    
+    .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
+    .enemyCount = 3,
+    .intelligence = 0
+  },
+  [LEVEL1_WAVE5_5] = {
+    .x = SCREEN_WIDTH,
+    .y = 200,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .attackConfig = enemy_attackConfig1,
+    .attackWait = 0,
+    .enemyCount = 3,
+    .intelligence = 0
+  },
+  [LEVEL1_WAVE5_6] = {
+    .x = -48,
+    .y = 100,
+    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
+    .attackConfig = enemy_attackConfig2,    
+    .attackWait = 0,
+    .enemyCount = 4,
+    .intelligence = 0
+  },
+  //================================
+  [LEVEL1_WAVE6_1] = {
+    .x = SCREEN_WIDTH,
+    .y = 88,
+    .animId = OBJECT_ANIM_PLAYER4_STAND_RIGHT,
+    .attackConfig = enemy_attackConfig2,    
+    .attackWait = 0,
+    .enemyCount = 0,
+    .intelligence = 0
+  },
+  [LEVEL1_WAVE6_2] = {
+    .x = -48,
+    .y = 200,
+    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .attackConfig = enemy_attackConfig2,    
+    .attackWait = 0,
+    .enemyCount = 1,
+    .intelligence = 0
+  },
+
+  [LEVEL1_WAVE6_3] = {
+    .x = SCREEN_WIDTH,
+    .y = 200,
+    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
+    .attackConfig = enemy_attackConfig2,    
+    .attackWait = 0,
+    .enemyCount = 2,
+    .intelligence = 0
   },  
+
 };
   
 static object_t* level1_door;
-static int16_t
+//static
+int16_t
 level1_addPhoneBooth(uint16_t argument)
 {
   USE(argument);
@@ -263,6 +365,10 @@ level1_doAddBoss(uint16_t x)
   
   object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_BOSS_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, enemy_bossAttackConfig, level1_doorIntelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
+
+  // override easy setting
+  data->attackConfig = enemy_bossAttackConfig;
+
   data->attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE;
   //  data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
@@ -352,15 +458,7 @@ conductor_instruction_t level1_instructions[] = {
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_start},
 
   //   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_pause},      
-#if 0
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE3_1, level1_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE3_2, level1_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE3_3, level1_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE3_4, level1_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE3_5, level1_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE3_6, level1_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_pause},        
-  #endif
+
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_1, level1_processEnemyConfig},    
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_2, level1_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_3, level1_processEnemyConfig},
@@ -383,7 +481,21 @@ conductor_instruction_t level1_instructions[] = {
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH+1, level1_addPhoneBooth},    
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+(SCREEN_WIDTH/2), LEVEL1_WAVE4_1, level1_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+(SCREEN_WIDTH/2), LEVEL1_WAVE4_2, level1_processEnemyConfig},    
-  
+
+#define WAVE_5_X ((SCREEN_WIDTH*2)+150)
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, WAVE_5_X, level1_scroll},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, WAVE_5_X, LEVEL1_WAVE5_1, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, WAVE_5_X, LEVEL1_WAVE5_2, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, WAVE_5_X, LEVEL1_WAVE5_3, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, WAVE_5_X, LEVEL1_WAVE5_4, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, WAVE_5_X, LEVEL1_WAVE5_5, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, WAVE_5_X, LEVEL1_WAVE5_6, level1_processEnemyConfig},  
+
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (WAVE_5_X)+(SCREEN_WIDTH/2), level1_scroll},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (WAVE_5_X)+1, SCREEN_WIDTH, level1_addPostbox},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (WAVE_5_X)+(SCREEN_WIDTH/2), LEVEL1_WAVE6_1, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (WAVE_5_X)+(SCREEN_WIDTH/2), LEVEL1_WAVE6_2, level1_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (WAVE_5_X)+(SCREEN_WIDTH/2), LEVEL1_WAVE6_3, level1_processEnemyConfig},    
   
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*4), level1_scroll},  
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3)+80, SCREEN_WIDTH, level1_addPostbox},      

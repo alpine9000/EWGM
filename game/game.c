@@ -29,6 +29,7 @@ object_t* game_player1;
 object_t* game_player2;
 uint32_t game_player1Score;
 uint32_t game_player2Score;
+uint16_t game_difficulty;
 
 static volatile __section(random_c) struct framebuffeData {
 #ifdef DEBUG
@@ -42,7 +43,6 @@ static volatile __section(random_c) struct framebuffeData {
   uint32_t canary2;
 #endif
 } game_frameBufferData;
-
 
 typedef union {
   struct {
@@ -224,6 +224,7 @@ game_check25fps(void)
 static void
 game_ctor(void)
 {
+  game_difficulty = GAME_DIFFICULTY_HARD;
   game_numPlayers = 1;
   game_onScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer2;
   game_offScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer1;
@@ -440,7 +441,7 @@ game_newGame(menu_command_t command)
   game_player2Score = 0;
   game_lastPlayer1Score = 0xffffffff;
   game_lastPlayer2Score = 0xffffffff;
-  game_levelTime.min = 2;
+  game_levelTime.min = 5;
   game_levelTime.sec10 = 0;
   game_levelTime.sec= 0;
   game_lastLevelTime.value = 0;
@@ -855,6 +856,9 @@ game_processKeyboard()
 {
   switch (keyboard_key) {
 #ifdef DEBUG
+  case 'Y':
+    game_difficulty = game_difficulty == GAME_DIFFICULTY_HARD ? GAME_DIFFICULTY_EASY : GAME_DIFFICULTY_HARD;
+    break;
   case 'C':
     game_collisions = !game_collisions;
     break;

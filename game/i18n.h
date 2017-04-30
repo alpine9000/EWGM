@@ -11,6 +11,8 @@
 #define I18N_PLAY_RECORDING    "WATCH DEMO"
 #define I18N_MUSIC_ON          "MUSIC - ON "
 #define I18N_MUSIC_OFF         "MUSIC - OFF"
+#define I18N_MODE_EASY         "MODE - EASY"
+#define I18N_MODE_HARD         "MODE - HARD"
 #define I18N_HI_SCORES         "HI SCORES"
 #define I18N_CREDITS           "CREDITS"
 

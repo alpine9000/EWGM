@@ -1,7 +1,8 @@
 #ifndef __MENU_H
 #define __MENU_H
 
-#define MENU_NUM_ITEMS          6
+#define MENU_NUM_ITEMS          7
+#define MENU_MAX_ITEMS          8
 #define MENU_SCREEN_WIDTH       320
 #define MENU_SCREEN_WIDTH_BYTES (MENU_SCREEN_WIDTH/8)
 
@@ -12,7 +13,8 @@ typedef enum {
   MENU_COMMAND_RECORD,
   MENU_COMMAND_MENU,
   MENU_COMMAND_LEVEL,
-  MENU_COMMAND_NUM_PLAYERS
+  MENU_COMMAND_NUM_PLAYERS,
+  MENU_COMMAND_MODE
 } menu_command_t;
 
 typedef enum {
