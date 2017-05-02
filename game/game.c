@@ -24,6 +24,7 @@ int16_t game_cameraX;
 int16_t game_screenScrollX;
 uint16_t game_level;
 uint16_t game_over;
+uint16_t game_loopControl;
 uint32_t game_paused;
 object_t* game_player1;
 object_t* game_player2;
@@ -56,8 +57,9 @@ typedef union {
 static uint32_t game_lastPlayer1Score;
 static uint32_t game_lastPlayer2Score;
 static int16_t game_scroll;
-static uint16_t game_gotoMenu;				 
+#ifdef DEBUG
 static uint16_t game_singleStep;
+#endif
 static int16_t game_targetCameraX;
 static uint32_t game_lastScrollFrame;
 static uint16_t game_lastTileX;
@@ -267,7 +269,7 @@ game_checkCanary(void)
 static void
 game_complete(void)
 {
-  game_gotoMenu = 1;
+  game_loopControl = GAME_LOOP_CONTROL_GOTO_MENU;
 
   game_disableCopperEffects();  
   palette_fadeFrom(level.palette, 32, 0, 32);  
@@ -384,6 +386,7 @@ game_refreshScoreboard(void)
 static void
 game_startRecord(void)
 {
+  random_seed(1);
   palette_black();
   game_loadLevel(MENU_COMMAND_REPLAY);
   record_setState(RECORD_RECORD);
@@ -397,6 +400,7 @@ game_startRecord(void)
 static void
 game_startPlayback(void)
 {
+  random_seed(1);
   palette_black();
   game_loadLevel(MENU_COMMAND_REPLAY);
   music_restart();
@@ -452,6 +456,11 @@ game_newGame(menu_command_t command)
     command = MENU_COMMAND_PLAY;
   }
 
+  if (command == MENU_COMMAND_REPLAY || command == MENU_COMMAND_RECORD) {
+    random_seed(1);
+  } else {
+    random_seed(hw_getRasterLine());
+  }
   game_loadLevel(command);
 }
 
@@ -473,10 +482,12 @@ game_loadLevel(menu_command_t command)
   game_lastTileX = 0;  
   game_targetCameraX = 0;
   game_scroll = 0;
+#ifdef DEBUG
   game_singleStep = 0;
+#endif
   game_paused = 0;
   game_over = 0;
-  game_gotoMenu = 0;
+  game_loopControl = GAME_LOOP_CONTROL_RUN;
   game_screenScrollX = 0xf;
   game_requestCameraX(0);
   game_lastScrollFrame = 0;
@@ -783,21 +794,6 @@ game_requestCameraX(int16_t targetCameraX)
 
 
 static void
-game_playLevel(uint16_t levelIndex)
-{
-  game_level = levelIndex;
-  if (game_level >= LEVEL_NUM_LEVELS) {
-    game_level = 0;
-  }
-  palette_black();
-  game_loadLevel(MENU_COMMAND_PLAY);
-#ifdef GAME_RECORDING
-  record_setState(RECORD_IDLE);
-#endif
-}
-
-
-static void
 game_updateScoreboard(void)
 {
   static uint16_t game_scoreBoardTic = 0;
@@ -879,12 +875,22 @@ game_processKeyboard()
   case 'X':
     game_collectTotal = !game_collectTotal;
     break;
+  case 'T':
+    game_singleStep = 1;
+    break;
+  case 'Z':
+    music_next();
+    break;
+  case '1':
+    game_numPlayers = 1;
+    game_init(MENU_COMMAND_PLAY);
+    break;
+  case '5':
+    game_25fps = !game_25fps;
+    break;
 #endif    
 
 #ifdef GAME_RECORDING
-  case 'A':
-    record_showAddress();
-    break;
   case 'R':
     game_startRecord();
     break;
@@ -898,19 +904,10 @@ game_processKeyboard()
   case 'P':
     game_pauseToggle();
     break;
-  case 'T':
-    game_singleStep = 1;
-    break;
-  case 'Z':
-    music_next();
-    break;
-  case 'N':
-    game_playLevel(game_level+1);
-    break;
   case 'M':
     music_toggle();
     break;
-  case 27:
+  case KEYBOARD_CODE_ESC:
   case 'Q':
     if (game_paused) {
       game_pauseToggle();
@@ -918,10 +915,6 @@ game_processKeyboard()
     game_disableCopperEffects();    
     palette_fadeFrom(level.palette, 32, 0, 32);
     return 1;
-    break;
-  case '1':
-    game_numPlayers = 1;
-    game_init(MENU_COMMAND_PLAY);
     break;
   case '2':
     if (!game_over && game_player2 == 0 && game_numPlayers == 1) {
@@ -932,9 +925,6 @@ game_processKeyboard()
       game_player2 = player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER3_STAND_RIGHT, game_cameraX+SCREEN_WIDTH-80);
       game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);      
     }
-    break;
-  case '5':
-    game_25fps = !game_25fps;
     break;
   }
 
@@ -1052,6 +1042,65 @@ game_setGameOver(void)
     game_waitForMenuExit(OBJECT_ANIM_GAMEOVER, 35);
   }
 }
+
+
+void
+game_showDeathMatch(void)
+{
+
+  if (!game_player1 || !game_player2) {
+    return;
+  }
+  game_player1->velocity.x = 0;
+  game_player1->velocity.y = 0;
+  game_player2->velocity.x = 0;
+  game_player2->velocity.y = 0;  
+  ((fighter_data_t*)(game_player1->data))->intelligence = fighter_nullIntelligence;
+  ((fighter_data_t*)(game_player2->data))->intelligence = fighter_nullIntelligence;  
+  
+  object_t* dm = object_add(OBJECT_ID_DEATHMATCH, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-48), -4, 0,OBJECT_ANIM_DEATHMATCH, 0, 0, 0);
+  object_set_z(dm, 4096);
+  uint32_t frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;
+  int16_t y;
+  for (y = -16; y <= (PLAYAREA_HEIGHT/2)-4; y+=4) {
+    object_set_py_no_checks(dm, y*OBJECT_PHYSICS_FACTOR);
+    frame = hw_verticalBlankCount;
+    game_deltaT = frame-lastFrame;
+    lastFrame = frame;
+    game_render(game_deltaT);
+    game_waitForNextFrame();
+    game_switchFrameBuffers();
+  }
+  
+  for (uint16_t i = 0; i < 7; i++) {
+    game_render(1);
+    game_waitForNextFrame();
+    game_switchFrameBuffers();      
+    game_waitForNextFrame();
+    game_waitForNextFrame();
+    game_waitForNextFrame();
+    game_waitForNextFrame();
+    game_waitForNextFrame();
+    game_waitForNextFrame();
+    dm->visible = !dm->visible;      
+  }
+  
+  dm->visible = 1;
+  frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;    
+  for (y = y - 2; y >= -8; y-=4) {
+    object_set_py_no_checks(dm, y*OBJECT_PHYSICS_FACTOR);
+    frame = hw_verticalBlankCount;
+    game_deltaT = frame-lastFrame;
+    lastFrame = frame;
+    game_render(game_deltaT);
+    game_waitForNextFrame();
+    game_switchFrameBuffers();
+  }
+  game_lastVerticalBlankCount = hw_verticalBlankCount;
+
+  ((fighter_data_t*)(game_player1->data))->intelligence = player_intelligence;
+  ((fighter_data_t*)(game_player2->data))->intelligence = player_intelligence;    
+} 
 
 
 void
@@ -1178,7 +1227,11 @@ game_loop()
       goto menu;
     }
       
-    if (game_paused && game_singleStep != 1) {
+    if (game_paused
+#ifdef DEBUG
+	&& game_singleStep != 1
+#endif
+	) {
       goto skip;
     }
     
@@ -1201,14 +1254,22 @@ game_loop()
     
     sound_schedule();
 
-    if (game_gotoMenu) {
-      goto menu;
-    }
+    if (game_loopControl != 0) {
+      if (game_loopControl == GAME_LOOP_CONTROL_DISPLAY_DEATHMATCH) {
+	game_waitForNextFrame();
+	game_switchFrameBuffers();
+	game_showDeathMatch();
+	game_loopControl = GAME_LOOP_CONTROL_DEATHMATCH;
+      } else if (game_loopControl == GAME_LOOP_CONTROL_GOTO_MENU) {
+	goto menu;
+      }
+    }    
 
     game_waitForNextFrame();
 
     game_switchFrameBuffers();
 
+    
     uint32_t frame = hw_verticalBlankCount;
     game_deltaT = hw_verticalBlankCount-game_lastScrollFrame;
     

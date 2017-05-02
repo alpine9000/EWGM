@@ -12,11 +12,21 @@ extern frame_buffer_t menu_frameBuffer;
 
 static uint8_t menu_offscreenBuffer[SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH*9];
 static frame_buffer_t menu_offscreen = &menu_offscreenBuffer[0];
-static frame_buffer_t menu_creditsFB;
-static uint16_t menu_creditsCounter;
-static char* menu_creditsPtr;
-static uint16_t menu_creditsMode;
+static frame_buffer_t menu_scrollerFB;
+static uint16_t menu_scrollerCounter;
+static char* menu_scrollerPtr;
+static uint16_t menu_scrollerMode;
 static uint8_t menu_lastJoystick;
+static char* menu_scrollerText;
+static uint16_t menu_demoCount;
+
+static char* menu_creditsText =
+  "CREDITS:MUSIC/ART/SFX COPYRIGHT (c) 2017 AMIGA WAVE...  GAME ENGINE COPYRIGHT (c) 2017 ENABLE SOFTWARE PTY LTD...  ALL RIGHTS RESERVED...   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE....            ";
+
+static char* menu_helpText = "WELCOME TO ELSE WE GET MAD!... PRESS ESC TO QUIT GAME... PRESS P TO PAUSE... PRESS M TO TOGGLE MUSIC... PRESS D TO WATCH A DEMO...                                            ";
+
+
+
 
 typedef struct {
   uint16_t wait1[2];
@@ -29,7 +39,7 @@ typedef struct {
   uint16_t bpl1[SCREEN_BIT_DEPTH*2*2];
   menu_line_copper_t lines[MENU_MAX_ITEMS];
   uint16_t wrap[2];
-  menu_line_copper_t creditsLine;
+  menu_line_copper_t scrollerLine;
   uint16_t end[2];
 } menu_copper_t;
 
@@ -79,7 +89,7 @@ static  __section(data_c)  menu_copper_t menu_copper  = {
 
   .wrap = {0xffdf,0xfffe},
 
-  .creditsLine = {
+  .scrollerLine = {
     .wait1 =  {0x1adf, 0xfffe},
     .color1 = { COLOR01, MENU_TOP_COLOR},
     .wait2 =  {0x1edf, 0xfffe},
@@ -112,7 +122,7 @@ menu_select(uint16_t i);
 static void
 menu_credits(void);
 static void
-menu_creditsRender(void);
+menu_scrollerRender(void);
 
 static 
 menu_mode_t menu_mode = MENU_MODE_INACTIVE;
@@ -193,12 +203,28 @@ menu_pokeCopperList(frame_buffer_t frameBuffer)
 static int16_t
 menu_processKeyboard(void)
 {
+  if (keyboard_key) {
+    menu_demoCount = 0;
+  } else {
+    menu_demoCount++;
+  }
+
+  if (menu_demoCount == 50*28) {
+    if (menu_scrollerText != menu_creditsText) {
+      return MENU_COMMAND_REPLAY;
+    } else {
+      menu_demoCount = 0;
+    }
+  }
+  
   switch (keyboard_key) {
+#ifdef DEBUG
   case 'Z':
     music_next();
     return -1;
     break;
-  case 'P':
+#endif
+  case 'D':
     return MENU_COMMAND_REPLAY;
     break;
   case 'R':
@@ -213,7 +239,7 @@ menu_processKeyboard(void)
     return MENU_COMMAND_LEVEL;
     break;
 #if TRACKLOADER==0
-  case 27:
+  case KEYBOARD_CODE_ESC:
   case 'Q':
     return MENU_COMMAND_EXIT;
     break;
@@ -500,7 +526,8 @@ menu_up(void)
     menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR;
     menu_selected--;
     menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR_SELECTED;
-    menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR_SELECTED;    
+    menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR_SELECTED;
+    menu_demoCount = 0;
   }
 }
 
@@ -514,8 +541,32 @@ menu_down(void)
     menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR;
     menu_selected++;
     menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR_SELECTED;
-    menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR_SELECTED;    
+    menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR_SELECTED;
+    menu_demoCount = 0;    
   }
+}
+
+
+static void
+menu_scroller(char* text)
+{
+  switch (menu_scrollerMode) {
+  case 0:
+  case 2:
+    menu_scrollerMode = 1;
+    menu_scrollerFB = game_onScreenBuffer;  
+    menu_scrollerFB += (((SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)*256));
+    menu_scrollerCounter = 0;
+    menu_scrollerPtr = text;
+    menu_scrollerText = text;
+    break;
+  case 1:
+    menu_scrollerMode = 2;
+    menu_scrollerPtr = text;
+    menu_scrollerText = text;
+    menu_scrollerCounter = 0;
+    break;
+  } 
 }
 
 
@@ -526,8 +577,10 @@ menu_loop(menu_mode_t mode)
   uint16_t done;
   volatile uint16_t scratch;
 
+  menu_demoCount = 0;
   menu_lastJoystick = 0;  
-  menu_creditsMode = 0;
+  menu_scrollerMode = 0;
+  menu_scroller(menu_helpText);
 #ifdef GAME_STARS
   custom->dmacon = DMAF_SPRITE;
 #endif
@@ -630,6 +683,7 @@ menu_loop(menu_mode_t mode)
 	menu_mode = MENU_MODE_MENU;
 	menu_refresh();
       } else {
+	menu_demoCount = 0;
 	command = menu_items[menu_selected].command;
 	done = menu_items[menu_selected].done;
 	if (menu_items[menu_selected].callback != 0) {
@@ -657,10 +711,10 @@ menu_loop(menu_mode_t mode)
       done = 1;
     }
 
-    if (menu_creditsMode == 0) {
+    if (menu_scrollerMode == 0) {
       hw_waitVerticalBlank();
     } else {
-      menu_creditsRender();      
+      menu_scrollerRender();      
     }
   }
 
@@ -674,51 +728,34 @@ menu_loop(menu_mode_t mode)
   return command;
 }
 
-static char* menu_creditsText =
-  "ELSE WE GET MAD!...  MUSIC/ART/SFX COPYRIGHT (c) 2017 AMIGA WAVE...  GAME ENGINE COPYRIGHT (c) 2017 ENABLE SOFTWARE PTY LTD...  ALL RIGHTS RESERVED...   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE....           ";
-
 
 static void
-menu_credits(void)
-{
-  switch (menu_creditsMode) {
-  case 0:
-  case 2:
-    menu_creditsMode = 1;
-    menu_creditsFB = game_onScreenBuffer;  
-    menu_creditsFB += (((SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)*256));
-    menu_creditsCounter = 0;
-    menu_creditsPtr = menu_creditsText;
-    break;
-  case 1:
-    menu_creditsMode = 2;
-    break;
-  } 
-}
-
-static void
-menu_creditsRender(void)
+menu_scrollerRender(void)
 {
   volatile struct Custom* _custom = CUSTOM;    
   int32_t shift = 1;
 
-  if (menu_creditsMode == 2) {
+  if (menu_scrollerMode == 2) {
     shift = 15;
-  }
-  
-  if (menu_creditsCounter == 7) {
-    char buffer[2] = {0, 0};
-    if (*menu_creditsPtr == 0) {
-      menu_creditsPtr = menu_creditsText;
+    if (menu_scrollerCounter++ > 25) {
+      menu_scrollerMode = 1;
+      menu_scrollerCounter = 0;
     }
-    buffer[0] = *menu_creditsPtr;
-    menu_creditsPtr++;
-    if (menu_creditsMode == 1) {
-      text_drawMaskedText8Blitter(game_onScreenBuffer, buffer, SCREEN_WIDTH-8, SCREEN_HEIGHT-11);
+  } else {  
+    if (menu_scrollerCounter == 7) {
+      char buffer[2] = {0, 0};
+      if (*menu_scrollerPtr == 0) {
+	menu_scrollerPtr = menu_scrollerText;
+      }
+      buffer[0] = *menu_scrollerPtr;
+      menu_scrollerPtr++;
+      if (menu_scrollerMode == 1) {
+	text_drawMaskedText8Blitter(game_onScreenBuffer, buffer, SCREEN_WIDTH-8, SCREEN_HEIGHT-11);
+      }
+      menu_scrollerCounter = 0;
+    } else {
+      menu_scrollerCounter++;
     }
-    menu_creditsCounter = 0;
-  } else {
-    menu_creditsCounter++;
   }
   
   hw_waitBlitter();   
@@ -729,9 +766,22 @@ menu_creditsRender(void)
   _custom->bltamod = 0;
   _custom->bltdmod = 0;
   
-  _custom->bltapt = (uint8_t*)menu_creditsFB;
-  _custom->bltdpt = (uint8_t*)menu_creditsFB;
+  _custom->bltapt = (uint8_t*)menu_scrollerFB;
+  _custom->bltdpt = (uint8_t*)menu_scrollerFB;
   
   hw_waitVerticalBlank();    
   _custom->bltsize = ((10*SCREEN_BIT_DEPTH)<<6) | (SCREEN_WIDTH_WORDS);
+}
+
+
+void
+menu_credits(void)
+{
+  if (menu_scrollerMode != 2) {
+    if (menu_scrollerText == menu_creditsText) {
+      menu_scroller(menu_helpText);
+    } else {
+      menu_scroller(menu_creditsText);    
+    }
+  }
 }

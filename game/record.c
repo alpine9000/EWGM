@@ -13,18 +13,6 @@ record_getState(void)
 
 
 void
-record_showAddress(void)
-{
-  char buffer[16];
-  
-  strcpy(buffer, itoh((uint32_t)record_ptr, 8));
-  strcat(buffer, " ");
-  strcat(buffer,  itoh(sizeof(record_t), 4));
-  //popup(buffer, popup_off);
-}
-
-
-void
 record_setState(record_state_t state)
 {
   record_state = state;
@@ -68,7 +56,17 @@ record_process(void)
       level.record->lastKey = keyboard_key;
       level.record->index++;
     }
+#ifdef DEBUG
+    else {
+      PANIC("RECORD_OVERRUN");
+    }
+#endif
   } else if (level.record->state == RECORD_PLAYBACK) {
+#ifndef DEBUG
+    if (game_fire()) {
+      keyboard_key = 'Q';
+    }
+#endif
     if (level.record->index < RECORD_MAX_RECORD) {
       if (level.record->buffer[level.record->index].frame == level.record->frame) {
 	level.record->joystickPos = level.record->buffer[level.record->index].joystickPos;
@@ -84,8 +82,14 @@ record_process(void)
       hw_joystick2Button = level.record->joystick2Button;      
     }
 
+#ifdef DEBUG
+    else {
+      PANIC("RECORD_OVERRUN");
+    }
+#endif
   }
 
+  
   level.record->frame++;
 #endif
 }

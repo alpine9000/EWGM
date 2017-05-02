@@ -104,6 +104,7 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   if (data->walkAbout > 0) {
     data->walkAbout-=deltaT;
   } else {
+    uint32_t rand = random();
     object_t* player = enemy_closestPlayer(ptr);
     if (!player) {
       ptr->velocity.x = 0;
@@ -113,18 +114,52 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
     object_collision_t collision;
 
     if (object_x(ptr)-game_cameraX <= 0) {
-      data->walkAbout = ENEMY_WALKABOUT_TICS;
+      data->walkAbout = rand & 0x7f; //ENEMY_WALKABOUT_TICS;
       ptr->velocity.x = 1;
     } else if (object_x(ptr)-game_cameraX >= SCREEN_WIDTH) {
-      data->walkAbout = ENEMY_WALKABOUT_TICS;
+      data->walkAbout = rand & 0x7f; //ENEMY_WALKABOUT_TICS;
       ptr->velocity.x = -1;      
     } else if ((object_collision(deltaT, ptr, &collision, ENEMY_INTERCEPT_X_RANGE, ENEMY_INTERCEPT_Y_THRESHOLD))) {
-      if (collision.left) {
-	ptr->velocity.x = 1;
-	ptr->velocity.y = 0;
-      } else if (collision.right) {
+      switch ((rand >> 8) & 0x7) {
+      case 0:
+      case 1:
+	ptr->velocity.x = 0;
+	ptr->velocity.y = 0;	
+	break;	
+      case 2:
 	ptr->velocity.x = -1;
 	ptr->velocity.y = 0;
+	break;
+      case 3:
+	ptr->velocity.x = 1;
+	ptr->velocity.y = 0;
+	break;	
+      case 4:
+	ptr->velocity.x = -1;
+	ptr->velocity.y = -1;
+	break;	
+      case 5:
+	ptr->velocity.x = -1;
+	ptr->velocity.y = 1;
+	break;
+      case 6:
+	ptr->velocity.x = 1;
+	ptr->velocity.y = 1;
+	break;
+      case 7:
+	ptr->velocity.x = 1;
+	ptr->velocity.y = -1;	      		
+	break;
+      }
+#if 0
+    int16_t r = (rand >> 8) & 0x3;
+      int16_t y = r > 1 ? -1 : r ? 1 : 0;
+      if (collision.left) {
+	ptr->velocity.x = 1;
+	ptr->velocity.y = y;
+      } else if (collision.right) {
+	ptr->velocity.x = -1;
+	ptr->velocity.y = y;
       } else if (collision.up) {
 	ptr->velocity.x = 0;
 	ptr->velocity.y = 1;
@@ -132,10 +167,11 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 	ptr->velocity.x = 0;
 	ptr->velocity.y = -1;
       }
-      data->walkAbout = ENEMY_WALKABOUT_TICS;
+      #endif
+      data->walkAbout = rand & 0x7f;//ENEMY_WALKABOUT_TICS;
     } else {
       ptr->velocity.x = enemy_strikingDistanceX(player, ptr);
-
+      
       if (abs(object_y(ptr)-object_y(player)) <= data->attackRangeY) {
 	if (ptr->velocity.x == 0) {
 	  if (data->enemyAttackWait <= 0) {
@@ -144,13 +180,21 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 	  } else {
 	    data->enemyAttackWait-=deltaT;
 	  }
-	}
+	} 
 	ptr->velocity.y = 0;
       }
       else if (object_y(ptr) < object_y(player)) {
 	ptr->velocity.y = data->speed;
+	if (((rand >> 8) & 0x3) == 0) {
+	  ptr->velocity.x = 0;
+	  data->walkAbout = rand & 0x7f;
+	}	
       } else if (object_y(ptr) > object_y(player)) {
 	ptr->velocity.y = -data->speed;
+	if (((rand >> 8) & 0xff) == 0) {
+	  ptr->velocity.x = 0;
+	  data->walkAbout = 10;
+	}		
       } 
     }
   }

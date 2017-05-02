@@ -108,6 +108,7 @@ extern frame_buffer_t game_onScreenBuffer;
 extern frame_buffer_t game_offScreenBuffer;
 extern frame_buffer_t game_scoreBoardFrameBuffer;
 extern uint16_t game_over;
+extern uint16_t game_loopControl;
 extern uint16_t game_numPlayers;
 extern uint32_t game_player1Score;
 extern uint32_t game_player2Score;
@@ -122,8 +123,16 @@ enum {
   GAME_DIFFICULTY_HARD
 };
 
+enum {
+  GAME_LOOP_CONTROL_RUN = 0,
+  GAME_LOOP_CONTROL_GOTO_MENU = 1,
+  GAME_LOOP_CONTROL_DISPLAY_DEATHMATCH = 2,
+  GAME_LOOP_CONTROL_DEATHMATCH = 3
+};
+
 #include "i18n.h"
 #include "string.h"
+#include "random.h"
 #include "registers.h"
 #include "hw.h"
 #include "panic.h"
@@ -164,7 +173,7 @@ extern object_t* game_player2;
 #include "star.h"
 
 #define game_fire() ((!(hw_lastJoystickButton&0x1) && (hw_joystickButton&0x1)) || \
-			(keyboard_key && keyboard_code == KEYBOARD_CODE_RETURN))
+			(keyboard_lastKey != keyboard_key && keyboard_key && keyboard_code == KEYBOARD_CODE_RETURN))
 void 
 game_loop(void);
 uint16_t

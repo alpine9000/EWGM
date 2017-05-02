@@ -137,20 +137,21 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
   
   object_set_z(ptr, object_y(ptr));
   data->attack_py = object_py(ptr);
-  data->health -= dammage;
+
+  if (ptr->id != OBJECT_ID_ENEMY && attacker->id != OBJECT_ID_ENEMY) {
+    data->health -= (dammage/4);
+  } else {
+    data->health -= dammage;
+  }
   if (data->health <= 0) {
     data->health = 0;
     switch (attacker->id) {
     case OBJECT_ID_PLAYER1:
       game_player1Score += 1000;
-      //      text_drawText8(game_scoreBoardFrameBuffer, itoan(game_player1Score, 6), 224, 8);
-      //      custom->bltafwm = 0xffff;
       sound_queueSound(SOUND_DIE01);
       break;
     case OBJECT_ID_PLAYER2:
       game_player2Score += 1000;
-      //      text_drawText8(game_scoreBoardFrameBuffer, itoan(game_player2Score, 6), 48, 8);
-      //      custom->bltafwm = 0xffff;
       sound_queueSound(SOUND_DIE02);
       break;
     default:
@@ -309,7 +310,11 @@ fighter_die(object_t* ptr)
     enemy_count--;
     if (enemy_count == 0) {
       if (conductor_complete()) {
-	game_setGameComplete();
+	if (game_numPlayers == 2 && game_player1 && game_player2) {
+	  game_loopControl = GAME_LOOP_CONTROL_DISPLAY_DEATHMATCH;
+	} else {
+	  game_setGameComplete();
+	}
       }
     }
     break;	  
@@ -318,12 +323,16 @@ fighter_die(object_t* ptr)
     game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
     if (!game_player2) {
       game_setGameOver();	    
+    } else if (game_loopControl == GAME_LOOP_CONTROL_DEATHMATCH) {
+      game_setGameComplete();
     }
     break;
   case OBJECT_ID_PLAYER2:
     game_player2 = 0;
     if (!game_player1) {
       game_setGameOver();	    
+    } else if (game_loopControl == GAME_LOOP_CONTROL_DEATHMATCH) {      
+      game_setGameComplete();
     }	  
     game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);	  	  
     break;

@@ -430,6 +430,13 @@ object_animation_t object_animations[] = {
     .stop = SPRITE_GAMECOMPLETE,
     .speed = 0,
     .facing = FACING_RIGHT
+  },
+  // =================================
+  [OBJECT_ANIM_DEATHMATCH] = {
+    .start = SPRITE_DEATHMATCH,
+    .stop = SPRITE_DEATHMATCH,
+    .speed = 0,
+    .facing = FACING_RIGHT
   },  
   // =================================
   [OBJECT_ANIM_PHONEBOOTH] = {
@@ -1482,6 +1489,15 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
 
+  [SPRITE_DEATHMATCH] = {
+    .x = 96,
+    .y = 848,
+    .w = 96,
+    .h = 8,
+    .dx = 0,
+    .dy = 0,    
+    },
+  
   //==========================
   [SPRITE_PHONEBOOTH] = {
     .x = 240,

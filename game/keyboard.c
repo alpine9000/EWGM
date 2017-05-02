@@ -3,6 +3,7 @@
 extern uint16_t keyboard_code;
 extern char keyboard_keymap[];
 uint16_t keyboard_key;
+uint16_t keyboard_lastKey = 0;
 uint16_t keyboard_lastCode = 0;
 
 void
@@ -18,5 +19,6 @@ keyboard_read(void)
 
   keyboard_lastCode = keyboard_code;
 
+  keyboard_lastKey = keyboard_key;
   keyboard_key = c;
 }
