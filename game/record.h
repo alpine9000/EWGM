@@ -6,7 +6,7 @@
 #ifdef DEBUG
 #define RECORD_MAX_RECORD 1024+128
 #else
-#define RECORD_MAX_RECORD 512
+#define RECORD_MAX_RECORD 256
 #endif
 
 typedef struct {

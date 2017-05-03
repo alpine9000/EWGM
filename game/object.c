@@ -5,9 +5,9 @@ object_t* object_activeList;
 static object_t* object_freeList;
 static __section(random_c) object_t object_buffer[OBJECT_MAX_OBJECTS];
 object_t* object_zBuffer[OBJECT_MAX_OBJECTS];
-
-uint16_t object_tileDirty[MAP_TILE_WIDTH][16];
-uint16_t object_overlap[MAP_TILE_WIDTH][16];
+#ifndef GAME_TRIPLE_BUFFER
+static uint16_t object_tileDirty[MAP_TILE_WIDTH][16];
+#endif
 
 static object_t*
 object_getFree(void)
@@ -196,8 +196,7 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
   USE(frame);
   if (ow) {
     int16_t sx = (ox>>4)<<4;
-
-    ow += 16;
+    //    ow += 16;
     int16_t screenX = 0xf+(sx)-game_cameraX-game_screenScrollX;
     int16_t screenY = oy;
 
@@ -212,7 +211,6 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
     }
 
     if ((screenX+ow) > SCREEN_WIDTH+TILE_WIDTH) {
-      //      int16_t tiles = (((screenX+ow) -(SCREEN_WIDTH+TILE_WIDTH))>>4)<<4;
       ow -= ((screenX+ow) -(SCREEN_WIDTH+TILE_WIDTH));
     }
     
@@ -242,51 +240,6 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
   }
 #endif
 }
-
-
-static INLINE void
-object_markTiles(int16_t ox, int16_t oy, int16_t ow, int16_t oh)
-{
-  if (ow) {
-    int16_t sx = ox>>4;
-    int16_t sy = (oy)>>4;
-    int16_t ex = (ox+ow)>>4;
-    int16_t ey = (oy+oh)>>4;
-    for (int32_t x = sx; x <= ex; x++) {
-      for (int32_t y = sy; y <= ey; y++) {
-	int16_t screenX = 0xf+(x<<4)-game_cameraX-game_screenScrollX;
-	int16_t screenY = y << 4;
-	if (screenY >= 0 && screenX >= 0 && screenX <= SCREEN_WIDTH+TILE_WIDTH) {
-	  object_overlap[x][y]++;
-	}
-      }	
-    }
-  }
-}
-
-#if 0
-static INLINE void
-object_dirty(int16_t ox, int16_t oy, int16_t ow, int16_t oh)
-{
-  if (ow) {
-    int16_t sx = ox>>4;
-    int16_t sy = (oy)>>4;
-    int16_t ex = (ox+ow)>>4;
-    int16_t ey = (oy+oh)>>4;
-    for (int32_t x = sx; x <= ex; x++) {
-      for (int32_t y = sy; y <= ey; y++) {
-	if (screenY >= 0 && screenX >= 0 && screenX <= SCREEN_WIDTH+TILE_WIDTH) {
-	  if (object_overlap[x][y] > 1) {
-	    return 1;
-	  }
-	}
-      }	
-    }
-  }
-
-  return 0;
-}
-#endif
 
 
 static INLINE void

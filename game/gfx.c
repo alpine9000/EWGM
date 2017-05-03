@@ -148,9 +148,6 @@ gfx_bitBlitNoMask(frame_buffer_t dest, frame_buffer_t src, int16_t sx, int16_t s
   uint32_t widthWords = ((w+15)>>4)+1;
   int32_t shift = 0;//(dx&0xf);
   
-  //  dest +=  (dy * (FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH)) + (dx>>3);
-  //  src += (sy * (FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH)) + (sx>>3);
-
   dest += gfx_dyOffsetsLUT[dy] + (dx>>3);
   src += gfx_dyOffsetsLUT[sy] + (sx>>3);
   
