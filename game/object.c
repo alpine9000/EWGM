@@ -7,6 +7,7 @@ static __section(random_c) object_t object_buffer[OBJECT_MAX_OBJECTS];
 object_t* object_zBuffer[OBJECT_MAX_OBJECTS];
 
 uint16_t object_tileDirty[MAP_TILE_WIDTH][16];
+uint16_t object_overlap[MAP_TILE_WIDTH][16];
 
 static object_t*
 object_getFree(void)
@@ -191,7 +192,35 @@ object_updateAnimation(uint16_t deltaT, object_t *ptr)
 static INLINE void
 object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t oh)
 {
+#ifdef GAME_TRIPLE_BUFFER
   USE(frame);
+  if (ow) {
+    int16_t sx = (ox>>4)<<4;
+
+    ow += 16;
+    int16_t screenX = 0xf+(sx)-game_cameraX-game_screenScrollX;
+    int16_t screenY = oy;
+
+    if (screenY < 0) {
+      oh += screenY;
+      screenY = 0;
+    }
+
+    if (screenX < 0) {
+      ow += screenX;
+      screenX = 0;
+    }
+
+    if ((screenX+ow) > SCREEN_WIDTH+TILE_WIDTH) {
+      //      int16_t tiles = (((screenX+ow) -(SCREEN_WIDTH+TILE_WIDTH))>>4)<<4;
+      ow -= ((screenX+ow) -(SCREEN_WIDTH+TILE_WIDTH));
+    }
+    
+    if (ow > 0 && oh > 0) {
+      gfx_bitBlitNoMask(fb, game_backScreenBuffer, screenX, screenY, screenX, screenY, ow, oh);
+    }
+  }
+#else  
   if (ow) {
     int16_t sx = ox>>4;
     int16_t sy = (oy)>>4;
@@ -211,7 +240,53 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
       }	
     }
   }
+#endif
 }
+
+
+static INLINE void
+object_markTiles(int16_t ox, int16_t oy, int16_t ow, int16_t oh)
+{
+  if (ow) {
+    int16_t sx = ox>>4;
+    int16_t sy = (oy)>>4;
+    int16_t ex = (ox+ow)>>4;
+    int16_t ey = (oy+oh)>>4;
+    for (int32_t x = sx; x <= ex; x++) {
+      for (int32_t y = sy; y <= ey; y++) {
+	int16_t screenX = 0xf+(x<<4)-game_cameraX-game_screenScrollX;
+	int16_t screenY = y << 4;
+	if (screenY >= 0 && screenX >= 0 && screenX <= SCREEN_WIDTH+TILE_WIDTH) {
+	  object_overlap[x][y]++;
+	}
+      }	
+    }
+  }
+}
+
+#if 0
+static INLINE void
+object_dirty(int16_t ox, int16_t oy, int16_t ow, int16_t oh)
+{
+  if (ow) {
+    int16_t sx = ox>>4;
+    int16_t sy = (oy)>>4;
+    int16_t ex = (ox+ow)>>4;
+    int16_t ey = (oy+oh)>>4;
+    for (int32_t x = sx; x <= ex; x++) {
+      for (int32_t y = sy; y <= ey; y++) {
+	if (screenY >= 0 && screenX >= 0 && screenX <= SCREEN_WIDTH+TILE_WIDTH) {
+	  if (object_overlap[x][y] > 1) {
+	    return 1;
+	  }
+	}
+      }	
+    }
+  }
+
+  return 0;
+}
+#endif
 
 
 static INLINE void
@@ -277,15 +352,19 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
       return;
     }
     gfx_renderSprite(fb, sx, sy, screenx, screeny, w, h);
+    //    object_markTiles(sx, sy, w, h);
   }
 }
 
 
 static void
-object_update(uint16_t deltaT)
+object_update(frame_buffer_t fb, uint16_t deltaT)
 {
+  static uint16_t frame = 0;
+  int16_t i = 0;  
   object_t* ptr = object_activeList;
 
+  
   while (ptr) {
     object_t* next = ptr->next;
     if (ptr->update) {
@@ -299,22 +378,35 @@ object_update(uint16_t deltaT)
 	  game_player2 = 0;
 	}
 	object_free(ptr);
-
+	ptr = 0;
       } else {
 	ptr->deadRenderCount++;
       }
     }
+    if (ptr) {
+      if (!ptr->tileRender) {
+	gfx_setupRenderTile();  
+	object_clear(frame, fb, ptr->save.position->x, ptr->save.position->y, ptr->save.position->w, ptr->save.position->h);
+      }
+
+      object_zBuffer[i] = ptr;
+      i++;
+      ptr->save.position->x = object_x(ptr)+ptr->image->dx;
+      ptr->save.position->y = object_y(ptr)-ptr->image->h;
+      ptr->save.position->w = ptr->image->w;
+      ptr->save.position->h = ptr->image->h;
+      ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];
+    }
     ptr = next;
   }
+
+  frame++;
 }
 
 
-static void
-#ifdef OBJECT_BACKING_STORE
-object_saveBackground(frame_buffer_t fb)
-#else
-  object_saveBackground(void)
-#endif
+//static
+void
+object_saveBackground(void)
 {  
   object_t* ptr = object_activeList;
 
@@ -322,17 +414,11 @@ object_saveBackground(frame_buffer_t fb)
   while (ptr != 0) {
     object_zBuffer[i] = ptr;
     i++;
-#ifdef OBJECT_BACKING_STORE
-      gfx_saveSprite(fb, ptr->save.buffer, ptr->save.blit, object_screenx(ptr), object_screeny(ptr), ptr->image->w, ptr->image->h);
-      ptr->save.blit = ptr->save.blit == &ptr->save.blits[0] ? &ptr->save.blits[1] : &ptr->save.blits[0];
-      ptr->save.buffer = ptr->save.buffer == ptr->save.buffers[0].fb ? ptr->save.buffers[1].fb : ptr->save.buffers[0].fb;
-#else
     ptr->save.position->x = object_x(ptr)+ptr->image->dx;
     ptr->save.position->y = object_y(ptr)-ptr->image->h;
     ptr->save.position->w = ptr->image->w;
     ptr->save.position->h = ptr->image->h;    
     ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];
-#endif
     ptr = ptr->next;
   }
 }
@@ -341,13 +427,9 @@ object_saveBackground(frame_buffer_t fb)
 void
 object_render(frame_buffer_t fb, uint16_t deltaT)
 {
-  object_update(deltaT);
-  object_restoreBackground(fb);
-#ifdef OBJECT_BACKING_STORE
-  object_saveBackground(fb);
-#else
-  object_saveBackground();  
-#endif
+  object_update(fb, deltaT);
+  //  object_restoreBackground(fb);
+  //  object_saveBackground();  
 
   sort_z(object_count, object_zBuffer);
 
@@ -368,23 +450,13 @@ object_restoreBackground(frame_buffer_t fb)
   
   object_t* ptr = object_activeList;
 
-
-#ifndef OBJECT_BACKING_STORE  
-    gfx_setupRenderTile();
+#ifndef GAME_TRIPLE_BUFFER
+  gfx_setupRenderTile();
 #endif
-
+  
   while (ptr != 0) {
     if (!ptr->tileRender) {
-#ifdef OBJECT_BACKING_STORE
-    USE(fb);
-    if (ptr->save.blit->size > 0) {
-      gfx_restoreSprite(ptr->save.blit);
-    } else {
-      return;
-    }
-#else
       object_clear(frame, fb, ptr->save.position->x, ptr->save.position->y, ptr->save.position->w, ptr->save.position->h);
-#endif
     }
 
     ptr = ptr->next;
@@ -467,17 +539,9 @@ object_add(uint16_t id, uint16_t class, int16_t x, int16_t y, int16_t dx, int16_
   ptr->id = id;
   ptr->velocity.x = dx;
   ptr->velocity.y = 0;
-#ifdef OBJECT_BACKING_STORE
-  ptr->save.blit = &ptr->save.blits[0];
-  ptr->save.buffer = ptr->save.buffers[0].fb;
-  //ptr->sprite.saveBufferHeightOffset = ((48/8)*SCREEN_BIT_DEPTH);
-  ptr->save.blits[0].size = 0;
-  ptr->save.blits[1].size = 0;
-#else
   ptr->save.position = &ptr->save.positions[0];  
   ptr->save.positions[0].w = 0;
   ptr->save.positions[1].w = 0;
-#endif
   ptr->anim = &object_animations[anim];
   ptr->animId = anim;
   ptr->baseId = anim;

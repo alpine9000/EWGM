@@ -18,6 +18,9 @@ game_scrollBackground(void);
 
 frame_buffer_t game_offScreenBuffer;
 frame_buffer_t game_onScreenBuffer;
+#ifdef GAME_TRIPLE_BUFFER
+frame_buffer_t game_backScreenBuffer;
+#endif
 uint16_t game_numPlayers;
 uint16_t game_bplcon1;
 int16_t game_cameraX;
@@ -42,6 +45,9 @@ static volatile __section(random_c) struct framebuffeData {
   uint8_t frameBuffer2[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES+1+32)];
 #ifdef DEBUG
   uint32_t canary2;
+#endif
+#ifdef GAME_TRIPLE_BUFFER
+  uint8_t frameBuffer3[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES+1+32)];
 #endif
 } game_frameBufferData;
 
@@ -230,6 +236,9 @@ game_ctor(void)
   game_numPlayers = 1;
   game_onScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer2;
   game_offScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer1;
+#ifdef GAME_TRIPLE_BUFFER
+  game_backScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer3;
+#endif
   game_25fps = game_check25fps();
 }
 
@@ -527,7 +536,11 @@ game_loadLevel(menu_command_t command)
   }
   
   tile_init();
-  tile_renderScreen(game_offScreenBuffer, game_onScreenBuffer);
+#ifdef GAME_TRIPLE_BUFFER
+  tile_renderScreen(game_offScreenBuffer, game_onScreenBuffer, game_backScreenBuffer);
+#else
+  tile_renderScreen(game_offScreenBuffer, game_onScreenBuffer);  
+#endif
 
   game_refreshScoreboard();  
   
@@ -632,6 +645,9 @@ game_scrollBackground(void)
     game_lastTileX = tile;
     game_offScreenBuffer += 2;
     game_onScreenBuffer += 2;
+#ifdef GAME_TRIPLE_BUFFER
+    game_backScreenBuffer += 2;
+#endif
   }
     
   uint16_t screenX = FRAME_BUFFER_WIDTH-TILE_WIDTH*2;    
@@ -644,6 +660,9 @@ game_scrollBackground(void)
       uint16_t offset = level.tileAddresses[x>>4][c];
       gfx_quickRenderTile(game_offScreenBuffer, screenX, c << 4, level.tileBitplanes+offset);
       gfx_quickRenderTile(game_onScreenBuffer, screenX, c << 4, level.tileBitplanes+offset);
+#ifdef GAME_TRIPLE_BUFFER
+      gfx_quickRenderTile(game_backScreenBuffer, screenX, c << 4, level.tileBitplanes+offset);
+#endif
     }
   }
 }
@@ -956,7 +975,7 @@ game_waitForNextFrame(void)
       }
       break;
     case 2:
-      break;
+      //      break;
 #ifdef GAME_TURTLE
     default:
 #ifdef DEBUG

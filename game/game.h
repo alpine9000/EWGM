@@ -10,11 +10,12 @@
 #define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1
 #define GAME_RECORDING                1
-#define GAME_ONE_BITPLANE_SPRITE_MASK 1
+//#define GAME_ONE_BITPLANE_SPRITE_MASK 1
 #define GAME_STARS                    1
 #define GAME_HISCORE_SAVE_ENABLE      1
 //#define GAME_BLITTER_WAIT_DEBUG       1
 //#define OBJECT_BACKING_STORE          1
+#define GAME_TRIPLE_BUFFER           1
 
 #define abs(a) ((a) >= 0 ? (a) : -(a))  
 #define max(a, b) ((a) > (b) ? (a) : (b))
@@ -107,6 +108,9 @@ extern int16_t game_cameraX;
 extern int16_t game_screenScrollX;
 extern frame_buffer_t game_onScreenBuffer;
 extern frame_buffer_t game_offScreenBuffer;
+#ifdef GAME_TRIPLE_BUFFER
+extern frame_buffer_t game_backScreenBuffer;
+#endif
 extern frame_buffer_t game_scoreBoardFrameBuffer;
 extern uint16_t game_over;
 extern uint16_t game_loopControl;

@@ -141,6 +141,33 @@ gfx_screenWidthBitBlitNoMask(frame_buffer_t dest, frame_buffer_t src, int16_t sx
 }
 
 
+void 
+gfx_bitBlitNoMask(frame_buffer_t dest, frame_buffer_t src, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
+{
+  volatile struct Custom* _custom = CUSTOM;
+  uint32_t widthWords = ((w+15)>>4)+1;
+  int32_t shift = 0;//(dx&0xf);
+  
+  //  dest +=  (dy * (FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH)) + (dx>>3);
+  //  src += (sy * (FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH)) + (sx>>3);
+
+  dest += gfx_dyOffsetsLUT[dy] + (dx>>3);
+  src += gfx_dyOffsetsLUT[sy] + (sx>>3);
+  
+  hw_waitBlitter();
+
+  _custom->bltcon0 = (SRCA|DEST|0xf0|shift<<ASHIFTSHIFT);
+  _custom->bltcon1 = shift<<BSHIFTSHIFT;
+  _custom->bltalwm = 0xffff;
+  
+  _custom->bltamod = (FRAME_BUFFER_WIDTH_BYTES-(widthWords<<1));
+  _custom->bltdmod = (FRAME_BUFFER_WIDTH_BYTES-(widthWords<<1));
+  _custom->bltapt = (uint8_t*)src;
+  _custom->bltdpt = (uint8_t*)dest;
+  _custom->bltsize = gfx_heightLUT[h] | widthWords;
+}
+
+
 
 void
 gfx_fillRect(frame_buffer_t fb, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)

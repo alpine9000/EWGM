@@ -6,6 +6,12 @@
 
 void
 tile_init(void);
+#ifdef GAME_TRIPLE_BUFFER
+void
+tile_renderScreen(frame_buffer_t onScreen, frame_buffer_t offScreen, frame_buffer_t backScreen);
+#else
 void 
 tile_renderScreen(frame_buffer_t onScreen, frame_buffer_t offScreen);
+#endif
+
 #endif
