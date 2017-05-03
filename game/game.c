@@ -273,14 +273,16 @@ game_complete(void)
 
   game_disableCopperEffects();  
   palette_fadeFrom(level.palette, 32, 0, 32);  
-  
+
+#ifdef GAME_KEYBOARD_ENABLED
   if (game_player1Score > 0) {
     hiscore_addScore(1, game_player1Score);
   }
   if (game_player2Score > 0) {
     hiscore_addScore(2, game_player2Score);
   }
-
+#endif
+  
   hw_waitVerticalBlank();
   palette_black();
   hw_waitVerticalBlank();
@@ -382,7 +384,7 @@ game_refreshScoreboard(void)
 #endif
 }
 
-
+#ifdef GAME_RECORDING
 static void
 game_startRecord(void)
 {
@@ -397,6 +399,7 @@ game_startRecord(void)
 }
 
 
+
 static void
 game_startPlayback(void)
 {
@@ -408,7 +411,7 @@ game_startPlayback(void)
   hw_verticalBlankCount = 0;
   game_lastVerticalBlankCount = 0;
 }
-
+#endif
 
 NOINLINE void
 game_scoreBoardPlayerText(uint16_t playerId, char* text)
@@ -753,7 +756,6 @@ game_updateWave(void)
 	(!game_player2 || object_x(game_player2)-game_cameraX > SCREEN_WIDTH/3)) {
       if ((game_player1 && object_x(game_player1)-game_cameraX > (SCREEN_WIDTH-128)) ||
 	  (game_player2 && object_x(game_player2)-game_cameraX > (SCREEN_WIDTH-128))) {
-#define _object_min(x,y)(x<=y?x:y)
 	game_requestCameraX(min(game_cameraX+(SCREEN_WIDTH/3), conductor_scrollTarget));
 	hand_hide();
       }

@@ -470,5 +470,8 @@ fighter_add(uint16_t id, uint16_t animId, int16_t x, int16_t y, uint16_t initial
   data->postAttackInvincibleTics = 0;
   data->postAttackCount = 0;
   data->speed = 1;
+#ifdef ENEMY_RUNAWAY
+  data->lastState = OBJECT_STATE_ALIVE;
+#endif
   return object_add(id, OBJECT_CLASS_FIGHTER, x, y, 0, animId, fighter_update, data, fighter_addFree);
 }

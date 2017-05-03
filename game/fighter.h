@@ -46,6 +46,9 @@ typedef struct fighter_data {
   int16_t postAttackCount;
   int16_t speed;
   fighter_attack_config_t* attackConfig;
+#ifdef ENEMY_RUNAWAY
+  uint16_t lastState;
+#endif
 } fighter_data_t;
 
 

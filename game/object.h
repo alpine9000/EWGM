@@ -5,6 +5,11 @@
 #define OBJECT_PHYSICS_FACTOR 2
 #define OBJECT_WIDTH 32
 
+#ifdef OBJECT_BACKING_STORE
+#define OBJECT_MAX_BLIT_WIDTH 48+16
+#define OBJECT_MAX_HEIGHT     80
+#endif
+
 typedef enum {
   SPRITE_PLAYER1_STAND_RIGHT,
   SPRITE_PLAYER1_RUN_RIGHT_1,
@@ -328,17 +333,32 @@ typedef enum {
   OBJECT_CLASS_DECORATION
 } object_class_t;
 
+#ifdef OBJECT_BACKING_STORE
+typedef struct {
+  uint8_t fb[(OBJECT_MAX_BLIT_WIDTH/8)*SCREEN_BIT_DEPTH*OBJECT_MAX_HEIGHT];
+} object_backing_store_t;
+#else
 typedef struct {
   int16_t x;
   int16_t y;
   int16_t w;
   int16_t h;
 } object_position_t;
+#endif
 
 typedef struct {
+#ifdef OBJECT_BACKING_STORE
+  object_backing_store_t buffers[2];
+  frame_buffer_t buffer;
+  gfx_blit_t blits[2];
+  gfx_blit_t* blit;
+#else
   object_position_t positions[2];
   object_position_t* position;
+#endif
 } object_save_t;
+
+
 
 typedef struct object {
   uint16_t id;
@@ -502,8 +522,8 @@ object_set_z(object_t* ptr, int16_t z)
 void
 object_setAnim(object_t* ptr, int16_t anim);
 
-void
-object_clear(frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t oh);
+//void
+//object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t oh);
 
 int16_t
 object_collision(int16_t deltaT, object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy);

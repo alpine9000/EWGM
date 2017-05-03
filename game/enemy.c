@@ -87,19 +87,22 @@ enemy_strikingDistanceX(object_t* a, object_t* b)
 uint16_t
 enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
+  uint16_t attack = 0;
+  
   if (object_get_state(ptr) != OBJECT_STATE_ALIVE) {
+#ifdef ENEMY_RUNAWAY
+    data->lastState = object_get_state(ptr);
+#endif
     return 0;
   }
   
 #ifdef DEBUG
   if (enemy_pause) {
     ptr->velocity.x = 0;
-    ptr->velocity.y = 0;    
-    return 0;
+    ptr->velocity.y = 0;
+    return 0;    
   }
-#endif
-  
-  uint16_t attack = 0;
+#endif  
   
   if (data->walkAbout > 0) {
     data->walkAbout-=deltaT;
@@ -151,54 +154,52 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 	ptr->velocity.y = -1;	      		
 	break;
       }
-#if 0
-    int16_t r = (rand >> 8) & 0x3;
-      int16_t y = r > 1 ? -1 : r ? 1 : 0;
-      if (collision.left) {
-	ptr->velocity.x = 1;
-	ptr->velocity.y = y;
-      } else if (collision.right) {
-	ptr->velocity.x = -1;
-	ptr->velocity.y = y;
-      } else if (collision.up) {
-	ptr->velocity.x = 0;
-	ptr->velocity.y = 1;
-      } else {
-	ptr->velocity.x = 0;
-	ptr->velocity.y = -1;
-      }
-      #endif
       data->walkAbout = rand & 0x7f;//ENEMY_WALKABOUT_TICS;
     } else {
-      ptr->velocity.x = enemy_strikingDistanceX(player, ptr);
-      
-      if (abs(object_y(ptr)-object_y(player)) <= data->attackRangeY) {
-	if (ptr->velocity.x == 0) {
-	  if (data->enemyAttackWait <= 0) {
-	    data->enemyAttackWait = data->enemyAttackWaitTics;
-	    attack = 1;
-	  } else {
-	    data->enemyAttackWait-=deltaT;
-	  }
-	} 
-	ptr->velocity.y = 0;
+
+#ifdef ENEMY_RUNAWAY
+      if (data->lastState == OBJECT_STATE_HIT && (((rand >> 8) & 0x3F) == 0)) {
+	if (object_x(player) > object_x(ptr)) {
+	  ptr->velocity.x = -1;
+	} else {
+	  ptr->velocity.x = 1;	  
+	}
+	data->lastState = OBJECT_STATE_ALIVE;
+	data->walkAbout = ENEMY_WALKABOUT_TICS*2;
+      } else {
+#endif
+	ptr->velocity.x = enemy_strikingDistanceX(player, ptr);	
+	if (abs(object_y(ptr)-object_y(player)) <= data->attackRangeY) {
+	  if (ptr->velocity.x == 0) {
+	    if (data->enemyAttackWait <= 0) {
+	      data->enemyAttackWait = data->enemyAttackWaitTics;
+	      attack = 1;
+	    } else {
+	      data->enemyAttackWait-=deltaT;
+	    }
+	  } 
+	  ptr->velocity.y = 0;
+	}
+	else if (object_y(ptr) < object_y(player)) {
+	  ptr->velocity.y = data->speed;
+	  if (((rand >> 8) & 0x3) == 0) {
+	    ptr->velocity.x = 0;
+	    data->walkAbout = rand & 0x7f;
+	  }	
+	} else if (object_y(ptr) > object_y(player)) {
+	  ptr->velocity.y = -data->speed;
+	  if (((rand >> 8) & 0xff) == 0) {
+	    ptr->velocity.x = 0;
+	    data->walkAbout = 10;
+	  }		
+	}
+#ifdef ENEMY_RUNAWAY
       }
-      else if (object_y(ptr) < object_y(player)) {
-	ptr->velocity.y = data->speed;
-	if (((rand >> 8) & 0x3) == 0) {
-	  ptr->velocity.x = 0;
-	  data->walkAbout = rand & 0x7f;
-	}	
-      } else if (object_y(ptr) > object_y(player)) {
-	ptr->velocity.y = -data->speed;
-	if (((rand >> 8) & 0xff) == 0) {
-	  ptr->velocity.x = 0;
-	  data->walkAbout = 10;
-	}		
-      } 
+#endif
     }
   }
 
+  
   return attack;
 }
 
