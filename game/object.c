@@ -169,6 +169,7 @@ object_init(void)
       ptr->next->prev = ptr;
       ptr = ptr->next;
   }
+
   ptr->next = 0;
 }
 
@@ -338,8 +339,19 @@ object_update(frame_buffer_t fb, uint16_t deltaT)
     }
     if (ptr) {
       if (!ptr->tileRender) {
-	gfx_setupRenderTile();  
-	object_clear(frame, fb, ptr->save.position->x, ptr->save.position->y, ptr->save.position->w, ptr->save.position->h);
+#ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
+	if (ptr->velocity.x != 0 ||
+	    (object_x(ptr)+ptr->image->dx) != ptr->save.position->x ||
+	    (object_y(ptr)-ptr->image->h) != ptr->save.position->y ||
+	    ptr->animId != ptr->save.position->animId ||
+	    object_get_state(ptr) == OBJECT_STATE_REMOVED ||
+	    ptr->visible != ptr->save.position->visible) {
+#endif
+	  gfx_setupRenderTile();
+	  object_clear(frame, fb, ptr->save.position->x, ptr->save.position->y, ptr->save.position->w, ptr->save.position->h);
+#ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
+	} 
+#endif
       }
 
       object_zBuffer[i] = ptr;
@@ -348,6 +360,10 @@ object_update(frame_buffer_t fb, uint16_t deltaT)
       ptr->save.position->y = object_y(ptr)-ptr->image->h;
       ptr->save.position->w = ptr->image->w;
       ptr->save.position->h = ptr->image->h;
+#ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
+      ptr->save.position->animId = ptr->animId;
+      ptr->save.position->visible = ptr->visible;
+#endif
       ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];
     }
     ptr = next;
@@ -381,8 +397,6 @@ void
 object_render(frame_buffer_t fb, uint16_t deltaT)
 {
   object_update(fb, deltaT);
-  //  object_restoreBackground(fb);
-  //  object_saveBackground();  
 
   sort_z(object_count, object_zBuffer);
 

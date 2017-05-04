@@ -4,7 +4,6 @@ USE_BIG=1
 SFX=1
 PHOTON_TRACKLOADER=0
 MUSIC_PARALLEL_LOAD=0
-ONEBITPLANE_MASK=#--onebitplane-mask
 
 # programs and paths
 CC=/usr/local/amiga/vgcc/bin/m68k-amigaos-gcc
@@ -191,9 +190,11 @@ out/background_%-map.c: assets/background_%.tmx out
 
 out/sprite_%.h: assets/sprite_%.png palettes/palette_%.pal
 	$(CROPPA) --width=320 --height=893 --input=assets/sprite_$*.png --output=out/sprite_$*-resized.png
-	$(IMAGECON) $(ONEBITPLANE_MASK) --quantize --colors=32 --full-color-palette --input=out/sprite_$*-resized.png --output=out/sprite_$* --output-bitplanes --output-png --output-palette --output-grey-palette-asm --output-palette-asm --use-palette=palettes/palette_$*.pal --output-mask
+	$(IMAGECON)  --quantize --colors=32 --full-color-palette --input=out/sprite_$*-resized.png --output=out/sprite_$* --output-bitplanes --output-png --output-palette --output-grey-palette-asm --output-palette-asm --use-palette=palettes/palette_$*.pal --output-mask
+	$(IMAGECON) --onebitplane-mask --quantize --colors=32 --full-color-palette --input=out/sprite_$*-resized.png --output=out/sprite_1bp_$* --output-bitplanes --output-png --output-palette --output-grey-palette-asm --output-palette-asm --use-palette=palettes/palette_$*.pal --output-mask
 	cat out/sprite_$*.bin | $(BIN2C) > out/sprite_$*.h
 	cat out/sprite_$*-mask.bin | $(BIN2C) > out/sprite_$*-mask.h
+	cat out/sprite_1bp_$*-mask.bin | $(BIN2C) > out/sprite_1bp_$*-mask.h
 
 
 out/tile_%.h: assets/tile_%.png palettes/palette_%.pal

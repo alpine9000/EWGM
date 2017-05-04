@@ -7,7 +7,11 @@
 #define __LEVEL_SPRITE_IDS(x)        __LEVEL_SPRITE_IDS2(x)
 #define __LEVEL_SPRITE_BITPLANES2(x) __LEVEL_STRINGIFY(out/sprite_ ##x.h)
 #define __LEVEL_SPRITE_BITPLANES(x)  __LEVEL_SPRITE_BITPLANES2(x)
+#ifdef GAME_ONE_BITPLANE_SPRITE_MASK
+#define __LEVEL_SPRITE_MASK2(x)      __LEVEL_STRINGIFY(out/sprite_1bp_ ##x-mask.h)
+#else
 #define __LEVEL_SPRITE_MASK2(x)      __LEVEL_STRINGIFY(out/sprite_ ##x-mask.h)
+#endif
 #define __LEVEL_SPRITE_MASK(x)       __LEVEL_SPRITE_MASK2(x)
 #define __LEVEL_TILE2(x)             __LEVEL_STRINGIFY(out/tile_ ##x.h)
 #define __LEVEL_TILE(x)              __LEVEL_TILE2(x)

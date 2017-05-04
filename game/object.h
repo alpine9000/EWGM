@@ -343,6 +343,8 @@ typedef struct {
   int16_t y;
   int16_t w;
   int16_t h;
+  uint16_t animId;
+  uint16_t visible;
 } object_position_t;
 #endif
 

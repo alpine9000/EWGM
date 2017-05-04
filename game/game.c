@@ -223,6 +223,7 @@ game_setBigFontColor(uint16_t topColor, uint16_t bottomColor)
 static uint16_t NOINLINE
 game_check25fps(void)
 {
+  return 0;
   uint32_t count = hw_verticalBlankCount;
   for (volatile int i = 0; i < 100000; i++);
   return hw_verticalBlankCount - count > 25;  
