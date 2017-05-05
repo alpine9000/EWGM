@@ -221,6 +221,7 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
   }
 #else  
   if (ow) {
+    gfx_setupRenderTile();
     int16_t sx = ox>>4;
     int16_t sy = (oy)>>4;
     int16_t ex = (ox+ow)>>4;
@@ -241,6 +242,49 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
   }
 #endif
 }
+
+
+static void
+object_restoreBackground(frame_buffer_t fb)
+{
+  static uint16_t frame = 0;
+  uint16_t i = 0;
+  object_t* ptr = object_activeList;
+
+  while (ptr != 0) {
+    if (!ptr->tileRender) {
+#ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
+      /* Don't change the order of these checks, they are optimised */
+      if (object_get_state(ptr) == OBJECT_STATE_REMOVED ||
+	  ptr->imageIndex != ptr->save.position->imageIndex ||	    
+	  (object_y(ptr)-ptr->image->h) != ptr->save.position->y ||
+	  (object_x(ptr)+ptr->image->dx) != ptr->save.position->x ||
+	  ptr->visible != ptr->save.position->visible) {
+#endif
+	object_clear(frame, fb, ptr->save.position->x, ptr->save.position->y, ptr->save.position->w, ptr->save.position->h);
+#ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
+      } 
+#endif
+    }
+
+    object_zBuffer[i] = ptr;
+    i++;
+    ptr->save.position->x = object_x(ptr)+ptr->image->dx;
+    ptr->save.position->y = object_y(ptr)-ptr->image->h;
+    ptr->save.position->w = ptr->image->w;
+    ptr->save.position->h = ptr->image->h;    
+#ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
+    ptr->save.position->imageIndex = ptr->imageIndex;
+    ptr->save.position->visible = ptr->visible;
+#endif
+    ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];
+
+    ptr = ptr->next;
+  }
+
+  frame++;    
+}
+
 
 
 static INLINE void
@@ -265,7 +309,7 @@ object_tileRender(frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t
 }
 
          
-void
+static void
 object_renderObject(frame_buffer_t fb, object_t* ptr)
 {
   if (!ptr->visible) {
@@ -312,12 +356,9 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
 
 
 static void
-object_update(frame_buffer_t fb, uint16_t deltaT)
+object_update(uint16_t deltaT)
 {
-  static uint16_t frame = 0;
-  int16_t i = 0;  
   object_t* ptr = object_activeList;
-
   
   while (ptr) {
     object_t* next = ptr->next;
@@ -337,58 +378,7 @@ object_update(frame_buffer_t fb, uint16_t deltaT)
 	ptr->deadRenderCount++;
       }
     }
-    if (ptr) {
-      if (!ptr->tileRender) {
-#ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
-	if (ptr->velocity.x != 0 ||
-	    (object_x(ptr)+ptr->image->dx) != ptr->save.position->x ||
-	    (object_y(ptr)-ptr->image->h) != ptr->save.position->y ||
-	    ptr->animId != ptr->save.position->animId ||
-	    object_get_state(ptr) == OBJECT_STATE_REMOVED ||
-	    ptr->visible != ptr->save.position->visible) {
-#endif
-	  gfx_setupRenderTile();
-	  object_clear(frame, fb, ptr->save.position->x, ptr->save.position->y, ptr->save.position->w, ptr->save.position->h);
-#ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
-	} 
-#endif
-      }
-
-      object_zBuffer[i] = ptr;
-      i++;
-      ptr->save.position->x = object_x(ptr)+ptr->image->dx;
-      ptr->save.position->y = object_y(ptr)-ptr->image->h;
-      ptr->save.position->w = ptr->image->w;
-      ptr->save.position->h = ptr->image->h;
-#ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
-      ptr->save.position->animId = ptr->animId;
-      ptr->save.position->visible = ptr->visible;
-#endif
-      ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];
-    }
     ptr = next;
-  }
-
-  frame++;
-}
-
-
-//static
-void
-object_saveBackground(void)
-{  
-  object_t* ptr = object_activeList;
-
-  int16_t i = 0;
-  while (ptr != 0) {
-    object_zBuffer[i] = ptr;
-    i++;
-    ptr->save.position->x = object_x(ptr)+ptr->image->dx;
-    ptr->save.position->y = object_y(ptr)-ptr->image->h;
-    ptr->save.position->w = ptr->image->w;
-    ptr->save.position->h = ptr->image->h;    
-    ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];
-    ptr = ptr->next;
   }
 }
 
@@ -396,8 +386,9 @@ object_saveBackground(void)
 void
 object_render(frame_buffer_t fb, uint16_t deltaT)
 {
-  object_update(fb, deltaT);
-
+  object_update(deltaT);
+  object_restoreBackground(fb);
+    
   sort_z(object_count, object_zBuffer);
 
   for (int16_t i = 0; i < object_count; i++) {
@@ -407,29 +398,6 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
       object_updateAnimation(deltaT, ptr);      
     }
   }
-}
-
-
-void
-object_restoreBackground(frame_buffer_t fb)
-{
-  static uint16_t frame = 0;
-  
-  object_t* ptr = object_activeList;
-
-#ifndef GAME_TRIPLE_BUFFER
-  gfx_setupRenderTile();
-#endif
-  
-  while (ptr != 0) {
-    if (!ptr->tileRender) {
-      object_clear(frame, fb, ptr->save.position->x, ptr->save.position->y, ptr->save.position->w, ptr->save.position->h);
-    }
-
-    ptr = ptr->next;
-  }
-
-  frame++;  
 }
 
 

@@ -5,7 +5,7 @@
 #include <hardware/dmabits.h>
 #include <hardware/intbits.h>
 
-//#define DEBUG                         1
+#define DEBUG                         1
 //#define SCRIPTING                     1
 #define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1

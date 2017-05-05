@@ -6,7 +6,7 @@ PHOTON_TRACKLOADER=0
 MUSIC_PARALLEL_LOAD=0
 
 # programs and paths
-CC=/usr/local/amiga/vgcc/bin/m68k-amigaos-gcc
+#CC=/usr/local/amiga/vgcc/bin/m68k-amigaos-gcc
 #CC=/usr/local/amiga/bgcc.works/bin/m68k-amigaosvasm-gcc
 CC=/usr/local/amiga/bgcc/bin/m68k-amigaosvasm-gcc
 VASM=/usr/local/amiga/vgcc/bin/vasmm68k_mot
