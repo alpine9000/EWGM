@@ -27,8 +27,16 @@ void
 hw_waitVerticalBlank(void);
 void
 hw_setupPalette(void);
+#if TRACKLOADER==1
 void 
 hw_interruptsInit(void);
+#else
+#define hw_interruptsInit hw_interruptsGameInit
+#endif
+void
+hw_interruptsGameInit(void);
+void 
+hw_interruptsGameInit(void);
 void 
 hw_waitRaster(__REG("d0", uint32_t));
 void 

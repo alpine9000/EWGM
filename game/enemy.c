@@ -106,6 +106,9 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   
   if (data->walkAbout > 0) {
     data->walkAbout-=deltaT;
+    if (object_y(ptr) >= PLAYAREA_HEIGHT-1) {
+      ptr->velocity.y = 0;
+    }
   } else {
     uint32_t rand = random();
     object_t* player = enemy_closestPlayer(ptr);
@@ -143,7 +146,7 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 	break;	
       case 5:
 	ptr->velocity.x = -1;
-	ptr->velocity.y = 1;
+	ptr->velocity.y = 1;	
 	break;
       case 6:
 	ptr->velocity.x = 1;

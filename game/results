@@ -32,7 +32,15 @@
  680094        <- removed gfx_setupRenderTile for triple buffer case
  938905 527676 <- "" (small ram)
 
- 715456
+ 715456        <- fixed enforcer hit
  709938
  705310
  946603
+
+ 706062        <- stop enemies oscillating at bottom
+
+ 945556
+ 705146        <- added loading, removed copper checks in ISR
+
+ 704373
+ 945034

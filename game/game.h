@@ -10,11 +10,11 @@
 #define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1
 #define GAME_RECORDING                1
-//#define GAME_ONE_BITPLANE_SPRITE_MASK 1
+#define GAME_ONE_BITPLANE_SPRITE_MASK 1
 #define GAME_STARS                    1
 #define GAME_HISCORE_SAVE_ENABLE      1
 //#define GAME_BLITTER_WAIT_DEBUG       1
-#define GAME_TRIPLE_BUFFER           1
+//#define GAME_TRIPLE_BUFFER           1
 #define GAME_DONT_CLEAR_STATIONARY_OBJECTS 1
 
 #define abs(a) ((a) >= 0 ? (a) : -(a))  
@@ -58,6 +58,7 @@
 #define RASTER_X_STOP	         RASTER_X_START+SCREEN_WIDTH
 #define GAME_RASTER_Y_STOP       RASTER_Y_START+PLAYAREA_HEIGHT+SCOREBOARD_HEIGHT
 #define SCREEN_RASTER_Y_STOP     RASTER_Y_START+SCREEN_HEIGHT
+#define LOGO_RASTER_Y_STOP       RASTER_Y_START+SCREEN_HEIGHT-10
 #define SCOREBOARD_HEIGHT        43
 #define GAME_PAVEMENT_START      66
 

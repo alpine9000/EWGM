@@ -1,7 +1,13 @@
 #include "game.h"
 
-
+#if TRACKLOADER==1
+uint16_t message_loadingAnimation = 0;
+static char* message_message;
+static frame_buffer_t message_fb;
+static int16_t message_loadingState;
+#endif
 static uint16_t message_on = 0;
+
 
 typedef struct {
   uint16_t bpl1[SCREEN_BIT_DEPTH*2*2];
@@ -44,6 +50,10 @@ message_pokeCopperList(frame_buffer_t frameBuffer)
 NOINLINE void
 message_screenOn(char* message)
 {
+#if TRACKLOADER==1
+  message_loadingAnimation = 0;
+  hw_interruptsGameInit();
+#endif
   custom->dmacon = DMAF_SPRITE;
   
   if (message_on) {
@@ -77,7 +87,7 @@ message_screenOn(char* message)
   /* set up playfield */
   
   custom->diwstrt = (RASTER_Y_START<<8)|RASTER_X_START;
-  custom->diwstop = ((SCREEN_RASTER_Y_STOP-256)<<8)|(RASTER_X_STOP-256);
+  custom->diwstop = ((LOGO_RASTER_Y_STOP-256)<<8)|(RASTER_X_STOP-256);
 
   custom->ddfstrt = (RASTER_X_START/2-SCREEN_RES);
   custom->ddfstop = (RASTER_X_START/2-SCREEN_RES)+(8*((SCREEN_WIDTH/16)-1));
@@ -104,6 +114,10 @@ message_screenOn(char* message)
 NOINLINE void
 message_screenOff(void)
 {
+#if TRACKLOADER==1
+  message_loadingAnimation = 0;
+  hw_interruptsGameInit();  
+#endif
   hw_waitBlitter();
   hw_waitVerticalBlank();
   
@@ -122,6 +136,7 @@ message_screenOff(void)
 NOINLINE void
 message_loading(char* message)
 {
+
 #if TRACKLOADER==1
   message_screenOn(message);
 #else
@@ -130,7 +145,14 @@ message_loading(char* message)
 #endif
 
   hw_waitBlitter();
-  hw_waitVerticalBlank();  
+  hw_waitVerticalBlank();
+#if TRACKLOADER==1
+  message_fb = game_offScreenBuffer;
+  message_message = message;
+  message_loadingAnimation = 1;
+  message_loadingState = 0;
+  hw_interruptsInit();
+#endif
 }
 
 NOINLINE uint16_t
@@ -157,3 +179,38 @@ message_ask(char* message)
   return result;
 }
 
+
+#if TRACKLOADER==1
+__EXTERNAL void
+message_loadingAnimate(void)
+{
+
+  if (!message_loadingAnimation) {
+    return;
+  }
+  
+  int16_t x;
+  
+  switch (message_loadingState) {
+  case 80:
+    x = (SCREEN_WIDTH/2)+(strlen(message_message)*4);
+    gfx_fillRectSmallScreen(message_fb, x, (SCREEN_HEIGHT/2)+4, 3*9, 9, 0);
+    message_loadingState = 0;
+    break;
+  case 60:
+    x = (SCREEN_WIDTH/2)+(strlen(message_message)*4);
+    text_drawMaskedText8Blitter(message_fb, "...", x, (SCREEN_HEIGHT/2)+4);
+    break;
+  case 40:
+    x = (SCREEN_WIDTH/2)+(strlen(message_message)*4);
+    text_drawMaskedText8Blitter(message_fb, "..", x, (SCREEN_HEIGHT/2)+4);
+    break;
+  case 20:
+    x = (SCREEN_WIDTH/2)+(strlen(message_message)*4);
+    text_drawMaskedText8Blitter(message_fb, ".", x, (SCREEN_HEIGHT/2)+4);
+    break;    
+  }
+  
+  message_loadingState++;
+}
+#endif

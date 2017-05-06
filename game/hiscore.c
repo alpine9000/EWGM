@@ -74,7 +74,7 @@ hiscore_load(uint16_t ignoreErrors)
 
    if (error) {
      if (ignoreErrors) {
-       message_loading(I18N_HISCORE_LOAD_ERR);
+       message_screenOn(I18N_HISCORE_LOAD_ERR);
        hw_waitScanLines(200);
      } else {
        if (message_ask(I18N_HISCORE_LOAD_RTRY)) {
@@ -86,7 +86,7 @@ hiscore_load(uint16_t ignoreErrors)
     
     if (checksum != hiscore.checksum) {
       if (ignoreErrors) {
-	message_loading(I18N_HISCORE_CHSM_BAD);
+	message_screenOn(I18N_HISCORE_CHSM_BAD);
 	hw_waitScanLines(200);
       } else {
 	if (message_ask(I18N_HISCORE_CHSM_RTRY)) {
@@ -164,7 +164,7 @@ hiscore_saveData(uint16_t ignoreErrors)
   message_loading(I18N_SAVING_HISCORE);
   if (disk_write(&hiscore_disk, &hiscore, 1) != 0) {
     if (ignoreErrors) {
-      message_loading(I18N_HISCORE_SAVE_FAIL);
+      message_screenOn(I18N_HISCORE_SAVE_FAIL);
       hw_waitScanLines(200);
     } else {
       if (message_ask(I18N_HISCORE_SAVE_RTRY)) {

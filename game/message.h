@@ -9,4 +9,9 @@ void
 message_screenOff(void);
 uint16_t
 message_ask(char* message);
+#if TRACKLOADER==1
+void
+message_loadingAnimate(void);
+extern uint16_t message_loadingAnimation;
+#endif
 #endif

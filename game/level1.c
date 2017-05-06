@@ -369,7 +369,7 @@ level1_doAddBoss(uint16_t x)
   // override easy setting
   data->attackConfig = enemy_bossAttackConfig;
 
-  data->attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE;
+  data->attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE*2;
   //  data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->width = OBJECT_WIDTH;

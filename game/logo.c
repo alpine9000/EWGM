@@ -64,7 +64,7 @@ logo_load(void)
   /* set up playfield */
   
   custom->diwstrt = (RASTER_Y_START<<8)|RASTER_X_START;
-  custom->diwstop = ((SCREEN_RASTER_Y_STOP-256)<<8)|(RASTER_X_STOP-256);
+  custom->diwstop = ((LOGO_RASTER_Y_STOP-256)<<8)|(RASTER_X_STOP-256);
   custom->ddfstrt = (RASTER_X_START/2-SCREEN_RES);
   custom->ddfstop = (RASTER_X_START/2-SCREEN_RES)+(8*((MENU_SCREEN_WIDTH/16)-1));
   custom->bplcon0 = (LOGO_BIT_DEPTH<<12)|0x200;

@@ -13,6 +13,7 @@
 	xdef _hw_joystickPos
 	xdef _hw_joystick2Pos		
 	xdef _hw_interruptsInit
+	xdef _hw_interruptsGameInit	
 	xdef _hw_waitScanLines
 	xdef _hw_getRasterLine
 	xdef _hw_verticalBlankCount
@@ -150,25 +151,31 @@ _hw_readJoystick2:
 .conv:
         dc.b      0,5,4,3,1,0,3,2,8,7,0,1,7,6,5,0
 
-	
+	if TRACKLOADER==1
 _hw_interruptsInit:
 	movem.l	a0/a3/a6,-(sp)
 	lea	CUSTOM,a6	
 	lea	Level3InterruptHandler,a3
 	move.l	vectorBase,a0
  	move.l	a3,LVL3_INT_VECTOR(a0)
-	move.w	#(INTF_SETCLR|INTF_VERTB|INTF_INTEN),INTENA(a6)
+	;; move.w	#(INTF_SETCLR|INTF_VERTB|INTF_INTEN),INTENA(a6)
 	movem.l	(sp)+,a0/a3/a6
 	rts
+	endif
 
-Level3InterruptHandler:
+_hw_interruptsGameInit:
+	movem.l	a0/a3/a6,-(sp)
+	lea	CUSTOM,a6	
+	lea	Level3InterruptGameHandler,a3
+	move.l	vectorBase,a0
+ 	move.l	a3,LVL3_INT_VECTOR(a0)
+	;; move.w	#(INTF_SETCLR|INTF_VERTB|INTF_INTEN),INTENA(a6)
+	movem.l	(sp)+,a0/a3/a6
+	rts	
+
+Level3InterruptGameHandler:
 	movem.l	d0-a6,-(sp)
 	lea	CUSTOM,a6
-.checkVerticalBlank:
-	move.w	INTREQR(a6),d0
-	and.w	#INTF_VERTB,d0	
-	beq	.checkCopper
-
 .verticalBlank:
 	move.w	#INTF_VERTB,INTREQ(a6)	; clear interrupt bit	
 	add.l	#1,_hw_verticalBlankCount
@@ -188,20 +195,44 @@ Level3InterruptHandler:
 	move.w  #0,AUD0VOL(a6)
 	move.w  #0,AUD1VOL(a6)
 	move.w  #0,AUD2VOL(a6)
-	bra	.checkCopper
+	bra 	.interruptComplete
 .playMusic:
-	jsr	P61_Music
-.checkCopper:
-	move.w	INTREQR(a6),d0
-	and.w	#INTF_COPER,d0	
-	beq.s	.interruptComplete
-.copperInterrupt:
-	move.w	#INTF_COPER,INTREQ(a6)	; clear interrupt bit	
-	
+	jsr	P61_Music	
 .interruptComplete:
 	movem.l	(sp)+,d0-a6
 	rte
 
+	if TRACKLOADER==1
+Level3InterruptHandler:
+	movem.l	d0-a6,-(sp)
+	lea	CUSTOM,a6
+.verticalBlank:
+	move.w	#INTF_VERTB,INTREQ(a6)	; clear interrupt bit	
+	add.l	#1,_hw_verticalBlankCount
+	move.w	_P61_Target,d0
+	cmp.w   P61_Master,d0
+	beq	.ok
+	blt	.lowerVolume
+	add.w	#1,P61_Master
+	bra	.ok
+.lowerVolume:
+	sub.w	#1,P61_Master
+	bra	.ok
+.ok:
+	jsr     _star_resetSprpt
+	jsr	_message_loadingAnimate
+	cmp.w	#0,P61_Master
+	bne	.playMusic
+	move.w  #0,AUD0VOL(a6)
+	move.w  #0,AUD1VOL(a6)
+	move.w  #0,AUD2VOL(a6)
+.playMusic:
+	jsr	P61_Music
+	bra	.interruptComplete
+.interruptComplete:
+	movem.l	(sp)+,d0-a6
+	rte	
+	endif
 _hw_getsp:
 	move.l	a7,d0
 	rts

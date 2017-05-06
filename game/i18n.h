@@ -17,13 +17,13 @@
 #define I18N_CREDITS           "CREDITS"
 
 #define I18N_PRESENTS          "PRESENTS"
-#define I18N_LOADING           "LOADING..."
+#define I18N_LOADING           "LOADING"
 
 #define I18N_HISCORE_LOAD_ERR  "error loading hiscore..."
 #define I18N_HISCORE_LOAD_RTRY "hiscore load fail, retry? y/n"
 #define I18N_HISCORE_CHSM_BAD  "hiscore checksum mismatch..."
 #define I18N_HISCORE_CHSM_RTRY "hiscore chsm fail, retry? y/n"
-#define I18N_SAVING_HISCORE    "Saving hiscore..."
+#define I18N_SAVING_HISCORE    "Saving hiscore"
 
 #define I18N_DISK_READ_RTRY     "disk read fail, retry? y/n"
 

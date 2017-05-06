@@ -1191,7 +1191,7 @@ game_loop()
   
   custom->color[0] = 0;
   hw_interruptsInit(); // Don't enable interrupts until music is set up
-
+  custom->intena = INTF_SETCLR|INTF_VERTB|INTF_INTEN;
   game_ctor();
 
   logo_load();
