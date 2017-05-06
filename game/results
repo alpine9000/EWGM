@@ -47,3 +47,5 @@
 
  704102        <- post enforcer hit cleanup
  944918
+
+ 706371        <- fixed bad clear with triple buffer

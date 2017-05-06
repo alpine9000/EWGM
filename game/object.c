@@ -189,7 +189,6 @@ object_updateAnimation(uint16_t deltaT, object_t *ptr)
   }
 }
 
-
 static INLINE void
 object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t oh)
 {
@@ -197,7 +196,6 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
   USE(frame);
   if (ow) {
     int16_t sx = (ox>>4)<<4;
-    //    ow += 16;
     int16_t screenX = 0xf+(sx)-game_cameraX-game_screenScrollX;
     int16_t screenY = oy;
 
@@ -208,6 +206,7 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
 
     if (screenX < 0) {
       ow += screenX;
+      ow += 1;      
       screenX = 0;
     }
 
