@@ -56,7 +56,11 @@ enemy_strikingDistanceX(object_t* a, object_t* b)
 
 #else
 
+#ifdef HIT_HUNTER
+int16_t
+#else
 static int16_t
+#endif
 enemy_strikingDistanceX(object_t* a, object_t* b)
 {
   //  fighter_data_t* a_data = a->data;

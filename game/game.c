@@ -232,7 +232,12 @@ game_check25fps(void)
 static void
 game_ctor(void)
 {
+#ifdef HIT_HUNTER  
+  game_difficulty = GAME_DIFFICULTY_EASY;
+#else
   game_difficulty = GAME_DIFFICULTY_HARD;
+#endif
+  
   game_numPlayers = 1;
   game_onScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer2;
   game_offScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer1;
@@ -447,6 +452,9 @@ game_updatePlayerHealth(uint16_t x, int16_t health)
   } 
 }
 
+#ifdef HIT_HUNTER
+__EXTERNAL uint16_t xxx_seed = 10;
+#endif
 
 static void
 game_newGame(menu_command_t command)
@@ -471,7 +479,12 @@ game_newGame(menu_command_t command)
   if (command == MENU_COMMAND_REPLAY || command == MENU_COMMAND_RECORD) {
     random_seed(1);
   } else {
+#ifdef HIT_HUNTER
+    random_seed(xxx_seed++);
+#else
     random_seed(hw_getRasterLine());
+#endif
+
   }
   game_loadLevel(command);
 }
@@ -1005,7 +1018,7 @@ game_waitForMenuExit(int16_t messageAnimId, int16_t offset)
   if (game_player2) {
     ((fighter_data_t*)(game_player2->data))->intelligence = fighter_nullIntelligence;
   }  
-    
+
   object_t* gameOver = object_add(OBJECT_ID_GAMEOVER, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-offset), -4, 0, messageAnimId, 0, 0, 0);
   object_set_z(gameOver, 4096);
   
@@ -1055,16 +1068,43 @@ game_setGameOver(void)
 {
   if (!game_over) {
     game_over = 1;
-    game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
-    game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);
-        
-    if (game_numPlayers == 1) {
-      game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
-    }
-    
-    game_waitForMenuExit(OBJECT_ANIM_GAMEOVER, 35);
+    game_loopControl = GAME_LOOP_CONTROL_GAME_OVER;
   }
 }
+
+void
+game_setGameComplete(void)
+{
+  if (!game_over) {
+    game_over = 1;
+    game_loopControl = GAME_LOOP_CONTROL_GAME_COMPLETE;    
+  }
+}
+
+
+static void
+game_gameOverSequence(void)
+{
+  game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
+  game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);
+  
+  if (game_numPlayers == 1) {
+    game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
+  }
+  
+  game_waitForMenuExit(OBJECT_ANIM_GAMEOVER, 35);
+}
+
+
+static void
+game_gameCompleteSequence(void)
+{
+  music_play(4);  
+  game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
+  game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);
+  
+  game_waitForMenuExit(OBJECT_ANIM_GAMECOMPLETE, 55);
+}  
 
 
 void
@@ -1124,21 +1164,6 @@ game_showDeathMatch(void)
   ((fighter_data_t*)(game_player1->data))->intelligence = player_intelligence;
   ((fighter_data_t*)(game_player2->data))->intelligence = player_intelligence;    
 } 
-
-
-void
-game_setGameComplete(void)
-{
-  if (!game_over) {
-    game_over = 1;
-    music_play(4);  
-    game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
-    game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);
-
-    game_waitForMenuExit(OBJECT_ANIM_GAMECOMPLETE, 55);
-    
-  }
-}
 
 
 static void
@@ -1285,6 +1310,14 @@ game_loop()
 	game_loopControl = GAME_LOOP_CONTROL_DEATHMATCH;
       } else if (game_loopControl == GAME_LOOP_CONTROL_GOTO_MENU) {
 	goto menu;
+      } else if (game_loopControl == GAME_LOOP_CONTROL_GAME_OVER) {
+	game_waitForNextFrame();
+	game_switchFrameBuffers();
+	game_gameOverSequence();
+      } else if (game_loopControl == GAME_LOOP_CONTROL_GAME_COMPLETE) {
+	game_waitForNextFrame();
+	game_switchFrameBuffers();
+	game_gameCompleteSequence();
       }
     }    
 

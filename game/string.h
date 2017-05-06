@@ -13,5 +13,6 @@ char*
 itoh(uint32_t i, uint16_t numChars);
 char *
 strcpy(char *dest, const char *src);
-
+char *
+strncpy(char *s1, const char *s2, size_t n);
 #endif

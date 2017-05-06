@@ -79,6 +79,21 @@ strcpy(char *dest, const char *src)
   return dest;
 }
 
+char *
+strncpy(char *s1, const char *s2, size_t n)
+{
+  char *s = s1;
+  while (n > 0 && *s2 != '\0') {
+    *s++ = *s2++;
+    --n;
+  }
+  while (n > 0) {
+    *s++ = '\0';
+    --n;
+  }
+  return s1;
+}
+
 static char _text_hex[] = {'A', 'B', 'C', 'D', 'E', 'F'};
 static char _text_buf[9];
 

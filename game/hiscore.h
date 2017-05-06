@@ -3,12 +3,14 @@
 
 
 #define HISCORE_NUM_SCORES 6
+#define HISCORE_NAME_LENGTH 3
+#define HISCORE_TEXT_LENGTH 15
 
 typedef struct {
   uint32_t score;
-  char name[4];
+  char name[HISCORE_NAME_LENGTH+1];
   uint32_t checksum;
-  char text[16];
+  char text[HISCORE_TEXT_LENGTH];
 } hiscore_t;
 
 void

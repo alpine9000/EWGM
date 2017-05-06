@@ -6,7 +6,7 @@ static object_t* object_freeList;
 static __section(random_c) object_t object_buffer[OBJECT_MAX_OBJECTS];
 object_t* object_zBuffer[OBJECT_MAX_OBJECTS];
 #ifndef GAME_TRIPLE_BUFFER
-static uint16_t object_tileDirty[MAP_TILE_WIDTH][16];
+static uint16_t object_tileDirty[MAP_TILE_WIDTH+1][16];
 #endif
 
 static object_t*

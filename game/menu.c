@@ -381,7 +381,11 @@ menu_redraw(uint16_t i)
     if (i == 0) {
       menu_renderText(fb, I18N_HI_SCORES, y);
     } else {
-      menu_renderText(fb, menu_hiscores[i-1].text, y);
+      if (i-1 < HISCORE_NUM_SCORES) {
+	menu_renderText(fb, menu_hiscores[i-1].text, y);
+      } else {
+	menu_renderText(fb, I18N_BLANK_GAME_OVER, y);
+      }
     }
   }
 }
@@ -662,8 +666,8 @@ menu_loop(menu_mode_t mode)
   hw_waitVerticalBlank();
 
   command = MENU_COMMAND_PLAY;
-  done = 0;
-  
+  done = 0;  
+
   while (!done) {
     hw_readJoystick();
     keyboard_read();
@@ -681,6 +685,7 @@ menu_loop(menu_mode_t mode)
       done = 1;
     }
 #endif
+    
       
     if (game_fire()) {
       if (menu_mode == MENU_MODE_HISCORES) {
@@ -718,7 +723,7 @@ menu_loop(menu_mode_t mode)
     if (menu_scrollerMode == 0) {
       hw_waitVerticalBlank();
     } else {
-      menu_scrollerRender();      
+      menu_scrollerRender();
     }
   }
 

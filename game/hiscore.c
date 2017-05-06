@@ -114,7 +114,7 @@ hiscore_load(uint16_t ignoreErrors)
       uint32_t checksum = hiscore_checksum();
       if (checksum == hiscore.checksum) {
 	loaded = 1;
-      }      
+      }
     }
     Close(file);
   }
@@ -145,7 +145,7 @@ hiscore_render(void)
     strcpy(hiscore.scores[i].text, itoan(hiscore.scores[i].score, 6));
     strcpy(&hiscore.scores[i].text[6], " -    ");
     int16_t nameLen = strlen(hiscore.scores[i].name);
-    strcpy(&hiscore.scores[i].text[9+(3-nameLen)], hiscore.scores[i].name);
+    strcpy(&hiscore.scores[i].text[9+(HISCORE_NAME_LENGTH-nameLen)], hiscore.scores[i].name);
   }
   
   return hiscore.scores;
@@ -267,7 +267,8 @@ hiscore_addScore(uint16_t playerNumber, uint32_t score)
     if (score >= hiscore.scores[i].score) {
       if (i > 0) {
 	hiscore.scores[i].score = hiscore.scores[i-1].score;
-	strcpy(hiscore.scores[i].name, hiscore.scores[i-1].name);
+	strncpy(hiscore.scores[i].name, hiscore.scores[i-1].name, HISCORE_NAME_LENGTH);
+	hiscore.scores[i].name[HISCORE_NAME_LENGTH] = 0;
       } else if (i == 0) {
 	hiscore.scores[i].score = score;
 	if (playerNumber == 1) {
@@ -275,7 +276,8 @@ hiscore_addScore(uint16_t playerNumber, uint32_t score)
 	} else {
 	  name = hiscore_prompt(I18N_PLAYER2_HISCORE);
 	}
-	strcpy(hiscore.scores[i].name, name);
+	strncpy(hiscore.scores[i].name, name, HISCORE_NAME_LENGTH);
+	hiscore.scores[i].name[HISCORE_NAME_LENGTH] = 0;
 	dirty = 1;
       }
     } else {
@@ -286,7 +288,8 @@ hiscore_addScore(uint16_t playerNumber, uint32_t score)
 	} else {
 	  name = hiscore_prompt(I18N_PLAYER2_ONBOARD);
 	}
-	strcpy(hiscore.scores[i+1].name, name);
+	strncpy(hiscore.scores[i+1].name, name, HISCORE_NAME_LENGTH);
+	hiscore.scores[i+1].name[HISCORE_NAME_LENGTH] = 0;
 	dirty = 1;
       }
       break;
