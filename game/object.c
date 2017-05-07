@@ -387,7 +387,23 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
 {
   object_update(deltaT);
   object_restoreBackground(fb);
+
+  
+#ifdef __DEBUG
+  {
+    object_t* ptr = object_activeList;
+    int16_t count = 0;
+    while (ptr) {
+      count++;
+      ptr = ptr->next;
+    }
     
+    if (count != object_count) {
+      PANIC("BAD OBJECT COUNT");
+    }
+  }
+#endif
+  
   sort_z(object_count, object_zBuffer);
 
   for (int16_t i = 0; i < object_count; i++) {

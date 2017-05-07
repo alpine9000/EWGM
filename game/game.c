@@ -34,6 +34,7 @@ object_t* game_player2;
 uint32_t game_player1Score;
 uint32_t game_player2Score;
 uint16_t game_difficulty;
+uint16_t game_killScore;
 
 static volatile __section(random_c) struct framebuffeData {
 #ifdef DEBUG
@@ -471,6 +472,8 @@ game_newGame(menu_command_t command)
   game_lastLevelTime.value = 0;
   game_levelTicCounter = 0;  
 
+  game_killScore = game_difficulty == GAME_DIFFICULTY_HARD ? 1000 : 500;
+  
   if (command >= MENU_COMMAND_LEVEL) {
     game_level = command - MENU_COMMAND_LEVEL;
     command = MENU_COMMAND_PLAY;
@@ -698,11 +701,11 @@ debug_mode(void)
       text_drawScoreBoard(itoan(frame, 6), 32*8, 0);
     }
     break;
-  case 3:
 #ifdef GAME_TURTLE
+  case 3:
     text_drawScoreBoard(itoan(game_missedFrameCount, 3),5*8, 9);
-#endif
     break;
+#endif    
   case 4:
     if (game_average != game_lastAverage) {
       text_drawScoreBoard(itoan(game_average, 4), 13*8, 9);
@@ -877,7 +880,8 @@ game_pauseToggle(void)
     palette_fade(level.greyPalette, level.palette, 32, 16);
     game_enableCopperEffects();
     game_paused = 0;
-    game_lastVerticalBlankCount = hw_verticalBlankCount;
+    game_levelTicCounter = 0;
+    game_lastScrollFrame = game_lastVerticalBlankCount = hw_verticalBlankCount;
   }
 }
 
@@ -1169,7 +1173,7 @@ game_showDeathMatch(void)
 static void
 game_decrementTime(void)
 {
-  if (!game_over) {
+  if (!game_over && !game_paused) {
     if (game_levelTime.sec == 0) {
       game_levelTime.sec = 9;
       if (game_levelTime.sec10 == 0) {
@@ -1286,7 +1290,9 @@ game_loop()
 
 #ifdef GAME_TURTLE    
     if (game_turtle > 1) {
+#ifndef RELEASE
       custom->color[21] = 0xf00;
+#endif
       game_turtle--;
     } else if (game_turtle == 1) {
       custom->color[21] = level.palette[21];

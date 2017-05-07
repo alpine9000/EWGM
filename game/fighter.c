@@ -147,11 +147,11 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
     data->health = 0;
     switch (attacker->id) {
     case OBJECT_ID_PLAYER1:
-      game_player1Score += 1000;
+      game_player1Score += game_killScore;
       sound_queueSound(SOUND_DIE01);
       break;
     case OBJECT_ID_PLAYER2:
-      game_player2Score += 1000;
+      game_player2Score += game_killScore;
       sound_queueSound(SOUND_DIE02);
       break;
     default:

@@ -5,17 +5,18 @@
 #include <hardware/dmabits.h>
 #include <hardware/intbits.h>
 
-#define DEBUG                         1
+#define RELEASE                       1
+//#define DEBUG                         1
 //#define HIT_HUNTER                    1
 //#define SCRIPTING                     1
 #define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1
 #define GAME_RECORDING                1
-//#define GAME_ONE_BITPLANE_SPRITE_MASK 1
+#define GAME_ONE_BITPLANE_SPRITE_MASK 1
 #define GAME_STARS                    1
 #define GAME_HISCORE_SAVE_ENABLE      1
 //#define GAME_BLITTER_WAIT_DEBUG       1
-#define GAME_TRIPLE_BUFFER           1
+//#define GAME_TRIPLE_BUFFER           1
 #define GAME_DONT_CLEAR_STATIONARY_OBJECTS 1
 
 #define abs(a) ((a) >= 0 ? (a) : -(a))  
@@ -120,7 +121,7 @@ extern uint16_t game_numPlayers;
 extern uint32_t game_player1Score;
 extern uint32_t game_player2Score;
 extern uint16_t game_difficulty;
-
+extern uint16_t game_killScore;
 #ifdef DEBUG
 extern uint16_t game_collisions;
 #endif
