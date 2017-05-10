@@ -42,7 +42,7 @@ typedef struct star {
 int16_t star_count;
 star_t* star_activeList;
 static star_t* star_freeList;
-static __section(random_c) star_t star_buffer[STAR_MAX_STARS];
+static __section(random) star_t star_buffer[STAR_MAX_STARS];
 static uint16_t star_yOffset;
 
 __section(data_c) uint16_t sprite_nullhsprite[] = {

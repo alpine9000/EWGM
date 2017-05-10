@@ -1,9 +1,4 @@
 	include "includes.i"
-	xdef _memset
-	xdef _menu_frameBuffer
-	xdef _logo_frameBuffer
-	xdef _game_scoreBoardFrameBuffer
-	;; 	xdef _popup_frameBuffer
 
 	if TRACKLOADER=1
 byteMap:
@@ -54,6 +49,7 @@ __memset:
 .l389   equ     0
         rts
 	else
+	xdef _memset	
 	cnop    0,4
 _memset:
 	movem.l	a1,-(sp)
@@ -76,38 +72,27 @@ l385	equ	0
 	align 4
 	include "os.i"
 
-	if TRACKLOADER=0
 	section data_c
-	endif
-	
-_game_scoreBoardFrameBuffer:
-	dc.l	_scoreBoardBitplanes
-	;; _popup_frameBuffer:
-	;; 	dc.l	_popupBitplanes		
-_menu_frameBuffer:
-	dc.l	_menuBitplanes
-_logo_frameBuffer:
-	dc.l	_logoBitplanes
 
 	align 9
+	xdef _scoreBoardBitplanes
 _scoreBoardBitplanes:
 	incbin  "out/scoreboard.bin"	
-	;; _popupBitplanes:
-	;; 	incbin  "out/popup.bin"
 
 	section .noload
 	cnop 0,512
-_menuBitplanes:	
+	xdef _menu_menuBitplanes
+_menu_menuBitplanes:	
 	incbin	"out/menu.bin"
 	cnop 0,512
-_logoBitplanes:	
+	xdef _logo_logoBitplanes
+_logo_logoBitplanes:	
 	incbin   "out/logo.bin"
 	cnop 0, 512
 		
 	section data_c
 	align 4
 	if SFX==1
-
 	xdef _sound_Bud_Punch01
 _sound_Bud_Punch01:	
 	incbin "out/Bud_Punch01.raw"	
@@ -132,20 +117,15 @@ _sound_enemy03:
 	xdef _sound_coin
 _sound_coin:	
 	incbin "out/coin1.raw"
-
 	
 	xdef _sound_pop
 _sound_pop:	
 	incbin "out/pop.raw"
-
-
 	endif
 	
-	if TRACKLOADER=0	
-	section	bss
-	endif
-	align 4
+
 	if TRACKLOADER=1
+	align 4
 	xdef _startUserstack
 _startUserstack:
 startUserstack:

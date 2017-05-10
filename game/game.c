@@ -18,6 +18,7 @@ game_scrollBackground(void);
 
 frame_buffer_t game_offScreenBuffer;
 frame_buffer_t game_onScreenBuffer;
+frame_buffer_t game_scoreBoardFrameBuffer;
 #ifdef GAME_TRIPLE_BUFFER
 frame_buffer_t game_backScreenBuffer;
 #endif
@@ -245,6 +246,8 @@ game_ctor(void)
 #ifdef GAME_TRIPLE_BUFFER
   game_backScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer3;
 #endif
+  extern uint8_t scoreBoardBitplanes;
+  game_scoreBoardFrameBuffer = &scoreBoardBitplanes;
   game_25fps = game_check25fps();
 }
 

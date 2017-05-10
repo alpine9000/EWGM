@@ -3,7 +3,6 @@
 #define LOGO_BIT_DEPTH 4
 
 extern void palette_menuInstall(void);
-extern frame_buffer_t logo_frameBuffer;
 
 typedef struct {
   uint16_t bpl1[SCREEN_BIT_DEPTH*2*2];
@@ -51,8 +50,8 @@ void
 logo_load(void)
 {
   volatile uint16_t scratch;
-
-  disk_loadData((void*)game_onScreenBuffer, (void*)logo_frameBuffer, SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*LOGO_BIT_DEPTH);
+  extern uint8_t logo_logoBitplanes;
+  disk_loadData((void*)game_onScreenBuffer, (void*)&logo_logoBitplanes, SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*LOGO_BIT_DEPTH);
 
   hw_waitVerticalBlank();
   custom->dmacon = DMAF_RASTER|DMAF_COPPER;;

@@ -52,7 +52,8 @@ SECTIONS
     random (NOLOAD) : {
     	. = _endBSS;
 	_startRandom = .;
-    	*(random_c)
+    	*(random)
+        *(random_c)
 	_endRandom = .;	
 	endRam = .;
     } > ram;

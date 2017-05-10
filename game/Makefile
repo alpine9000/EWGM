@@ -330,6 +330,7 @@ out/workbench/%.o: %.s
 	@$(VASM) -depend=make  -DTRACKLOADER=1 $(VASM_ARGS) $(INCLUDE) $< -o $@  > out/workbench/$*.d
 
 out/main.bin: out/adf/main.o $(ADF_OBJS)
+	#$(LD) -brawseg -q -Tlink.script2.x $< $(ADF_OBJS) $(C_LIBS) -o out/reloc -M > blah
 	$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@ 
 	@$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@  -M -o /tmp/main.bin > out/adf/main.txt
 	@$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -M -o /tmp/main.bin | grep ", value " | cut -d " " -f3,7 | cut -d "," -f1 > $@.symbols

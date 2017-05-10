@@ -2,7 +2,7 @@
 
 static int16_t fighter_count;
 static fighter_data_t* fighter_freeList;
-static __section(random_c) fighter_data_t fighter_buffer[FIGHTER_MAX_FIGHTERS];
+static __section(random) fighter_data_t fighter_buffer[FIGHTER_MAX_FIGHTERS];
 
 /*static uint16_t figher_attack_range[] = {
   [OBJECT_PUNCH_LEFT1] = FIGHTER_LONG_PUNCH_RANGE,

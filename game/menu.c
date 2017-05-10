@@ -2,7 +2,7 @@
 // http://www.picturetopeople.org/text_generator/others/3d/3d-perspective-text-effect-creator.html
 
 extern void palette_menuInstall(void);
-extern frame_buffer_t menu_frameBuffer;
+static frame_buffer_t menu_frameBuffer;
 
 #define MENU_START_Y               102
 #define MENU_TOP_COLOR             0xfb5
@@ -581,6 +581,8 @@ menu_scroller(char* text)
 __EXTERNAL menu_command_t
 menu_loop(menu_mode_t mode)
 {
+  extern uint8_t menu_menuBitplanes;
+  menu_frameBuffer = &menu_menuBitplanes;
   menu_command_t command;
   uint16_t done;
   volatile uint16_t scratch;
