@@ -52,12 +52,11 @@ NOINLINE uint16_t
 disk_loadData(void* dest, void* src, int32_t size)
 {
 #if TRACKLOADER==1
-  uint8_t* start;
   uint16_t error = 0;
 #if FASTRAM==0
-  start = &startCode;
-  int32_t startSector = ((((uint32_t)src)-((uint32_t)start))>>9)+2; // +2 for bootblock  
+  int32_t startSector = ((((uint32_t)src)-((uint32_t)&startCode))>>9)+2; // +2 for bootblock  
 #else
+  uint8_t* start;  
   start = disk_dataStart;
   int32_t startSector = ((((uint32_t)src)+((uint32_t)start))>>9);
 #endif
@@ -129,15 +128,14 @@ disk_write(void* dest, void* src, int16_t numBlocks)
 {
   uint32_t err = 0;
 #if TRACKLOADER==1
-  uint8_t* start;
 #if FASTRAM==0
-  start = &startCode;
+  int32_t startBlock = ((((uint32_t)dest)-((uint32_t)&startCode))>>9)+2; // +2 for bootblock  
 #else
-  start = disk_dataStart;
+  uint8_t* start = disk_dataStart;
+  int32_t startBlock = ((((uint32_t)dest)-((uint32_t)start))>>9)+2; // +2 for bootblock  
 #endif  
 
 #if PHOTON_TRACKLOADER==0
-  int32_t startBlock = ((((uint32_t)dest)-((uint32_t)start))>>9)+2; // +2 for bootblock
 
 #ifdef DEBUG
   if (((startBlock/11)*11) != startBlock) {

@@ -22,8 +22,8 @@ Entry:
 	else
 	lea	userstack,a7	
 	endif
-	jmp 	Main
 
+	jmp 	Main
 	section .text
 Main:
 	jsr	_init_amiga
@@ -136,7 +136,9 @@ _sound_pop:
 
 	if TRACKLOADER=1
 	align 4
-	 section stack		
+	if FASTRAM=1
+	section stack
+	endif
 	xdef _startUserstack
 _startUserstack:
 startUserstack:

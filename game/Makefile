@@ -244,8 +244,8 @@ out/font%.bin: assets/font%.png palettes/font.pal
 out/bootblock_relocate.s: bootblock_relocate.c
 	$(CC) -fomit-frame-pointer -mregparm=2 -noixemul -mcpu=68000 -m68000 -pedantic-errors -Wfatal-errors -Wall -Werror -Wextra -Wshadow -Wuninitialized -Wduplicated-cond -Wundef -Wbad-function-cast -Wparentheses -Os -S bootblock_relocate.c -o out/bootblock_relocate.s
 
-out/bootblock.o: out/bootblock_relocate.s $(BOOTBLOCK_ASM) $(PROGRAM_BIN)
-	$(VASM) -gas -no-opt -sc -m68000 -ldots -esc $(VASM_ARGS)  -DUSERSTACK_ADDRESS="\$$$(USERSTACK_ADDRESS)" -DBASE_ADDRESS="\$$$(BASE_ADDRESS)"   $(BOOTBLOCK_ASM) -o $@ $(INCLUDE)
+out/bootblock.o: bootblock_relocate.s $(BOOTBLOCK_ASM) $(PROGRAM_BIN)
+	$(VASM) -no-opt -m68000 -ldots  $(VASM_ARGS) -DFASTRAM=$(FASTRAM) -DUSERSTACK_ADDRESS="\$$$(USERSTACK_ADDRESS)" -DBASE_ADDRESS="\$$$(BASE_ADDRESS)"   $(BOOTBLOCK_ASM) -o $@ $(INCLUDE)
 
 out/adf/main.o: $(MODULE) $(EXTRA) $(ASSETS) $(IMAGEDATA)
 	$(VASM)  -DTRACKLOADER=1  $(VASM_ARGS) $< -o $@ $(INCLUDE)
@@ -335,15 +335,18 @@ out/workbench/%.o: %.s
 	@$(VASM) -depend=make  -DTRACKLOADER=1 $(VASM_ARGS) $(INCLUDE) $< -o $@  > out/workbench/$*.d
 
 out/main.bin: out/adf/main.o $(ADF_OBJS)
+ifeq ($(FASTRAM), 1)
 	$(LD) -brawseg -q -Tlink.script2.x $< $(ADF_OBJS) $(C_LIBS) -o out/reloc -M > blah
-	#$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@ 
-	#@$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@  -M -o /tmp/main.bin > out/adf/main.txt
-	#@$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -M -o /tmp/main.bin | grep ", value " | cut -d " " -f3,7 | cut -d "," -f1 > $@.symbols
-	#@cp $@.symbols debugger.syms
-	#-#@echo "RAM USAGE:" $$((16#`cat debugger.syms | grep endRam | sed 's/0x//' | sed 's/endRam: //'`)) bytes
-	#./ram_usage.sh
+else
+	$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@ 
+	@$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@  -M -o /tmp/main.bin > out/adf/main.txt
+	@$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -M -o /tmp/main.bin | grep ", value " | cut -d " " -f3,7 | cut -d "," -f1 > $@.symbols
+	@cp $@.symbols debugger.syms
+	-#@echo "RAM USAGE:" $$((16#`cat debugger.syms | grep endRam | sed 's/0x//' | sed 's/endRam: //'`)) bytes
+	./ram_usage.sh
 ifeq ($(USE_BIG), 1)	
-	#-@#rm out/adf/big.o
+	-@#rm out/adf/big.o
+endif
 endif
 
 bin/$(GAME_NAME): bin $(ALL_TOOLS)  $(ALL_WORKBENCH_OBJS) 

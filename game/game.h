@@ -6,7 +6,7 @@
 #include <hardware/intbits.h>
 
 //#define RELEASE                       1
-//#define DEBUG                         1
+#define DEBUG                         1
 //#define HIT_HUNTER                    1
 //#define SCRIPTING                     1
 #define GAME_TURTLE                   1
