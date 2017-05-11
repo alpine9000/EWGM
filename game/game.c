@@ -1218,6 +1218,7 @@ game_checkStack(void)
 __EXTERNAL void
 game_loop()
 {
+  hw_verticalBlankCount = 0;
   P61_Target = 0;
   P61_Master = 0;
   
@@ -1228,6 +1229,8 @@ game_loop()
 
   logo_load();
 
+  // seems to work to here!
+  
   music_play(0);
 
   logo_display();

@@ -1,16 +1,23 @@
 #include "game.h"
 
 __EXTERNAL void
-memory_ctor(void) 
+memory_ctor(void)
 {
 #if TRACKLOADER==1
   extern char startBSS;
   extern char endBSS;
   //  extern char startRandom;
-  //  extern char endRandom;  
-
+  //  extern char endRandom;
+  
   memset(&startBSS, 0x0, &endBSS-&startBSS);
-  //  memset(&startRandom, 0x0, &endRandom-&startRandom);  
+  //  memset(&startRandom, 0x0, &endRandom-&startRandom);
+  
+  extern char startBSSChip;
+  extern char endBSSChip;
+  //  extern char startRandom;
+  //  extern char endRandom;
+  
+  memset(&startBSSChip, 0x0, &endBSSChip-&startBSSChip);
 #endif
 }
 

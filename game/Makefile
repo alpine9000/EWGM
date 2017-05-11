@@ -1,8 +1,9 @@
 # frequently changed config items
-#KEEP_ASM=1
+KEEP_ASM=1
 USE_BIG=1
 SFX=1
 PHOTON_TRACKLOADER=0
+FASTRAM=1
 MUSIC_PARALLEL_LOAD=0
 
 # programs and paths
@@ -41,13 +42,14 @@ IMAGES=font8x8.png menu.png scoreboard.png logo.png #popup.png
 # program arguments
 LINKER_OPTIONS=-T link.script.x
 
-VASM_ARGS=-Fhunk -quiet -esc -DSFX=$(SFX) -allmp -DMAX_P61_SIZE=$(MAX_P61_SIZE) -DMUSIC_PARALLEL_LOAD=$(MUSIC_PARALLEL_LOAD) -DPHOTON_TRACKLOADER=$(PHOTON_TRACKLOADER)
+VASM_ARGS=-Fhunk -quiet -esc -DSFX=$(SFX) -allmp -DMAX_P61_SIZE=$(MAX_P61_SIZE) -DMUSIC_PARALLEL_LOAD=$(MUSIC_PARALLEL_LOAD) -DPHOTON_TRACKLOADER=$(PHOTON_TRACKLOADER) -DFASTRAM=$(FASTRAM)
 VASM_C_ARGS=-ldots -Fhunk -quiet -no-opt
 
-EXTRA_DEFINES=-DSFX=$(SFX) -DMAX_P61_SIZE=$(MAX_P61_SIZE) -DPHOTON_TRACKLOADER=$(PHOTON_TRACKLOADER) -DMUSIC_PARALLEL_LOAD=$(MUSIC_PARALLEL_LOAD)
+EXTRA_DEFINES=-DSFX=$(SFX) -DMAX_P61_SIZE=$(MAX_P61_SIZE) -DPHOTON_TRACKLOADER=$(PHOTON_TRACKLOADER) -DMUSIC_PARALLEL_LOAD=$(MUSIC_PARALLEL_LOAD) -DFASTRAM=$(FASTRAM)
 REGPARAM=-mregparm=2
 #VASM_OPTS=-Wa,-no-opt
-VASM_OPTS=-Wa,-opt-allbra -Wa,-opt-brajmp -Wa,-opt-lsl  -Wa,-opt-movem -Wa,-opt-mul -Wa,-opt-div -Wa,-opt-pea #-Wa,-opt-speed 
+VASM_OPTS=-Wa,-opt-allbra -Wa,-opt-brajmp -Wa,-opt-lsl  -Wa,-opt-movem -Wa,-opt-mul -Wa,-opt-div -Wa,-opt-pea #-Wa,-opt-speed
+VASM_BOOTBLOCK_OPTS=-opt-allbra -opt-brajmp -opt-lsl -opt-movem -opt-mul -opt-div -opt-pea
 ifeq ($(USE_BIG), 1)
 WHOLE_PROGRAM=-fwhole-program
 endif
@@ -230,7 +232,7 @@ out/scoreboard.bin: assets/scoreboard.png palettes/palette_1.pal
 #	$(IMAGECON) --colors=32 --full-color-palette --input=assets/popup.png --output=out/popup --output-bitplanes --output-png --output-palette-asm --output-palette --use-palette=palettes/default.pal
 
 out/bootblock.bin: out/bootblock.o
-	$(LD) -brawbin1 $< -o $@
+	$(LD) -brawbin1 $< -o $@ -M > bootblock.txt
 
 out/font%.bin: assets/font%.png palettes/font.pal
 	$(IMAGECON) --input $< $(IMAGECON_ARGS) --output-bitplanes --output-grey-palette-asm --output-palette-asm --output-palette --output out/font$* --colors=2 --use-palette=palettes/font.pal --full-color-palette-file --output-mask --transparent-color=0,0,0 --output-png
@@ -239,8 +241,11 @@ out/font%.bin: assets/font%.png palettes/font.pal
 #./out/logo.pal: out/logo.bin
 #./out/menu.pal: out/menu.bin
 
-out/bootblock.o: $(BOOTBLOCK_ASM) $(PROGRAM_BIN)
-	$(VASM) $(VASM_ARGS)  -DUSERSTACK_ADDRESS="\$$$(USERSTACK_ADDRESS)" -DBASE_ADDRESS="\$$$(BASE_ADDRESS)"  $< -o $@ $(INCLUDE)
+out/bootblock_relocate.s: bootblock_relocate.c
+	$(CC) -fomit-frame-pointer -mregparm=2 -noixemul -mcpu=68000 -m68000 -pedantic-errors -Wfatal-errors -Wall -Werror -Wextra -Wshadow -Wuninitialized -Wduplicated-cond -Wundef -Wbad-function-cast -Wparentheses -Os -S bootblock_relocate.c -o out/bootblock_relocate.s
+
+out/bootblock.o: out/bootblock_relocate.s $(BOOTBLOCK_ASM) $(PROGRAM_BIN)
+	$(VASM) -gas -no-opt -sc -m68000 -ldots -esc $(VASM_ARGS)  -DUSERSTACK_ADDRESS="\$$$(USERSTACK_ADDRESS)" -DBASE_ADDRESS="\$$$(BASE_ADDRESS)"   $(BOOTBLOCK_ASM) -o $@ $(INCLUDE)
 
 out/adf/main.o: $(MODULE) $(EXTRA) $(ASSETS) $(IMAGEDATA)
 	$(VASM)  -DTRACKLOADER=1  $(VASM_ARGS) $< -o $@ $(INCLUDE)
@@ -330,15 +335,15 @@ out/workbench/%.o: %.s
 	@$(VASM) -depend=make  -DTRACKLOADER=1 $(VASM_ARGS) $(INCLUDE) $< -o $@  > out/workbench/$*.d
 
 out/main.bin: out/adf/main.o $(ADF_OBJS)
-	#$(LD) -brawseg -q -Tlink.script2.x $< $(ADF_OBJS) $(C_LIBS) -o out/reloc -M > blah
-	$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@ 
-	@$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@  -M -o /tmp/main.bin > out/adf/main.txt
-	@$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -M -o /tmp/main.bin | grep ", value " | cut -d " " -f3,7 | cut -d "," -f1 > $@.symbols
-	@cp $@.symbols debugger.syms
-	-#@echo "RAM USAGE:" $$((16#`cat debugger.syms | grep endRam | sed 's/0x//' | sed 's/endRam: //'`)) bytes
-	./ram_usage.sh
+	$(LD) -brawseg -q -Tlink.script2.x $< $(ADF_OBJS) $(C_LIBS) -o out/reloc -M > blah
+	#$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@ 
+	#@$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@  -M -o /tmp/main.bin > out/adf/main.txt
+	#@$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -M -o /tmp/main.bin | grep ", value " | cut -d " " -f3,7 | cut -d "," -f1 > $@.symbols
+	#@cp $@.symbols debugger.syms
+	#-#@echo "RAM USAGE:" $$((16#`cat debugger.syms | grep endRam | sed 's/0x//' | sed 's/endRam: //'`)) bytes
+	#./ram_usage.sh
 ifeq ($(USE_BIG), 1)	
-	-@#rm out/adf/big.o
+	#-@#rm out/adf/big.o
 endif
 
 bin/$(GAME_NAME): bin $(ALL_TOOLS)  $(ALL_WORKBENCH_OBJS) 

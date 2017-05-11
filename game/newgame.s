@@ -1,20 +1,30 @@
 	include "includes.i"
 
 	if TRACKLOADER=1
+	if FASTRAM=0
 byteMap:
 	dc.l	Entry
 	dc.l	endCode-byteMap
 	endif
-
-	include "wbstartup.i"		; does nothing if TRACKLOADER=1
+	endif
 	
+	include "wbstartup.i"		; does nothing if TRACKLOADER=1
+
+	if FASTRAM=1	
+	section .entry
+	xdef _disk_dataStart
+_disk_dataStart:
+	dc.l	0
+	endif
 Entry:
 	if TRACKLOADER=0
 	jmp 	StartupFromOS
 	else
 	lea	userstack,a7	
 	endif
+	jmp 	Main
 
+	section .text
 Main:
 	jsr	_init_amiga
 	jsr	_game_loop
@@ -126,6 +136,7 @@ _sound_pop:
 
 	if TRACKLOADER=1
 	align 4
+	 section stack		
 	xdef _startUserstack
 _startUserstack:
 startUserstack:

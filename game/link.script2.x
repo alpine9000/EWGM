@@ -30,13 +30,12 @@ SECTIONS
 
     .fast : {
     	_startFast = .;
-    	_startCode = .;
-    	*(.text)
+	*(.entry)
+	*(.text)
 	*(CODE)			
         *(.data)	
         *(data)
 	*(DATA)
-	endCode = .;	
     } :fast
 
     .bss (NOLOAD) : {
@@ -46,6 +45,7 @@ SECTIONS
 	_endBSS = .;
 	_startRandom = .;
         *(random)
+	*(stack)
 	_endRandom = .;
 	_endFast = .;
    } 
@@ -53,11 +53,10 @@ SECTIONS
    . = 0x200000;
    
    .disk : {
-   	startDisk = .;
+   	_startDisk = .;
    	*(.noload)
    	*(noload)	    
 	*(music)
-	*(lastTrack)
 	endDisk = .;
    } :disk
 

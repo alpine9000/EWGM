@@ -23,6 +23,7 @@ typedef struct {
 } hiscore_small_buffer_t;
 #endif
 
+#if FASTRAM==0
 __EXTERNAL __section(section lastTrack) 
 hiscore_storage_t hiscore_disk = {
   .scores = {
@@ -35,16 +36,18 @@ hiscore_storage_t hiscore_disk = {
   },
   .checksum = 1925
 };
-
+#endif
 
 static hiscore_buffer_t hiscore;
 #if TRACKLOADER==1
+#if FASTRAM==0
 static hiscore_small_buffer_t hiscore2;
+#endif
 #endif
 static char hiscore_promptBuffer[4];
 
 #ifdef GAME_HISCORE_SAVE_ENABLE
-static
+//static
 #endif
 uint32_t
 hiscore_checksum(void)
@@ -62,6 +65,8 @@ hiscore_checksum(void)
 uint16_t
 hiscore_load(uint16_t ignoreErrors)
 {
+  USE(ignoreErrors);
+#if FASTRAM==0
   uint16_t error = 0;
 #ifdef DEBUG
   if (sizeof(hiscore_disk) != 512) {
@@ -97,6 +102,9 @@ hiscore_load(uint16_t ignoreErrors)
   }
 
   return error;
+#else
+  return 1;
+#endif
 }
 #else
 __EXTERNAL uint16_t
@@ -156,6 +164,8 @@ hiscore_render(void)
 void
 hiscore_saveData(uint16_t ignoreErrors)
 {
+  USE(ignoreErrors);
+#if FASTRAM==0
   hiscore.checksum = hiscore_checksum();
 
   memcpy(&hiscore2, &hiscore, sizeof(hiscore2));
@@ -181,6 +191,7 @@ hiscore_saveData(uint16_t ignoreErrors)
     }
   }
   message_screenOff();
+#endif
 }
 #endif
 
