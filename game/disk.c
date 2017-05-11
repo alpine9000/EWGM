@@ -51,21 +51,15 @@ __EXTERNAL
 NOINLINE uint16_t
 disk_loadData(void* dest, void* src, int32_t size)
 {
-  uint8_t* start;
-
-
 #if TRACKLOADER==1
+  uint8_t* start;
   uint16_t error = 0;
 #if FASTRAM==0
   start = &startCode;
   int32_t startSector = ((((uint32_t)src)-((uint32_t)start))>>9)+2; // +2 for bootblock  
 #else
   start = disk_dataStart;
-  *((volatile unsigned long*)0x80) = 12345678;
-  *((volatile unsigned long*)0x80) = (uint32_t)src; // 0000C800
-  *((volatile unsigned long*)0x80) = (uint32_t)start; //1A600   
   int32_t startSector = ((((uint32_t)src)+((uint32_t)start))>>9);
-  *((volatile unsigned long*)0x80) = startSector; //
 #endif
 
   int16_t numSectors = (size+512)>>9;
@@ -133,14 +127,15 @@ disk_read(void* dest, void* src, int32_t size)
 uint16_t
 disk_write(void* dest, void* src, int16_t numBlocks)
 {
+  uint32_t err = 0;
+#if TRACKLOADER==1
   uint8_t* start;
 #if FASTRAM==0
   start = &startCode;
 #else
   start = disk_dataStart;
 #endif  
-  uint32_t err = 0;
-#if TRACKLOADER==1
+
 #if PHOTON_TRACKLOADER==0
   int32_t startBlock = ((((uint32_t)dest)-((uint32_t)start))>>9)+2; // +2 for bootblock
 

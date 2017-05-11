@@ -222,12 +222,12 @@ menu_processKeyboard(void)
   }
   
   switch (keyboard_key) {
-#ifdef DEBUG
+    //#ifdef DEBUG
   case 'Z':
     music_next();
     return -1;
     break;
-#endif
+    //#endif
   case 'D':
     return MENU_COMMAND_REPLAY;
     break;

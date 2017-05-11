@@ -52,10 +52,11 @@ SECTIONS
 
    . = 0x200000;
    
-   .disk : {
+   .disk ALIGN(512) : {
    	_startDisk = .;
    	*(.noload)
    	*(noload)	    
+	. = ALIGN(512);
 	*(music)
 	endDisk = .;
    } :disk

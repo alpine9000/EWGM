@@ -23,7 +23,7 @@ typedef struct {
 } hiscore_small_buffer_t;
 #endif
 
-#if FASTRAM==0
+#if FASTRAM==0 || TRACKLOADER==0
 __EXTERNAL __section(section lastTrack) 
 hiscore_storage_t hiscore_disk = {
   .scores = {

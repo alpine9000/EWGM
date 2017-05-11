@@ -1,5 +1,5 @@
 	include "includes.i"
-	xref font
+	xdef font
 	xdef _fontPtr
 
 FONT_HEIGHT		equ 8
@@ -179,9 +179,9 @@ staticBuffer:
         dc.b    "000000000"
         dc.b    0
 
-	if TRACKLOADER=0
 	section data_c
-	endif
+	xdef _text_fontData
+_text_fontData:	
 font:
 	incbin	"out/font8x8.bin"
 _fontPtr:

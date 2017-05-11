@@ -347,7 +347,7 @@ ifeq ($(USE_BIG), 1)
 endif
 
 bin/$(GAME_NAME): bin $(ALL_TOOLS)  $(ALL_WORKBENCH_OBJS) 
-	$(LD) $(C_LIBS_WB) -hunkattr random_c=2 -hunkattr bss_c=2 -hunkattr code_c=2 -hunkattr data_c=2  $(ALL_WORKBENCH_OBJS) -o $@
+	$(LD) $(C_LIBS_WB) -hunkattr random_c=2 -hunkattr bss_c=2 -hunkattr code_c=2 -hunkattr data_c=2  $(ALL_WORKBENCH_OBJS) -o $@ -M > blah
 	@$(LD) $(C_LIBS_WB) -hunkattr random_c=2 -hunkattr bss_c=2 -hunkattr code_c=2 -hunkattr data_c=2  $(ALL_WORKBENCH_OBJS) -M -o /tmp/main.bin > out/workbench/newgame.txt
 ifeq ($(USE_BIG), 1)	
 	-@#rm out/workbench/big.o

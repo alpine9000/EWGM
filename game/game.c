@@ -1229,8 +1229,6 @@ game_loop()
 
   logo_load();
 
-  // seems to work to here!
-  
   music_play(0);
 
   logo_display();
