@@ -24,6 +24,7 @@ SECTIONS
         *(BSS_C)
 	*(CHIP_BSS)
        _endBSSChip = .;
+       endRam = .;
     } 
 
     . = 0x100000;

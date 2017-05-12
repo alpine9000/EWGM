@@ -232,7 +232,7 @@ out/scoreboard.bin: assets/scoreboard.png palettes/palette_1.pal
 #	$(IMAGECON) --colors=32 --full-color-palette --input=assets/popup.png --output=out/popup --output-bitplanes --output-png --output-palette-asm --output-palette --use-palette=palettes/default.pal
 
 out/bootblock.bin: out/bootblock.o
-	$(LD) -brawbin1 $< -o $@ -M > bootblock.txt
+	$(LD) -brawbin1 $< -o $@ -M > out/adf/bootblock.txt
 
 out/font%.bin: assets/font%.png palettes/font.pal
 	$(IMAGECON) --input $< $(IMAGECON_ARGS) --output-bitplanes --output-grey-palette-asm --output-palette-asm --output-palette --output out/font$* --colors=2 --use-palette=palettes/font.pal --full-color-palette-file --output-mask --transparent-color=0,0,0 --output-png
@@ -336,7 +336,10 @@ out/workbench/%.o: %.s
 
 out/main.bin: out/adf/main.o $(ADF_OBJS)
 ifeq ($(FASTRAM), 1)
-	$(LD) -brawseg -q -Tlink.script2.x $< $(ADF_OBJS) $(C_LIBS) -o out/reloc -M > blah
+	$(LD) -brawseg -q -Tlink.fastram.script.x $< $(ADF_OBJS) $(C_LIBS) -o out/reloc -M > out/adf/reloc.txt
+	@cat out/adf/reloc.txt | grep ", value " | cut -d " " -f3,7 | cut -d "," -f1 > $@.symbols
+	@cp $@.symbols debugger.syms
+	-@./ram_usage.sh
 else
 	$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@ 
 	@$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@  -M -o /tmp/main.bin > out/adf/main.txt
@@ -350,8 +353,7 @@ endif
 endif
 
 bin/$(GAME_NAME): bin $(ALL_TOOLS)  $(ALL_WORKBENCH_OBJS) 
-	$(LD) $(C_LIBS_WB) -hunkattr random_c=2 -hunkattr bss_c=2 -hunkattr code_c=2 -hunkattr data_c=2  $(ALL_WORKBENCH_OBJS) -o $@ -M > blah
-	@$(LD) $(C_LIBS_WB) -hunkattr random_c=2 -hunkattr bss_c=2 -hunkattr code_c=2 -hunkattr data_c=2  $(ALL_WORKBENCH_OBJS) -M -o /tmp/main.bin > out/workbench/newgame.txt
+	$(LD) $(C_LIBS_WB) -hunkattr random_c=2 -hunkattr bss_c=2 -hunkattr code_c=2 -hunkattr data_c=2  $(ALL_WORKBENCH_OBJS) -o $@ -M > out/workbench/newgame.txt
 ifeq ($(USE_BIG), 1)	
 	-@#rm out/workbench/big.o
 endif
