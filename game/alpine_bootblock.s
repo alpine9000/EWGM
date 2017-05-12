@@ -43,12 +43,21 @@ BootCode:	;gathers some data, turns off OS, copies itself to $100
 	jsr 	-216(a6)		;AvailMem()
 	move.l 	d0,d5
 
+	if FASTRAM=1
+	cmp.l	#0,d0			; no fast ram ?
+	bne.s	.allocFast
+	move.l	#$80000,a5		; 1mb chip ram or crash!
+	bra.w	.osOff
+	endif
+	
+.allocFast:
 	sub.l	#2048,d5		;leave room for stacks to grow
 	moveq 	#4,d1
 	jsr 	-198(a6)		;AllocMem()
 	and.l 	#-8,d0
 	move.l 	d0,a5			;Start Address
-	
+
+.osOff:
     *--- OS off ---*			;you're nice'n all, but now you die.
 
 	lea 	$dff002,a6		;Loader uses this custom base addr
