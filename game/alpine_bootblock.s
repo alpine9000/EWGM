@@ -120,14 +120,14 @@ LoadScript:				;At $120, sysinfo in 4 regs, a6=$dff002
 	if 1
 	moveq 	#2,d0			;from sector 2
 	move.w 	#-1,d1			;num sectors, - ==Step0
-	jsr 	LoadMFMB
+	bsr.w	LoadMFMB
 
 	move.l	4(a0),d1
 	add.l	#512,d1
 	lsr.l	#6,d1
 	lsr.l	#3,d1
 	moveq 	#2,d0			;from sector 2
-	jsr 	LoadMFMB
+	bsr.w 	LoadMFMB
 	
 	lea 	$dff000,a6		;restore plain custombase addr for demo
 
@@ -138,7 +138,7 @@ LoadScript:				;At $120, sysinfo in 4 regs, a6=$dff002
 
 	-moveq 	#2,d0			;from sector 2
 	move.w 	#-((mainEnd-mainStart)/512),d1;num sectors, - ==Step0
-	jsr 	LoadMFMB
+	bsr.w 	LoadMFMB
 	
 	jmp     (a0)		; -> main entry point
 
