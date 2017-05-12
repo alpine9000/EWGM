@@ -23,7 +23,6 @@ typedef struct {
 } hiscore_small_buffer_t;
 #endif
 
-#if FASTRAM==0 || TRACKLOADER==0
 __EXTERNAL __section(section lastTrack) 
 hiscore_storage_t hiscore_disk = {
   .scores = {
@@ -36,13 +35,10 @@ hiscore_storage_t hiscore_disk = {
   },
   .checksum = 1925
 };
-#endif
 
 static hiscore_buffer_t hiscore;
 #if TRACKLOADER==1
-#if FASTRAM==0
 static hiscore_small_buffer_t hiscore2;
-#endif
 #endif
 static char hiscore_promptBuffer[4];
 
@@ -66,7 +62,6 @@ uint16_t
 hiscore_load(uint16_t ignoreErrors)
 {
   USE(ignoreErrors);
-#if FASTRAM==0
   uint16_t error = 0;
 #ifdef DEBUG
   if (sizeof(hiscore_disk) != 512) {
@@ -75,7 +70,11 @@ hiscore_load(uint16_t ignoreErrors)
 #endif
 
  retry:
-   error = disk_loadData(&hiscore, &hiscore_disk, sizeof(hiscore_disk));
+#if FASTRAM==0
+    error = disk_loadData(&hiscore, &hiscore_disk, sizeof(hiscore_disk));
+#else
+    error = disk_loadData(&hiscore, (void*)(((uint8_t*)(895488))-disk_dataStart), sizeof(hiscore_disk));
+#endif
 
    if (error) {
      if (ignoreErrors) {
@@ -102,9 +101,6 @@ hiscore_load(uint16_t ignoreErrors)
   }
 
   return error;
-#else
-  return 1;
-#endif
 }
 #else
 __EXTERNAL uint16_t
@@ -165,14 +161,17 @@ void
 hiscore_saveData(uint16_t ignoreErrors)
 {
   USE(ignoreErrors);
-#if FASTRAM==0
   hiscore.checksum = hiscore_checksum();
 
   memcpy(&hiscore2, &hiscore, sizeof(hiscore2));
 
  retry:
   message_loading(I18N_SAVING_HISCORE);
+#if FASTRAM==0
   if (disk_write(&hiscore_disk, &hiscore, 1) != 0) {
+#else
+  if (disk_write((void*)895488, &hiscore, 1) != 0) {
+#endif
     if (ignoreErrors) {
       message_screenOn(I18N_HISCORE_SAVE_FAIL);
       hw_waitScanLines(200);
@@ -191,7 +190,6 @@ hiscore_saveData(uint16_t ignoreErrors)
     }
   }
   message_screenOff();
-#endif
 }
 #endif
 

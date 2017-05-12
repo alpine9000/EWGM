@@ -3,7 +3,7 @@ KEEP_ASM=1
 USE_BIG=1
 SFX=1
 PHOTON_TRACKLOADER=0
-FASTRAM=1
+FASTRAM=0
 MUSIC_PARALLEL_LOAD=0
 
 # programs and paths
@@ -232,7 +232,11 @@ out/scoreboard.bin: assets/scoreboard.png palettes/palette_1.pal
 #	$(IMAGECON) --colors=32 --full-color-palette --input=assets/popup.png --output=out/popup --output-bitplanes --output-png --output-palette-asm --output-palette --use-palette=palettes/default.pal
 
 out/bootblock.bin: out/bootblock.o
+ifeq ($(FASTRAM), 1)
+	$(LD) -Tlink.bootblock.x -brawbin1 $< -o $@ -M > out/adf/bootblock.txt
+else
 	$(LD) -brawbin1 $< -o $@ -M > out/adf/bootblock.txt
+endif
 
 out/font%.bin: assets/font%.png palettes/font.pal
 	$(IMAGECON) --input $< $(IMAGECON_ARGS) --output-bitplanes --output-grey-palette-asm --output-palette-asm --output-palette --output out/font$* --colors=2 --use-palette=palettes/font.pal --full-color-palette-file --output-mask --transparent-color=0,0,0 --output-png

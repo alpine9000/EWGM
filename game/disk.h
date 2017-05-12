@@ -1,6 +1,13 @@
 #ifndef DISK_H
 #define DISK_H
 
+#if FASTRAM==0
+extern uint32_t startCode;
+#else
+extern uint8_t* disk_dataStart;
+#endif
+
+
 #if TRACKLOADER==1
 #define DISK_SECTOR_ALIGN __attribute__ ((aligned (512)))
 #else

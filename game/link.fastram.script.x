@@ -2,6 +2,7 @@ PHDRS {
     chip PT_LOAD;    
     fast PT_LOAD;
     disk PT_LOAD;
+    lastTrack PT_LOAD;
 }
 
 
@@ -62,4 +63,7 @@ SECTIONS
 	endDisk = .;
    } :disk
 
+   .lastTrack : {
+        *(lastTrack)
+   } :lastTrack
 }

@@ -504,7 +504,7 @@ game_loadLevel(menu_command_t command)
   
 #ifdef DEBUG
   if (game_scoreBoardMode != 0) {
-    disk_loadData((void*)game_scoreBoardFrameBuffer, (void*)game_scoreBoardFrameBuffer, FRAME_BUFFER_WIDTH_BYTES*SCOREBOARD_HEIGHT*SCREEN_BIT_DEPTH);
+    //   disk_loadData((void*)game_scoreBoardFrameBuffer, (void*)game_scoreBoardFrameBuffer, FRAME_BUFFER_WIDTH_BYTES*SCOREBOARD_HEIGHT*SCREEN_BIT_DEPTH);
   }
 #endif 
 

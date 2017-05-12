@@ -1,11 +1,5 @@
 #include "game.h"
 
-#if FASTRAM==0
-extern uint32_t startCode;
-#else
-extern uint8_t* disk_dataStart;
-#endif
-
 #if TRACKLOADER==1
 
 #if PHOTON_TRACKLOADER==1
@@ -131,8 +125,7 @@ disk_write(void* dest, void* src, int16_t numBlocks)
 #if FASTRAM==0
   int32_t startBlock = ((((uint32_t)dest)-((uint32_t)&startCode))>>9)+2; // +2 for bootblock  
 #else
-  uint8_t* start = disk_dataStart;
-  int32_t startBlock = ((((uint32_t)dest)-((uint32_t)start))>>9)+2; // +2 for bootblock  
+  int32_t startBlock = ((uint32_t)dest)>>9;
 #endif  
 
 #if PHOTON_TRACKLOADER==0
