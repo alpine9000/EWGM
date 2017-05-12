@@ -6,18 +6,18 @@ _relocateSection:
 	move.l d2,-(sp)
 	move.l (a1)+,d2
 	moveq #0,d1
-_.L2:
+.L2:
 	cmp.l d1,d2
-	bne.w _.L3
+	bne.w .L3
 	move.l (sp)+,d2
 	move.l (sp)+,a2
 	rts
-_.L3:
+.L3:
 	move.l a0,a2
 	add.l (a1)+,a2
 	add.l d0,(a2)
 	addq.l #1,d1
-	bra.w _.L2
+	bra.w .L2
 	align	1
 	xdef	_relocate
 _relocate:

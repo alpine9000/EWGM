@@ -3,7 +3,7 @@ KEEP_ASM=1
 USE_BIG=1
 SFX=1
 PHOTON_TRACKLOADER=0
-FASTRAM=1
+FASTRAM=0
 MUSIC_PARALLEL_LOAD=0
 
 # programs and paths
@@ -245,7 +245,7 @@ out/bootblock_relocate.s: bootblock_relocate.c
 	$(CC) -fomit-frame-pointer -mregparm=2 -noixemul -mcpu=68000 -m68000 -pedantic-errors -Wfatal-errors -Wall -Werror -Wextra -Wshadow -Wuninitialized -Wduplicated-cond -Wundef -Wbad-function-cast -Wparentheses -Os -S bootblock_relocate.c -o out/bootblock_relocate.s
 
 out/bootblock.o: bootblock_relocate.s $(BOOTBLOCK_ASM) $(PROGRAM_BIN)
-	$(VASM) -no-opt -m68000 -ldots  $(VASM_ARGS) -DFASTRAM=$(FASTRAM) -DUSERSTACK_ADDRESS="\$$$(USERSTACK_ADDRESS)" -DBASE_ADDRESS="\$$$(BASE_ADDRESS)"   $(BOOTBLOCK_ASM) -o $@ $(INCLUDE)
+	$(VASM) -showopt $(VASM_ARGS) -DFASTRAM=$(FASTRAM) -DUSERSTACK_ADDRESS="\$$$(USERSTACK_ADDRESS)" -DBASE_ADDRESS="\$$$(BASE_ADDRESS)"   $(BOOTBLOCK_ASM) -o $@ $(INCLUDE)
 
 out/adf/main.o: $(MODULE) $(EXTRA) $(ASSETS) $(IMAGEDATA)
 	$(VASM)  -DTRACKLOADER=1  $(VASM_ARGS) $< -o $@ $(INCLUDE)
