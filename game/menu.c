@@ -10,7 +10,7 @@ extern frame_buffer_t menu_frameBuffer;
 #define MENU_TOP_COLOR_SELECTED    0xffb
 #define MENU_BOTTOM_COLOR_SELECTED 0xfb5
 
-static __section(random_c) uint8_t menu_offscreenBuffer[SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH*9];
+static __section(random_c) uint8_t menu_offscreenBuffer[(SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH*9)+2];
 static frame_buffer_t menu_offscreen = &menu_offscreenBuffer[0];
 static frame_buffer_t menu_scrollerFB;
 static uint16_t menu_scrollerCounter;
