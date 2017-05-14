@@ -2,6 +2,7 @@ debugger.syms
 out.*
 adf_big.c
 workbench_big.c
+fast_big.c
 default.lua
 lua.log
 temp
