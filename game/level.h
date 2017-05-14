@@ -16,7 +16,6 @@ typedef struct {
   uint8_t tileBitplanes[TILE_SHEET_WIDTH_BYTES*SCREEN_BIT_DEPTH*TILE_SHEET_HEIGHT];
   uint16_t palette[32];
   uint16_t greyPalette[32];
-  uint16_t clouds;
   uint16_t moduleIndex;
   conductor_instruction_t* instructions;
 #ifdef GAME_RECORDING
@@ -24,9 +23,6 @@ typedef struct {
   record_t* record;
 #endif
   void (*initFunctor)(void);
-#if 0
-  void (*effectFunctor)(frame_buffer_t fb);
-#endif
 } level_t DISK_SECTOR_ALIGN;
 
 extern level_t level;

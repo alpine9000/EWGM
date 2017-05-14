@@ -16,7 +16,7 @@ typedef struct _thing{
 
 static int16_t thing_count;
 static thing_data_t* thing_freeList;
-static __section(random) thing_data_t thing_buffer[THING_MAX_THINGS];
+static __SECTION_RANDOM thing_data_t thing_buffer[THING_MAX_THINGS];
 
 
 static thing_data_t*

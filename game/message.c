@@ -14,7 +14,7 @@ typedef struct {
   uint16_t end[2];
 } message_copper_t;
 
-static  __section(data_c)  message_copper_t message_copper  = {
+static  __SECTION_DATA_C  message_copper_t message_copper  = {
   .bpl1 = {
     BPL1PTL,0x0000,
     BPL1PTH,0x0000,

@@ -42,32 +42,32 @@ typedef struct star {
 int16_t star_count;
 star_t* star_activeList;
 static star_t* star_freeList;
-static __section(random) star_t star_buffer[STAR_MAX_STARS];
+static __SECTION_RANDOM star_t star_buffer[STAR_MAX_STARS];
 static uint16_t star_yOffset;
 
-__section(data_c) uint16_t sprite_nullhsprite[] = {
+__SECTION_DATA_C uint16_t sprite_nullhsprite[] = {
   0x0000, 0x0000,
   0x0000, 0x0000
 };
 uint16_t sprite_nullhspriteHi;
 uint16_t sprite_nullhspriteLo;
 
-__section(data_c) uint16_t star_sprite0[] = {
+__SECTION_DATA_C uint16_t star_sprite0[] = {
   #include "out/star-sprite.h"
 };
-__section(data_c) uint16_t star_sprite1[] = {
+__SECTION_DATA_C uint16_t star_sprite1[] = {
   #include "out/star-sprite.h"
 };
-__section(data_c) uint16_t star_sprite2[] = {
+__SECTION_DATA_C uint16_t star_sprite2[] = {
   #include "out/star-sprite.h"
 };
-__section(data_c) uint16_t star_sprite3[] = {
+__SECTION_DATA_C uint16_t star_sprite3[] = {
   #include "out/star-sprite.h"
 };
-__section(data_c) uint16_t star_sprite4[] = {
+__SECTION_DATA_C uint16_t star_sprite4[] = {
   #include "out/star-sprite.h"
 };
-__section(data_c) uint16_t star_sprite5[] = {
+__SECTION_DATA_C uint16_t star_sprite5[] = {
   #include "out/star-sprite.h"
 };
 

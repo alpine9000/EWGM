@@ -7,8 +7,11 @@ byteMap:
 	dc.l	endCode-byteMap
 	endif
 	endif
-	
+
+	if TRACKLOADER=0
+	section .text
 	include "wbstartup.i"		; does nothing if TRACKLOADER=1
+	endif
 
 	if FASTRAM=1	
 	section .entry
@@ -24,7 +27,6 @@ Entry:
 	endif
 
 	jmp 	Main
-	section .text
 Main:
 	jsr	_init_amiga
 	jsr	_game_loop
@@ -79,6 +81,7 @@ l385	equ	0
 	rts
 	endif
 	
+	section .text
 	align 4
 	include "os.i"
 
@@ -89,17 +92,26 @@ l385	equ	0
 _scoreBoardBitplanes:
 	incbin  "out/scoreboard.bin"	
 
-	section .noload
-	cnop 0,512
+	if TRACKLOADER=1
+	section disk
+	cnop 0,512	
+	else
+	section data
+	endif
+	
 	xdef _menu_menuBitplanes
 _menu_menuBitplanes:	
 	incbin	"out/menu.bin"
+	if TRACKLOADER=1
 	cnop 0,512
+	endif
 	xdef _logo_logoBitplanes
 _logo_logoBitplanes:	
 	incbin   "out/logo.bin"
+	if TRACKLOADER=1
 	cnop 0, 512
-		
+	endif
+	
 	section data_c
 	align 4
 	if SFX==1

@@ -56,3 +56,5 @@
  706793        <- post fast ram changes
  945224
  546805        <- with fast ram enabled
+
+ 652772        <- one bitplane sprite mask, triple buffer, fast ram

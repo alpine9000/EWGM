@@ -28,7 +28,7 @@
 #define __LEVEL_DEFINITION2(x)       level_level##x
 #define __LEVEL_DEFINITION(x)        __LEVEL_DEFINITION2(x)
 
-__NOLOAD level_t 
+__SECTION_DISK level_t 
 __LEVEL_DEFINITION(__LEVEL_NUMBER) =
   {
 #include __LEVEL_BACKGROUND_MAP(__LEVEL_NUMBER)

@@ -15,7 +15,7 @@ static uint16_t logoPalette[1<<LOGO_BIT_DEPTH] = {
 
 static uint32_t logo_startFrame;
 
-static  __section(data_c) logo_copper_t logo_copper  = {
+static  __SECTION_DATA_C logo_copper_t logo_copper  = {
   .bpl1 = {
     BPL1PTL,0x0000,
     BPL1PTH,0x0000,

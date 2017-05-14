@@ -93,7 +93,7 @@ static int16_t sound_next = -1;
 static int16_t sound_loop = -1;
 static int16_t sound_triggered = 0;
 
-static __section(data_c) UWORD sound_empty[2] = {0,0};
+static __SECTION_DATA_C UWORD sound_empty[2] = {0,0};
 
 static void 
 sound_playBud_Punch01(void)

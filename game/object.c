@@ -3,7 +3,7 @@
 int16_t object_count;
 object_t* object_activeList;
 static object_t* object_freeList;
-static __section(random) object_t object_buffer[OBJECT_MAX_OBJECTS];
+static __SECTION_RANDOM object_t object_buffer[OBJECT_MAX_OBJECTS];
 object_t* object_zBuffer[OBJECT_MAX_OBJECTS];
 #ifndef GAME_TRIPLE_BUFFER
 static uint16_t object_tileDirty[MAP_TILE_WIDTH+1][16];

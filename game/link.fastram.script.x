@@ -56,10 +56,7 @@ SECTIONS
    
    .disk ALIGN(512) : {
    	_startDisk = .;
-   	*(.noload)
-   	*(noload)	    
-	. = ALIGN(512);
-	*(music)
+   	*(disk)
 	endDisk = .;
    } :disk
 

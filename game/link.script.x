@@ -11,7 +11,7 @@ SECTIONS
     	. = 0x4000;
         startCode = .;
         _startCode = .;
-        *(CODE)
+	*(CODE)
         *(.text) 
         *(.data)
 	*(data_c)
@@ -24,10 +24,7 @@ SECTIONS
 
     noload ALIGN(512) : {
         startData = .;
-        *(.noload)
-        *(noload)
-	.=ALIGN(512);
-	*(music)
+	*(disk)
         endData = .;
     } > disk
 

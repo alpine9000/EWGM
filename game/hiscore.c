@@ -23,7 +23,7 @@ typedef struct {
 } hiscore_small_buffer_t;
 #endif
 
-__EXTERNAL __section(section lastTrack) 
+__EXTERNAL __SECTION_LASTTRACK
 hiscore_storage_t hiscore_disk = {
   .scores = {
     {1000, "E.G", 0, ""},

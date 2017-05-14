@@ -37,7 +37,7 @@ uint32_t game_player2Score;
 uint16_t game_difficulty;
 uint16_t game_killScore;
 
-static volatile __section(random_c) struct framebuffeData {
+static volatile __SECTION_RANDOM_C struct framebuffeData {
 #ifdef DEBUG
   uint32_t canary1;
 #endif
@@ -101,7 +101,7 @@ static int16_t game_debugRenderFrame;
 #endif
 
 
-__section(data_c)  copper_t copper  = {
+__SECTION_DATA_C  copper_t copper  = {
    .bplcon1 = {
      BPLCON1,0xff
    },

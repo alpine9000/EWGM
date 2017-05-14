@@ -91,7 +91,20 @@ typedef ULONG size_t;
 #define INLINE inline
 #define STATIC_INLINE static inline
 #define NOINLINE __attribute__ ((noinline))
-#define __NOLOAD __section(section noload)
+#define __SECTION_DATA_C __section(data_c)
+#if TRACKLOADER==1
+#define __SECTION_RANDOM_C __section(random_c)
+#define __SECTION_RANDOM __section(random)
+#define __SECTION_DISK __section(section disk)
+#define __SECTION_LASTTRACK __section(section lastTrack)
+#else
+#define __SECTION_RANDOM_C __attribute__ ((section ("bss_c,bss,chip")))
+#define __SECTION_RANDOM __attribute__ ((section ("bss")))
+#define __SECTION_DISK __section(section .text)
+#define __SECTION_LASTTRACK __section(section .text)
+#endif
+
+
 #define __EXTERNAL __attribute__((externally_visible))
 
 extern void* memcpy(void* destination, void* source, size_t num);

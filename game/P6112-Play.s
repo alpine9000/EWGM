@@ -6,7 +6,8 @@
 	xdef	P61_Master	
 	xdef	P61_End
 	xdef	P61_VBR
-	
+
+	section .text
 ;		#-----+-----------------------------------------#
 ;		|Name:| P6112 - Optimized Player 6.1 Playroutine|
 ;		+-----+-----------------------------------------+

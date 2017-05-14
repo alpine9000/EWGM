@@ -3,7 +3,6 @@ KEEP_ASM=1
 USE_BIG=1
 SFX=1
 PHOTON_TRACKLOADER=0
-FASTRAM=1
 MUSIC_PARALLEL_LOAD=0
 
 # programs and paths
@@ -26,8 +25,10 @@ BOOTBLOCK_ASM=alpine_bootblock.s
 # top level stuff
 GAME_NAME=newgame
 ADF=bin/$(GAME_NAME).adf
+FAST=bin/$(GAME_NAME)_fast.adf
 MODULE=$(GAME_NAME).s
 PROGRAM_BIN=out/main.bin
+FAST_PROGRAM_BIN=out/fast/main.bin
 
 
 # all the components that form the game
@@ -42,14 +43,13 @@ IMAGES=font8x8.png menu.png scoreboard.png logo.png #popup.png
 # program arguments
 LINKER_OPTIONS=-T link.script.x
 
-VASM_ARGS=-Fhunk -quiet -esc -DSFX=$(SFX) -allmp -DMAX_P61_SIZE=$(MAX_P61_SIZE) -DMUSIC_PARALLEL_LOAD=$(MUSIC_PARALLEL_LOAD) -DPHOTON_TRACKLOADER=$(PHOTON_TRACKLOADER) -DFASTRAM=$(FASTRAM)
+VASM_ARGS=-Fhunk -quiet -esc -DSFX=$(SFX) -allmp -DMAX_P61_SIZE=$(MAX_P61_SIZE) -DMUSIC_PARALLEL_LOAD=$(MUSIC_PARALLEL_LOAD) -DPHOTON_TRACKLOADER=$(PHOTON_TRACKLOADER) 
 VASM_C_ARGS=-ldots -Fhunk -quiet -no-opt
 
-EXTRA_DEFINES=-DSFX=$(SFX) -DMAX_P61_SIZE=$(MAX_P61_SIZE) -DPHOTON_TRACKLOADER=$(PHOTON_TRACKLOADER) -DMUSIC_PARALLEL_LOAD=$(MUSIC_PARALLEL_LOAD) -DFASTRAM=$(FASTRAM)
+EXTRA_DEFINES=-DSFX=$(SFX) -DMAX_P61_SIZE=$(MAX_P61_SIZE) -DPHOTON_TRACKLOADER=$(PHOTON_TRACKLOADER) -DMUSIC_PARALLEL_LOAD=$(MUSIC_PARALLEL_LOAD) 
 REGPARAM=-mregparm=2
 #VASM_OPTS=-Wa,-no-opt
-VASM_OPTS=-Wa,-opt-allbra -Wa,-opt-brajmp -Wa,-opt-lsl  -Wa,-opt-movem -Wa,-opt-mul -Wa,-opt-div -Wa,-opt-pea #-Wa,-opt-speed
-VASM_BOOTBLOCK_OPTS=-opt-allbra -opt-brajmp -opt-lsl -opt-movem -opt-mul -opt-div -opt-pea
+VASM_OPTS=-Wa,-opt-speed #-Wa,-opt-speed -Wa,-showcrit -Wa,-opt-allbra -Wa,-opt-brajmp -Wa,-opt-lsl  -Wa,-opt-movem -Wa,-opt-mul -Wa,-opt-div -Wa,-opt-pea #-Wa,-opt-speed
 ifeq ($(USE_BIG), 1)
 WHOLE_PROGRAM=-fwhole-program
 endif
@@ -82,12 +82,15 @@ else
 OBJS=$(ASM_OBJS) $(C_OBJS) 
 endif
 ADF_C_OBJS=$(addprefix out/adf/, $(C_OBJS)) 
-ADF_OBJS=$(addprefix out/adf/, $(OBJS)) 
+ADF_OBJS=$(addprefix out/adf/, $(OBJS))
+FAST_C_OBJS=$(addprefix out/fast/, $(C_OBJS)) 
+FAST_OBJS=$(addprefix out/fast/, $(OBJS)) 
 WORKBENCH_C_OBJS=$(addprefix out/workbench/, $(C_OBJS)) 
 WORKBENCH_OBJS=$(addprefix out/workbench/, $(OBJS)) 
 ALL_OBJS=out/adf/main.o $(ADF_OBJS)
+ALL_FAST_OBJS=out/fast/main.o $(FAST_OBJS)
 ALL_WORKBENCH_OBJS=out/workbench/main.o $(WORKBENCH_OBJS)
-ALL_DEPENDS=$(ALL_OBJS:.o=.d) $(ALL_WORKBENCH_OBJS:.o=.d)
+ALL_DEPENDS=$(ALL_OBJS:.o=.d) $(ALL_WORKBENCH_OBJS:.o=.d) $(ALL_FAST_OBJS:.o=.d)
 
 
 # rules
@@ -96,6 +99,8 @@ all: | out adf
 include ../shared/externals.mk
 
 adf: libgcc/out/gcc.lib version bin $(ALL_TOOLS) $(ADF)
+
+fast: libgcc/out/gcc.lib version bin $(ALL_TOOLS) $(FAST)
 
 .PHONY: version
 version:
@@ -107,6 +112,9 @@ gdrive: all
 
 testadf: all
 	cp $(ADF) ~/Projects/amiga/test.adf
+
+testfastadf: all
+	cp $(FAST) ~/Projects/amiga/test.adf
 
 libgcc/out/gcc.lib:
 	make -C libgcc
@@ -124,6 +132,10 @@ go: testadf
 	@rm -f default.lua
 	 $(RUN_SCRIPT)
 
+gf: testfastadf
+	cp debugger.syms ~/Projects/amiga/debugger.syms
+	@rm -f default.lua
+	 $(RUN_SCRIPT)
 
 goaga: testadf
 	 $(A1200T_RUN_SCRIPT)
@@ -134,16 +146,23 @@ bin:
 out:
 	mkdir out
 	mkdir out/adf
+	mkdir out/fast
 	mkdir out/workbench
 
 $(ADF): out/bootblock.bin
 	$(MAKEADF) out/bootblock.bin > $(ADF)
 	@ls -lh out/bootblock.bin
 
+$(FAST): out/fast/bootblock.bin
+	$(MAKEADF) out/fast/bootblock.bin > $(FAST)
+	@ls -lh out/fast/bootblock.bin
+
 wb: | out version libgcc/out/gcc.lib $(ALL_TOOLS) bin/$(GAME_NAME)
 
 out/adf/star.o: star.c out/star-sprite.h
 out/adf/level.o: level.c $(LEVEL_FILES) out/demo.h
+out/fast/star.o: star.c out/star-sprite.h
+out/fast/level.o: level.c $(LEVEL_FILES) out/demo.h
 out/workbench/star.o: star.c out/star-sprite.h
 out/workbench/level.o: level.c $(LEVEL_FILES)
 
@@ -177,7 +196,7 @@ out/star-sprite.h: assets/star.png
 	$(IMAGECON) --input $< --colors=4 --output=out/star --output-sprite --output-png
 
 out/adf/sprite.o: $(HSPRITE_HEADERS)
-
+out/fast/sprite.o: $(HSPRITE_HEADERS)
 out/workbench/sprite.o: $(HSPRITE_HEADERS)
 
 out/background_%-map.c: assets/background_%.tmx out
@@ -215,6 +234,7 @@ out/%.h: assets/%.bin
 	cat assets/$*.bin | $(BIN2C) > out/$*.h
 
 out/adf/music.o: music.c $(MODULE_HEADERS)
+out/fast/music.o: music.c $(MODULE_HEADERS)
 out/workbench/music.o: music.c $(MODULE_HEADERS)
 
 out/bootblock.bin: out/bootblock.o
@@ -232,11 +252,10 @@ out/scoreboard.bin: assets/scoreboard.png palettes/palette_1.pal
 #	$(IMAGECON) --colors=32 --full-color-palette --input=assets/popup.png --output=out/popup --output-bitplanes --output-png --output-palette-asm --output-palette --use-palette=palettes/default.pal
 
 out/bootblock.bin: out/bootblock.o
-ifeq ($(FASTRAM), 1)
-	$(LD) -Tlink.bootblock.x -brawbin1 $< -o $@ -M > out/adf/bootblock.txt
-else
 	$(LD) -brawbin1 $< -o $@ -M > out/adf/bootblock.txt
-endif
+
+out/fast/bootblock.bin: out/fast/bootblock.o
+	$(LD) -Tlink.bootblock.x -brawbin1 $< -o $@ -M > out/fast/bootblock.txt
 
 out/font%.bin: assets/font%.png palettes/font.pal
 	$(IMAGECON) --input $< $(IMAGECON_ARGS) --output-bitplanes --output-grey-palette-asm --output-palette-asm --output-palette --output out/font$* --colors=2 --use-palette=palettes/font.pal --full-color-palette-file --output-mask --transparent-color=0,0,0 --output-png
@@ -249,115 +268,169 @@ out/bootblock_relocate.s: bootblock_relocate.c
 	$(CC) -fomit-frame-pointer -mregparm=2 -noixemul -mcpu=68000 -m68000 -pedantic-errors -Wfatal-errors -Wall -Werror -Wextra -Wshadow -Wuninitialized -Wduplicated-cond -Wundef -Wbad-function-cast -Wparentheses -Os -S bootblock_relocate.c -o out/bootblock_relocate.s
 
 out/bootblock.o: bootblock_relocate.s $(BOOTBLOCK_ASM) $(PROGRAM_BIN)
-	$(VASM) -no-opt -showopt $(VASM_ARGS) -DFASTRAM=$(FASTRAM) -DUSERSTACK_ADDRESS="\$$$(USERSTACK_ADDRESS)" -DBASE_ADDRESS="\$$$(BASE_ADDRESS)"   $(BOOTBLOCK_ASM) -o $@ $(INCLUDE)
+	$(VASM) -no-opt -showopt $(VASM_ARGS) -DFASTRAM=0 -DUSERSTACK_ADDRESS="\$$$(USERSTACK_ADDRESS)" -DBASE_ADDRESS="\$$$(BASE_ADDRESS)"   $(BOOTBLOCK_ASM) -o $@ $(INCLUDE)
+
+out/fast/bootblock.o: bootblock_relocate.s $(BOOTBLOCK_ASM) $(FAST_PROGRAM_BIN)
+	$(VASM) -no-opt -showopt $(VASM_ARGS) -DFASTRAM=1 -DUSERSTACK_ADDRESS="\$$$(USERSTACK_ADDRESS)" -DBASE_ADDRESS="\$$$(BASE_ADDRESS)"   $(BOOTBLOCK_ASM) -o $@ $(INCLUDE)
+
 
 out/adf/main.o: $(MODULE) $(EXTRA) $(ASSETS) $(IMAGEDATA)
-	$(VASM)  -DTRACKLOADER=1  $(VASM_ARGS) $< -o $@ $(INCLUDE)
-	@$(VASM) -depend=make -DTRACKLOADER=1 $(VASM_ARGS) $< -o $@ $(INCLUDE) > $*.d
+	$(VASM)  -DFASTRAM=0 -DTRACKLOADER=1  $(VASM_ARGS) $< -o $@ $(INCLUDE)
+	@$(VASM) -depend=make -DFASTRAM=0 -DTRACKLOADER=1 $(VASM_ARGS) $< -o $@ $(INCLUDE) > $*.d
+
+out/fast/main.o: $(MODULE) $(EXTRA) $(ASSETS) $(IMAGEDATA)
+	$(VASM)  -DFASTRAM=1 -DTRACKLOADER=1  $(VASM_ARGS) $< -o $@ $(INCLUDE)
+	@$(VASM) -depend=make -DFASTRAM=1 -DTRACKLOADER=1 $(VASM_ARGS) $< -o $@ $(INCLUDE) > $*.d
 
 out/workbench/main.o: $(MODULE) $(EXTRA) $(ASSETS)
-	$(VASM)  -DTRACKLOADER=0 $(VASM_ARGS) $< -o $@ $(INCLUDE)
-	@$(VASM) -depend=make -DTRACKLOADER=0 $(VASM_ARGS) $< -o $@ $(INCLUDE) > $*.d
+	$(VASM)  -DFASTRAM=0 -DTRACKLOADER=0 $(VASM_ARGS) $< -o $@ $(INCLUDE)
+	@$(VASM) -depend=make -DFASTRAM=0 -DTRACKLOADER=0 $(VASM_ARGS) $< -o $@ $(INCLUDE) > $*.d
 
 out/adf/%.o: %.s
-	$(VASM) $(VASM_ARGS) -DTRACKLOADER=1 $< -o $@ $(INCLUDE)
-	@$(VASM) -depend=make -DTRACKLOADER=1 $(VASM_ARGS) $< -o $@ $(INCLUDE) > out/adf/$*.d
+	$(VASM) $(VASM_ARGS) -DFASTRAM=0 -DTRACKLOADER=1 $< -o $@ $(INCLUDE)
+	@$(VASM) -depend=make -DFASTRAM=0 -DTRACKLOADER=1 $(VASM_ARGS) $< -o $@ $(INCLUDE) > out/adf/$*.d
 
 out/adf/%.o: out/%.c
 ifeq ($(KEEP_ASM),1)
-	-@$(CC) -S $(CFLAGS_ASM_OUTPUT) -DTRACKLOADER=1 $< -o out/adf/$*.s 
+	-@$(CC) -S $(CFLAGS_ASM_OUTPUT) -DFASTRAM=0 -DTRACKLOADER=1 $< -o out/adf/$*.s 
 endif
-	$(CC) -c $(CFLAGS) -DTRACKLOADER=1 $< -o out/adf/$*.o
+	$(CC) -c $(CFLAGS) -DFASTRAM=0 -DTRACKLOADER=1 $< -o out/adf/$*.o
+
+out/fast/%.o: %.s
+	$(VASM) $(VASM_ARGS) -DFASTRAM=1 -DTRACKLOADER=1 $< -o $@ $(INCLUDE)
+	@$(VASM) -depend=make -DFASRRAM=1 -DTRACKLOADER=1 $(VASM_ARGS) $< -o $@ $(INCLUDE) > out/fast/$*.d
+
+out/fast/%.o: out/%.c
+ifeq ($(KEEP_ASM),1)
+	-@$(CC) -S $(CFLAGS_ASM_OUTPUT) -DFASTRAM=1 -DTRACKLOADER=1 $< -o out/fast/$*.s 
+endif
+	$(CC) -c $(CFLAGS) -DFASTRAM=1 -DTRACKLOADER=1 $< -o out/fast/$*.o
+
 
 out/workbench/%.o: out/%.c
-	$(CC) $(CFLAGS) -DTRACKLOADER=0 -c $< -o $@ 
+	$(CC) $(CFLAGS) -DFASTRAM=0 -DTRACKLOADER=0 -c $< -o $@ 
 
 adf_big.c: $(ADF_C_OBJS) $(C_SRCS)
 	cat $(C_SRCS) > adf_big.c
 
 out/adf/big.o: adf_big.c
-	$(CC) -c $(CFLAGS) $(BIG_FLAGS) -DTRACKLOADER=1 adf_big.c -o $*.o
-	-@$(CC) -MM $(CFLAGS_CHECL) -DTRACKLOADER=1 adf_big.c -o $*.d
+	$(CC) -c $(CFLAGS) $(BIG_FLAGS) -DFASTRAM=0 -DTRACKLOADER=1 adf_big.c -o $*.o
+	-@$(CC) -MM $(CFLAGS_CHECL) -DFASTRAM=0 -DTRACKLOADER=1 adf_big.c -o $*.d
 	@mv -f $*.d $*.d.tmp
 	@sed -e 's|.*:|$*.o:|' < $*.d.tmp > $*.d
 	@sed -e 's/.*://' -e 's/\\$$//' < $*.d.tmp | fmt -1 | \
 	sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
 	@rm -f $*.d.tmp
 ifeq ($(KEEP_ASM), 1)
-	-@$(CC) -c $(CFLAGS) $(BIG_FLAGS) -DTRACKLOADER=1 adf_big.c -S -o out/adf/big.s
+	-@$(CC) -c $(CFLAGS) $(BIG_FLAGS) -DFASTRAM=0 -DTRACKLOADER=1 adf_big.c -S -o out/adf/big.s
 endif
 	-@#rm adf_big.c
+
+fast_big.c: $(FAST_C_OBJS) $(C_SRCS)
+	cat $(C_SRCS) > fast_big.c
+
+out/fast/big.o: fast_big.c
+	$(CC) -c $(CFLAGS) $(BIG_FLAGS) -DFASTRAM=1 -DTRACKLOADER=1 fast_big.c -o $*.o
+	-@$(CC) -MM $(CFLAGS_CHECL) -DFASTRAM=1 -DTRACKLOADER=1 fast_big.c -o $*.d
+	@mv -f $*.d $*.d.tmp
+	@sed -e 's|.*:|$*.o:|' < $*.d.tmp > $*.d
+	@sed -e 's/.*://' -e 's/\\$$//' < $*.d.tmp | fmt -1 | \
+	sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
+	@rm -f $*.d.tmp
+ifeq ($(KEEP_ASM), 1)
+	-@$(CC) -c $(CFLAGS) $(BIG_FLAGS) -DFASTRAM=1 -DTRACKLOADER=1 fast_big.c -S -o out/fast/big.s
+endif
+	-@#rm fast_big.c
+
 
 workbench_big.c: $(WORKBENCH_C_OBJS) $(C_SRCS)
 	cat $(C_SRCS) > workbench_big.c
 
 out/workbench/big.o: workbench_big.c
-	$(CC) -c $(CFLAGS) $(BIG_FLAGS) -DTRACKLOADER=0  workbench_big.c -o $*.o
-	-@$(CC) -MM $(CFLAGS_CHECK) -DTRACKLOADER=1 workbench_big.c -o $*.d
+	$(CC) -c $(CFLAGS) $(BIG_FLAGS) -DFASTRAM=0 -DTRACKLOADER=0  workbench_big.c -o $*.o
+	-@$(CC) -MM $(CFLAGS_CHECK) -DFASTRAM=0 -DTRACKLOADER=0 workbench_big.c -o $*.d
 	@mv -f $*.d $*.d.tmp
 	@sed -e 's|.*:|$*.o:|' < $*.d.tmp > $*.d
 	@sed -e 's/.*://' -e 's/\\$$//' < $*.d.tmp | fmt -1 | \
 	sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
 	@rm -f $*.d.tmp
 ifeq ($(KEEP_ASM), 1)
-	-@$(CC) -c $(CFLAGS) $(BIG_FLAGS) -DTRACKLOADER=0  workbench_big.c -S -o out/workbench/big.s
+	-@$(CC) -c $(CFLAGS) $(BIG_FLAGS) -DFASTRAM=0 -DTRACKLOADER=0  workbench_big.c -S -o out/workbench/big.s
 endif
 	-@#rm workbench_big.c
 
 out/adf/%.o: %.c
 ifeq ($(KEEP_ASM),1)
-	$(CC) -S $(CFLAGS_ASM_OUTPUT) -DTRACKLOADER=1 $< -o out/adf/$*.s 
+	$(CC) -S $(CFLAGS_ASM_OUTPUT) -DFASTRAM=0 -DTRACKLOADER=1 $< -o out/adf/$*.s 
 endif
 ifeq ($(USE_BIG), 1)	
-	$(CC) -c $(CFLAGS_CHECK) -DTRACKLOADER=1  $< -o out/adf/$*.o
+	$(CC) -c $(CFLAGS_CHECK) -DFASTRAM=0 -DTRACKLOADER=1  $< -o out/adf/$*.o
 else
-	$(CC) -c $(CFLAGS) -DTRACKLOADER=1  $< -o out/adf/$*.o
+	$(CC) -c $(CFLAGS) -DFASTRAM=0 -DTRACKLOADER=1  $< -o out/adf/$*.o
 endif
-	@$(CC) -MM $(CFLAGS_CHECK) -DTRACKLOADER=1  $< -o out/adf/$*.d
+	@$(CC) -MM $(CFLAGS_CHECK) -DFASTRAM=0 -DTRACKLOADER=1  $< -o out/adf/$*.d
 	@mv -f out/adf/$*.d $*.d.tmp
 	@sed -e 's|.*:|out/adf/$*.o:|' < $*.d.tmp > out/adf/$*.d
 	@sed -e 's/.*://' -e 's/\\$$//' < $*.d.tmp | fmt -1 | \
 	sed -e 's/^ *//' -e 's/$$/:/' >> out/adf/$*.d
 	@rm -f $*.d.tmp
 
+
+out/fast/%.o: %.c
+ifeq ($(KEEP_ASM),1)
+	$(CC) -S $(CFLAGS_ASM_OUTPUT) -DFASTRAM=1 -DTRACKLOADER=1 $< -o out/fast/$*.s 
+endif
+ifeq ($(USE_BIG), 1)	
+	$(CC) -c $(CFLAGS_CHECK) -DFASTRAM=1 -DTRACKLOADER=1  $< -o out/fast/$*.o
+else
+	$(CC) -c $(CFLAGS) -DFASTRAM=1 -DTRACKLOADER=1  $< -o out/fast/$*.o
+endif
+	@$(CC) -MM $(CFLAGS_CHECK) -DFASTRAM=1 -DTRACKLOADER=1  $< -o out/fast/$*.d
+	@mv -f out/fast/$*.d $*.d.tmp
+	@sed -e 's|.*:|out/fast/$*.o:|' < $*.d.tmp > out/fast/$*.d
+	@sed -e 's/.*://' -e 's/\\$$//' < $*.d.tmp | fmt -1 | \
+	sed -e 's/^ *//' -e 's/$$/:/' >> out/fast/$*.d
+	@rm -f $*.d.tmp
+
+
 out/workbench/%.o: %.c
 ifeq ($(USE_BIG), 1)	
-	$(CC) -c $(CFLAGS_CHECK) -DTRACKLOADER=0  $< -o out/workbench/$*.o
+	$(CC) -c $(CFLAGS_CHECK) -DFASTRAM=0 -DTRACKLOADER=0  $< -o out/workbench/$*.o
 else
-	$(CC) -c $(CFLAGS) -DTRACKLOADER=0  $< -o out/workbench/$*.o
+	$(CC) -c $(CFLAGS) -DFASTRAM=0 -DTRACKLOADER=0  $< -o out/workbench/$*.o
 endif
-	@$(CC) -MM $(CFLAGS_CHECK) -DTRACKLOADER=0  $< -o out/workbench/$*.d
+	@$(CC) -MM $(CFLAGS_CHECK) -DFASTRAM=0 -DTRACKLOADER=0  $< -o out/workbench/$*.d
 	@mv -f out/workbench/$*.d $*.d.tmp
 	@sed -e 's|.*:|out/workbench/$*.o:|' < $*.d.tmp > out/workbench/$*.d
 	@sed -e 's/.*://' -e 's/\\$$//' < $*.d.tmp | fmt -1 | \
 	sed -e 's/^ *//' -e 's/$$/:/' >> out/workbench/$*.d
 	@rm -f $*.d.tmp
-	-@$(CC) -S $(CFLAGS) -DTRACKLOADER=0  $< -o out/workbench/$*.s 
+	-@$(CC) -S $(CFLAGS) -DFASTRAM=0 -DTRACKLOADER=0  $< -o out/workbench/$*.s 
 
 out/workbench/%.o: %.s
-	$(VASM)  -DTRACKLOADER=0 $(VASM_ARGS) $< -o $@ $(INCLUDE)
-	@$(VASM) -depend=make  -DTRACKLOADER=1 $(VASM_ARGS) $(INCLUDE) $< -o $@  > out/workbench/$*.d
+	$(VASM)  -DFASTRAM=0 -DTRACKLOADER=0 $(VASM_ARGS) $< -o $@ $(INCLUDE)
+	@$(VASM) -depend=make  -DFASTRAM=0 -DTRACKLOADER=1 $(VASM_ARGS) $(INCLUDE) $< -o $@  > out/workbench/$*.d
 
 out/main.bin: out/adf/main.o $(ADF_OBJS)
-ifeq ($(FASTRAM), 1)
-	$(LD) -brawseg -q -Tlink.fastram.script.x $< $(ADF_OBJS) $(C_LIBS) -o out/reloc -M > out/adf/reloc.txt
-	@cat out/adf/reloc.txt | grep ", value " | cut -d " " -f3,7 | cut -d "," -f1 > $@.symbols
+	$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@ -M > out/adf/main.txt
+	@cat out/adf/main.txt | grep ", value " | cut -d " " -f3,7 | cut -d "," -f1 > $@.symbols
 	@cp $@.symbols debugger.syms
-	-@./ram_usage.sh
-else
-	$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@ 
-	@$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@  -M -o /tmp/main.bin > out/adf/main.txt
-	@$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -M -o /tmp/main.bin | grep ", value " | cut -d " " -f3,7 | cut -d "," -f1 > $@.symbols
-	@cp $@.symbols debugger.syms
-	-#@echo "RAM USAGE:" $$((16#`cat debugger.syms | grep endRam | sed 's/0x//' | sed 's/endRam: //'`)) bytes
 	./ram_usage.sh
 ifeq ($(USE_BIG), 1)	
 	-@#rm out/adf/big.o
 endif
+
+out/fast/main.bin: out/fast/main.o $(FAST_OBJS)
+	$(LD) -brawseg -q -Tlink.fastram.script.x $< $(FAST_OBJS) $(C_LIBS) -o out/reloc -M > out/fast/reloc.txt
+	@cat out/fast/reloc.txt | grep ", value " | cut -d " " -f3,7 | cut -d "," -f1 > $@.symbols
+	@cp $@.symbols debugger.syms
+	./ram_usage.sh
+ifeq ($(USE_BIG), 1)	
+	-@#rm out/fast/big.o
 endif
 
 bin/$(GAME_NAME): bin $(ALL_TOOLS)  $(ALL_WORKBENCH_OBJS) 
-	$(LD) $(C_LIBS_WB) -hunkattr random_c=2 -hunkattr bss_c=2 -hunkattr code_c=2 -hunkattr data_c=2  $(ALL_WORKBENCH_OBJS) -o $@ -M > out/workbench/newgame.txt
+	$(LD) $(C_LIBS_WB) -hunkattr bss_c=2 -hunkattr code_c=2 -hunkattr data_c=2  $(ALL_WORKBENCH_OBJS) -o $@ -M > out/workbench/newgame.txt
 ifeq ($(USE_BIG), 1)	
 	-@#rm out/workbench/big.o
 endif
@@ -387,6 +460,7 @@ depend:
 
 -include $(ALL_DEPENDS)
 $(ALL_OBJS): Makefile
+$(ALL_FAST_OBJS): Makefile
 $(ALL_WORKBENCH_OBJS): Makefile
 
 
