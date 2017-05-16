@@ -10,10 +10,8 @@ SECTIONS
 {
     . = 0;
     .chip : {
-        *(entry)
     	*(data_c)    
         *(DATA_C)
-	*(CHIP_DATA)
     } :chip
 
     .chip_bss (NOLOAD) : {
@@ -23,7 +21,6 @@ SECTIONS
        _startBSSChip = .;
     	*(bss_c)
         *(BSS_C)
-	*(CHIP_BSS)
        _endBSSChip = .;
        endRam = .;
     } 

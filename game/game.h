@@ -5,19 +5,24 @@
 #include <hardware/dmabits.h>
 #include <hardware/intbits.h>
 
+#define CONFIG_OCS_512     1
+#define CONFIG_OCS_FAST    2
+#define CONFIG_WORKBENCH   3
+
 //#define RELEASE                       1
 #define DEBUG                         1
-//#define HIT_HUNTER                    1
-//#define SCRIPTING                     1
-#define GAME_TURTLE                   1
-#define GAME_KEYBOARD_ENABLED         1
-#define GAME_RECORDING                1
-#define GAME_ONE_BITPLANE_SPRITE_MASK 1
-#define GAME_STARS                    1
-#define GAME_HISCORE_SAVE_ENABLE      1
-//#define GAME_BLITTER_WAIT_DEBUG       1
-#define GAME_TRIPLE_BUFFER           1
-#define GAME_DONT_CLEAR_STATIONARY_OBJECTS 1
+
+
+#if GAME_CONFIG == CONFIG_OCS_512
+#include "configs/ocs512.h"
+#elif GAME_CONFIG == CONFIG_OCS_FAST
+#include "configs/ocsfast.h"
+#elif GAME_CONFIG == CONFIG_WORKBENCH
+#include "configs/workbench.h"
+#else
+#error "No config specified"
+#endif
+
 
 #define abs(a) ((a) >= 0 ? (a) : -(a))  
 #define max(a, b) ((a) > (b) ? (a) : (b))
@@ -91,7 +96,7 @@ typedef ULONG size_t;
 #define INLINE inline
 #define STATIC_INLINE static inline
 #define NOINLINE __attribute__ ((noinline))
-#define __SECTION_DATA_C __section(data_c)
+#define __SECTION_DATA_C __attribute__  ((section ("data_c,data,chip")))
 #if TRACKLOADER==1
 #define __SECTION_RANDOM_C __section(random_c)
 #define __SECTION_RANDOM __section(random)

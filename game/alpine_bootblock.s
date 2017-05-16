@@ -376,23 +376,23 @@ MFMbufE	equ 	MFMbuf+MFMlen	;lowest free address. $372e for a full bootblock.
 mainStart:
 	if FASTRAM=1
 _startFastRam:
-	incbin	"out/reloc.fast"
+	incbin	"out/fast/reloc.fast"
 _relocateFast:
-	incbin	"out/reloc.fast.relfast"
+	incbin	"out/fast/reloc.fast.relfast"
 _relocateChip:
-	incbin	"out/reloc.fast.relchip"
+	incbin	"out/fast/reloc.fast.relchip"
 _endFastRam:
 	cnop	0,512
 _startChipRam:
-	incbin	"out/reloc.chip"	
+	incbin	"out/fast/reloc.chip"	
 _endChipRam:
 	cnop	0,512	
 _startDisk:
-	incbin	"out/reloc.disk"
+	incbin	"out/fast/reloc.disk"
 	section .lastTrack	
-	incbin  "out/reloc.lastTrack"
+	incbin  "out/fast/reloc.lastTrack"
 	else
-	incbin  "out/main.bin"
+	incbin  "out/adf/main.bin"
 	endif
 	;| cnop    0,512
 mainEnd:	

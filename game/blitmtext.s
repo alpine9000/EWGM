@@ -180,7 +180,7 @@ staticBuffer:
         dc.b    "000000000"
         dc.b    0
 
-	section data_c
+	data_c
 	xdef _text_fontData
 _text_fontData:	
 font:

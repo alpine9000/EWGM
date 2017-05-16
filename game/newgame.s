@@ -85,7 +85,7 @@ l385	equ	0
 	align 4
 	include "os.i"
 
-	section data_c
+	data_c
 
 	align 9
 	xdef _scoreBoardBitplanes
@@ -112,7 +112,7 @@ _logo_logoBitplanes:
 	cnop 0, 512
 	endif
 	
-	section data_c
+	data_c
 	align 4
 	if SFX==1
 	xdef _sound_Bud_Punch01
