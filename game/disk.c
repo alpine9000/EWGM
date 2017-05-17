@@ -42,7 +42,7 @@ td_doInit(void)
 #endif
 
 __EXTERNAL
-NOINLINE uint16_t
+__NOINLINE uint16_t
 disk_loadData(void* dest, void* src, int32_t size)
 {
 #if TRACKLOADER==1
@@ -144,8 +144,8 @@ disk_write(void* dest, void* src, int16_t numBlocks)
 
 #endif
 #endif
-  USE(src);
-  USE(dest);
-  USE(numBlocks);
+  __USE(src);
+  __USE(dest);
+  __USE(numBlocks);
   return err;
 }

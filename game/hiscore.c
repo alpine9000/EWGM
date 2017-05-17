@@ -61,7 +61,7 @@ hiscore_checksum(void)
 uint16_t
 hiscore_load(uint16_t ignoreErrors)
 {
-  USE(ignoreErrors);
+  __USE(ignoreErrors);
   uint16_t error = 0;
 #ifdef DEBUG
   if (sizeof(hiscore_disk) != 512) {
@@ -106,7 +106,7 @@ hiscore_load(uint16_t ignoreErrors)
 __EXTERNAL uint16_t
 hiscore_load(uint16_t ignoreErrors)
 {
-  USE(ignoreErrors);
+  __USE(ignoreErrors);
   int16_t loaded = 0;  
 #ifdef GAME_HISCORE_SAVE_ENABLE
   dos_init();
@@ -160,7 +160,6 @@ hiscore_render(void)
 void
 hiscore_saveData(uint16_t ignoreErrors)
 {
-  USE(ignoreErrors);
   hiscore.checksum = hiscore_checksum();
 
   memcpy(&hiscore2, &hiscore, sizeof(hiscore2));
@@ -200,8 +199,6 @@ hiscore_prompt(char* message)
   uint16_t bufferIndex = 0;
   char* congrats = I18N_CONGRATULATIONS;
 
-  USE(congrats);
-  USE(message);
   hiscore_promptBuffer[0] = 0;
 
   message_screenOn(I18N_PLEASE_ENTER_NAME);
@@ -310,7 +307,7 @@ hiscore_addScore(uint16_t playerNumber, uint32_t score)
     hiscore_saveData(0);
   }
 #else
-  USE(dirty);
+  __USE(dirty);
 #endif
 }
 

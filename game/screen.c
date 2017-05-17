@@ -1,6 +1,6 @@
 #include "game.h"
 
-NOINLINE void 
+__NOINLINE void 
 screen_pokeCopperList(frame_buffer_t frameBuffer, uint16_t volatile* copperPtr, uint16_t screenWidthBytes)
 {
   /* poke bitplane pointers into copper list */
@@ -15,10 +15,10 @@ screen_pokeCopperList(frame_buffer_t frameBuffer, uint16_t volatile* copperPtr, 
 }
 
 
-NOINLINE void 
+__NOINLINE void 
 screen_setup(uint16_t volatile* copperPtr)
 {
-  volatile uint16_t scratch;
+  //  volatile uint16_t scratch;
 
   hw_waitBlitter();  
   custom->dmacon = (DMAF_COPPER|DMAF_RASTER);  
@@ -32,7 +32,6 @@ screen_setup(uint16_t volatile* copperPtr)
   /* install copper list, then enable dma and selected interrupts */
   custom->cop1lc = (uint32_t)copperPtr;
   //scratch = custom->copjmp1;
-  USE(scratch);
 
   custom->dmacon = (DMAF_SPRITE);  
   custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER);

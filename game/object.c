@@ -189,11 +189,11 @@ object_updateAnimation(uint16_t deltaT, object_t *ptr)
   }
 }
 
-static INLINE void
+static __INLINE void
 object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t oh)
 {
 #ifdef GAME_TRIPLE_BUFFER
-  USE(frame);
+  __USE(frame);
   if (ow) {
     int16_t sx = (ox>>4)<<4;
     int16_t screenX = 0xf+(sx)-game_cameraX-game_screenScrollX;
@@ -286,7 +286,7 @@ object_restoreBackground(frame_buffer_t fb)
 
 
 
-static INLINE void
+static __INLINE void
 object_tileRender(frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t oh)
 {
   if (ow) {
@@ -472,7 +472,7 @@ object_collision(int16_t deltaT, object_t* a, object_collision_t* collision, uin
 }
 
 
-NOINLINE object_t*
+__NOINLINE object_t*
 object_add(uint16_t id, uint16_t class, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data, void (*freeData)(void*))
 {
 #ifdef DEBUG

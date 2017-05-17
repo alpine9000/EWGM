@@ -49,7 +49,7 @@ logo_pokeCopperList(frame_buffer_t frameBuffer)
 void
 logo_load(void)
 {
-  volatile uint16_t scratch;
+  //  volatile uint16_t scratch;
   extern uint8_t logo_logoBitplanes;
   disk_loadData((void*)game_onScreenBuffer, (void*)&logo_logoBitplanes, SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*LOGO_BIT_DEPTH);
 
@@ -75,7 +75,6 @@ logo_load(void)
   /* install copper list, then enable dma and selected interrupts */
   custom->cop1lc = (uint32_t)copperPtr;
   //  scratch = custom->copjmp1;
-  USE(scratch);
 
   custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
 

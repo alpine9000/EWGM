@@ -65,7 +65,7 @@ itoan(int32_t i, int16_t nChars)
     *--p = '-';
   }
 
-  USE(nChars);
+  //  USE(nChars);
   return (char *)buf + (12-nChars);
 }
 

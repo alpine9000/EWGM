@@ -8,7 +8,7 @@
 
 
 static void sort0(object_t **d){
-  USE(d);
+  __USE(d);
 }
 
 static void sort2(object_t **d){

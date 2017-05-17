@@ -93,37 +93,34 @@ typedef LONG int32_t;
 typedef ULONG uint32_t;
 typedef ULONG size_t;
 
-#define INLINE inline
-#define STATIC_INLINE static inline
-#define NOINLINE __attribute__ ((noinline))
-#define __SECTION_DATA_C __attribute__  ((section ("data_c,data,chip")))
+#define __INLINE            inline
+#define __NOINLINE          __attribute__ ((noinline))
+#define __SECTION_DATA_C    __attribute__ ((section ("data_c,data,chip")))
 #if TRACKLOADER==1
-#define __SECTION_RANDOM_C __section(random_c)
-#define __SECTION_RANDOM __section(random)
-#define __SECTION_DISK __section(section disk)
-#define __SECTION_LASTTRACK __section(section lastTrack)
+#define __SECTION_RANDOM_C  __attribute__ ((section ("random_c")))
+#define __SECTION_RANDOM    __attribute__ ((section("random")))
+#define __SECTION_DISK      __attribute__ ((section ("disk")))
+#define __SECTION_LASTTRACK __attribute__ ((section ("lastTrack")))
 #else
-#define __SECTION_RANDOM_C __attribute__ ((section ("bss_c,bss,chip")))
-#define __SECTION_RANDOM __attribute__ ((section ("bss")))
-#define __SECTION_DISK __section(section .text)
-#define __SECTION_LASTTRACK __section(section .text)
+#define __SECTION_RANDOM_C  __attribute__ ((section ("bss_c,bss,chip")))
+#define __SECTION_RANDOM    __attribute__ ((section ("bss")))
+#define __SECTION_DISK      __attribute__ ((section (".text")))
+#define __SECTION_LASTTRACK __attribute__ ((section (".text")))
 #endif
+#define __EXTERNAL          __attribute__ ((externally_visible))
+#define __REG(reg, arg)     register arg asm(reg)
+#define __USE(x) do { x = x; } while(0);
+#define custom ((custom_t)0xdff000)
 
-
-#define __EXTERNAL __attribute__((externally_visible))
 
 extern void* memcpy(void* destination, void* source, size_t num);
 extern void* memset(void *dst, int c, size_t n);
 extern int memcmp(void *s1, void *s2, size_t n);
 
-#define __section(x) __attribute__ ((section (#x))) 
-#define __REG(reg, arg) register arg asm(reg)
-#define USE(x) do { x = x; } while(0);
 
 typedef volatile uint8_t* frame_buffer_t;
 typedef volatile struct Custom* custom_t;
 
-#define custom ((custom_t)0xdff000)
 
 extern int16_t game_cameraX;
 extern int16_t game_screenScrollX;
@@ -168,10 +165,6 @@ enum {
 #include "init.h"
 #include "gfx.h"
 #include "object.h"
-
-extern object_t* game_player1;
-extern object_t* game_player2;
-
 #include "fighter.h"
 #include "player.h"
 #include "enemy.h"
@@ -199,6 +192,9 @@ extern object_t* game_player2;
 #include "alarm.h"
 #include "thing.h"
 #include "star.h"
+
+extern object_t* game_player1;
+extern object_t* game_player2;
 
 #define game_fire() ((!(hw_lastJoystickButton&0x1) && (hw_joystickButton&0x1)) || \
 			(keyboard_lastKey != keyboard_key && keyboard_key && keyboard_code == KEYBOARD_CODE_RETURN))

@@ -33,7 +33,7 @@ gfx_ctor()
 
 
 #ifndef GAME_ONE_BITPLANE_SPRITE_MASK
-INLINE void
+__INLINE void
 gfx_screenWidthBitBlit(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   volatile struct Custom* _custom = CUSTOM;
@@ -64,7 +64,7 @@ gfx_screenWidthBitBlit(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, 
   _custom->bltsize = gfx_heightLUT[h] | widthWords;
 }
 #else
-INLINE void
+__INLINE void
 gfx_screenWidthBitBlit(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   volatile struct Custom* _custom = CUSTOM;
@@ -232,7 +232,7 @@ gfx_fillRect(frame_buffer_t fb, uint16_t x, uint16_t y, uint16_t w, uint16_t h, 
   }
 }
 
-INLINE void
+__INLINE void
 gfx_fillRectSmallScreen(frame_buffer_t fb, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
 {
   static custom_t _custom = CUSTOM;
@@ -299,7 +299,7 @@ gfx_fillRectSmallScreen(frame_buffer_t fb, uint16_t x, uint16_t y, uint16_t w, u
 }
 
 #ifndef GAME_ONE_BITPLANE_SPRITE_MASK
-INLINE void
+__INLINE void
 gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   volatile struct Custom* _custom = CUSTOM;
@@ -332,7 +332,7 @@ gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_
 }
 
 #else
-INLINE void
+__INLINE void
 gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   volatile struct Custom* _custom = CUSTOM;
@@ -382,7 +382,7 @@ gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_
 #endif
 
 
-INLINE void
+__INLINE void
 gfx_setupRenderTile(void)
 {
   volatile struct Custom* _custom = CUSTOM;
@@ -398,7 +398,7 @@ gfx_setupRenderTile(void)
   _custom->bltdmod = FRAME_BUFFER_WIDTH_BYTES-2;
 }
 
-INLINE void
+__INLINE void
 gfx_renderTile(frame_buffer_t dest, int16_t x, int16_t y, frame_buffer_t tile)
 {
   volatile struct Custom* _custom = CUSTOM;
@@ -412,7 +412,7 @@ gfx_renderTile(frame_buffer_t dest, int16_t x, int16_t y, frame_buffer_t tile)
   _custom->bltsize = (16*SCREEN_BIT_DEPTH)<<6 | 1;
 }
 
-INLINE void
+__INLINE void
 gfx_quickRenderTile(frame_buffer_t dest, int16_t x, int16_t y, frame_buffer_t tile)
 {
   volatile struct Custom* _custom = CUSTOM;

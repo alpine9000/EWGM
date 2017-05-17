@@ -262,7 +262,7 @@ static object_t* level1_door;
 int16_t
 level1_addPhoneBooth(uint16_t argument)
 {
-  USE(argument);
+  __USE(argument);
   thing_add(OBJECT_ID_PHONEBOOTH, OBJECT_ANIM_PHONEBOOTH, OBJECT_ANIM_PHONEBOOTH_BROKEN, OBJECT_ANIM_PHONEBOOTH_JUNK1, game_cameraX+argument, 80);
   return 1;
 }
@@ -409,7 +409,7 @@ level1_removeDoor(void)
 static int16_t
 level1_wave3(uint16_t argument)
 {
-  USE(argument);
+  __USE(argument);
   level1_door =  object_add(/*id*/OBJECT_ID_DOOR,
 			       /*class*/OBJECT_CLASS_DECORATION,
 			       /*x*/LEVEL1_ENEMY_BOSS_START_X,
@@ -437,7 +437,7 @@ level1_wave3(uint16_t argument)
 int16_t
 level1_start(uint16_t argument)
 {
-  USE(argument);
+  __USE(argument);
   level1_addPostbox(50);
   //  level1_addPhoneBooth(50);
   //  level1_doAddBoss(50);
@@ -448,7 +448,7 @@ level1_start(uint16_t argument)
 int16_t
 level1_pause(uint16_t argument)
 {
-  USE(argument);
+  __USE(argument);
   return 0;
 }
 #endif

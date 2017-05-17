@@ -585,7 +585,7 @@ menu_loop(menu_mode_t mode)
   menu_frameBuffer = &menu_menuBitplanes;
   menu_command_t command;
   uint16_t done;
-  volatile uint16_t scratch;
+  //  volatile uint16_t scratch;
 
   menu_demoCount = 0;
   menu_lastJoystick = 0;  
@@ -657,7 +657,6 @@ menu_loop(menu_mode_t mode)
   /* install copper list, then enable dma and selected interrupts */
   custom->cop1lc = (uint32_t)copperPtr;
   //  scratch = custom->copjmp1;
-  USE(scratch);
 
   custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
 

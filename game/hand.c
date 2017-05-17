@@ -9,8 +9,8 @@ object_t* hand;
 static void
 hand_update(uint16_t deltaT, object_t* ptr)
 {
-  USE(deltaT);
-  USE(ptr);
+  __USE(deltaT);
+  __USE(ptr);
   if (hand_frame && (hw_verticalBlankCount - hand_frame > 25)) {
     if (hand_hideNextAnimation) {
       hand_frame = 0;

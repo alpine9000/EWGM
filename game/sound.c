@@ -272,7 +272,7 @@ sound_doQueue(sound_t sound)
 }
 
 
-NOINLINE void
+__NOINLINE void
 sound_playSound(sound_t sound)
 {
   sound_config_t* sptr = &sound_queue[sound];
@@ -285,7 +285,7 @@ sound_playSound(sound_t sound)
 }
 
 
-NOINLINE void
+__NOINLINE void
 sound_queueSound(sound_t sound)
 {
   sound_doQueue(sound);

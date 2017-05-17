@@ -2,7 +2,6 @@
 
 #define GAME_SCORE_RASTERLINE_CUTOFF 330
 
-#define GAME_LEVEL_BONUS_TRANSFER_RATE 32
 #ifdef DEBUG
 #define GAME_RASTERAVERAGE_LENGTH 16
 #endif
@@ -222,7 +221,7 @@ game_setBigFontColor(uint16_t topColor, uint16_t bottomColor)
 }
 
 
-static uint16_t NOINLINE
+static uint16_t __NOINLINE
 game_check25fps(void)
 {
   uint32_t count = hw_verticalBlankCount;
@@ -271,7 +270,7 @@ game_init(menu_command_t command)
 
 
 #ifdef DEBUG
-static void __attribute__ ((noinline))
+static void __NOINLINE
 game_checkCanary(void)
 {
   if (game_frameBufferData.canary1 != 0x55555555) {
@@ -431,7 +430,7 @@ game_startPlayback(void)
 }
 #endif
 
-NOINLINE void
+__NOINLINE void
 game_scoreBoardPlayerText(uint16_t playerId, char* text)
 {
   if (playerId == OBJECT_ID_PLAYER1) {
@@ -500,7 +499,6 @@ static void
 game_loadLevel(menu_command_t command)
 {
   custom->bltafwm = 0xffff;
-  USE(command);
   
 #ifdef DEBUG
   if (game_scoreBoardMode != 0) {
@@ -864,7 +862,7 @@ game_updateScoreboard(void)
 }
 
 
-static NOINLINE void
+static __NOINLINE void
 game_pauseToggle(void)
 {
   static uint16_t music;

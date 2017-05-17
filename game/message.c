@@ -47,7 +47,7 @@ message_pokeCopperList(frame_buffer_t frameBuffer)
 }
 
 
-NOINLINE void
+__NOINLINE void
 message_screenOn(char* message)
 {
 #if TRACKLOADER==1
@@ -73,7 +73,7 @@ message_screenOn(char* message)
   palette_black();
   hw_waitVerticalBlank();  
 
-  volatile uint16_t scratch;
+  //  volatile uint16_t scratch;
 
   hw_waitBlitter();  
   custom->dmacon = (DMAF_COPPER|DMAF_RASTER);
@@ -100,7 +100,6 @@ message_screenOn(char* message)
   uint16_t volatile* copperPtr = (uint16_t*)&message_copper;  
   custom->cop1lc = (uint32_t)copperPtr;
   //  scratch = custom->copjmp1;
-  USE(scratch);
 
   custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
   
@@ -111,7 +110,7 @@ message_screenOn(char* message)
   message_on = 1;
 }
 
-NOINLINE void
+__NOINLINE void
 message_screenOff(void)
 {
 #if TRACKLOADER==1
@@ -133,14 +132,14 @@ message_screenOff(void)
   }
 }
 
-NOINLINE void
+__NOINLINE void
 message_loading(char* message)
 {
 
 #if TRACKLOADER==1
   message_screenOn(message);
 #else
-  USE(message);
+  __USE(message);
   message_screenOn(" ");  
 #endif
 
@@ -155,7 +154,7 @@ message_loading(char* message)
 #endif
 }
 
-NOINLINE uint16_t
+__NOINLINE uint16_t
 message_ask(char* message)
 {
   uint16_t result = 0;

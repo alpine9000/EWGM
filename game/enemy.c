@@ -211,7 +211,7 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 }
 
 
-void NOINLINE
+void __NOINLINE
 enemy_add(uint16_t animId, uint16_t x, uint16_t y, fighter_attack_config_t* attackConfig, uint16_t attackWait, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data))
 {
   if (intelligence == 0) {

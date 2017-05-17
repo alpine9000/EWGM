@@ -121,8 +121,7 @@ player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   }
 
  ok:
-  USE(data);
-  USE(deltaT);
+  __USE(deltaT);
   uint16_t attack = 0;
   uint16_t buttonDown = 0;
   uint16_t joyUp = 0;
