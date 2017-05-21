@@ -403,15 +403,15 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
 int16_t
 object_collision(int16_t deltaT, object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy)
 {
-  int16_t vy = a->velocity.y;
-  int16_t vx = a->velocity.x;
+  int32_t vy = a->velocity.y;
+  int32_t vx = a->velocity.x;
   
   if (deltaT == 2) {
     vx *= 2;
     vy *= 2;
   }
   
-  int16_t _collision = 0;
+  int32_t _collision = 0;
   object_t* b = object_activeList;
   
   collision->up = collision->down = collision->left = collision->right = 0;
@@ -422,17 +422,17 @@ object_collision(int16_t deltaT, object_t* a, object_collision_t* collision, uin
   }
 #endif
 
-  int16_t a_y = ((object_py(a) + vy) / OBJECT_PHYSICS_FACTOR);
-  int16_t a_x1 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + a->widthOffset)-thresholdx;
-  int16_t a_x2 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + (a->width - a->widthOffset)) + thresholdx;
+  int32_t a_y = ((object_py(a) + vy) / OBJECT_PHYSICS_FACTOR);
+  int32_t a_x1 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + a->widthOffset)-thresholdx;
+  int32_t a_x2 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + (a->width - a->widthOffset)) + thresholdx;
   
   while (b) {
     if (b->collidable && b != a) {
-      int16_t b_y = ((object_y(b)));
+      int32_t b_y = ((object_y(b)));
 
       if (abs(a_y - b_y) <= thresholdy) {
-	int16_t b_x1 = ((object_x(b))) + b->widthOffset;
-	int16_t b_x2 = ((object_x(b))) + (b->width - b->widthOffset);
+	int32_t b_x1 = ((object_x(b))) + b->widthOffset;
+	int32_t b_x2 = ((object_x(b))) + (b->width - b->widthOffset);
 	
 	if (a_x1 < b_x2 && a_x2 > b_x1) {		  
 	  if (b_y >= a_y) {

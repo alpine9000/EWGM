@@ -29,8 +29,8 @@ enemy_closestPlayer(object_t* ptr)
     return 0;
   }
 
-  int player1Diff = abs(object_x(ptr)-object_x(game_player1)) + abs(object_y(ptr)-object_y(game_player1));
-  int player2Diff = abs(object_x(ptr)-object_x(game_player2)) + abs(object_y(ptr)-object_y(game_player2));
+  int32_t player1Diff = abs(object_x(ptr)-object_x(game_player1)) + abs(object_y(ptr)-object_y(game_player1));
+  int32_t player2Diff = abs(object_x(ptr)-object_x(game_player2)) + abs(object_y(ptr)-object_y(game_player2));
 
   if (player1Diff < player2Diff) {
     return game_player1;

@@ -225,7 +225,7 @@ static uint16_t __NOINLINE
 game_check25fps(void)
 {
   uint32_t count = hw_verticalBlankCount;
-  for (volatile int i = 0; i < 100000; i++);
+  for (volatile int32_t i = 0; i < 100000; i++);
   return hw_verticalBlankCount - count > 25;  
 }
 

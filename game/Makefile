@@ -40,7 +40,7 @@ C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text
 SRCS=blitmtext.s hw_asm.s trackloader.s palette_asm.s  P6112-Play.s music_asm.s keyboard_asm.s sg_trackdisk.s
 MODULES=P61.jojo_ingame.bin P61.jojo_boss.bin
 SOUND_FILES=Terence_punch01.wav Terence_punch02.wav Bud_Punch01.wav enemy01.wav enemy02.wav enemy03.wav pop.wav coin1.wav
-LEVELS=1
+LEVELS=1 2
 IMAGES=font8x8.png menu.png scoreboard.png logo.png #popup.png
 
 
@@ -78,19 +78,22 @@ MODULE_HEADERS=$(addprefix out/, $(MODULES:.bin=.h))
 IMAGEDATA=$(addprefix out/, $(IMAGES:.png=.bin))
 RAW_SOUND_FILES=$(addprefix out/, $(SOUND_FILES:.wav=.raw))
 ASSETS=$(IMAGEDATA) $(RAW_SOUND_FILES)
-ASM_OBJS=$(SRCS:.s=.o)
+ASM_OBJS=$(SRCS:.s=.o) 
 C_OBJS=$(C_SRCS:.c=.o)
 ifeq ($(USE_BIG), 1)
 OBJS=$(ASM_OBJS) big.o
 else
 OBJS=$(ASM_OBJS) $(C_OBJS) 
 endif
-ADF_C_OBJS=$(addprefix out/adf/, $(C_OBJS)) 
-ADF_OBJS=$(addprefix out/adf/, $(OBJS))
-FAST_C_OBJS=$(addprefix out/fast/, $(C_OBJS)) 
-FAST_OBJS=$(addprefix out/fast/, $(OBJS)) 
-WORKBENCH_C_OBJS=$(addprefix out/workbench/, $(C_OBJS)) 
-WORKBENCH_OBJS=$(addprefix out/workbench/, $(OBJS)) 
+ADF_C_OBJS=$(addprefix out/adf/, $(C_OBJS))
+ADF_LEVEL_OBJS=$(addsuffix .o,$(addprefix out/adf/level_data_, $(LEVELS)))
+ADF_OBJS=$(addprefix out/adf/, $(OBJS)) $(ADF_LEVEL_OBJS)
+FAST_C_OBJS=$(addprefix out/fast/, $(C_OBJS))
+FAST_LEVEL_OBJS=$(addsuffix .o,$(addprefix out/fast/level_data_, $(LEVELS)))
+FAST_OBJS=$(addprefix out/fast/, $(OBJS)) $(FAST_LEVEL_OBJS)
+WORKBENCH_C_OBJS=$(addprefix out/workbench/, $(C_OBJS))
+WORKBENCH_LEVEL_OBJS=$(addsuffix .o,$(addprefix out/workbench/level_data_, $(LEVELS)))
+WORKBENCH_OBJS=$(addprefix out/workbench/, $(OBJS)) $(WORKBENCH_LEVEL_OBJS)
 ALL_OBJS=out/adf/main.o $(ADF_OBJS)
 ALL_FAST_OBJS=out/fast/main.o $(FAST_OBJS)
 ALL_WORKBENCH_OBJS=out/workbench/main.o $(WORKBENCH_OBJS)
@@ -206,10 +209,7 @@ out/workbench/sprite.o: $(HSPRITE_HEADERS)
 out/background_%-map.c: assets/background_%.tmx out
 	$(MAPGEN) --c --depth=5 --input=$<
 	@mv background_$*-map.c out
-	@mv item_$*-sprites.c out
 	@rm background_$*-indexes.c
-	@rm item_$*-indexes.c
-	@rm item_$*-map.c
 	@rm background_$*-sprites.c
 
 out/sprite_%.h: assets/sprite_%.png palettes/palette_%.pal
@@ -441,11 +441,11 @@ endif
 	-cp $@ ~/A1200/BlockySkies
 	-cp $@ ~/A4000/BlockySkies
 	rm -f bin/vegeta.adf
-	../tools/amitools/xdftool.py bin/vegeta.adf format "vegeta" + write bin/newgame
-	../tools/amitools/xdftool.py bin/vegeta.adf boot install
-	../tools/amitools/xdftool.py bin/vegeta.adf makedir s
-	../tools/amitools/xdftool.py bin/vegeta.adf write support/EndRun
-	../tools/amitools/xdftool.py bin/vegeta.adf write support/startup-sequence s
+	-../tools/amitools/xdftool.py bin/vegeta.adf format "vegeta" + write bin/newgame
+	-../tools/amitools/xdftool.py bin/vegeta.adf boot install
+	-../tools/amitools/xdftool.py bin/vegeta.adf makedir s
+	-../tools/amitools/xdftool.py bin/vegeta.adf write support/EndRun
+	-../tools/amitools/xdftool.py bin/vegeta.adf write support/startup-sequence s
 	@ls -l bin/$(GAME_NAME)
 
         #cp assets/BlockySkies.info bin

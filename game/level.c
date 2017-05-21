@@ -2,9 +2,16 @@
 
 __SECTION_RANDOM_C level_t level;
 
+#if 0
 #define __LEVEL_NUMBER       1
 #include "define_level.h"
 
+#define __LEVEL_NUMBER       2
+#include "define_level.h"
+#endif
+
+extern level_t level_level1;
+extern level_t level_level2;
 
 typedef struct {
   level_t* levelData;
@@ -19,7 +26,13 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
     .instructions = level1_instructions,
     .moduleIndex = 0,
     .initFunctor = 0,
-  }
+  },
+  { 
+    .levelData = &level_level2,
+    .instructions = level1_instructions,
+    .moduleIndex = 0,
+    .initFunctor = 0,
+  }    
 };
 
 static uint16_t level_current = 0xFFFF;

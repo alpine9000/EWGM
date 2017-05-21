@@ -1,7 +1,7 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
-#define LEVEL_NUM_LEVELS 1
+#define LEVEL_NUM_LEVELS 2
 
 typedef struct {
   uint16_t tileAddresses[MAP_TILE_WIDTH][16];
@@ -23,7 +23,7 @@ typedef struct {
   record_t* record;
 #endif
   void (*initFunctor)(void);
-} level_t DISK_SECTOR_ALIGN;
+} level_t;
 
 extern level_t level;
 

@@ -22,10 +22,15 @@ SECTIONS
         endCode = .;
     } > disk
 
-    noload ALIGN(512) : {
+    noload  : {
+	. = ALIGN(512);    
         startData = .;
+        level_data_1.o(disk);
+	. = ALIGN(512);	
+        level_data_2.o(disk);
+	. = ALIGN(512);
 	*(disk)
-        endData = .;
+	endData = .;
     } > disk
 
     lastTrack (LOAD) : {
