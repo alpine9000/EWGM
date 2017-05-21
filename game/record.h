@@ -24,6 +24,7 @@ typedef enum {
   RECORD_PLAYBACK = 2
 } record_state_t;
 
+/* 7*4 + 2 + 4 + 2 + 8 * (1024+128) */
 typedef struct {
   uint32_t size;
   record_state_t state;

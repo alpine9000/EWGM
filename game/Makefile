@@ -1,13 +1,13 @@
 # frequently changed config items
-KEEP_ASM=1
+#KEEP_ASM=1
 USE_BIG=1
 SFX=1
 PHOTON_TRACKLOADER=0
 MUSIC_PARALLEL_LOAD=0
 
-ADF_DEFINES=-DTRACKLOADER=1 -DFASTRAM=0 -DGAME_CONFIG=CONFIG_OCS_512
-FAST_DEFINES=-DTRACKLOADER=1 -DFASTRAM=1 -DGAME_CONFIG=CONFIG_OCS_FAST
-WORKBENCH_DEFINES=-DTRACKLOADER=0 -DFASTRAM=0 -DGAME_CONFIG=CONFIG_WORKBENCH
+ADF_DEFINES=-DTRACKLOADER=1 -DFASTRAM=0 -DGAME_CONFIG=CONFIG_OCS_512 -Iout/adf
+FAST_DEFINES=-DTRACKLOADER=1 -DFASTRAM=1 -DGAME_CONFIG=CONFIG_OCS_FAST -Iout/fast
+WORKBENCH_DEFINES=-DTRACKLOADER=0 -DFASTRAM=0 -DGAME_CONFIG=CONFIG_WORKBENCH -Iout/workbench
 
 # programs and paths
 #CC=/usr/local/amiga/vgcc/bin/m68k-amigaosvasm-gcc
@@ -37,7 +37,7 @@ FAST_PROGRAM_BIN=out/fast/reloc.fast
 
 # all the components that form the game
 C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text.c sound.c music.c keyboard.c menu.c message.c record.c  string.c hw.c hiscore.c dos.c panic.c script.c object.c object_data.c sort.c player.c enemy.c logo.c fighter.c hand.c conductor.c alarm.c thing.c level1.c star.c random.c
-SRCS=blitmtext.s hw_asm.s trackloader.s palette_asm.s  P6112-Play.s music_asm.s keyboard_asm.s sg_trackdisk.s
+SRCS=blitmtext.s hw_asm.s trackloader.s palette_asm.s  P6112-Play.s music_asm.s keyboard_asm.s sg_trackdisk.s depacker_doynax.s
 MODULES=P61.jojo_ingame.bin P61.jojo_boss.bin
 SOUND_FILES=Terence_punch01.wav Terence_punch02.wav Bud_Punch01.wav enemy01.wav enemy02.wav enemy03.wav pop.wav coin1.wav
 LEVELS=1 2
@@ -86,14 +86,15 @@ else
 OBJS=$(ASM_OBJS) $(C_OBJS) 
 endif
 ADF_C_OBJS=$(addprefix out/adf/, $(C_OBJS))
-ADF_LEVEL_OBJS=$(addsuffix .o,$(addprefix out/adf/level_data_, $(LEVELS)))
-ADF_OBJS=$(addprefix out/adf/, $(OBJS)) $(ADF_LEVEL_OBJS)
+ADF_LEVEL_UNCOMPRESSED=$(addsuffix .c,$(addprefix out/adf/leveldata_, $(LEVELS)))
+ADF_OBJS=$(addprefix out/adf/, $(OBJS))
 FAST_C_OBJS=$(addprefix out/fast/, $(C_OBJS))
-FAST_LEVEL_OBJS=$(addsuffix .o,$(addprefix out/fast/level_data_, $(LEVELS)))
-FAST_OBJS=$(addprefix out/fast/, $(OBJS)) $(FAST_LEVEL_OBJS)
+FAST_LEVEL_OBJS=$(addsuffix .o,$(addprefix out/fast/leveldata_, $(LEVELS)))
+FAST_OBJS=$(addprefix out/fast/, $(OBJS))
+FAST_LEVEL_COMPRESSED=$(addsuffix .c,$(addprefix out/fast/leveldata_, $(LEVELS)))
 WORKBENCH_C_OBJS=$(addprefix out/workbench/, $(C_OBJS))
-WORKBENCH_LEVEL_OBJS=$(addsuffix .o,$(addprefix out/workbench/level_data_, $(LEVELS)))
-WORKBENCH_OBJS=$(addprefix out/workbench/, $(OBJS)) $(WORKBENCH_LEVEL_OBJS)
+WORKBENCH_LEVEL_COMPRESSED=$(addsuffix .c,$(addprefix out/workbench/leveldata_, $(LEVELS)))
+WORKBENCH_OBJS=$(addprefix out/workbench/, $(OBJS))
 ALL_OBJS=out/adf/main.o $(ADF_OBJS)
 ALL_FAST_OBJS=out/fast/main.o $(FAST_OBJS)
 ALL_WORKBENCH_OBJS=out/workbench/main.o $(WORKBENCH_OBJS)
@@ -167,11 +168,11 @@ $(FAST): out/fast/bootblock.bin
 wb: | out version libgcc/out/gcc.lib $(ALL_TOOLS) bin/$(GAME_NAME)
 
 out/adf/star.o: star.c out/star-sprite.h
-out/adf/level.o: level.c $(LEVEL_FILES) out/demo.h
+out/adf/level.o: $(ADF_LEVEL_UNCOMPRESSED) level.c $(LEVEL_FILES) out/demo.h
 out/fast/star.o: star.c out/star-sprite.h
-out/fast/level.o: level.c $(LEVEL_FILES) out/demo.h
+out/fast/level.o: $(FAST_LEVEL_COMPRESSED) level.c $(FAST_LEVEL_COMPRESSED) out/demo.h
 out/workbench/star.o: star.c out/star-sprite.h
-out/workbench/level.o: level.c $(LEVEL_FILES)
+out/workbench/level.o: $(WORKBENCH_LEVEL_COMPRESSED) level.c
 
 out/Terence_punch01.raw: assets/Terence_punch01.wav
 	sox  -R -v 1.0 $< -b 8 -c 1 -r 11025 -e signed $@
@@ -264,6 +265,31 @@ out/fast/bootblock.bin: out/fast/bootblock.o
 out/font%.bin: assets/font%.png palettes/font.pal
 	$(IMAGECON) --input $< $(IMAGECON_ARGS) --output-bitplanes --output-grey-palette-asm --output-palette-asm --output-palette --output out/font$* --colors=2 --use-palette=palettes/font.pal --full-color-palette-file --output-mask --transparent-color=0,0,0 --output-png
 
+
+out/fast/level_data_1.o: $(LEVEL_FILES)
+out/fast/level_data_2.o: $(LEVEL_FILES)
+out/fast/level_data_%.bin: out/fast/level_data_%.o
+	$(LD) -brawbin1 out/fast/level_data_$*.o -o out/fast/level_data_$*.bin
+out/fast/leveldata_%.c: out/fast/level_data_%.bin
+	../tools/doynamite68k/out/lz -o out/fast/level_data_$*.bin.lz out/fast/level_data_$*.bin
+	cat out/fast/level_data_$*.bin.lz | $(BIN2C) > $@
+
+out/workbench/level_data_1.o: $(LEVEL_FILES)
+out/workbench/level_data_2.o: $(LEVEL_FILES)
+out/workbench/level_data_%.bin: out/workbench/level_data_%.o
+	$(LD) -brawbin1 out/workbench/level_data_$*.o -o out/workbench/level_data_$*.bin
+out/workbench/leveldata_%.c: out/workbench/level_data_%.bin
+	../tools/doynamite68k/out/lz -o out/workbench/level_data_$*.bin.lz out/workbench/level_data_$*.bin
+	cat out/workbench/level_data_$*.bin.lz | $(BIN2C) > $@
+
+out/adf/level_data_1.o: $(LEVEL_FILES)
+out/adf/level_data_2.o: $(LEVEL_FILES)
+out/adf/level_data_%.bin: out/adf/level_data_%.o
+	$(LD) -brawbin1 out/adf/level_data_$*.o -o out/adf/level_data_$*.bin
+out/adf/leveldata_%.c: out/adf/level_data_%.bin
+	cat out/adf/level_data_$*.bin | $(BIN2C) > $@
+	#../tools/doynamite68k/out/lz -o out/adf/level_data_$*.bin.lz out/adf/level_data_$*.bin
+	#cat out/adf/level_data_$*.bin.lz | $(BIN2C) > $@
 
 #./out/logo.pal: out/logo.bin
 #./out/menu.pal: out/menu.bin

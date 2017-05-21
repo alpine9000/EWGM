@@ -9,7 +9,7 @@ extern uint8_t* disk_dataStart;
 
 
 #if TRACKLOADER==1
-#define DISK_SECTOR_ALIGN //__attribute__ ((aligned (512)))
+#define DISK_SECTOR_ALIGN __attribute__ ((aligned (512)))
 #else
 #define DISK_SECTOR_ALIGN
 #endif

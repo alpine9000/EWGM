@@ -44,12 +44,12 @@ static volatile __SECTION_RANDOM_C struct framebuffeData {
   uint8_t frameBuffer1[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES+1+32)];
   uint32_t overdraw2;
   uint8_t frameBuffer2[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES+1+32)];
-#ifdef DEBUG
-  uint32_t canary2;
-#endif
 #ifdef GAME_TRIPLE_BUFFER
   uint8_t frameBuffer3[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES+1+32)];
 #endif
+#ifdef DEBUG
+  uint32_t canary2;
+#endif  
 } game_frameBufferData;
 
 typedef union {
@@ -548,10 +548,6 @@ game_loadLevel(menu_command_t command)
 
   level_load(game_level);
 
-  if (level.initFunctor) {
-    level.initFunctor();
-  }
-  
   tile_init();
 #ifdef GAME_TRIPLE_BUFFER
   tile_renderScreen(game_offScreenBuffer, game_onScreenBuffer, game_backScreenBuffer);

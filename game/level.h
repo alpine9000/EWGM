@@ -22,7 +22,7 @@ typedef struct {
   uint8_t recordData[sizeof(record_t)];
   record_t* record;
 #endif
-  void (*initFunctor)(void);
+  __attribute__ ((aligned (4))) uint32_t end; // needed for packer
 } level_t;
 
 extern level_t level;
