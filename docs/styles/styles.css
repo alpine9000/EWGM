@@ -12,8 +12,8 @@ body {
 
 h1 {
     text-align: center;
-    color: #fb5;
-    text-shadow: 2px 2px rgb(13, 103, 151);
+    color: #de8909;
+    text-shadow: 2px 2px #67563d;
 }
 
 h2 {
@@ -21,11 +21,11 @@ h2 {
 }
 
 a:link {
-    color: #fb5;
+    color: #de8909;
 }
 
 a:visited {
-    color: #fb5;
+    color: #de8909;
 }
 
 a:hover {
@@ -45,12 +45,12 @@ a.download {
 }
 
 a.download:link {
-    color: #fb5;
+    color: #de8909;
     
 }
 
 a.download:visited {
-    color: #fb5;
+    color: #de8909;
 }
 
 a.download:hover {
@@ -73,11 +73,11 @@ a.bottomLink {
 }
 
 a.bottomLink:link {
-    color: #fb5;
+    color: #de8909;
 }
 
 a.bottomLink:visited {
-    color: #fb5;
+    color: #de8909;
 }
 
 a.bottomLink:hover {
