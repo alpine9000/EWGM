@@ -1,0 +1,122 @@
+@font-face {
+    font-family:Topaz;
+    src: url(fonts/Topaz_a1200_v1.0.ttf) format("truetype");
+}
+
+body {
+    background-color: black;
+    color: #DCDCDC;
+    font-family: Topaz;
+    text-align: center;
+}
+
+h1 {
+    text-align: center;
+    color: #69EBFF;
+    text-shadow: 2px 2px rgb(13, 103, 151);
+}
+
+h2 {
+   color: #fafafa;
+}
+
+a:link {
+    color: #DCDCDC;
+}
+
+a:visited {
+    color: #DCDCDC;
+}
+
+a:hover {
+    color: #fff;
+}
+
+a:active {
+    color: #fff;
+}
+
+a.download {
+    width: 33%;
+    text-align: center;
+    display: inline-block;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+a.download:link {
+    color: #69EBFF;
+    
+}
+
+a.download:visited {
+    color: #69EBFF;
+}
+
+a.download:hover {
+    color: #41c3cd;
+}
+
+a.download:active {
+    color: #41c3cd;
+}
+
+a.bottomLink {
+   display: inline-block;	  
+   width: 6em;
+   padding-left: 1em;
+   padding-right: 1em;   
+   text-align: center;
+   width: 33%;
+   padding-left: 0px;	
+   padding-right: 0px;	
+}
+
+a.bottomLink:link {
+    color: #69EBFF;
+}
+
+a.bottomLink:visited {
+    color: #69EBFF;
+}
+
+a.bottomLink:hover {
+    color: #AEEBFF;
+}
+
+a.bottomLink:active {
+    color: #AEEBFF;
+}
+
+.main {
+   width: 600px;
+   display: inline-block;
+   text-align: left;
+}
+
+.footer {
+   width: 600px;
+   display: inline-block;
+   text-align: center;
+   margin-bottom: 0.5em;
+}
+
+.danger {
+   color: red;
+   font-weight: bold;
+}
+
+.good {
+    color: #15DE15;
+    font-weight: bold;
+}
+
+.centered {
+    text-align: center;
+}
+
+.pig {
+    position: relative;
+    top: 10px;
+    left: -20px;
+}
