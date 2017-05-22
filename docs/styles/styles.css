@@ -55,11 +55,11 @@ a.download:visited {
 }
 
 a.download:hover {
-    color: #ffb;
+    color: #fff;
 }
 
 a.download:active {
-    color: #ffb;
+    color: #de8909;        
 }
 
 a.bottomLink {
@@ -82,11 +82,11 @@ a.bottomLink:visited {
 }
 
 a.bottomLink:hover {
-    color: #ffb;
+    color: #fff;
 }
 
 a.bottomLink:active {
-    color: #ffb;
+    color: #de8909;    
 }
 
 .main {
