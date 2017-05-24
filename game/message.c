@@ -6,11 +6,14 @@ static char* message_message;
 static frame_buffer_t message_fb;
 static int16_t message_loadingState;
 #endif
-static uint16_t message_on = 0;
+uint16_t message_on = 0;
 
 
 typedef struct {
   uint16_t bpl1[SCREEN_BIT_DEPTH*2*2];
+  uint16_t color1[2];  
+  uint16_t wait[2];
+  uint16_t color2[2];
   uint16_t end[2];
 } message_copper_t;
 
@@ -28,6 +31,10 @@ static  __SECTION_DATA_C  message_copper_t message_copper  = {
     BPL5PTH,0x0000,
   },
 
+  .color1 = { COLOR01, 0x000},
+  .wait = { ((RASTER_Y_START+PLAYAREA_HEIGHT)<<8)|0xe1, 0xfffe},
+  .color2 = {COLOR01, 0x000},
+  
   .end = {0xFFFF, 0xFFFE}
 };
 
@@ -50,6 +57,10 @@ message_pokeCopperList(frame_buffer_t frameBuffer)
 __NOINLINE void
 message_screenOn(char* message)
 {
+  if (game_messageBuffer != game_offScreenBuffer) {
+    game_switchFrameBuffers();
+  }
+  
 #if TRACKLOADER==1
   message_loadingAnimation = 0;
   hw_interruptsGameInit();
@@ -57,19 +68,22 @@ message_screenOn(char* message)
   custom->dmacon = DMAF_SPRITE;
   
   if (message_on) {
-    hw_waitVerticalBlank();    
+    hw_waitVerticalBlank();
+    message_copper.color1[1] = 0x000;    
     palette_black();
-    gfx_fillRectSmallScreen(game_offScreenBuffer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
-    text_drawMaskedText8Blitter(game_offScreenBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)+4);
-    hw_waitBlitter();
+    gfx_fillRectSmallScreen(game_messageBuffer, 0, 0, SCREEN_WIDTH, PLAYAREA_HEIGHT, 0);
+    text_drawMaskedText8Blitter(game_messageBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)+4);  
+    hw_waitBlitter();    
     custom->bltafwm = 0xffff;
-    custom->color[1] = 0xfff;  
+    //custom->color[1] = 0xfff;
+    message_copper.color1[1] = 0xfff;
     custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
     return;
   }
 
   hw_waitBlitter();
   hw_waitVerticalBlank();
+  message_copper.color1[1] = 0x000;  
   palette_black();
   hw_waitVerticalBlank();  
 
@@ -78,8 +92,13 @@ message_screenOn(char* message)
   hw_waitBlitter();  
   custom->dmacon = (DMAF_COPPER|DMAF_RASTER);
 
-  gfx_fillRectSmallScreen(game_offScreenBuffer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
-  text_drawMaskedText8Blitter(game_offScreenBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)+4);
+  gfx_fillRectSmallScreen(game_messageBuffer, 0, 0, SCREEN_WIDTH, PLAYAREA_HEIGHT, 0);
+
+#ifdef DEBUG
+  game_checkCanary();
+#endif
+  
+  text_drawMaskedText8Blitter(game_messageBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)+4);
 
   hw_waitBlitter();
   custom->bltafwm = 0xffff;
@@ -87,7 +106,7 @@ message_screenOn(char* message)
   /* set up playfield */
   
   custom->diwstrt = (RASTER_Y_START<<8)|RASTER_X_START;
-  custom->diwstop = ((LOGO_RASTER_Y_STOP-256)<<8)|(RASTER_X_STOP-256);
+  custom->diwstop = ((SCREEN_RASTER_Y_STOP-256)<<8)|(RASTER_X_STOP-256);
 
   custom->ddfstrt = (RASTER_X_START/2-SCREEN_RES);
   custom->ddfstop = (RASTER_X_START/2-SCREEN_RES)+(8*((SCREEN_WIDTH/16)-1));
@@ -95,7 +114,9 @@ message_screenOn(char* message)
   custom->bpl1mod = (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-SCREEN_WIDTH_BYTES;
   custom->bpl2mod = (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-SCREEN_WIDTH_BYTES;
 
-  message_pokeCopperList(game_offScreenBuffer);  
+  message_pokeCopperList(game_messageBuffer);  
+  // in case previous copper list changed color registers
+  palette_black();
   /* install copper list, then enable dma and selected interrupts */
   uint16_t volatile* copperPtr = (uint16_t*)&message_copper;  
   custom->cop1lc = (uint32_t)copperPtr;
@@ -105,7 +126,8 @@ message_screenOn(char* message)
   
   hw_waitVerticalBlank();
 
-  custom->color[1] = 0xfff;  
+  //custom->color[1] = 0xfff;
+  message_copper.color1[1] = 0xfff;  
 
   message_on = 1;
 }
@@ -121,9 +143,10 @@ message_screenOff(void)
   hw_waitVerticalBlank();
   
   if (message_on) {
+    message_copper.color1[1] = 0x000;    
     palette_black();
     hw_waitVerticalBlank();    
-    gfx_fillRectSmallScreen(game_onScreenBuffer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    gfx_fillRectSmallScreen(game_messageBuffer, 0, 0, SCREEN_WIDTH, PLAYAREA_HEIGHT, 0);
     hw_waitBlitter();    
     hw_waitVerticalBlank();
     screen_setup((uint16_t*)&copper);
@@ -146,7 +169,7 @@ message_loading(char* message)
   hw_waitBlitter();
   hw_waitVerticalBlank();
 #if TRACKLOADER==1
-  message_fb = game_offScreenBuffer;
+  message_fb = game_messageBuffer;
   message_message = message;
   message_loadingAnimation = 1;
   message_loadingState = 0;

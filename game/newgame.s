@@ -85,9 +85,13 @@ l385	equ	0
 	align 4
 	include "os.i"
 
-	data_c
-
-	align 9
+	if TRACKLOADER=1
+	section disk
+	cnop 0,512	
+	else
+	section data
+	endif	
+	
 	xdef _scoreBoardBitplanes
 _scoreBoardBitplanes:
 	incbin  "out/scoreboard.bin"	

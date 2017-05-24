@@ -52,10 +52,15 @@ __SECTION_RANDOM static uint16_t level_buffer[100000/2];
 void
 level_load(uint16_t index)
 {
+  if (!game_scoreboardLoaded) {
+    message_loading(I18N_LOADING);    
+    extern uint8_t scoreBoardBitplanes;
+    disk_loadData((void*)game_scoreBoardFrameBuffer, &scoreBoardBitplanes, SCOREBOARD_BUFFER_SIZE_BYTES);
+    game_scoreboardLoaded = 1;
+  }
+  
   if (index == level_current) {
-    message_loading(I18N_LOADING);  
-    music_play(level_levels[index].moduleIndex);        
-    //    disk_loadData(&level, level_levels[index].levelData, sizeof(level.tileAddresses) /*+ sizeof(level.item_spriteIds)*/);
+    music_play(level_levels[index].moduleIndex);
     message_screenOff();    
     return;
   }
@@ -67,8 +72,10 @@ level_load(uint16_t index)
   }
 #endif
 
-  message_loading(I18N_LOADING);
-
+  if (!message_on) {
+    message_loading(I18N_LOADING);
+  }
+  
   music_play(level_levels[index].moduleIndex);
 
 #ifdef GAME_COMPRESS_LEVEL_DATA 

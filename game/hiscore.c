@@ -203,13 +203,13 @@ hiscore_prompt(char* message)
 
   message_screenOn(I18N_PLEASE_ENTER_NAME);
   
-  text_drawMaskedText8Blitter(game_offScreenBuffer, congrats, (SCREEN_WIDTH/2)-(strlen(congrats)*4), (SCREEN_HEIGHT/2)-22-16);
-  text_drawMaskedText8Blitter(game_offScreenBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)-22);
+  text_drawMaskedText8Blitter(game_messageBuffer, congrats, (SCREEN_WIDTH/2)-(strlen(congrats)*4), (SCREEN_HEIGHT/2)-22-16);
+  text_drawMaskedText8Blitter(game_messageBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)-22);
 
   int x = (SCREEN_WIDTH/2)-8;
   int y = (SCREEN_HEIGHT/2)+22;
 
-  text_drawMaskedText8Blitter(game_offScreenBuffer, "___", x, y);
+  text_drawMaskedText8Blitter(game_messageBuffer, "___", x, y);
 
   for (;;) {
     char str[2] = {0,0};
@@ -222,16 +222,16 @@ hiscore_prompt(char* message)
 #endif
     
     if (keyboard_key) {            
-      //gfx_fillRectSmallScreen(game_offScreenBuffer, 0, 0, 16*8, 8, 0);
-      //text_drawMaskedText8Blitter(game_offScreenBuffer, itoa(keyboard_code), 0, 0);
+      //gfx_fillRectSmallScreen(game_messageBuffer, 0, 0, 16*8, 8, 0);
+      //text_drawMaskedText8Blitter(game_messageBuffer, itoa(keyboard_code), 0, 0);
       
       if (keyboard_code == KEYBOARD_CODE_BACKSPACE) {
 	if (bufferIndex > 0) {
 	  x-=8;
 	  hiscore_promptBuffer[bufferIndex] = 0;
 	  bufferIndex--;
-	  gfx_fillRectSmallScreen(game_offScreenBuffer, x, y, 8, 8, 0);
-	  text_drawMaskedText8Blitter(game_offScreenBuffer, "_", x, y);	
+	  gfx_fillRectSmallScreen(game_messageBuffer, x, y, 8, 8, 0);
+	  text_drawMaskedText8Blitter(game_messageBuffer, "_", x, y);	
 	}
       } else if (keyboard_code != KEYBOARD_CODE_RETURN) {
 	if (bufferIndex < 3) {
@@ -239,8 +239,8 @@ hiscore_prompt(char* message)
 	  bufferIndex++;
 	  hiscore_promptBuffer[bufferIndex] = 0;	
 	  str[0] = keyboard_key;
-	  gfx_fillRectSmallScreen(game_offScreenBuffer, x, y, 8, 8, 0);
-	  text_drawMaskedText8Blitter(game_offScreenBuffer, str, x, y);
+	  gfx_fillRectSmallScreen(game_messageBuffer, x, y, 8, 8, 0);
+	  text_drawMaskedText8Blitter(game_messageBuffer, str, x, y);
 	  x+=8;
 	}
       }

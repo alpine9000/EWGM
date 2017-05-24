@@ -71,7 +71,7 @@ logo_load(void)
   custom->bpl1mod = (MENU_SCREEN_WIDTH_BYTES*LOGO_BIT_DEPTH)-MENU_SCREEN_WIDTH_BYTES;
   custom->bpl2mod = (MENU_SCREEN_WIDTH_BYTES*LOGO_BIT_DEPTH)-MENU_SCREEN_WIDTH_BYTES;
 
-  logo_pokeCopperList(game_onScreenBuffer);    
+  logo_pokeCopperList(game_menuBuffer);    
   /* install copper list, then enable dma and selected interrupts */
   custom->cop1lc = (uint32_t)copperPtr;
   //  scratch = custom->copjmp1;

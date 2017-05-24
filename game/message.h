@@ -15,3 +15,5 @@ message_loadingAnimate(void);
 extern uint16_t message_loadingAnimation;
 #endif
 #endif
+
+extern uint16_t message_on;

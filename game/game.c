@@ -17,6 +17,8 @@ game_scrollBackground(void);
 
 frame_buffer_t game_offScreenBuffer;
 frame_buffer_t game_onScreenBuffer;
+frame_buffer_t game_menuBuffer;
+frame_buffer_t game_messageBuffer;
 frame_buffer_t game_scoreBoardFrameBuffer;
 #ifdef GAME_TRIPLE_BUFFER
 frame_buffer_t game_backScreenBuffer;
@@ -35,18 +37,20 @@ uint32_t game_player1Score;
 uint32_t game_player2Score;
 uint16_t game_difficulty;
 uint16_t game_killScore;
+uint16_t game_scoreboardLoaded;
 
 static volatile __SECTION_RANDOM_C struct framebuffeData {
 #ifdef DEBUG
   uint32_t canary1;
 #endif
-  uint32_t overdraw1;
-  uint8_t frameBuffer1[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES+1+32)];
-  uint32_t overdraw2;
-  uint8_t frameBuffer2[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES+1+32)];
+  // uint32_t overdraw1;
+  uint8_t frameBuffer1[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES)];
+  //  uint32_t overdraw2;
+  uint8_t frameBuffer2[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES)];
 #ifdef GAME_TRIPLE_BUFFER
-  uint8_t frameBuffer3[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES+1+32)];
+  uint8_t frameBuffer3[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES)];
 #endif
+  uint8_t scoreBoardBuffer[SCOREBOARD_BUFFER_SIZE_BYTES];  
 #ifdef DEBUG
   uint32_t canary2;
 #endif  
@@ -240,16 +244,31 @@ game_ctor(void)
 #endif
   
   game_numPlayers = 1;
+  game_scoreboardLoaded = 0;
   game_onScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer2;
   game_offScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer1;
+  game_messageBuffer  = (frame_buffer_t)&game_frameBufferData.frameBuffer1;
+  game_menuBuffer  = (frame_buffer_t)&game_frameBufferData.frameBuffer2;
 #ifdef GAME_TRIPLE_BUFFER
   game_backScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer3;
 #endif
-  extern uint8_t scoreBoardBitplanes;
-  game_scoreBoardFrameBuffer = &scoreBoardBitplanes;
+  game_scoreBoardFrameBuffer = (frame_buffer_t)&game_frameBufferData.scoreBoardBuffer;
   game_25fps = game_check25fps();
 }
 
+
+#ifdef DEBUG
+void __NOINLINE
+game_checkCanary(void)
+{
+  if (game_frameBufferData.canary1 != 0x55555555) {
+    PANIC("game_finish: dead canary 1");
+  }
+  if (game_frameBufferData.canary2 != 0xaaaaaaaa) {
+    PANIC("game_finish: dead canary 2");
+  }
+}
+#endif
 
 static void
 game_init(menu_command_t command)
@@ -267,20 +286,6 @@ game_init(menu_command_t command)
 
   game_newGame(command);
 }
-
-
-#ifdef DEBUG
-static void __NOINLINE
-game_checkCanary(void)
-{
-  if (game_frameBufferData.canary1 != 0x55555555) {
-    PANIC("game_finish: dead canary 1");
-  }
-  if (game_frameBufferData.canary2 != 0xaaaaaaaa) {
-    PANIC("game_finish: dead canary 2");
-  }
-}
-#endif
 
 
 static void
@@ -547,7 +552,7 @@ game_loadLevel(menu_command_t command)
   sound_init();
 
   level_load(game_level);
-
+  
   tile_init();
 #ifdef GAME_TRIPLE_BUFFER
   tile_renderScreen(game_offScreenBuffer, game_onScreenBuffer, game_backScreenBuffer);
@@ -648,6 +653,7 @@ game_scrollBackground(void)
   } else {
     game_cameraX += 2;
   }
+
   
   uint16_t tile = game_cameraX >> 4;
   uint16_t scroll = (game_cameraX % 16);
@@ -662,7 +668,11 @@ game_scrollBackground(void)
     game_backScreenBuffer += 2;
 #endif
   }
-    
+
+  //  if (game_cameraX >= (MAP_TILE_WIDTH*TILE_WIDTH)-128) {
+  //    return;
+  //  }
+  
   uint16_t screenX = FRAME_BUFFER_WIDTH-TILE_WIDTH*2;    
   uint16_t count = game_cameraX-lastCameraX;
 
@@ -900,6 +910,7 @@ game_processKeyboard()
     game_setGameOver();
     break;
   case 'D':
+    game_scoreboardLoaded = 0;
     game_scoreBoardMode = !game_scoreBoardMode;
     if (game_scoreBoardMode) {
       game_refreshDebugScoreboard();
@@ -1034,10 +1045,10 @@ game_waitForMenuExit(int16_t messageAnimId, int16_t offset)
     game_switchFrameBuffers();
   }
 
-  object_t* joystick = object_add(OBJECT_ID_JOYSTICK, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-16),PLAYAREA_HEIGHT, 0, OBJECT_ANIM_JOYSTICK, 0, 0, 0);
+  object_t* joystick = object_add(OBJECT_ID_JOYSTICK, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-16),PLAYAREA_HEIGHT-32, 0, OBJECT_ANIM_JOYSTICK, 0, 0, 0);
   object_set_z(joystick, 4096);     
 
-  for (int16_t y = PLAYAREA_HEIGHT; y >  (PLAYAREA_HEIGHT/2)+32; y-=8) {
+  for (int16_t y = PLAYAREA_HEIGHT-32; y >  (PLAYAREA_HEIGHT/2)+32; y-=8) {
     object_set_py_no_checks(joystick, y*OBJECT_PHYSICS_FACTOR);
     frame = hw_verticalBlankCount;
     game_deltaT = frame-lastFrame;
@@ -1215,6 +1226,11 @@ game_loop()
   hw_verticalBlankCount = 0;
   P61_Target = 0;
   P61_Master = 0;
+
+#ifdef DEBUG
+  game_frameBufferData.canary1 = 0x55555555;
+  game_frameBufferData.canary2 = 0xaaaaaaaa;
+#endif  
   
   custom->color[0] = 0;
   hw_interruptsInit(); // Don't enable interrupts until music is set up

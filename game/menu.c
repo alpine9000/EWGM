@@ -263,11 +263,11 @@ menu_renderText(frame_buffer_t _fb, char* text, uint16_t y)
   
   
   if (len == 0) {
-    gfx_screenWidthBitBlitNoMask(fb, game_offScreenBuffer, 0, y, 0, y, SCREEN_WIDTH, 9);    
+    gfx_screenWidthBitBlitNoMask(fb, game_messageBuffer, 0, y-(SCREEN_HEIGHT-PLAYAREA_HEIGHT), 0, y, SCREEN_WIDTH, 9);    
     return;
   }
 
-  gfx_screenWidthBitBlitNoMask(menu_offscreen, game_offScreenBuffer, 0, y, 0, 0, SCREEN_WIDTH, 9);    
+  gfx_screenWidthBitBlitNoMask(menu_offscreen, game_messageBuffer, 0, y-(SCREEN_HEIGHT-PLAYAREA_HEIGHT), 0, 0, SCREEN_WIDTH, 9);    
 
   fb = menu_offscreen;
   int16_t _y = 0;
@@ -369,7 +369,7 @@ menu_fillRect(frame_buffer_t fb, uint16_t x, uint16_t y, uint16_t w, uint16_t h,
 static void
 menu_redraw(uint16_t i)
 {
-  frame_buffer_t fb = game_onScreenBuffer;
+  frame_buffer_t fb = game_menuBuffer;
   int16_t y = MENU_START_Y + (i*16);
 
 
@@ -460,7 +460,7 @@ menu_render(void)
   menu_updateNumPlayersMenu();
   menu_updateModeMenu();
 
-  frame_buffer_t fb = game_onScreenBuffer;
+  frame_buffer_t fb = game_menuBuffer;
   uint16_t y = MENU_START_Y;
 
   switch (menu_mode) {
@@ -562,7 +562,7 @@ menu_scroller(char* text)
   case 0:
   case 2:
     menu_scrollerMode = 1;
-    menu_scrollerFB = game_onScreenBuffer;  
+    menu_scrollerFB = game_menuBuffer;  
     menu_scrollerFB += (((SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)*256));
     menu_scrollerCounter = 0;
     menu_scrollerPtr = text;
@@ -613,8 +613,12 @@ menu_loop(menu_mode_t mode)
 
   game_switchFrameBuffers();
   
-  disk_loadData((void*)game_offScreenBuffer, (void*)menu_frameBuffer, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
+  disk_loadData((void*)game_menuBuffer, (void*)menu_frameBuffer, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
 
+#ifndef GAME_TRIPLE_BUFFER
+  game_scoreboardLoaded = 0;
+#endif
+  
   //memset((void*)game_offScreenBuffer, 0, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
 
   if (!menu_first) {
@@ -630,8 +634,8 @@ menu_loop(menu_mode_t mode)
 
   game_switchFrameBuffers();  
 
-  for (uint16_t y = 0; y < SCREEN_HEIGHT; y += SCREEN_HEIGHT/8) {
-    gfx_screenWidthBitBlitNoMask(game_offScreenBuffer, game_onScreenBuffer, 0, y, 0, y, SCREEN_WIDTH, SCREEN_HEIGHT/8);
+  for (uint16_t y = 0; y < PLAYAREA_HEIGHT; y += PLAYAREA_HEIGHT/8) {
+    gfx_screenWidthBitBlitNoMask(game_messageBuffer, game_menuBuffer, 0, y+(SCREEN_HEIGHT-PLAYAREA_HEIGHT), 0, y, SCREEN_WIDTH, PLAYAREA_HEIGHT/8);
   }
 
   palette_black();
@@ -653,7 +657,7 @@ menu_loop(menu_mode_t mode)
   custom->bpl1mod = (MENU_SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-(MENU_SCREEN_WIDTH_BYTES);
   custom->bpl2mod = (MENU_SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-(MENU_SCREEN_WIDTH_BYTES);
 
-  menu_pokeCopperList(game_onScreenBuffer);  
+  menu_pokeCopperList(game_menuBuffer);  
   /* install copper list, then enable dma and selected interrupts */
   custom->cop1lc = (uint32_t)copperPtr;
   //  scratch = custom->copjmp1;
@@ -760,7 +764,7 @@ menu_scrollerRender(void)
       buffer[0] = *menu_scrollerPtr;
       menu_scrollerPtr++;
       if (menu_scrollerMode == 1) {
-	text_drawMaskedText8Blitter(game_onScreenBuffer, buffer, SCREEN_WIDTH-8, SCREEN_HEIGHT-11);
+	text_drawMaskedText8Blitter(game_menuBuffer, buffer, SCREEN_WIDTH-8, SCREEN_HEIGHT-11);
       }
       menu_scrollerCounter = 0;
     } else {

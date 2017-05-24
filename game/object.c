@@ -213,6 +213,14 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
     if ((screenX+ow) > SCREEN_WIDTH+TILE_WIDTH) {
       ow -= ((screenX+ow) -(SCREEN_WIDTH+TILE_WIDTH));
     }
+
+#ifdef GAME_OBJECTS_BELOW_PLAYAREA_BOTTOM
+    if (screenY >= (PLAYAREA_HEIGHT)) {
+      return;
+    } else if (screenY+oh >= PLAYAREA_HEIGHT) {
+      oh -= (screenY+oh) - (PLAYAREA_HEIGHT);
+    }
+#endif
     
     if (ow > 0 && oh > 0) {
       gfx_bitBlitNoMask(fb, game_backScreenBuffer, screenX, screenY, screenX, screenY, ow, oh);
@@ -229,7 +237,11 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
       for (int32_t y = sy; y <= ey; y++) {
 	int16_t screenX = 0xf+(x<<4)-game_cameraX-game_screenScrollX;
 	int16_t screenY = y << 4;
-	if (screenY >= 0 && screenX >= 0 && screenX <= SCREEN_WIDTH+TILE_WIDTH) {
+	if (screenY >= 0 &&
+#ifdef GAME_OBJECTS_BELOW_PLAYAREA_BOTTOM
+	    screenY <= (PLAYAREA_HEIGHT-TILE_HEIGHT) &&
+#endif
+	    screenX >= 0 && screenX <= SCREEN_WIDTH+TILE_WIDTH) {
 	  if (object_tileDirty[x][y] != frame) {
 	    uint16_t tile = level.tileAddresses[x][y];	      
 	    gfx_quickRenderTile(fb, screenX, screenY, level.tileBitplanes+tile);
@@ -342,12 +354,22 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
     screeny = 0;
   }
 
+#ifdef GAME_OBJECTS_BELOW_PLAYAREA_BOTTOM
+  else if (screeny >= PLAYAREA_HEIGHT) {
+    return;
+  } else if (screeny + h >= PLAYAREA_HEIGHT) {
+    h -= (screeny + h)-PLAYAREA_HEIGHT;
+  }
+#endif
+  
   if (w > 0 && h > 0) {
     if (ptr->tileRender) {
       gfx_setupRenderTile();
       object_tileRender(fb, object_x(ptr)+ptr->image->dx, object_y(ptr)-h, w, h);
       return;
     }
+
+
     gfx_renderSprite(fb, sx, sy, screenx, screeny, w, h);
     //    object_markTiles(sx, sy, w, h);
   }
