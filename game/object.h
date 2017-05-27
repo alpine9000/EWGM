@@ -345,6 +345,9 @@ typedef struct {
   int16_t h;
   uint16_t imageIndex;
   uint16_t visible;
+#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
+  uint16_t dirty;
+#endif
 } object_position_t;
 #endif
 

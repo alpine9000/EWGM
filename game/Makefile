@@ -118,34 +118,51 @@ version:
 gdrive: all
 	cp $(ADF) ~/Google\ Drive
 
-testadf: all
+.PHONY: emulate-adf
+emulate-adf: adf
 	cp $(ADF) ~/Projects/amiga/test.adf
 
-testfastadf: all
+.PHONY: emulate-fast
+emulate-fast: fast
 	cp $(FAST) ~/Projects/amiga/test.adf
 
 libgcc/out/gcc.lib:
 	make -C libgcc
 
-.PHONY: test
-test: testadf
+.PHONY: test-all
+test-all: test-adf test-fast
+
+.PHONY: test-adf
+test-adf: emulate-adf
+	cp adf_debugger.syms ~/Projects/amiga/debugger.syms
 	-@rm -f ~/Documents/FS-UAE/Save\ States/A500/test.sdf
 	cp test/test.lua default.lua
+	cd test; rm -f screenshots; ln -sf adf_screenshots screenshots; cd ..
 	 $(RUN_SCRIPT)
 	-@grep FAIL lua.log || true
 	@grep PASSED lua.log
 
-go: testadf
-	cp debugger.syms ~/Projects/amiga/debugger.syms
+.PHONY: test-fast
+test-fast: emulate-fast
+	cp fast_debugger.syms ~/Projects/amiga/debugger.syms
+	-@rm -f ~/Documents/FS-UAE/Save\ States/A500/test.sdf
+	cp test/test.lua default.lua
+	cd test; rm -f screenshots; ln -sf fast_screenshots screenshots; cd ..
+	 $(RUN_SCRIPT)
+	-@grep FAIL lua.log || true
+	@grep PASSED lua.log
+
+go: emulate-adf
+	cp adf_debugger.syms ~/Projects/amiga/debugger.syms
 	@rm -f default.lua
 	 $(RUN_SCRIPT)
 
-gf: testfastadf
-	cp debugger.syms ~/Projects/amiga/debugger.syms
+gf: emulate-fast
+	cp fast_debugger.syms ~/Projects/amiga/debugger.syms
 	@rm -f default.lua
 	 $(RUN_SCRIPT)
 
-goaga: testadf
+goaga: emulate-adf
 	 $(A1200T_RUN_SCRIPT)
 
 bin:
@@ -279,7 +296,9 @@ out/workbench/level_data_2.o: $(LEVEL_FILES)
 out/workbench/level_data_%.bin: out/workbench/level_data_%.o
 	$(LD) -brawbin1 out/workbench/level_data_$*.o -o out/workbench/level_data_$*.bin
 out/workbench/leveldata_%.c: out/workbench/level_data_%.bin
+	#cat out/workbench/level_data_$*.bin | $(BIN2C) > $@
 	../tools/doynamite68k/out/lz -o out/workbench/level_data_$*.bin.lz out/workbench/level_data_$*.bin
+	cp out/workbench/level_data_$*.bin out/workbench/level_data_$*.bin.orig
 	cat out/workbench/level_data_$*.bin.lz | $(BIN2C) > $@
 
 out/adf/level_data_1.o: $(LEVEL_FILES)
@@ -444,7 +463,8 @@ out/workbench/%.o: %.s
 out/adf/main.bin: out/adf/main.o $(ADF_OBJS)
 	$(LD) $(LINKER_OPTIONS) -brawbin1 $< $(ADF_OBJS) $(C_LIBS) -o $@ -M > out/adf/main.txt
 	@cat out/adf/main.txt | grep ", value " | cut -d " " -f3,7 | cut -d "," -f1 > $@.symbols
-	@cp $@.symbols debugger.syms
+	@cp $@.symbols adf_debugger.syms
+	@cp adf_debugger.syms debugger.syms
 	./ram_usage.sh
 ifeq ($(USE_BIG), 1)	
 	-@#rm out/adf/big.o
@@ -453,7 +473,8 @@ endif
 out/fast/reloc.fast: out/fast/main.o $(FAST_OBJS)
 	$(LD) -brawseg -q -Tlink.fastram.script.x $< $(FAST_OBJS) $(C_LIBS) -o out/fast/reloc -M > out/fast/reloc.txt
 	@cat out/fast/reloc.txt | grep ", value " | cut -d " " -f3,7 | cut -d "," -f1 > $@.symbols
-	@cp $@.symbols debugger.syms
+	@cp $@.symbols fast_debugger.syms
+	@cp fast_debugger.syms debugger.syms
 	./ram_usage.sh
 ifeq ($(USE_BIG), 1)	
 	-@#rm out/fast/big.o

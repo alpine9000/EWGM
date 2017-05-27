@@ -9,6 +9,7 @@ object_t* object_zBuffer[OBJECT_MAX_OBJECTS];
 static uint16_t object_tileDirty[MAP_TILE_WIDTH+1][16];
 #endif
 
+
 static object_t*
 object_getFree(void)
 {
@@ -255,6 +256,37 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
 }
 
 
+#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
+static int16_t
+object_dirty(object_t* ptr)
+{
+  object_t* o = object_activeList;
+
+  if (object_screenx(ptr)+ptr->image->w > SCREEN_WIDTH) {
+      return 1;
+  }
+
+  int16_t px = ptr->save.position->x-TILE_WIDTH;
+  int16_t py = ptr->save.position->y-TILE_HEIGHT;  
+  
+  while (o) {
+    if (o != ptr) {
+      int16_t ox = o->save.position->x-TILE_WIDTH;
+      int16_t oy = o->save.position->y-TILE_HEIGHT;	
+      if (ox <= px + ptr->save.position->w+TILE_WIDTH &&
+	  ox + o->save.position->w + TILE_WIDTH >= px &&
+	  oy <= py + ptr->save.position->h+TILE_HEIGHT &&
+	  o->save.position->h + TILE_HEIGHT + oy >= py) {
+	return 1;
+      }
+    }
+    o = o->next;
+  }
+  
+  return 0;
+}
+#endif
+
 static void
 object_restoreBackground(frame_buffer_t fb)
 {
@@ -263,6 +295,9 @@ object_restoreBackground(frame_buffer_t fb)
   object_t* ptr = object_activeList;
 
   while (ptr != 0) {
+#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
+    uint16_t dirty = 0;
+#endif
     if (!ptr->tileRender) {
 #ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
       /* Don't change the order of these checks, they are optimised */
@@ -271,10 +306,13 @@ object_restoreBackground(frame_buffer_t fb)
 	  (object_y(ptr)-ptr->image->h) != ptr->save.position->y ||
 	  (object_x(ptr)+ptr->image->dx) != ptr->save.position->x ||
 	  ptr->visible != ptr->save.position->visible) {
+#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
+	dirty = 1;
 #endif
+#endif	
 	object_clear(frame, fb, ptr->save.position->x, ptr->save.position->y, ptr->save.position->w, ptr->save.position->h);
 #ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
-      } 
+      }
 #endif
     }
 
@@ -289,6 +327,11 @@ object_restoreBackground(frame_buffer_t fb)
     ptr->save.position->visible = ptr->visible;
 #endif
     ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];
+
+#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS    
+    ptr->save.position->dirty = !dirty ? object_dirty(ptr) : 1;
+#endif
+
 
     ptr = ptr->next;
   }
@@ -369,9 +412,13 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
       return;
     }
 
-
-    gfx_renderSprite(fb, sx, sy, screenx, screeny, w, h);
-    //    object_markTiles(sx, sy, w, h);
+#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
+    if (ptr->save.position->dirty) {
+#endif
+      gfx_renderSprite(fb, sx, sy, screenx, screeny, w, h);
+#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
+    }
+#endif
   }
 }
 
@@ -420,7 +467,6 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
     }
   }
 }
-
 
 int16_t
 object_collision(int16_t deltaT, object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy)

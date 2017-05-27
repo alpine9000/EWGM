@@ -57,6 +57,9 @@ extern volatile uint8_t hw_joystick2Button;
 extern volatile uint8_t hw_joystickPos;
 extern volatile uint8_t hw_joystick2Pos;
 extern volatile uint32_t hw_verticalBlankCount;
+#if FASTRAM==1
+extern uint32_t hw_fastRamStart;
+#endif
 
 #define JOYSTICK_BUTTON_DOWN (hw_joystickButton&0x1)
 

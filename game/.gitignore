@@ -1,4 +1,4 @@
-debugger.syms
+*debugger.syms
 out.*
 adf_big.c
 workbench_big.c
@@ -22,3 +22,4 @@ tile.c.new
 version/version.h
 version/version.txt
 gfx/
+test/screenshots

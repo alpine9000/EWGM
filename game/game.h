@@ -9,9 +9,16 @@
 #define CONFIG_OCS_FAST    2
 #define CONFIG_WORKBENCH   3
 
-//#define RELEASE                       1
-#define DEBUG                         1
+#define RELEASE                       1
+//#define DEBUG                         1
+
+#ifdef DEBUG
+#define SCRIPTING                     1
+#endif
+
 //#define GAME_OBJECTS_BELOW_PLAYAREA_BOTTOM 1
+#define GAME_DONT_CLEAR_STATIONARY_OBJECTS 1
+#define GAME_DONT_REDRAW_CLEAN_OBJECTS 1
 
 #if GAME_CONFIG == CONFIG_OCS_512
 #include "configs/ocs512.h"

@@ -18,6 +18,9 @@ byteMap:
 	xdef _disk_dataStart
 _disk_dataStart:
 	dc.l	0
+	xdef _hw_fastRamStart
+_hw_fastRamStart:
+	dc.l	0
 	endif
 Entry:
 	if TRACKLOADER=0

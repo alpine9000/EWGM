@@ -120,6 +120,9 @@ LoadScript:				;At $120, sysinfo in 4 regs, a6=$dff002
 
 	lea 	$dff000,a6		;restore plain custombase addr for demo
 
+	move.l  a5,a4
+	add.l	#4,a5
+	move.l	a4,(a5)
 	add.l	#4,a5
 	jmp     (a5)			; -> main entry point	
 	endif

@@ -222,12 +222,16 @@ menu_processKeyboard(void)
   }
   
   switch (keyboard_key) {
-    //#ifdef DEBUG
+#ifdef DEBUG
+  case ' ':
+    menu_scrollerMode = 0xff;
+    return -1;
+    break;
   case 'Z':
     music_next();
     return -1;
     break;
-    //#endif
+#endif
   case 'D':
     return MENU_COMMAND_REPLAY;
     break;
@@ -749,7 +753,9 @@ menu_scrollerRender(void)
   volatile struct Custom* _custom = CUSTOM;    
   int32_t shift = 1;
 
-  if (menu_scrollerMode == 2) {
+  if (menu_scrollerMode == 0xff) {
+    shift = 15;
+  } else if (menu_scrollerMode == 2) {
     shift = 15;
     if (menu_scrollerCounter++ > 25) {
       menu_scrollerMode = 1;

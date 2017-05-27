@@ -25,7 +25,7 @@ SECTIONS
        endRam = .;
     } 
 
-    . = 0x100000;
+    . = 0x203250;
 
     .fast : {
     	_startFast = .;
@@ -49,7 +49,7 @@ SECTIONS
 	_endFast = .;
    } 
 
-   . = 0x200000;
+   . = 0x400000;
    
    .disk ALIGN(512) : {
    	_startDisk = .;

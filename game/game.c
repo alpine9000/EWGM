@@ -947,6 +947,10 @@ game_processKeyboard()
     game_startPlayback();
     break;
 #endif
+  case ' ':
+    game_paused = 0;
+    game_lastVerticalBlankCount = hw_verticalBlankCount;
+    break;      
   case 'P':
     game_pauseToggle();
     break;
@@ -1069,6 +1073,11 @@ game_waitForMenuExit(int16_t messageAnimId, int16_t offset)
     keyboard_read();
     hw_readJoystick();
     hw_readJoystick2();
+#ifdef DEBUG
+#ifdef SCRIPTING
+    script_process();
+#endif
+#endif    
   } while(!game_fire());
   
   game_complete();
@@ -1247,6 +1256,10 @@ game_loop()
   
   hiscore_ctor();
 
+#if FASTRAM==1
+  //  message_ask(itoh(hw_fastRamStart, 8));
+#endif
+  
   menu_command_t menuCommand;
  menu:
 #ifdef DEBUG

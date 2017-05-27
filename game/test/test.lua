@@ -2,14 +2,15 @@ test = 1
 state = "startup"
 quit = false
 screenShotFilename = "out/test-screenshot.png"
-screenShotWait = 50
+screenShotWait = 100
 menuWait = 100
+createTestImages = 0
 
 function Setup()
    uae_write_symbol16("_script_port", 0)
    log = io.open("lua.log", "w")
    io.output(log)
-   uae_warp()
+   --uae_warp()
    io.write("\n\n=== test started ===\n")
 end
 
@@ -33,22 +34,38 @@ function Write(symbol, value)
 end
 
 
+function Write32(symbol, value)
+   io.write("ram write32: ", symbol, " = ", value, "\n")
+   uae_write_symbol32(symbol, value)
+end
+
+
 function CheckScreenshot(filename)
    local screenshot1 = io.open(screenShotFilename, "rb")
    local screenshot2 = io.open(filename, "rb")
-   if screenshot1:read("*all") ~= screenshot2:read("*all") then
+   local screenshot1Data = screenshot1:read("*all")
+   local screenshot2Data = screenshot2:read("*all")   
+   screenshot1:close()
+   screenshot2:close()
+   if screenshot1Data ~= screenshot2Data then
       io.write("FAIL: ", screenShotFilename, " != ", filename, "\n")
       io.flush()
-      quit = true
+     if createTestImages == 1 then
+	screenshot2 = io.open(filename, "wb")
+	screenshot2:write(screenshot1Data)
+	screenshot2:close()
+     else
+	quit = true
+     end
    else
       io.write("PASS: ", screenShotFilename, " == ", filename, "\n")
    end
-   screenshot1:close()
-   screenshot2:close()   
+
 end
 
 
 function GameScreenshot(_state)
+   
    if screenShotState == 0 or screenShotState == nil then
       screenShotState = 1
       Write("_script_port",  _state.screenShotFrame + 0x8000)
@@ -67,6 +84,7 @@ function GameScreenshot(_state)
       if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+screenShotWait then
 	 CheckScreenshot(_state.filename)
 	 Write("_script_port", string.byte(' '))
+	 --Write32("_game_paused", 0)	 
 	 screenShotState = 4
       end
    elseif screenShotState == 4 then
@@ -75,6 +93,7 @@ function GameScreenshot(_state)
 	 return true
       else
 	 Write("_script_port", string.byte(' '))
+	 --Write32("_game_paused", 0)
       end
    end
    return false
@@ -107,132 +126,112 @@ function Screenshot(_state)
 end
 
 
-function HiscoreMenu()
-   local frame
-   if hiscoreMenuState == nil or hiscoreMenuState == 0 then
-      Write("_script_port",  5) -- joystick down
-      hiscoreMenuFrame = uae_peek_symbol32("_hw_verticalBlankCount")
-      hiscoreMenuState = 1
-   elseif hiscoreMenuState == 4 then
-      frame = uae_peek_symbol32("_hw_verticalBlankCount")
-      if frame > hiscoreMenuFrame + menuWait then	 
-	 Write("_script_port", 10) -- enter
-	 hiscoreMenuState = nil
-	 return true
-      end
-   else
-      frame = uae_peek_symbol32("_hw_verticalBlankCount")
-      if frame > hiscoreMenuFrame + menuWait then
-	 Write("_script_port",  5) -- joystick down
-	 hiscoreMenuFrame = frame
-	 hiscoreMenuState = hiscoreMenuState + 1
-      end
-   end
-
-   return false
-end
-
 setup = {
    ["startup"] = {
       exitState = Setup
    }
 }
 
-hiscore1 = {
+mainMenu = {
    ["booting"] = {
-      next = "goto hiscore screen",
-      wait = {"_menu_mode", 1, 32},
+      waitFrames = 250,
+      next = "disable scroller",      
    },
-   ["goto hiscore screen"] = {
-      transition = HiscoreMenu,
-      next = "hiscore screenshot1"
+   ["disable scroller"] = {
+      writeEntry = {"_script_port",  string.byte(' ')},
+      waitFrames = 500,
+      next = "main menu hiscore screenshot",
    },
-   ["hiscore screenshot1"] = {
-      filename = "test/hiscore1.png",
+   ["main menu hiscore screenshot"] = {
+      filename = "test/screenshots/mainmenuhiscore.png",
       transition = Screenshot,
-      next = "back to menu",
+      next = "enter",
    },
-   ["back to menu"] = {
+   ["enter"] = {
       writeEntry = {"_script_port", 10},
-      next = "menu screenshot",
-      waitFrames = 250
+      waitFrames = 250,
+      next = "main menu screenshot",
    },
-   ["menu screenshot"] = {
-      filename = "test/menu.png",
+   ["main menu screenshot"] = {
+      filename = "test/screenshots/mainmenu.png",
       transition = Screenshot,
-   }
+   },   
 }
 
-hiscore2 = {
+mainMenu2 = {
    ["booting"] = {
-      next = "goto hiscore screen",
-      wait = {"_menu_mode", 1, 32},
+      waitFrames = 250,
+      next = "disable scroller",      
    },
-   ["goto hiscore screen"] = {
-      transition = HiscoreMenu,
-      next = "hiscore screenshot1"
+   ["disable scroller"] = {
+      writeEntry = {"_script_port",  string.byte(' ')},
+      waitFrames = 500,
+      next = "main menu hiscore screenshot",
    },
-   ["hiscore screenshot1"] = {
-      screenShotFrame = 2000,
-      filename = "test/hiscore2.png",
+   ["main menu hiscore screenshot"] = {
+      filename = "test/screenshots/mainmenuhiscore-2.png",
       transition = Screenshot,
-      next = "back to menu",
+      next = "enter",
    },
-   ["back to menu"] = {
+   ["enter"] = {
       writeEntry = {"_script_port", 10},
-      wait = {"_menu_mode", 1, 32},
-   }
+      waitFrames = 250,
+      next = "main menu screenshot",
+   },
+   ["main menu screenshot"] = {
+      filename = "test/screenshots/mainmenu-2.png",
+      transition = Screenshot,
+   },   
 }
 
 
-level2 = {
+level = {
    ["booting"] = {
-      wait = {"_menu_mode", 1, 32},
-      next = "waiting for level to load",
-      writeExit = {"_script_port", string.byte('2')}
+      wait = {"_hw_verticalBlankCount", 1, 32},      
+      next = "game start"
    },
-   ["waiting for level to load"] = {
-      wait = {"_menu_mode", 0, 32},      
-      next = "waiting for record start",
-      writeExit = {"_script_port", string.byte('P')},
-   },
-   ["waiting for record start"] = {
-      wait = {"_record_state", 2, 32},
-      next =  "screenshot1",
-   },
+   ["game start"] = {
+      wait = {"_hw_verticalBlankCount", 0, 32},      
+      next = "screenshot1",
+   },      
    ["screenshot1"] = {
-      screenShotFrame = 2000,
-      filename = "test/screenshot.png",
+      screenShotFrame = 500,
+      filename = "test/screenshots/screenshot1.png",
       transition = GameScreenshot,
       next = "screenshot2"
    },
    ["screenshot2"] = {
-      screenShotFrame = 3000,
-      filename = "test/screenshot2.png",
+      screenShotFrame = 1000,
+      filename = "test/screenshots/screenshot2.png",
       transition = GameScreenshot,
-      next = "waiting for level end",
-   },
+      next = "screenshot3"
+   },   
+   ["screenshot3"] = {
+      screenShotFrame = 3001,
+      filename = "test/screenshots/screenshot3.png",
+      transition = GameScreenshot,
+      next = "waiting for level end"
+   },      
    ["waiting for level end"] = {
       wait = {"_game_collectTotal", 0},
       next = "verify level parameters",
    },
    ["verify level parameters"] = {
-      less = {{"_game_total", 765648, 32}},
-      equal = {{"_game_score", 13461, 32}, {"_game_lives", 2, 32}}
+      less = {{"_game_total", 965648, 32}},
+      equal = {{"_game_player1Score", 9000, 32}, {"_game_player2Score", 13000, 32}}
    },
 }
 
 
 newHiscore = {
    ["booting"] = {
-      writeEntry = {"_script_port", string.byte('O')},
-      waitFrames = 250,
+      waitFrames = 2000,
       next = "ok"
    },
    ["ok"] = {
       writeEntry = {"_script_port", 10},
       waitFrames = 250,
-      next = "a"
+      next = "a",
    },
    ["a"] = {
       waitFrames = 250,
@@ -250,14 +249,101 @@ newHiscore = {
       next = "screenshot"
    },
    ["screenshot"] = {
-      filename = "test/enterhiscore.png",
+      filename = "test/screenshots/enterhiscore.png",
       transition = Screenshot,
       next = "enter"
    },
    ["enter"] = {
       writeEntry = {"_script_port", 10},
       waitFrames = 250,
-   }
+      next = "w",
+   },
+    ["w"] = {
+      waitFrames = 250,
+      writeExit = {"_script_port", string.byte('w')},
+      next = "i"
+   },
+   ["i"] = {
+      waitFrames = 250,
+      writeExit = {"_script_port", string.byte('i')},
+      next = "n"
+   },
+   ["n"] = {
+      waitFrames = 250,
+      writeExit = {"_script_port", string.byte('n')},
+      next = "screenshot2"
+   },
+   ["screenshot2"] = {
+      filename = "test/screenshots/enterhiscore2.png",
+      transition = Screenshot,
+      next = "enter2"
+   },
+   ["enter2"] = {
+      writeEntry = {"_script_port", 10},
+      waitFrames = 250,
+   },   
+}
+
+
+newHiscore2 = {
+   ["booting"] = {
+      waitFrames = 2000,
+      next = "ok"
+   },
+   ["ok"] = {
+      writeEntry = {"_script_port", 10},
+      waitFrames = 250,
+      next = "a",
+   },
+   ["a"] = {
+      waitFrames = 250,
+      writeExit = {"_script_port", string.byte('1')},      
+      next = "l"
+   },
+   ["l"] = {
+      waitFrames = 250,
+      writeExit = {"_script_port", string.byte('1')},
+      next = "x"
+   },
+   ["x"] = {
+      waitFrames = 250,
+      writeExit = {"_script_port", string.byte('1')},
+      next = "screenshot"
+   },
+   ["screenshot"] = {
+      filename = "test/screenshots/enterhiscore-2.png",
+      transition = Screenshot,
+      next = "enter"
+   },
+   ["enter"] = {
+      writeEntry = {"_script_port", 10},
+      waitFrames = 250,
+      next = "w",
+   },
+    ["w"] = {
+      waitFrames = 250,
+      writeExit = {"_script_port", string.byte('2')},
+      next = "i"
+   },
+   ["i"] = {
+      waitFrames = 250,
+      writeExit = {"_script_port", string.byte('2')},
+      next = "n"
+   },
+   ["n"] = {
+      waitFrames = 250,
+      writeExit = {"_script_port", string.byte('2')},
+      next = "screenshot2"
+   },
+   ["screenshot2"] = {
+      filename = "test/screenshots/enterhiscore2-2.png",
+      transition = Screenshot,
+      next = "enter2"
+   },
+   ["enter2"] = {
+      writeEntry = {"_script_port", 10},
+      waitFrames = 250,
+   },   
 }
 
 
@@ -271,12 +357,13 @@ reset = {
 
 tests = {
    { setup, "setup" },
-   { hiscore1, "hiscore 1"},
-   { level2, "level 2 : first pass"},
-   { newHiscore, "level 2 : enter hiscore"},
-   { reset, "reset" },
-   { hiscore2, "hiscore 2"},   
-   { level2, "level 2 : second pass"}
+   { level, "level 1, first pass"},
+   { newHiscore, "new hiscore"},
+   { mainMenu, "main menu"},
+   { reset, "reset"},
+   { level, "level 1,  second pass"},
+   { newHiscore2, "new hiscore, second pass"},
+   { mainMenu2, "main menu, second pass"},   
 }
 
 
@@ -296,8 +383,7 @@ function Tick(stateMachine)
    if not quit then 
       local transition = false
       local asserts = false
-      
-      
+
       if stateMachine[state].equal then
 	 asserts = true
 	 for i, equal in ipairs(stateMachine[state].equal) do
@@ -413,6 +499,8 @@ end
 
 
 function on_uae_vsync()
+   --io.write(uae_peek_symbol32("_hw_verticalBlankCount"), "\n");
+   
    if tests[test] then 
       Tick(tests[test][1])
    elseif not quit then
