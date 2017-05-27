@@ -32,7 +32,7 @@ static  __SECTION_DATA_C  message_copper_t message_copper  = {
   },
 
   .color1 = { COLOR01, 0x000},
-  .wait = { ((RASTER_Y_START+PLAYAREA_HEIGHT)<<8)|0xe1, 0xfffe},
+  .wait = { ((RASTER_Y_START+PLAYAREA_HEIGHT-1)<<8)|0xe1, 0xfffe},
   .color2 = {COLOR01, 0x000},
   
   .end = {0xFFFF, 0xFFFE}
