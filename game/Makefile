@@ -157,6 +157,12 @@ go: emulate-adf
 	@rm -f default.lua
 	 $(RUN_SCRIPT)
 
+speed: emulate-adf
+	cp adf_debugger.syms ~/Projects/amiga/debugger.syms
+	-@rm -f ~/Documents/FS-UAE/Save\ States/A500/test.sdf
+	cp test/speed.lua default.lua
+	$(RUN_SCRIPT)
+
 gf: emulate-fast
 	cp fast_debugger.syms ~/Projects/amiga/debugger.syms
 	@rm -f default.lua

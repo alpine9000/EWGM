@@ -88,8 +88,6 @@ __EXTERNAL int16_t game_missedFrameCount;
 
 #ifdef DEBUG
 uint16_t game_collisions;
-static uint16_t game_rasterLines[GAME_RASTERAVERAGE_LENGTH];
-static uint16_t game_rasterLinesIndex;
 static uint16_t game_maxRasterLine;
 static uint16_t game_collectTotal;				 
 static uint32_t game_total;
@@ -386,6 +384,8 @@ game_refreshScoreboard(void)
     game_scoreBoardPlayer1Score(I18N_BLANK_GAME_OVER);
     text_drawText8(game_scoreBoardFrameBuffer, itoan(game_player1Score, 6), 224, 8);
     game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
+
+    //text_drawText8(game_scoreBoardFrameBuffer, itoa(game_25fps), 224, 16);
     
     if (game_numPlayers == 1) {
       game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);      
@@ -538,7 +538,6 @@ game_loadLevel(menu_command_t command)
   game_frame  = 0;
   game_average = 0;
   game_maxRasterLine = 0;
-  game_rasterLinesIndex = 0;
   game_lastAverage = -1;
   game_lastMaxRasterLine = -1;
   game_lastEnemyCount = -1;
@@ -764,12 +763,8 @@ debug_showRasterLine(void)
     line += 312;
   }
   
-  game_rasterLines[game_rasterLinesIndex++] = line;
   if (line > game_maxRasterLine) {
     game_maxRasterLine = line;
-  }
-  if (game_rasterLinesIndex >= GAME_RASTERAVERAGE_LENGTH) {
-    game_rasterLinesIndex = 0;
   }
 
   game_average = line;
@@ -1257,7 +1252,7 @@ game_loop()
   hiscore_ctor();
 
 #if FASTRAM==1
-  //  message_ask(itoh(hw_fastRamStart, 8));
+  //message_ask(itoh(hw_fastRamStart, 8));
 #endif
   
   menu_command_t menuCommand;
