@@ -107,14 +107,26 @@ _scoreBoardBitplanes:
 	endif
 	
 	xdef _menu_menuBitplanes
+	xdef _menu_menuBitplanesEnd
 _menu_menuBitplanes:	
-	incbin	"out/menu.bin"
+	if GAME_COMPRESS_DATA=1
+	incbin	"out/menu.bin.lz"
+	else
+	incbin	"out/menu.bin"	
+	endif
+_menu_menuBitplanesEnd:	
 	if TRACKLOADER=1
 	cnop 0,512
 	endif
 	xdef _logo_logoBitplanes
-_logo_logoBitplanes:	
-	incbin   "out/logo.bin"
+	xdef _logo_logoBitplanesEnd
+_logo_logoBitplanes:
+	if GAME_COMPRESS_DATA=1	
+	incbin   "out/logo.bin.lz"
+	else
+	incbin   "out/logo.bin"	
+	endif
+_logo_logoBitplanesEnd:	
 	if TRACKLOADER=1
 	cnop 0, 512
 	endif

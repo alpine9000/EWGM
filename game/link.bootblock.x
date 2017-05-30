@@ -7,6 +7,7 @@ SECTIONS
 {
     .disk : {
     	 *(.text)
+	 maxDisk = .;
 	 . = 895488;
 	 *(.lastTrack)
     } > disk

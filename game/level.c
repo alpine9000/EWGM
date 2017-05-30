@@ -20,35 +20,60 @@ __SECTION_DISK uint8_t level_level1_data[] DISK_SECTOR_ALIGN = {
 __SECTION_DISK uint8_t level_level2_data[] DISK_SECTOR_ALIGN = {
   #include "leveldata_2.c"
 };
+__SECTION_DISK uint8_t level_level3_data[] DISK_SECTOR_ALIGN = {
+  #include "leveldata_3.c"
+};
 
 typedef struct {
   level_t* levelData;
   uint32_t dataSize;
   uint16_t moduleIndex;
   conductor_instruction_t* instructions;
+  char* readyMessage;
 } level_config_t;
 
 level_config_t level_levels[LEVEL_NUM_LEVELS] = {
   { 
-    .levelData = (level_t*)level_level1_data,//&level_level1,
+    .levelData = (level_t*)level_level1_data,
     .dataSize = sizeof(level_level1_data),
     .instructions = level1_instructions,
     .moduleIndex = 0,
+    .readyMessage = I18N_LEVEL1_READY
   },
   { 
-    .levelData = (level_t*)level_level2_data,//&level_level2,
+    .levelData = (level_t*)level_level2_data,
+    .dataSize = sizeof(level_level2_data),    
     .instructions = level1_instructions,
     .moduleIndex = 0,
-  }    
+    .readyMessage = I18N_LEVEL2_READY    
+  },
+  { 
+    .levelData = (level_t*)level_level3_data,
+    .dataSize = sizeof(level_level3_data),    
+    .instructions = level1_instructions,
+    .moduleIndex = 0,
+    .readyMessage = I18N_LEVEL3_READY    
+  }      
 };
 
 static uint16_t level_current = 0xFFFF;
 
-#ifdef GAME_COMPRESS_LEVEL_DATA 
-__SECTION_RANDOM static uint16_t level_buffer[100000/2];
-#endif
+void
+level_readyMessage(void)
+{
+  message_screenOn(level_levels[level_current].readyMessage);
 
-  extern void delz(uint16_t* src, void* dest);
+  for (uint32_t i = 0; i < 100; i++) {
+    hw_readJoystick();
+    keyboard_read();
+    if (game_fire()) {
+      break;
+    }
+    hw_waitVerticalBlank();
+  }
+}
+
+
 void
 level_load(uint16_t index)
 {
@@ -61,6 +86,7 @@ level_load(uint16_t index)
   
   if (index == level_current) {
     music_play(level_levels[index].moduleIndex);
+    level_readyMessage();
     message_screenOff();    
     return;
   }
@@ -78,10 +104,8 @@ level_load(uint16_t index)
   
   music_play(level_levels[index].moduleIndex);
 
-#ifdef GAME_COMPRESS_LEVEL_DATA 
-  disk_loadData(&level_buffer, level_levels[index].levelData, level_levels[index].dataSize);
-  extern void  depack(__REG("d0", void* src), __REG("d1", void* dest));
-  depack(level_buffer, &level);
+#ifdef GAME_COMPRESS_DATA 
+  disk_loadCompressedData(&level, level_levels[index].levelData, level_levels[index].dataSize);
 #else
   disk_loadData(&level, level_levels[index].levelData, sizeof(level_t));
 #endif
@@ -92,7 +116,9 @@ level_load(uint16_t index)
   level.record = (record_t*)&level.recordData;
 #endif
 
+  level_current = index;  
+  
+  level_readyMessage();
+  
   message_screenOff();
-
-  level_current = index;
 }

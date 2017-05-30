@@ -616,9 +616,16 @@ menu_loop(menu_mode_t mode)
   }
 
   game_switchFrameBuffers();
-  
-  disk_loadData((void*)game_menuBuffer, (void*)menu_frameBuffer, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
 
+
+#ifdef GAME_COMPRESS_DATA
+  extern uint8_t menu_menuBitplanes;
+  extern uint8_t menu_menuBitplanesEnd;  
+  disk_loadCompressedData((void*)game_menuBuffer, (void*)menu_frameBuffer, &menu_menuBitplanesEnd-&menu_menuBitplanes);
+#else
+  disk_loadData((void*)game_menuBuffer, (void*)menu_frameBuffer, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
+#endif
+  
 #ifndef GAME_TRIPLE_BUFFER
   game_scoreboardLoaded = 0;
 #endif

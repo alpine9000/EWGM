@@ -201,16 +201,20 @@ hiscore_prompt(char* message)
 
   hiscore_promptBuffer[0] = 0;
 
+  message_textColor = 0;
   message_screenOn(I18N_PLEASE_ENTER_NAME);
   
   text_drawMaskedText8Blitter(game_messageBuffer, congrats, (SCREEN_WIDTH/2)-(strlen(congrats)*4), (SCREEN_HEIGHT/2)-22-16);
   text_drawMaskedText8Blitter(game_messageBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)-22);
-
+  
   int x = (SCREEN_WIDTH/2)-8;
   int y = (SCREEN_HEIGHT/2)+22;
 
   text_drawMaskedText8Blitter(game_messageBuffer, "___", x, y);
 
+  message_textColor = 0xfff;  
+  message_fadeIn();  
+  
   for (;;) {
     char str[2] = {0,0};
     keyboard_read();

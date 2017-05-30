@@ -9,6 +9,8 @@ void
 message_screenOff(void);
 uint16_t
 message_ask(char* message);
+void
+message_fadeIn(void);
 #if TRACKLOADER==1
 void
 message_loadingAnimate(void);
@@ -17,3 +19,4 @@ extern uint16_t message_loadingAnimation;
 #endif
 
 extern uint16_t message_on;
+extern uint16_t message_textColor;

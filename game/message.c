@@ -7,7 +7,7 @@ static frame_buffer_t message_fb;
 static int16_t message_loadingState;
 #endif
 uint16_t message_on = 0;
-
+uint16_t message_textColor = 0xfff;
 
 typedef struct {
   uint16_t bpl1[SCREEN_BIT_DEPTH*2*2];
@@ -55,6 +55,16 @@ message_pokeCopperList(frame_buffer_t frameBuffer)
 
 
 __NOINLINE void
+message_fadeIn(void)
+{
+  for (uint16_t c = 0x0; c != message_textColor; c+=0x111) {
+    message_copper.color1[1] = c;
+    hw_waitVerticalBlank();
+  }
+  message_copper.color1[1] = message_textColor;
+}
+
+__NOINLINE void
 message_screenOn(char* message)
 {
   if (game_messageBuffer != game_offScreenBuffer) {
@@ -69,14 +79,22 @@ message_screenOn(char* message)
   
   if (message_on) {
     hw_waitVerticalBlank();
+    for (uint16_t c = message_textColor; c != 0; c-=0x111) {
+      message_copper.color1[1] = c;
+      hw_waitVerticalBlank();
+    }
     message_copper.color1[1] = 0x000;    
     palette_black();
     gfx_fillRectSmallScreen(game_messageBuffer, 0, 0, SCREEN_WIDTH, PLAYAREA_HEIGHT, 0);
     text_drawMaskedText8Blitter(game_messageBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)+4);  
     hw_waitBlitter();    
     custom->bltafwm = 0xffff;
-    //custom->color[1] = 0xfff;
-    message_copper.color1[1] = 0xfff;
+
+    for (uint16_t c = 0x0; c != message_textColor; c+=0x111) {
+      message_copper.color1[1] = c;
+      hw_waitVerticalBlank();
+    }    
+    message_copper.color1[1] = message_textColor;
     custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
     return;
   }
@@ -127,7 +145,7 @@ message_screenOn(char* message)
   hw_waitVerticalBlank();
 
   //custom->color[1] = 0xfff;
-  message_copper.color1[1] = 0xfff;  
+  message_fadeIn();
 
   message_on = 1;
 }

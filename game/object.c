@@ -544,6 +544,12 @@ object_add(uint16_t id, uint16_t class, int16_t x, int16_t y, int16_t dx, int16_
   ptr->save.position = &ptr->save.positions[0];  
   ptr->save.positions[0].w = 0;
   ptr->save.positions[1].w = 0;
+  ptr->save.positions[0].x = -1;
+  ptr->save.positions[1].y = -1;  
+#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
+  ptr->save.positions[0].dirty = 1;
+  ptr->save.positions[0].dirty = 1;
+#endif
   ptr->anim = &object_animations[anim];
   ptr->animId = anim;
   ptr->baseId = anim;

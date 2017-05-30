@@ -6,8 +6,8 @@ PHOTON_TRACKLOADER=0
 MUSIC_PARALLEL_LOAD=0
 
 ADF_DEFINES=-DTRACKLOADER=1 -DFASTRAM=0 -DGAME_CONFIG=CONFIG_OCS_512 -Iout/adf
-FAST_DEFINES=-DTRACKLOADER=1 -DFASTRAM=1 -DGAME_CONFIG=CONFIG_OCS_FAST -Iout/fast
-WORKBENCH_DEFINES=-DTRACKLOADER=0 -DFASTRAM=0 -DGAME_CONFIG=CONFIG_WORKBENCH -Iout/workbench
+FAST_DEFINES=-DTRACKLOADER=1 -DFASTRAM=1 -DGAME_CONFIG=CONFIG_OCS_FAST -DGAME_COMPRESS_DATA=1 -Iout/fast
+WORKBENCH_DEFINES=-DTRACKLOADER=0 -DFASTRAM=0 -DGAME_CONFIG=CONFIG_WORKBENCH -DGAME_COMPRESS_DATA=1 -Iout/workbench
 
 # programs and paths
 #CC=/usr/local/amiga/vgcc/bin/m68k-amigaosvasm-gcc
@@ -40,7 +40,7 @@ C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text
 SRCS=blitmtext.s hw_asm.s trackloader.s palette_asm.s  P6112-Play.s music_asm.s keyboard_asm.s sg_trackdisk.s depacker_doynax.s
 MODULES=P61.jojo_ingame.bin P61.jojo_boss.bin
 SOUND_FILES=Terence_punch01.wav Terence_punch02.wav Bud_Punch01.wav enemy01.wav enemy02.wav enemy03.wav pop.wav coin1.wav
-LEVELS=1 2
+LEVELS=1 2 3
 IMAGES=font8x8.png menu.png scoreboard.png logo.png #popup.png
 
 
@@ -73,6 +73,8 @@ LEVEL_FILES=$(addsuffix .h,$(addprefix out/sprite_, $(LEVELS)))\
 	    $(addsuffix .h,$(addprefix out/tile_, $(LEVELS)))\
 	    $(addsuffix -map.c,$(addprefix out/background_, $(LEVELS)))\
 	    $(addsuffix .h,$(addprefix out/level_recording_, $(LEVELS)))
+LEVEL_FAST_BIN_FILES=$(addsuffix .bin,$(addprefix out/fast/level_data_, $(LEVELS)))
+LEVEL_WB_BIN_FILES=$(addsuffix .bin,$(addprefix out/workbench/level_data_, $(LEVELS)))
 MAX_P61_SIZE=$(shell ls -Sl assets/P61*.bin | awk '{print $$5}' | head -1)
 MODULE_HEADERS=$(addprefix out/, $(MODULES:.bin=.h))
 IMAGEDATA=$(addprefix out/, $(IMAGES:.png=.bin))
@@ -102,7 +104,7 @@ ALL_DEPENDS=$(ALL_OBJS:.o=.d) $(ALL_WORKBENCH_OBJS:.o=.d) $(ALL_FAST_OBJS:.o=.d)
 
 
 # rules
-all: | out adf fast wb
+all: | out fast wb #adf
 
 include ../shared/externals.mk
 
@@ -115,8 +117,8 @@ version:
 	@echo $(ALL_TOOLS)
 	-@#./version/version.sh
 
-gdrive: all
-	cp $(ADF) ~/Google\ Drive
+gdrive: fast
+	cp $(FAST) ~/Google\ Drive
 
 .PHONY: emulate-adf
 emulate-adf: adf
@@ -129,8 +131,8 @@ emulate-fast: fast
 libgcc/out/gcc.lib:
 	make -C libgcc
 
-.PHONY: test-all
-test-all: test-adf test-fast
+.PHONY: test
+test: test-fast #test-adf
 
 .PHONY: test-adf
 test-adf: emulate-adf
@@ -157,8 +159,8 @@ go: emulate-adf
 	@rm -f default.lua
 	 $(RUN_SCRIPT)
 
-speed: emulate-adf
-	cp adf_debugger.syms ~/Projects/amiga/debugger.syms
+speed: emulate-fast
+	cp fast_debugger.syms ~/Projects/amiga/debugger.syms
 	-@rm -f ~/Documents/FS-UAE/Save\ States/A500/test.sdf
 	cp test/speed.lua default.lua
 	$(RUN_SCRIPT)
@@ -186,16 +188,16 @@ $(ADF): out/bootblock.bin
 
 $(FAST): out/fast/bootblock.bin
 	$(MAKEADF) out/fast/bootblock.bin > $(FAST)
-	@ls -lh out/fast/bootblock.bin
+	@./disk_usage.sh
 
 wb: | out version libgcc/out/gcc.lib $(ALL_TOOLS) bin/$(GAME_NAME)
 
 out/adf/star.o: star.c out/star-sprite.h
-out/adf/level.o: $(ADF_LEVEL_UNCOMPRESSED) level.c $(LEVEL_FILES) out/demo.h
+out/adf/level.o: out/demo.h $(ADF_LEVEL_UNCOMPRESSED) level.c $(LEVEL_FILES)
 out/fast/star.o: star.c out/star-sprite.h
-out/fast/level.o: $(FAST_LEVEL_COMPRESSED) level.c $(FAST_LEVEL_COMPRESSED) out/demo.h
+out/fast/level.o: out/demo.h $(FAST_LEVEL_COMPRESSED) level.c
 out/workbench/star.o: star.c out/star-sprite.h
-out/workbench/level.o: $(WORKBENCH_LEVEL_COMPRESSED) level.c
+out/workbench/level.o: out/demo.h $(WORKBENCH_LEVEL_COMPRESSED) level.c
 
 out/Terence_punch01.raw: assets/Terence_punch01.wav
 	sox  -R -v 1.0 $< -b 8 -c 1 -r 11025 -e signed $@
@@ -269,9 +271,11 @@ out/bootblock.bin: out/bootblock.o
 
 out/menu.bin: assets/menu.png palettes/menu.pal
 	$(IMAGECON) --colors=32 --full-color-palette --input=assets/menu.png --output=out/menu --output-bitplanes --output-png --output-palette-asm --output-palette --use-palette=palettes/menu.pal
+	../tools/doynamite68k/out/lz -o out/menu.bin.lz out/menu.bin
 
 out/logo.bin: assets/menu.png palettes/logo.pal
 	$(IMAGECON) --colors=16 --full-color-palette --input=assets/logo.png --output=out/logo --output-bitplanes --output-png  --output-palette --use-palette=palettes/logo.pal
+	../tools/doynamite68k/out/lz -o out/logo.bin.lz out/logo.bin
 
 out/scoreboard.bin: assets/scoreboard.png palettes/palette_1.pal
 	$(IMAGECON) --colors=32 --full-color-palette --input=assets/scoreboard.png --output=out/scoreboard --output-bitplanes --output-png --output-palette-asm --output-palette --use-palette=palettes/palette_1.pal
@@ -291,6 +295,8 @@ out/font%.bin: assets/font%.png palettes/font.pal
 
 out/fast/level_data_1.o: $(LEVEL_FILES)
 out/fast/level_data_2.o: $(LEVEL_FILES)
+out/fast/level_data_3.o: $(LEVEL_FILES)
+.SECONDARY : $(LEVEL_FAST_BIN_FILES)
 out/fast/level_data_%.bin: out/fast/level_data_%.o
 	$(LD) -brawbin1 out/fast/level_data_$*.o -o out/fast/level_data_$*.bin
 out/fast/leveldata_%.c: out/fast/level_data_%.bin
@@ -299,6 +305,8 @@ out/fast/leveldata_%.c: out/fast/level_data_%.bin
 
 out/workbench/level_data_1.o: $(LEVEL_FILES)
 out/workbench/level_data_2.o: $(LEVEL_FILES)
+out/workbench/level_data_3.o: $(LEVEL_FILES)
+.SECONDARY: $(LEVEL_WB_BIN_FILES)
 out/workbench/level_data_%.bin: out/workbench/level_data_%.o
 	$(LD) -brawbin1 out/workbench/level_data_$*.o -o out/workbench/level_data_$*.bin
 out/workbench/leveldata_%.c: out/workbench/level_data_%.bin
@@ -309,6 +317,7 @@ out/workbench/leveldata_%.c: out/workbench/level_data_%.bin
 
 out/adf/level_data_1.o: $(LEVEL_FILES)
 out/adf/level_data_2.o: $(LEVEL_FILES)
+out/adf/level_data_3.o: $(LEVEL_FILES)
 out/adf/level_data_%.bin: out/adf/level_data_%.o
 	$(LD) -brawbin1 out/adf/level_data_$*.o -o out/adf/level_data_$*.bin
 out/adf/leveldata_%.c: out/adf/level_data_%.bin
@@ -481,7 +490,6 @@ out/fast/reloc.fast: out/fast/main.o $(FAST_OBJS)
 	@cat out/fast/reloc.txt | grep ", value " | cut -d " " -f3,7 | cut -d "," -f1 > $@.symbols
 	@cp $@.symbols fast_debugger.syms
 	@cp fast_debugger.syms debugger.syms
-	./ram_usage.sh
 ifeq ($(USE_BIG), 1)	
 	-@#rm out/fast/big.o
 endif

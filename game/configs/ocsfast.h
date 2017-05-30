@@ -7,4 +7,3 @@
 #define GAME_HISCORE_SAVE_ENABLE      1
 //#define GAME_BLITTER_WAIT_DEBUG       1
 #define GAME_TRIPLE_BUFFER           1
-#define GAME_COMPRESS_LEVEL_DATA    1

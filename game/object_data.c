@@ -438,7 +438,14 @@ object_animation_t object_animations[] = {
     .speed = 0,
     .facing = FACING_RIGHT
   },  
-  // =================================
+  // ================================= 
+  [OBJECT_ANIM_LEVELCOMPLETE] = {
+    .start = SPRITE_LEVELCOMPLETE,
+    .stop = SPRITE_LEVELCOMPLETE,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },  
+  // ================================= 
   [OBJECT_ANIM_PHONEBOOTH] = {
     .start = SPRITE_PHONEBOOTH,
     .stop = SPRITE_PHONEBOOTH,
@@ -1497,6 +1504,15 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
+
+  [SPRITE_LEVELCOMPLETE] = {
+    .x = 96,
+    .y = 856,
+    .w = 119,
+    .h = 8,
+    .dx = 0,
+    .dy = 0,    
+    },  
   
   //==========================
   [SPRITE_PHONEBOOTH] = {

@@ -1,5 +1,10 @@
 #include "game.h"
 
+#ifdef GAME_COMPRESS_DATA
+#define GAME_MAX_COMPRESS_DATA_SIZE 100000
+__SECTION_RANDOM static  uint16_t disk_buffer[GAME_MAX_COMPRESS_DATA_SIZE/2];
+#endif
+
 #if TRACKLOADER==1
 
 #if PHOTON_TRACKLOADER==1
@@ -39,6 +44,22 @@ td_doInit(void)
   }
 }
 #endif
+#endif
+
+#ifdef GAME_COMPRESS_DATA
+__EXTERNAL
+__NOINLINE uint16_t
+disk_loadCompressedData(void* dest, void* src, int32_t size)
+{
+#ifdef DEBUG
+  if (size >= GAME_MAX_COMPRESS_DATA_SIZE) {
+    PANIC("disk_loadCompressedData: too big");
+  }
+#endif
+  uint16_t result = disk_loadData(disk_buffer, src, size);
+  disk_depack(disk_buffer, dest);
+  return result;
+}
 #endif
 
 __EXTERNAL

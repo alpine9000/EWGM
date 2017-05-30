@@ -49,8 +49,8 @@ DOY_REFILL2 macro						;This swaps in the new bits ahead of the
 		move.w	(a0)+,d0				;old, but that's fine as long as the
 		swap.w	d0						;encoder is in on the scheme
 		endm
-		xdef _depack
-_depack:
+		xdef _disk_depack
+_disk_depack:
 		movem.l	d0-a6,-(sp)
 		move.l	d0,a0
 	        move.l	d1,a1

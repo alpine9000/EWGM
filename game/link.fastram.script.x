@@ -25,7 +25,7 @@ SECTIONS
        endRam = .;
     } 
 
-    . = 0x203250;
+    . = 0x203250;    
 
     .fast : {
     	_startFast = .;
@@ -53,7 +53,14 @@ SECTIONS
    
    .disk ALIGN(512) : {
    	_startDisk = .;
-   	*(disk)
+        startData = .;
+        level_data_1.o(disk);
+	. = ALIGN(512);	
+        level_data_2.o(disk);
+	. = ALIGN(512);
+        level_data_3.o(disk);
+	. = ALIGN(512);
+	*(disk)
 	endDisk = .;
    } :disk
 

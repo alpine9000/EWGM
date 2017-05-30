@@ -1,7 +1,7 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
-#define LEVEL_NUM_LEVELS 2
+#define LEVEL_NUM_LEVELS 3
 
 typedef struct {
   uint16_t tileAddresses[MAP_TILE_WIDTH][16];
