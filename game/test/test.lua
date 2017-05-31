@@ -155,7 +155,26 @@ mainMenu = {
    ["main menu screenshot"] = {
       filename = "test/screenshots/mainmenu.png",
       transition = Screenshot,
-   },   
+      next = "down",
+   },
+   ["down"] = {
+      writeEntry = {"_script_port",  5}, -- joystick down,
+      waitFrames = 100,
+      next = "enter2"
+   },
+   ["enter2"] = {
+      writeEntry = {"_script_port",  10}, -- enter
+      waitFrames = 100,
+      next = "toggled menu item screenshot"
+   },
+   ["toggled menu item screenshot"] = {
+      filename = "test/screenshots/toggledmenu.png",
+      transition = Screenshot,
+      next = "pause"
+   },
+   ["pause"] = {
+      waitFrames = 100
+   }
 }
 
 mainMenu2 = {
@@ -210,8 +229,14 @@ level = {
       screenShotFrame = 3001,
       filename = "test/screenshots/screenshot3.png",
       transition = GameScreenshot,
+      next = "screenshot4"
+   },
+   ["screenshot4"] = {
+      screenShotFrame = 3400,
+      filename = "test/screenshots/screenshot4.png",
+      transition = GameScreenshot,
       next = "waiting for level end"
-   },      
+   },         
    ["waiting for level end"] = {
       wait = {"_game_collectTotal", 0},
       next = "verify level parameters",

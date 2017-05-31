@@ -155,6 +155,7 @@ extern uint16_t game_scoreboardLoaded;
 #ifdef DEBUG
 extern uint16_t game_collisions;
 #endif
+extern uint16_t player1_character;
 
 enum {
   GAME_DIFFICULTY_EASY,

@@ -51,8 +51,8 @@ logo_load(void)
 {
   //  volatile uint16_t scratch;
   extern uint8_t logo_logoBitplanes;
-  extern uint8_t logo_logoBitplanesEnd;
 #ifdef GAME_COMPRESS_DATA
+  extern uint8_t logo_logoBitplanesEnd;  
   disk_loadCompressedData((void*)game_onScreenBuffer, (void*)&logo_logoBitplanes, &logo_logoBitplanesEnd-&logo_logoBitplanes);
 #else
   disk_loadData((void*)game_onScreenBuffer, (void*)&logo_logoBitplanes, SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*LOGO_BIT_DEPTH);

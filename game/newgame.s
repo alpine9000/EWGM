@@ -114,7 +114,25 @@ _menu_menuBitplanes:
 	else
 	incbin	"out/menu.bin"	
 	endif
-_menu_menuBitplanesEnd:	
+_menu_menuBitplanesEnd:
+
+	if TRACKLOADER=1
+	section disk
+	cnop 0,512	
+	else
+	section data
+	endif	
+	
+	xdef _player_selectBitplanes
+	xdef _player_selectBitplanesEnd
+_player_selectBitplanes:	
+	if GAME_COMPRESS_DATA=1
+	incbin	"out/player_select.bin.lz"
+	else
+	incbin	"out/player_select.bin"	
+	endif
+_player_selectBitplanesEnd:
+	
 	if TRACKLOADER=1
 	cnop 0,512
 	endif

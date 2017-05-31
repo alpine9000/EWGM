@@ -17,4 +17,7 @@ player_init(uint16_t id, uint16_t animId, int16_t x);
 
 uint16_t
 player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data);
+
+uint16_t
+player_select(void);
 #endif

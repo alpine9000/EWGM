@@ -38,6 +38,7 @@ uint32_t game_player2Score;
 uint16_t game_difficulty;
 uint16_t game_killScore;
 uint16_t game_scoreboardLoaded;
+uint16_t player1_character;
 
 static volatile __SECTION_RANDOM_C struct framebuffeData {
 #ifdef DEBUG
@@ -382,23 +383,34 @@ game_refreshScoreboard(void)
     game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_BLANK_GAME_OVER);    
     game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_BLANK_GAME_OVER);
     game_scoreBoardPlayer1Score(I18N_BLANK_GAME_OVER);
-    text_drawText8(game_scoreBoardFrameBuffer, itoan(game_player1Score, 6), 224, 8);
     game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
-
-    //text_drawText8(game_scoreBoardFrameBuffer, itoa(game_25fps), 224, 16);
     
-    if (game_numPlayers == 1) {
-      game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);      
-      game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, 0);
-      game_scoreBoardPlayer2Score(I18N_PRESS_2);      
-      game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_TO_PLAY);            
-      game_lastPlayer2Score = game_player2Score;
-    } else {
-      text_drawText8(game_scoreBoardFrameBuffer, itoan(game_player2Score, 6), 48, 8);
+    if (game_player1) {
+      text_drawText8(game_scoreBoardFrameBuffer, itoan(game_player1Score, 6), 224, 8);
       game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);
-      game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);              
     }
 
+    if (game_player2) {
+      text_drawText8(game_scoreBoardFrameBuffer, itoan(game_player2Score, 6), 48, 8);
+      game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);
+    }
+
+    if (!game_player2) {
+      game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, 0);
+      if (game_numPlayers == 1) {
+	game_scoreBoardPlayer2Score(I18N_PRESS_2);      
+	game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_TO_PLAY);
+      }
+    }
+
+    if (!game_player1) {
+      game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, 0);
+      if (game_numPlayers == 1) {
+	game_scoreBoardPlayer1Score(I18N_PRESS_2);      
+	game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_TO_PLAY);
+      }      
+    }
+    
     game_renderCounter();
 
 #ifdef DEBUG
@@ -468,8 +480,8 @@ static void
 game_startLevel(menu_command_t command)
 {
   game_deltaT = 0;
-  game_lastPlayer1Score = 0xffffffff;
-  game_lastPlayer2Score = 0xffffffff;
+  game_lastPlayer1Score = 0;
+  game_lastPlayer2Score = 0;
   game_levelTime.min = 5;
   game_levelTime.sec10 = 0;
   game_levelTime.sec= 0;
@@ -547,6 +559,23 @@ game_loadLevel(menu_command_t command)
 
   sound_init();
 
+  player1_character = 1;
+  
+#if 1
+  if (game_numPlayers == 1) {
+#ifdef DEBUG
+    static int first = 1;
+    if (!first) {
+#endif
+    player1_character = player_select();
+#ifdef DEBUG
+    } else {
+      first = 0;
+    }
+#endif
+  }
+#endif
+  
   level_load(game_level);
   
   tile_init();
@@ -556,9 +585,9 @@ game_loadLevel(menu_command_t command)
   tile_renderScreen(game_offScreenBuffer, game_onScreenBuffer);  
 #endif
 
-  if (game_level == 0) {
-    game_refreshScoreboard();
-  }
+  //  if (game_level == 0) {
+  //    game_refreshScoreboard();
+  //  }
   
 #ifdef GAME_RECORDING
   switch (command) {
@@ -588,13 +617,32 @@ game_loadLevel(menu_command_t command)
 #endif
 
 
-  game_player1 = (game_level == 0 || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80) : 0;
-  if (game_numPlayers == 2) {
+  if (game_numPlayers == 2 || player1_character == 1) {
+    game_player1 = (game_level == 0 || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80) : 0;
+    game_player1->joystickPos = &hw_joystickPos;
+    game_player1->joystickButton = &hw_joystickButton;
+  } else {
+    game_player1 = 0;
+  }
+  
+  if (game_numPlayers == 2 || player1_character == 0) {
     game_player2 = (game_level == 0 || game_player2) ? player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER3_STAND_RIGHT, SCREEN_WIDTH-80) : 0;
+    game_player2->joystickPos = &hw_joystickPos;
+    game_player2->joystickButton = &hw_joystickButton;    
   } else {
     game_player2 = 0;    
   }
 
+  if (game_numPlayers == 2) {
+    game_player2->joystickPos = &hw_joystick2Pos;
+    game_player2->joystickButton = &hw_joystick2Button;    
+  }
+
+  if (game_level == 0) {
+    game_refreshScoreboard();
+  }
+  
+  
   enemy_init();
 
   conductor_init(level.instructions);  
@@ -962,13 +1010,24 @@ game_processKeyboard()
     return 1;
     break;
   case '2':
-    if (!game_over && game_player2 == 0 && game_numPlayers == 1) {
+    if (!game_over && game_player2 == 0 && game_numPlayers == 1 && player1_character == 1) {
       game_numPlayers = 2;
       game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
       game_lastPlayer2Score = 0xffffffff;
       game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_BLANK_GAME_OVER);
       game_player2 = player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER3_STAND_RIGHT, game_cameraX+SCREEN_WIDTH-80);
+      game_player2->joystickPos = &hw_joystick2Pos;
+      game_player2->joystickButton = &hw_joystick2Button;          
       game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);      
+    } else if (!game_over && game_player1 == 0 && game_numPlayers == 1 && player1_character == 0) {
+      game_numPlayers = 2;
+      game_scoreBoardPlayer1Score(I18N_BLANK_GAME_OVER);
+      game_lastPlayer1Score = 0xffffffff;
+      game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_BLANK_GAME_OVER);
+      game_player1 = player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80);
+      game_player1->joystickPos = &hw_joystick2Pos;
+      game_player1->joystickButton = &hw_joystick2Button;          
+      game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);      
     }
     break;
   }
@@ -1285,7 +1344,7 @@ game_loop()
     goto menu;
   }
 
-  game_level = 0;  
+  game_level = 0;
   game_player1Score = 0;
   game_player2Score = 0;
   
@@ -1299,9 +1358,9 @@ game_loop()
 #endif
     keyboard_read();
     hw_readJoystick();
-    if (game_numPlayers == 2) {
+    //    if (game_numPlayers == 2) {
       hw_readJoystick2();
-    }
+      //    }
 
     if (!game_paused) {
       record_process();

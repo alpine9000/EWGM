@@ -399,6 +399,9 @@ typedef struct object {
   uint16_t width;
 
   uint16_t collidable;
+
+  volatile uint8_t* joystickButton;
+  volatile uint8_t* joystickPos;
 } object_t;
 
 

@@ -126,16 +126,9 @@ player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   uint16_t buttonDown = 0;
   uint16_t joyUp = 0;
 
-  
-  if (ptr->id == OBJECT_ID_PLAYER1) {
-    player_processJoystick(ptr, hw_joystickPos);
-    buttonDown = hw_joystickButton & 0x1;
-    joyUp = hw_joystickPos  == JOYSTICK_POS_UP || hw_joystickPos == JOYSTICK_POS_UPRIGHT || hw_joystickPos == JOYSTICK_POS_UPLEFT;
-  } else if (ptr->id == OBJECT_ID_PLAYER2) {
-    player_processJoystick(ptr, hw_joystick2Pos);
-    buttonDown = hw_joystick2Button & 0x1;
-    joyUp = hw_joystick2Pos  == JOYSTICK_POS_UP || hw_joystick2Pos == JOYSTICK_POS_UPRIGHT || hw_joystick2Pos == JOYSTICK_POS_UPLEFT;    
-  }
+  player_processJoystick(ptr, *ptr->joystickPos);
+  buttonDown = *ptr->joystickButton & 0x1;
+  joyUp = *ptr->joystickPos  == JOYSTICK_POS_UP || *ptr->joystickPos == JOYSTICK_POS_UPRIGHT || *ptr->joystickPos == JOYSTICK_POS_UPLEFT;
 
   if (buttonDown && data->buttonReleased) {
     if (joyUp) {
