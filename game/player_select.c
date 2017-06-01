@@ -63,9 +63,8 @@ player_select(void)
 
   //  uint32_t startFrame = 0;
 
-
-#ifdef GAME_COMPRESS_DATA
   extern uint8_t player_selectBitplanes;
+#ifdef GAME_COMPRESS_DATA
   extern uint8_t player_selectBitplanesEnd;  
   disk_loadCompressedData((void*)game_menuBuffer, (void*)&player_selectBitplanes, &player_selectBitplanesEnd-&player_selectBitplanes);
 #else

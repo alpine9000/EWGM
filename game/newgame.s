@@ -109,7 +109,7 @@ _scoreBoardBitplanes:
 	xdef _menu_menuBitplanes
 	xdef _menu_menuBitplanesEnd
 _menu_menuBitplanes:	
-	if GAME_COMPRESS_DATA=1
+	ifd GAME_COMPRESS_DATA
 	incbin	"out/menu.bin.lz"
 	else
 	incbin	"out/menu.bin"	
@@ -126,7 +126,7 @@ _menu_menuBitplanesEnd:
 	xdef _player_selectBitplanes
 	xdef _player_selectBitplanesEnd
 _player_selectBitplanes:	
-	if GAME_COMPRESS_DATA=1
+	ifd GAME_COMPRESS_DATA
 	incbin	"out/player_select.bin.lz"
 	else
 	incbin	"out/player_select.bin"	
@@ -139,7 +139,7 @@ _player_selectBitplanesEnd:
 	xdef _logo_logoBitplanes
 	xdef _logo_logoBitplanesEnd
 _logo_logoBitplanes:
-	if GAME_COMPRESS_DATA=1	
+	ifd GAME_COMPRESS_DATA
 	incbin   "out/logo.bin.lz"
 	else
 	incbin   "out/logo.bin"	

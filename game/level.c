@@ -61,6 +61,13 @@ static uint16_t level_current = 0xFFFF;
 void
 level_readyMessage(void)
 {
+#if 0
+  if (level_current) {
+    volatile int x = 1;
+    __USE(x);
+  }
+#endif
+  
   message_screenOn(level_levels[level_current].readyMessage);
 
   for (uint32_t i = 0; i < 100; i++) {
