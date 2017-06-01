@@ -559,7 +559,6 @@ game_loadLevel(menu_command_t command)
 
   sound_init();
 
-  player1_character = 1;
   
 #if 1
   if (game_numPlayers == 1) {
@@ -567,12 +566,17 @@ game_loadLevel(menu_command_t command)
     static int first = 1;
     if (!first) {
 #endif
-    player1_character = player_select();
+      if (game_level == 0) {
+	player1_character = player_select();
+      }
 #ifdef DEBUG
     } else {
       first = 0;
+      player1_character = 1;      
     }
 #endif
+  } else {
+    player1_character = 1;
   }
 #endif
   
@@ -938,13 +942,13 @@ static int16_t
 game_processKeyboard()
 {
   switch (keyboard_key) {
-#ifdef DEBUG
-  case 'Y':
-    game_difficulty = game_difficulty == GAME_DIFFICULTY_HARD ? GAME_DIFFICULTY_EASY : GAME_DIFFICULTY_HARD;
-    break;
   case 'C':
     //game_collisions = !game_collisions;
     game_setGameComplete();
+    break;
+#ifdef DEBUG
+  case 'Y':
+    game_difficulty = game_difficulty == GAME_DIFFICULTY_HARD ? GAME_DIFFICULTY_EASY : GAME_DIFFICULTY_HARD;
     break;
   case 'E':
     enemy_pause = !enemy_pause;
