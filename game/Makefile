@@ -3,7 +3,7 @@
 USE_BIG=1
 SFX=1
 PHOTON_TRACKLOADER=0
-MUSIC_PARALLEL_LOAD=0
+MUSIC_PARALLEL_LOAD=1
 
 ADF_DEFINES=-DTRACKLOADER=1 -DFASTRAM=0 -DGAME_CONFIG=CONFIG_OCS_512 -Iout/adf
 FAST_DEFINES=-DTRACKLOADER=1 -DFASTRAM=1 -DGAME_CONFIG=CONFIG_OCS_FAST -DGAME_COMPRESS_DATA=1 -Iout/fast
@@ -11,8 +11,8 @@ WORKBENCH_DEFINES=-DTRACKLOADER=0 -DFASTRAM=0 -DGAME_CONFIG=CONFIG_WORKBENCH -DG
 
 # programs and paths
 #CC=/usr/local/amiga/vgcc/bin/m68k-amigaosvasm-gcc
-#CC=/usr/local/amiga/bgcc.devel1/bin/m68k-amigaosvasm-gcc
-CC=/usr/local/amiga/bgcc/bin/m68k-amigaosvasm-gcc
+CC=/usr/local/amiga/bgcc.devel1/bin/m68k-amigaosvasm-gcc
+#CC=/usr/local/amiga/bgcc/bin/m68k-amigaosvasm-gcc
 VASM=/usr/local/amiga/vgcc/bin/vasmm68k_mot
 LD=/usr/local/amiga/vgcc/bin/vlink
 NDK=/usr/local/amiga/vgcc/ndk/
@@ -39,7 +39,7 @@ FAST_PROGRAM_BIN=out/fast/reloc.fast
 # all the components that form the game
 C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text.c sound.c music.c keyboard.c menu.c message.c record.c  string.c hw.c hiscore.c dos.c panic.c script.c object.c object_data.c sort.c player.c enemy.c logo.c fighter.c hand.c conductor.c alarm.c thing.c level1.c star.c random.c player_select.c
 SRCS=blitmtext.s hw_asm.s trackloader.s palette_asm.s  P6112-Play.s music_asm.s keyboard_asm.s sg_trackdisk.s depacker_doynax.s
-MODULES=P61.jojo_ingame.bin P61.jojo_boss.bin
+MODULES=P61.jojo_ingame.bin P61.intro.bin P61.jojo_boss.bin
 SOUND_FILES=Terence_punch01.wav Terence_punch02.wav Bud_Punch01.wav enemy01.wav enemy02.wav enemy03.wav pop.wav coin1.wav
 LEVELS=1 2 3
 IMAGES=font8x8.png menu.png scoreboard.png logo.png player_select.png #popup.png
@@ -58,7 +58,7 @@ VASM_OPTS=-Wa,-opt-speed #-Wa,-opt-speed -Wa,-showcrit -Wa,-opt-allbra -Wa,-opt-
 ifeq ($(USE_BIG), 1)
 WHOLE_PROGRAM=-fwhole-program
 endif
-C_OPT=-Ofast #-fbbb=+V 
+C_OPT=-Ofast #-fbbb=+V #-fbbb=sapcmefbV 
 BIG_FLAGS=$(WHOLE_PROGRAM)
 C_OPT_ASM_OUTPUT=-Ofast
 BASE_CFLAGS=-funsafe-loop-optimizations -Wno-overlength-strings $(REGPARAM) $(VASM_OPTS) -fomit-frame-pointer -noixemul -mcpu=68000 -m68000 -pedantic-errors -Wfatal-errors -Wall -Werror -Wextra -Wshadow -Wuninitialized -Wduplicated-cond -Wframe-larger-than=512 -Wstack-usage=512 -Wundef -Wbad-function-cast -Wparentheses $(INCLUDE) $(EXTRA_DEFINES)

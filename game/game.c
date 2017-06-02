@@ -1313,23 +1313,24 @@ game_loop()
 #endif  
   
   custom->color[0] = 0;
-  hw_interruptsInit(); // Don't enable interrupts until music is set up
-  custom->intena = INTF_SETCLR|INTF_VERTB|INTF_INTEN;
   game_ctor();
 
+#if FASTRAM==1
+  //  message_ask(itoh(hw_fastRamStart, 8));
+#endif
+
   logo_load();
+  
+  music_play(5);
 
-  music_play(0);
-
+  hw_interruptsInit(); // Don't enable interrupts until music is set up
+  custom->intena = INTF_SETCLR|INTF_VERTB|INTF_INTEN;  
+  
   logo_display();
 
   music_toggle();
   
   hiscore_ctor();
-
-#if FASTRAM==1
-  //message_ask(itoh(hw_fastRamStart, 8));
-#endif
   
   menu_command_t menuCommand;
  menu:

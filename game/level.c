@@ -109,7 +109,6 @@ level_load(uint16_t index)
     message_loading(I18N_LOADING);
   }
   
-  music_play(level_levels[index].moduleIndex);
 
 #ifdef GAME_COMPRESS_DATA 
   disk_loadCompressedData(&level, level_levels[index].levelData, level_levels[index].dataSize);
@@ -123,6 +122,8 @@ level_load(uint16_t index)
   level.record = (record_t*)&level.recordData;
 #endif
 
+  music_play(level_levels[index].moduleIndex);
+  
   level_current = index;  
   
   level_readyMessage();
