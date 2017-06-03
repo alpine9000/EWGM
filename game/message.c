@@ -67,7 +67,9 @@ message_fadeIn(void)
 __NOINLINE void
 message_screenOn(char* message)
 {
+#if TRACKLOADER==1
   message_message =  message;
+#endif
   
   if (game_messageBuffer != game_offScreenBuffer) {
     game_switchFrameBuffers();

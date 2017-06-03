@@ -399,7 +399,8 @@ fast_big.c: $(FAST_C_OBJS) $(C_SRCS)
 	cat $(C_SRCS) > fast_big.c
 
 out/fast/big.o: fast_big.c
-	$(CC) -c $(CFLAGS) $(BIG_FLAGS) $(FAST_DEFINES) fast_big.c -o $*.o
+	$(eval MAX_LEVEL_SIZE=$(shell ls -Sl out/fast/level*.bin.lz | awk '{print $$5}' | head -1))
+	$(CC) -c -DMAX_LEVEL_SIZE=$(MAX_LEVEL_SIZE) $(CFLAGS) $(BIG_FLAGS) $(FAST_DEFINES) fast_big.c -o $*.o
 	-@$(CC) -MM $(CFLAGS_CHECL) $(FAST_DEFINES) fast_big.c -o $*.d
 	@mv -f $*.d $*.d.tmp
 	@sed -e 's|.*:|$*.o:|' < $*.d.tmp > $*.d
@@ -407,7 +408,7 @@ out/fast/big.o: fast_big.c
 	sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
 	@rm -f $*.d.tmp
 ifeq ($(KEEP_ASM), 1)
-	-@$(CC) -c $(CFLAGS) $(BIG_FLAGS)  $(FAST_DEFINES) fast_big.c -S -o out/fast/big.s
+	-@$(CC) -DMAX_LEVEL_SIZE=$(MAX_LEVEL_SIZE) -c $(CFLAGS) $(BIG_FLAGS)  $(FAST_DEFINES) fast_big.c -S -o out/fast/big.s
 endif
 	-@#rm fast_big.c
 
@@ -416,7 +417,8 @@ workbench_big.c: $(WORKBENCH_C_OBJS) $(C_SRCS)
 	cat $(C_SRCS) > workbench_big.c
 
 out/workbench/big.o: workbench_big.c
-	$(CC) -c $(CFLAGS) $(BIG_FLAGS) $(WORKBENCH_DEFINES)  workbench_big.c -o $*.o
+	$(eval MAX_LEVEL_SIZE=$(shell ls -Sl out/workbench/level*.bin.lz | awk '{print $$5}' | head -1))
+	$(CC) -c -DMAX_LEVEL_SIZE=$(MAX_LEVEL_SIZE) $(CFLAGS) $(BIG_FLAGS) $(WORKBENCH_DEFINES)  workbench_big.c -o $*.o
 	-@$(CC) -MM $(CFLAGS_CHECK)  $(WORKBENCH_DEFINES)  workbench_big.c -o $*.d
 	@mv -f $*.d $*.d.tmp
 	@sed -e 's|.*:|$*.o:|' < $*.d.tmp > $*.d
@@ -424,7 +426,7 @@ out/workbench/big.o: workbench_big.c
 	sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
 	@rm -f $*.d.tmp
 ifeq ($(KEEP_ASM), 1)
-	-@$(CC) -c $(CFLAGS) $(BIG_FLAGS) $(WORKBENCH_DEFINES) workbench_big.c -S -o out/workbench/big.s
+	-@$(CC) -DMAX_LEVEL_SIZE=$(MAX_LEVEL_SIZE) -c $(CFLAGS) $(BIG_FLAGS) $(WORKBENCH_DEFINES) workbench_big.c -S -o out/workbench/big.s
 endif
 	-@#rm workbench_big.c
 

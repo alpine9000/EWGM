@@ -1,7 +1,11 @@
 #include "game.h"
 
 #ifdef GAME_COMPRESS_DATA
-#define GAME_MAX_COMPRESS_DATA_SIZE 100000
+#ifdef MAX_LEVEL_SIZE
+#define GAME_MAX_COMPRESS_DATA_SIZE MAX_LEVEL_SIZE+8
+#else
+#define GAME_MAX_COMPRESS_DATA_SIZE 2
+#endif
 __SECTION_RANDOM static  uint16_t disk_buffer[GAME_MAX_COMPRESS_DATA_SIZE/2];
 #endif
 
