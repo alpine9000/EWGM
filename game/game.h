@@ -144,6 +144,7 @@ extern frame_buffer_t game_offScreenBuffer;
 extern frame_buffer_t game_backScreenBuffer;
 #endif
 extern frame_buffer_t game_scoreBoardFrameBuffer;
+extern uint16_t game_demo;
 extern uint16_t game_over;
 extern uint16_t game_loopControl;
 extern uint16_t game_numPlayers;
@@ -154,6 +155,7 @@ extern uint16_t game_killScore;
 extern uint16_t game_scoreboardLoaded;
 #ifdef DEBUG
 extern uint16_t game_collisions;
+extern uint16_t game_startReplay;
 #endif
 extern uint16_t player1_character;
 
@@ -168,7 +170,7 @@ enum {
   GAME_LOOP_CONTROL_DISPLAY_DEATHMATCH = 2,
   GAME_LOOP_CONTROL_DEATHMATCH = 3,
   GAME_LOOP_CONTROL_GAME_OVER = 4,
-  GAME_LOOP_CONTROL_GAME_COMPLETE = 5  
+  GAME_LOOP_CONTROL_GAME_COMPLETE = 5
 };
 
 #include "i18n.h"

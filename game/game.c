@@ -39,6 +39,13 @@ uint16_t game_difficulty;
 uint16_t game_killScore;
 uint16_t game_scoreboardLoaded;
 uint16_t player1_character;
+uint16_t game_demo;
+#ifdef DEBUG
+uint16_t game_startReplay;
+uint16_t game_collisions;
+#endif
+
+static menu_command_t menuCommand;
 
 static volatile __SECTION_RANDOM_C struct framebuffeData {
 #ifdef DEBUG
@@ -88,7 +95,6 @@ __EXTERNAL int16_t game_missedFrameCount;
 #endif
 
 #ifdef DEBUG
-uint16_t game_collisions;
 static uint16_t game_maxRasterLine;
 static uint16_t game_collectTotal;				 
 static uint32_t game_total;
@@ -241,7 +247,11 @@ game_ctor(void)
 #else
   game_difficulty = GAME_DIFFICULTY_HARD;
 #endif
-  
+
+  game_demo = 0;
+#ifdef DEBUG
+  game_startReplay = 1;
+#endif
   game_numPlayers = 1;
   game_scoreboardLoaded = 0;
   game_onScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer2;
@@ -432,19 +442,6 @@ game_startRecord(void)
   game_lastVerticalBlankCount = 0;
 }
 
-
-
-static void
-game_startPlayback(void)
-{
-  random_seed(1);
-  palette_black();
-  game_loadLevel(MENU_COMMAND_REPLAY);
-  music_restart();
-  hw_waitVerticalBlank();
-  hw_verticalBlankCount = 0;
-  game_lastVerticalBlankCount = 0;
-}
 #endif
 
 __NOINLINE void
@@ -479,6 +476,7 @@ __EXTERNAL uint16_t xxx_seed = 10;
 static void
 game_startLevel(menu_command_t command)
 {
+  hw_waitVerticalBlank();
   game_deltaT = 0;
   game_lastPlayer1Score = 0;
   game_lastPlayer2Score = 0;
@@ -497,6 +495,7 @@ game_startLevel(menu_command_t command)
 
   if (command == MENU_COMMAND_REPLAY || command == MENU_COMMAND_RECORD) {
     random_seed(1);
+    //    music_restart();
   } else {
 #ifdef HIT_HUNTER
     random_seed(xxx_seed++);
@@ -563,15 +562,15 @@ game_loadLevel(menu_command_t command)
 #if 1
   if (game_numPlayers == 1) {
 #ifdef DEBUG
-    static int first = 1;
-    if (!first) {
+    //    static int first = 1;
+    if (!game_startReplay) {
 #endif
-      if (game_level == 0) {
+      if (game_level == 0 && !game_demo) {
 	player1_character = player_select();
       }
 #ifdef DEBUG
     } else {
-      first = 0;
+      game_startReplay = 0;
       player1_character = 1;      
     }
 #endif
@@ -990,9 +989,12 @@ game_processKeyboard()
   case 'S':
     record_setState(RECORD_IDLE);
     break;
+#ifdef DEBUG
   case 'L':
-    game_startPlayback();
+    game_startReplay = 1;
+    return 1;
     break;
+#endif
 #endif
   case ' ':
     game_paused = 0;
@@ -1008,6 +1010,9 @@ game_processKeyboard()
   case 'Q':
     if (game_paused) {
       game_pauseToggle();
+    }
+    if (game_demo) {
+      game_numPlayers = 1;
     }
     game_disableCopperEffects();    
     palette_fadeFrom(level.palette, 32, 0, 32);
@@ -1300,9 +1305,11 @@ game_checkStack(void)
 #endif
 
 
+
 __EXTERNAL void
 game_loop()
 {
+
   hw_verticalBlankCount = 0;
   P61_Target = 0;
   P61_Master = 0;
@@ -1313,6 +1320,7 @@ game_loop()
 #endif  
   
   custom->color[0] = 0;
+
   game_ctor();
 
 #if FASTRAM==1
@@ -1331,8 +1339,7 @@ game_loop()
   music_toggle();
   
   hiscore_ctor();
-  
-  menu_command_t menuCommand;
+
  menu:
 #ifdef DEBUG
   game_checkStack();

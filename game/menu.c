@@ -215,6 +215,7 @@ menu_processKeyboard(void)
 
   if (menu_demoCount == 50*28) {
     if (menu_scrollerText != menu_creditsText) {
+      game_demo = 1;
       return MENU_COMMAND_REPLAY;
     } else {
       menu_demoCount = 0;
@@ -233,6 +234,7 @@ menu_processKeyboard(void)
     break;
 #endif
   case 'D':
+    game_demo = '1';
     return MENU_COMMAND_REPLAY;
     break;
   case 'R':
@@ -591,6 +593,7 @@ menu_loop(menu_mode_t mode)
   uint16_t done;
   //  volatile uint16_t scratch;
 
+  game_demo = 0;
   menu_demoCount = 0;
   menu_lastJoystick = 0;  
   menu_scrollerMode = 0;
@@ -694,9 +697,10 @@ menu_loop(menu_mode_t mode)
 #endif
 
 #ifdef DEBUG
-    static uint16_t first = 1;
-    if (first) {
-      first = 0;
+    if (game_startReplay) {
+      game_difficulty = GAME_DIFFICULTY_HARD;
+      game_scoreboardLoaded = 0;
+      game_numPlayers = 1;
       command = MENU_COMMAND_REPLAY;
       done = 1;
     }

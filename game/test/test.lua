@@ -42,23 +42,26 @@ end
 
 function CheckScreenshot(filename)
    local screenshot1 = io.open(screenShotFilename, "rb")
-   local screenshot2 = io.open(filename, "rb")
+   local screenshot2
    local screenshot1Data = screenshot1:read("*all")
-   local screenshot2Data = screenshot2:read("*all")   
+
    screenshot1:close()
-   screenshot2:close()
-   if screenshot1Data ~= screenshot2Data then
-      io.write("FAIL: ", screenShotFilename, " != ", filename, "\n")
-      io.flush()
-     if createTestImages == 1 then
-	screenshot2 = io.open(filename, "wb")
-	screenshot2:write(screenshot1Data)
-	screenshot2:close()
-     else
-	quit = true
-     end
+   if createTestImages == 1 then
+      io.write("CREATED: ", screenShotFilename, " ==> ", filename, "\n")      
+      screenshot2 = io.open(filename, "wb")
+      screenshot2:write(screenshot1Data)
+      screenshot2:close()
    else
-      io.write("PASS: ", screenShotFilename, " == ", filename, "\n")
+      screenshot2 = io.open(filename, "rb")      
+      local screenshot2Data = screenshot2:read("*all")
+      screenshot2:close()      
+      if screenshot1Data ~= screenshot2Data then
+	 io.write("FAIL: ", screenShotFilename, " != ", filename, "\n")
+	 io.flush()
+	 quit = true
+      else
+	 io.write("PASS: ", screenShotFilename, " == ", filename, "\n")
+      end
    end
 
 end
@@ -170,6 +173,7 @@ mainMenu = {
    ["toggled menu item screenshot"] = {
       filename = "test/screenshots/toggledmenu.png",
       transition = Screenshot,
+      writeExit = {"_script_port", 1}, -- joystick up
       next = "pause"
    },
    ["pause"] = {
@@ -234,6 +238,50 @@ level = {
    ["screenshot4"] = {
       screenShotFrame = 3400,
       filename = "test/screenshots/screenshot4.png",
+      transition = GameScreenshot,
+      next = "waiting for level end"
+   },         
+   ["waiting for level end"] = {
+      wait = {"_game_collectTotal", 0},
+      next = "verify level parameters",
+   },
+   ["verify level parameters"] = {
+      less = {{"_game_total", 965648, 32}},
+      equal = {{"_game_player1Score", 9000, 32}, {"_game_player2Score", 13000, 32}}
+   },
+}
+
+
+level1_2 = {
+   ["booting"] = {
+      wait = {"_hw_verticalBlankCount", 1, 32},      
+      next = "game start"
+   },
+   ["game start"] = {
+      wait = {"_hw_verticalBlankCount", 0, 32},      
+      next = "screenshot1",
+   },      
+   ["screenshot1"] = {
+      screenShotFrame = 500,
+      filename = "test/screenshots/screenshot1_2.png",
+      transition = GameScreenshot,
+      next = "screenshot2"
+   },
+   ["screenshot2"] = {
+      screenShotFrame = 1000,
+      filename = "test/screenshots/screenshot2_2.png",
+      transition = GameScreenshot,
+      next = "screenshot3"
+   },   
+   ["screenshot3"] = {
+      screenShotFrame = 3001,
+      filename = "test/screenshots/screenshot3_2.png",
+      transition = GameScreenshot,
+      next = "screenshot4"
+   },
+   ["screenshot4"] = {
+      screenShotFrame = 3400,
+      filename = "test/screenshots/screenshot4_2.png",
       transition = GameScreenshot,
       next = "waiting for level end"
    },         
@@ -379,12 +427,29 @@ reset = {
    }
 }
 
+restartReplay = {
+   ["booting"] = {
+      writeEntry = {"_script_port", 10},      
+      waitFrames = 250,
+      next = "select player"
+   },
+   ["select player"] = {
+      writeEntry = {"_script_port", 10},      
+      waitFrames = 250,
+      next = "trigger replay"
+   },
+   ["trigger replay"] = {
+      writeEntry = {"_script_port", string.byte('L')}
+   }
+}
 
 tests = {
    { setup, "setup" },
    { level, "level 1, first pass"},
    { newHiscore, "new hiscore"},
    { mainMenu, "main menu"},
+   { restartReplay, "restart replay"},
+   { level1_2, "level 1, restart"},   
    { reset, "reset"},
    { level, "level 1,  second pass"},
    { newHiscore2, "new hiscore, second pass"},

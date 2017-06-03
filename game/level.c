@@ -92,7 +92,9 @@ level_load(uint16_t index)
   }
   
   if (index == level_current) {
-    music_play(level_levels[index].moduleIndex);
+    if (!game_demo) {
+      music_play(level_levels[index].moduleIndex);
+    }
     level_readyMessage();
     message_screenOff();    
     return;
@@ -122,11 +124,15 @@ level_load(uint16_t index)
   level.record = (record_t*)&level.recordData;
 #endif
 
-  music_play(level_levels[index].moduleIndex);
+  if (!game_demo) {
+    music_play(level_levels[index].moduleIndex);
+  }
   
   level_current = index;  
-  
-  level_readyMessage();
+
+  if (!game_demo) {
+    level_readyMessage();
+  }
   
   message_screenOff();
 }
