@@ -108,19 +108,22 @@ function Screenshot(_state)
       screenShotFrame = uae_peek_symbol32("_hw_verticalBlankCount")
       screenShotState = 1
    elseif screenShotState == 1 then
-      if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+screenShotWait then
+      if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+screenShotWait or
+         uae_peek_symbol32("_hw_verticalBlankCount") < screenShotFrame then	 
 	 screenShotState = 2
 	 screenShotFrame = uae_peek_symbol32("_hw_verticalBlankCount")
 	 uae_screenshot(screenShotFilename)
       end
    elseif screenShotState == 2 then
-      if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+screenShotWait then
+      if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+screenShotWait or
+         uae_peek_symbol32("_hw_verticalBlankCount") < screenShotFrame then
 	 CheckScreenshot(_state.filename)
 	 screenShotFrame = uae_peek_symbol32("_hw_verticalBlankCount")
 	 screenShotState = 3
       end
    elseif screenShotState == 3 then
-      if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+screenShotWait then      
+      if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+screenShotWait or
+      uae_peek_symbol32("_hw_verticalBlankCount") < screenShotFrame then      
 	 screenShotState = 0
 	 return true
       end
@@ -128,6 +131,15 @@ function Screenshot(_state)
    return false
 end
 
+function WaitForMessage(_state)
+   message = uae_peek_string("_message_message")
+   if message == state then
+      io.write("_message_message ", state, " == ", message, "\n")         
+      return true
+   end
+   io.write("_message_message ", state, " ~= ", message, "\n")      
+   return false
+end
 
 setup = {
    ["startup"] = {
@@ -431,15 +443,37 @@ restartReplay = {
    ["booting"] = {
       writeEntry = {"_script_port", 10},      
       waitFrames = 250,
-      next = "select player"
+      next = "select player screenshot"
    },
-   ["select player"] = {
-      writeEntry = {"_script_port", 10},      
-      waitFrames = 250,
-      next = "trigger replay"
+   ["select player screenshot"] = {
+      filename = "test/screenshots/select-player.png",
+      transition = Screenshot,
+      next = "joystick right"
    },
-   ["trigger replay"] = {
-      writeEntry = {"_script_port", string.byte('L')}
+   ["joystick right"] = {
+      writeEntry = {"_script_port", 3},
+      waitFrames = 10,
+      next = "select player screenshot2"      
+   },
+   ["select player screenshot2"] = {
+      filename = "test/screenshots/select-player2.png",
+      transition = Screenshot,
+      next = "joystick left"
+   },
+   ["joystick left"] = {
+      writeEntry = {"_script_port", 7},
+      waitFrames = 10,
+      next = "LEVEL 1 READY!"
+   },   
+   ["LEVEL 1 READY!"] = {
+      writeEntry = {"_script_port", 10},
+      transition = WaitForMessage,
+      next = "ready screenshot"
+   },
+   ["ready screenshot"] = {
+      filename = "test/screenshots/ready.png",
+      transition = Screenshot,
+      writeExit = {"_script_port", string.byte('L')},
    }
 }
 

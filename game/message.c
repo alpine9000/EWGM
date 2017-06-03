@@ -67,6 +67,8 @@ message_fadeIn(void)
 __NOINLINE void
 message_screenOn(char* message)
 {
+  message_message =  message;
+  
   if (game_messageBuffer != game_offScreenBuffer) {
     game_switchFrameBuffers();
   }
@@ -188,7 +190,6 @@ message_loading(char* message)
   hw_waitVerticalBlank();
 #if TRACKLOADER==1
   message_fb = game_messageBuffer;
-  message_message = message;
   message_loadingAnimation = 1;
   message_loadingState = 0;
   hw_interruptsInit();
