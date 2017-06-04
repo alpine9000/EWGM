@@ -73,6 +73,8 @@ typedef union {
   uint32_t value;
 } time_t;
 
+static int16_t game_lastPlayer1Health;
+static int16_t game_lastPlayer2Health;
 static uint32_t game_lastPlayer1Score;
 static uint32_t game_lastPlayer2Score;
 static int16_t game_scroll;
@@ -416,6 +418,14 @@ game_refreshScoreboard(void)
 	game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_TO_PLAY);
       }      
     }
+
+#ifndef RELEASE
+    if (!game_25fps) {
+      text_drawText8(game_scoreBoardFrameBuffer, "50", (SCREEN_WIDTH/2)-8, 8);
+    } else {
+      text_drawText8(game_scoreBoardFrameBuffer, "25", (SCREEN_WIDTH/2)-8, 8);
+    }
+#endif
     
     game_renderCounter();
 
@@ -466,6 +476,40 @@ game_updatePlayerHealth(uint16_t x, int16_t health)
 }
 
 
+void
+game_updatePlayer1Health(uint16_t x, int16_t health)
+{
+  uint16_t score;
+  
+  for (score = 0; score < health; score+=10, x+= 5) {
+    // gfx_screenWidthBitBlit(game_scoreBoardFrameBuffer, 0, 288, x, 30, 16, 8);
+  }
+
+  for (; score < game_lastPlayer1Health; score+= 10, x+= 5) {
+    gfx_screenWidthBitBlit(game_scoreBoardFrameBuffer, 0, 296, x, 30, 16, 8);
+  }
+
+  game_lastPlayer1Health = health;  
+}
+
+void
+game_updatePlayer2Health(uint16_t x, int16_t health)
+{
+  uint16_t score;
+  
+  for (score = 0; score < health; score+=10, x+= 5) {
+    //gfx_screenWidthBitBlit(game_scoreBoardFrameBuffer, 0, 288, x, 30, 16, 8);
+  }
+
+  for (; score < game_lastPlayer2Health; score+= 10, x+= 5) {
+    gfx_screenWidthBitBlit(game_scoreBoardFrameBuffer, 0, 296, x, 30, 16, 8);
+  }
+
+  game_lastPlayer2Health = health;
+}
+
+
+
 static void
 game_startLevel(menu_command_t command)
 {
@@ -473,6 +517,8 @@ game_startLevel(menu_command_t command)
   game_deltaT = 0;
   game_lastPlayer1Score = 0;
   game_lastPlayer2Score = 0;
+  game_lastPlayer1Health = 0;
+  game_lastPlayer2Health = 0;
   game_levelTime.min = 5;
   game_levelTime.sec10 = 0;
   game_levelTime.sec= 0;
@@ -829,11 +875,6 @@ game_render(uint16_t deltaT)
   star_update(deltaT);
 #endif
   game_updateWave();
-#if 0  
-  if (level.effectFunctor) {
-    level.effectFunctor(game_offScreenBuffer);
-  }
-#endif
 }
 
 

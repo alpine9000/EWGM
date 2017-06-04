@@ -168,8 +168,7 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
       sound_queueSound(SOUND_BUD_PUNCH01);
       break;
     default:
-      sound_queueSound(SOUND_ENEMY_PUNCH01);
-      
+      sound_queueSound(SOUND_ENEMY_PUNCH01);      
       break;
     }
     ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
@@ -178,10 +177,10 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
 
   switch(ptr->id) {
   case OBJECT_ID_PLAYER1:        
-    game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player1->data)->health);    
+    game_updatePlayer1Health(GAME_PLAYER1_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player1->data)->health);    
     break;
   case OBJECT_ID_PLAYER2:        
-    game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player2->data)->health);    
+    game_updatePlayer2Health(GAME_PLAYER2_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player2->data)->health);    
     break;
   }
   

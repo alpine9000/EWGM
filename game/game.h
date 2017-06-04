@@ -230,6 +230,10 @@ void
 game_setGameComplete(void);
 void
 game_updatePlayerHealth(uint16_t x, int16_t health);
+void
+game_updatePlayer1Health(uint16_t x, int16_t health);
+void
+game_updatePlayer2Health(uint16_t x, int16_t health);
 #ifdef DEBUG
 void
 game_checkCanary(void);
