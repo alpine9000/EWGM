@@ -480,6 +480,11 @@ void
 game_updatePlayer1Health(uint16_t x, int16_t health)
 {
   uint16_t score;
+  if (health > game_lastPlayer1Health) {
+    game_updatePlayerHealth(x, health);
+    game_lastPlayer1Health = health;
+    return;
+  }
   
   for (score = 0; score < health; score+=10, x+= 5) {
     // gfx_screenWidthBitBlit(game_scoreBoardFrameBuffer, 0, 288, x, 30, 16, 8);
@@ -496,6 +501,12 @@ void
 game_updatePlayer2Health(uint16_t x, int16_t health)
 {
   uint16_t score;
+
+  if (health > game_lastPlayer2Health) {
+    game_updatePlayerHealth(x, health);
+    game_lastPlayer2Health = health;
+    return;
+  }
   
   for (score = 0; score < health; score+=10, x+= 5) {
     //gfx_screenWidthBitBlit(game_scoreBoardFrameBuffer, 0, 288, x, 30, 16, 8);

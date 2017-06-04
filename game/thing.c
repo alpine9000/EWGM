@@ -94,9 +94,9 @@ thing_awardBonus(object_t* ptr, object_t* collision)
   }
 
   if (collision->id == OBJECT_ID_PLAYER1) {
-    game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player1->data)->health);
+    game_updatePlayer1Health(GAME_PLAYER1_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player1->data)->health);
   } else {
-    game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player2->data)->health);
+    game_updatePlayer2Health(GAME_PLAYER2_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player2->data)->health);
   }
 }
 
