@@ -47,21 +47,11 @@ player_select_pokeCopperList(frame_buffer_t frameBuffer)
 uint16_t
 player_select(void)
 {
-
   static uint8_t lastJoystick;
   uint16_t done;
   uint16_t selectedIndex = 0;
-  //  volatile uint16_t scratch;
 
   lastJoystick = 0;  
-
-#ifdef GAME_STARS
-  //  custom->dmacon = DMAF_SPRITE;
-#endif
-  
-  // sound_init();
-
-  //  uint32_t startFrame = 0;
 
   extern uint8_t player_selectBitplanes;
 #ifdef GAME_COMPRESS_DATA
@@ -112,15 +102,12 @@ player_select(void)
 
   custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
 
-  //  palette_fadeTo(level.palette, 32, 0);
   player_select_palette[1] = PLAYER_SELECT_TOP_COLOR;  
   player_select_palette[2] = PLAYER_SELECT_BOTTOM_COLOR;
   player_select_palette[3] = 0x0;
   player_select_palette[4] = 0x0;  
   
-  palette_fadeTo(player_select_palette, 32, 0);    
-
- // menu_render();
+  palette_fadeTo(player_select_palette, 32, 0);
 
   hw_waitVerticalBlank();
 
@@ -135,19 +122,9 @@ player_select(void)
 #endif
 #endif
 
-#ifdef DEBUG
-    static uint16_t first = 1;
-    if (first) {
-      first = 0;
-      //command = MENU_COMMAND_REPLAY;
-      //      done = 1;
-    }
-#endif
-          
     if (game_fire()) {
       done = 1;
     }    
-
 
     if (JOYSTICK_LEFT() || JOYSTICK_RIGHT()) {
       if (lastJoystick != hw_joystickPos) {

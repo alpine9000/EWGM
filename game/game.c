@@ -242,11 +242,7 @@ game_check25fps(void)
 static void
 game_ctor(void)
 {
-#ifdef HIT_HUNTER  
-  game_difficulty = GAME_DIFFICULTY_EASY;
-#else
   game_difficulty = GAME_DIFFICULTY_HARD;
-#endif
 
   game_demo = 0;
 #ifdef DEBUG
@@ -469,9 +465,6 @@ game_updatePlayerHealth(uint16_t x, int16_t health)
   } 
 }
 
-#ifdef HIT_HUNTER
-__EXTERNAL uint16_t xxx_seed = 10;
-#endif
 
 static void
 game_startLevel(menu_command_t command)
@@ -497,12 +490,7 @@ game_startLevel(menu_command_t command)
     random_seed(1);
     //    music_restart();
   } else {
-#ifdef HIT_HUNTER
-    random_seed(xxx_seed++);
-#else
     random_seed(hw_getRasterLine());
-#endif
-
   }
   game_loadLevel(command);
 }
@@ -513,12 +501,6 @@ game_loadLevel(menu_command_t command)
 {
   custom->bltafwm = 0xffff;
   
-#ifdef DEBUG
-  if (game_scoreBoardMode != 0) {
-    //   disk_loadData((void*)game_scoreBoardFrameBuffer, (void*)game_scoreBoardFrameBuffer, FRAME_BUFFER_WIDTH_BYTES*SCOREBOARD_HEIGHT*SCREEN_BIT_DEPTH);
-  }
-#endif 
-
   game_bplcon1 = 0xff;
   game_cameraX = 0;
   game_lastTileX = 0;  
@@ -557,12 +539,9 @@ game_loadLevel(menu_command_t command)
   game_switchFrameBuffers();
 
   sound_init();
-
   
-#if 1
   if (game_numPlayers == 1) {
 #ifdef DEBUG
-    //    static int first = 1;
     if (!game_startReplay) {
 #endif
       if (game_level == 0 && !game_demo) {
@@ -577,7 +556,6 @@ game_loadLevel(menu_command_t command)
   } else {
     player1_character = 1;
   }
-#endif
   
   level_load(game_level);
   
@@ -588,10 +566,6 @@ game_loadLevel(menu_command_t command)
   tile_renderScreen(game_offScreenBuffer, game_onScreenBuffer);  
 #endif
 
-  //  if (game_level == 0) {
-  //    game_refreshScoreboard();
-  //  }
-  
 #ifdef GAME_RECORDING
   switch (command) {
   case MENU_COMMAND_REPLAY:
@@ -718,10 +692,6 @@ game_scrollBackground(void)
 #endif
   }
 
-  //  if (game_cameraX >= (MAP_TILE_WIDTH*TILE_WIDTH)-128) {
-  //    return;
-  //  }
-  
   uint16_t screenX = FRAME_BUFFER_WIDTH-TILE_WIDTH*2;    
   uint16_t count = game_cameraX-lastCameraX;
 
@@ -1141,9 +1111,7 @@ game_waitForMenuExit(int16_t messageAnimId, int16_t offset)
     script_process();
 #endif
 #endif    
-  } while(!game_fire());
-  
-  //  game_complete();
+  } while(!game_fire());  
 }
 
 
@@ -1197,8 +1165,6 @@ static void
 game_levelCompleteSequence(void)
 {
   music_play(4);  
-  //  game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
-  //  game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);
   
   game_waitForMenuExit(OBJECT_ANIM_LEVELCOMPLETE, 55);
 }
@@ -1370,9 +1336,7 @@ game_loop()
 #endif
     keyboard_read();
     hw_readJoystick();
-    //    if (game_numPlayers == 2) {
-      hw_readJoystick2();
-      //    }
+    hw_readJoystick2();
 
     if (!game_paused) {
       record_process();

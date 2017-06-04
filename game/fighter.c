@@ -35,8 +35,7 @@ fighter_getFree(void)
 }
 
 
-//static
-void
+static void
 fighter_addFree(void* data)
 {
   fighter_data_t* ptr = data;
@@ -208,7 +207,6 @@ fighter_updatePositionUnderAttack(uint16_t deltaT, object_t* ptr, fighter_data_t
       data->flashDurationTics = FIGHTER_HIT_FLASH_DURATION_TICS;
     } else {
       object_set_state(ptr, OBJECT_STATE_ALIVE);
-      //      data->attackQueued = 1;
       data->postAttackCount = data->postAttackInvincibleTics;
     }
   } else {
@@ -270,33 +268,31 @@ fighter_doAttack(object_t* ptr, fighter_data_t* data)
 static void
 fighter_updateSprite(object_t* ptr)
 {
-  //  if (object_get_state(ptr) == OBJECT_STATE_ALIVE) {
-    object_set_z(ptr, object_y(ptr));
-    if (ptr->velocity.dx || ptr->velocity.dy) {
-      if (ptr->velocity.dx > 0) {
-	object_setAction(ptr, OBJECT_RUN_RIGHT);
-      } else if (ptr->velocity.dx < 0) {
-	object_setAction(ptr, OBJECT_RUN_LEFT);
-      } else {
-	if (ptr->anim->facing == FACING_RIGHT) {
-	  object_setAction(ptr, OBJECT_RUN_RIGHT);
-	} else {
-	  object_setAction(ptr, OBJECT_RUN_LEFT);
-	}
-      }
+  object_set_z(ptr, object_y(ptr));
+  if (ptr->velocity.dx || ptr->velocity.dy) {
+    if (ptr->velocity.dx > 0) {
+      object_setAction(ptr, OBJECT_RUN_RIGHT);
+    } else if (ptr->velocity.dx < 0) {
+      object_setAction(ptr, OBJECT_RUN_LEFT);
     } else {
-      if (ptr->velocity.ix > 0) {
-	object_setAction(ptr, OBJECT_STAND_RIGHT);
-      } else if (ptr->velocity.ix < 0) {
-	object_setAction(ptr, OBJECT_STAND_LEFT);
+      if (ptr->anim->facing == FACING_RIGHT) {
+	object_setAction(ptr, OBJECT_RUN_RIGHT);
       } else {
-	if (ptr->anim->facing == FACING_RIGHT) {
-	  object_setAction(ptr, OBJECT_STAND_RIGHT);
-	} else {
-	  object_setAction(ptr, OBJECT_STAND_LEFT);
-	}
+	object_setAction(ptr, OBJECT_RUN_LEFT);
       }
-      //    }
+    }
+  } else {
+    if (ptr->velocity.ix > 0) {
+      object_setAction(ptr, OBJECT_STAND_RIGHT);
+    } else if (ptr->velocity.ix < 0) {
+      object_setAction(ptr, OBJECT_STAND_LEFT);
+    } else {
+      if (ptr->anim->facing == FACING_RIGHT) {
+	object_setAction(ptr, OBJECT_STAND_RIGHT);
+      } else {
+	object_setAction(ptr, OBJECT_STAND_LEFT);
+      }
+    }
   }
 }
 
@@ -369,8 +365,6 @@ fighter_update(uint16_t deltaT, object_t* ptr)
     data->postAttackCount--;
   }
 
-  //  ptr->velocity.ix = 0;      
-  
   if (data->attackQueued && data->attackCount == 0 && object_get_state(ptr) == OBJECT_STATE_ALIVE) {
     data->buttonReleased = 0;
     data->attackQueued = 0;

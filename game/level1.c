@@ -258,8 +258,7 @@ level_enemy_config_t level1_configs[] = {
 };
   
 static object_t* level1_door;
-//static
-int16_t
+static int16_t
 level1_addPhoneBooth(uint16_t argument)
 {
   __USE(argument);
@@ -268,15 +267,13 @@ level1_addPhoneBooth(uint16_t argument)
 }
 
 
-
-#if 1
 static int16_t
 level1_addPostbox(uint16_t argument)
 {
   thing_add(OBJECT_ID_POSTBOX, OBJECT_ANIM_POSTBOX, OBJECT_ANIM_POSTBOX_BROKEN, OBJECT_ANIM_POSTBOX_JUNK1, game_cameraX+argument, 80);
   return 1;
 }
-#endif
+
 
 static int16_t
 level1_processEnemyConfig(uint16_t argument)
@@ -370,7 +367,6 @@ level1_doAddBoss(uint16_t x)
   data->attackConfig = enemy_bossAttackConfig;
 
   data->attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE*2;
-  //  data->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->width = OBJECT_WIDTH;
   data->enemyAttackWait = 0;//ENEMY_BOSS_ATTACK_TICS_PER_FRAME*ENEMY_BOSS_NUM_ATTACK_FRAMES;
@@ -439,8 +435,6 @@ level1_start(uint16_t argument)
 {
   __USE(argument);
   level1_addPostbox(50);
-  //  level1_addPhoneBooth(50);
-  //  level1_doAddBoss(50);
   return 1;
 }
 

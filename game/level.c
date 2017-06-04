@@ -2,18 +2,6 @@
 
 __SECTION_RANDOM_C level_t level;
 
-#if 0
-#define __LEVEL_NUMBER       1
-#include "define_level.h"
-
-#define __LEVEL_NUMBER       2
-#include "define_level.h"
-extern level_t level_level1;
-extern level_t level_level2;
-
-#endif
-
-
 __SECTION_DISK uint8_t level_level1_data[] DISK_SECTOR_ALIGN = {
   #include "leveldata_1.c"
 };

@@ -1,5 +1,4 @@
 #include "game.h"
-// http://www.picturetopeople.org/text_generator/others/3d/3d-perspective-text-effect-creator.html
 
 extern void palette_menuInstall(void);
 static frame_buffer_t menu_frameBuffer;
@@ -378,9 +377,6 @@ menu_redraw(uint16_t i)
   frame_buffer_t fb = game_menuBuffer;
   int16_t y = MENU_START_Y + (i*16);
 
-
-  //  hw_waitVerticalBlank();
-
   if (menu_mode == MENU_MODE_MENU) {
     menu_renderText(fb, menu_items[i].text, y);
   } else {
@@ -522,7 +518,6 @@ menu_toggleMode(void)
 static void
 menu_select(uint16_t i)
 {
-  //  hw_waitVerticalBlank();
   menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR;
   menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR;
   menu_selected = i;
@@ -535,7 +530,6 @@ menu_up(void)
 {
   if (menu_mode == MENU_MODE_MENU && menu_selected > 0) {
     sound_playSound(SOUND_MENU);
-    //    hw_waitVerticalBlank();
     menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR;
     menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR;
     menu_selected--;
@@ -549,8 +543,7 @@ static void
 menu_down(void)
 {
   if (menu_mode == MENU_MODE_MENU && menu_selected < MENU_NUM_ITEMS-1) {
-    sound_playSound(SOUND_MENU);    
-    //    hw_waitVerticalBlank();
+    sound_playSound(SOUND_MENU);
     menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR;
     menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR;
     menu_selected++;
@@ -591,7 +584,6 @@ menu_loop(menu_mode_t mode)
   menu_frameBuffer = &menu_menuBitplanes;
   menu_command_t command;
   uint16_t done;
-  //  volatile uint16_t scratch;
 
   game_demo = 0;
   menu_demoCount = 0;
@@ -633,8 +625,6 @@ menu_loop(menu_mode_t mode)
   game_scoreboardLoaded = 0;
 #endif
   
-  //memset((void*)game_offScreenBuffer, 0, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
-
   if (!menu_first) {
     while (hw_verticalBlankCount < startFrame+200) {
       hw_waitVerticalBlank();

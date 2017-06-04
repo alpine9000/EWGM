@@ -1,62 +1,5 @@
 #include "game.h"
 
-#ifdef HIT_HUNTER
-
-static object_t*
-player_target(void)
-{
-  object_t* ptr = object_activeList;
-
-  while (ptr) {
-    if (ptr->id == OBJECT_ID_ENEMY) {
-      return ptr;
-    }
-    ptr = ptr->next;
-  }
-
-  return 0;
-}
-
-
-static uint16_t
-player_artificialIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
-{
-  USE(deltaT);
-  uint16_t attack = 0;
-  
-  if (object_get_state(ptr) != OBJECT_STATE_ALIVE) {
-    return 0;
-  }
-  
-  //  uint32_t rand = random();
-  object_t* enemy = player_target();
-  
-  if (!enemy) {
-    ptr->velocity.x = PLAYER_SPEED_X*OBJECT_PHYSICS_FACTOR;
-    ptr->velocity.y = 0;
-    return 0;
-  }
-  
-  //  object_collision_t collision;
-
-  extern int16_t enemy_strikingDistanceX(object_t* a, object_t* b)  ;
-  ptr->velocity.x = enemy_strikingDistanceX(enemy, ptr);
-  ptr->velocity.x *= 4;
-  if (abs(object_y(ptr)-object_y(enemy)) <= data->attackRangeY) {
-    if (ptr->velocity.x == 0) {
-      attack = 1;
-    } 
-    ptr->velocity.y = 0;
-  } else if (object_y(ptr) < object_y(enemy)) {
-    ptr->velocity.y = PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
-  } else if (object_y(ptr) > object_y(enemy)) {
-    ptr->velocity.y = -data->speed;
-  }
-  
-  return attack;
-}
-
-#endif
 
 static void
 player_processJoystick(object_t * ptr, uint8_t joystickPos)
@@ -105,10 +48,6 @@ player_processJoystick(object_t * ptr, uint8_t joystickPos)
 uint16_t
 player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
-#ifdef HIT_HUNTER
-  return player_artificialIntelligence(deltaT, ptr, data);
-#endif
-  
   if (data->attackCount > 0 && data->attackJump) {
     return 0;
   }
@@ -217,7 +156,6 @@ player_init(uint16_t id, uint16_t animId, int16_t x)
   } else {
     width = PLAYER_PLAYER2_WIDTH;
   }
-  //  data->widthOffset = (OBJECT_WIDTH-width)/2;
   ptr->widthOffset = (OBJECT_WIDTH-width)/2;
   ptr->width = OBJECT_WIDTH;
   object_set_state(ptr, OBJECT_STATE_FLASHING);  

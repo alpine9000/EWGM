@@ -1,4 +1,3 @@
-//#define HIT_HUNTER                    1
 #define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1
 #define GAME_RECORDING                1

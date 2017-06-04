@@ -3,7 +3,6 @@
 #ifdef GAME_STARS
 
 #define STAR_WIDTH 16
-//#define STAR_HEIGHT 3
 #define STAR_MAX_STARS 6
 #define SPRITE_SPRITESHEET_Y 547
 #define SPRITE_SPRITESHEET_X 112
@@ -38,7 +37,6 @@ typedef struct star {
 } star_t;
 
 
-//static
 int16_t star_count;
 star_t* star_activeList;
 static star_t* star_freeList;

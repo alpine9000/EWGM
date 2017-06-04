@@ -42,10 +42,7 @@ static hiscore_small_buffer_t hiscore2;
 #endif
 static char hiscore_promptBuffer[4];
 
-#ifdef GAME_HISCORE_SAVE_ENABLE
-//static
-#endif
-uint32_t
+static uint32_t
 hiscore_checksum(void)
 {
   uint32_t checksum = 0;
@@ -226,9 +223,6 @@ hiscore_prompt(char* message)
 #endif
     
     if (keyboard_key) {            
-      //gfx_fillRectSmallScreen(game_messageBuffer, 0, 0, 16*8, 8, 0);
-      //text_drawMaskedText8Blitter(game_messageBuffer, itoa(keyboard_code), 0, 0);
-      
       if (keyboard_code == KEYBOARD_CODE_BACKSPACE) {
 	if (bufferIndex > 0) {
 	  x-=8;
@@ -321,8 +315,6 @@ hiscore_addScore(uint16_t playerNumber, uint32_t score)
 __EXTERNAL void
 hiscore_save(void)
 { 
-  //extern BPTR startupDirLock;
-
 #ifdef GAME_HISCORE_SAVE_ENABLE  
   dos_init();
 
