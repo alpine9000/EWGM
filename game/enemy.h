@@ -15,6 +15,7 @@
 #define ENEMY_BOSS_ATTACK_DAMMAGE   20
 #define ENEMY_BOSS_ATTACK_RANGE     20
 
+#define ENEMY_MOTORBIKE_RIDE_ANIM_SPEED 8
 // the following are temporary and will be refactored
 #define ENEMY_ATTACK_DAMMAGE        5
 
@@ -28,6 +29,7 @@ extern uint16_t enemy_pause;
 extern fighter_attack_config_t enemy_attackConfig1[];
 extern fighter_attack_config_t enemy_attackConfig2[];
 extern fighter_attack_config_t enemy_bossAttackConfig[];
+extern fighter_attack_config_t enemy_motorbikeAttackConfig[];
 
 void
 enemy_init(void);

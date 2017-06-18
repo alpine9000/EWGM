@@ -49,7 +49,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE1_1] = {
     .x = -64,
     .y = 85,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT,
     .attackConfig = enemy_attackConfig1,
     .attackWait = ENEMY_ATTACK_WAIT_TICS,
     .enemyCount = 0,
@@ -60,7 +60,7 @@ level_enemy_config_t level1_configs[] = {
     .y = 85,
     .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,    
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT,    
     .enemyCount = 1,
     .intelligence = 0   
   },
@@ -68,7 +68,7 @@ level_enemy_config_t level1_configs[] = {
     .x = SCREEN_WIDTH,
     .y = 185,
     .attackConfig = enemy_attackConfig1,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,    
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS,
     .enemyCount = 1,
     .intelligence = 0
@@ -79,7 +79,7 @@ level_enemy_config_t level1_configs[] = {
     .x = -64,
     .y = 85,
     .attackConfig = enemy_attackConfig1,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,    
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS,
     .enemyCount = 0,
     .intelligence = 0
@@ -87,7 +87,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE2_2] = {
     .x = SCREEN_WIDTH,
     .y = 200,
-    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT,
     .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS,
     .enemyCount = 1,
@@ -98,7 +98,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE3_1] = {
     .x = SCREEN_WIDTH,
     .y = 150,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT,
     .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .enemyCount = 0,
@@ -107,7 +107,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE3_2] = {
     .x = -48,
     .y = 150,
-    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT,
     .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .enemyCount = 1,
@@ -116,7 +116,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE3_3] = {
     .x = -48,
     .y = 75,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT,
     .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .enemyCount = 2,
@@ -125,7 +125,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE3_4] = {
     .x = -48,
     .y = 150,
-    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT,
     .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .enemyCount = 2,
@@ -134,7 +134,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE3_5] = {
     .x = SCREEN_WIDTH+32,
     .y = 75,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT,
     .attackConfig = enemy_attackConfig1,
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .enemyCount = 3,
@@ -143,7 +143,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE3_6] = {
     .x = SCREEN_WIDTH,
     .y = 75,
-    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT,
     .attackConfig = enemy_attackConfig1,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .enemyCount = 0,
@@ -153,7 +153,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE4_1] = {
     .x = SCREEN_WIDTH,
     .y = 150,
-    .animId = OBJECT_ANIM_PLAYER4_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT,
     .attackConfig = enemy_attackConfig2,    
     .attackWait = 0,
     .enemyCount = 0,
@@ -162,7 +162,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE4_2] = {
     .x = -48,
     .y = 150,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT,
     .attackConfig = enemy_attackConfig2,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .enemyCount = 1,
@@ -174,7 +174,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE5_1] = {
     .x = SCREEN_WIDTH,
     .y = 100,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT,
     .attackConfig = enemy_attackConfig1,    
     .attackWait = 0,
     .enemyCount = 0,
@@ -183,7 +183,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE5_2] = {
     .x = -48,
     .y = 120,
-    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT,
     .attackConfig = enemy_attackConfig2,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .enemyCount = 1,
@@ -192,7 +192,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE5_3] = {
     .x = SCREEN_WIDTH,
     .y = 160,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT,
     .attackConfig = enemy_attackConfig1,    
     .attackWait = 0,
     .enemyCount = 2,
@@ -201,7 +201,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE5_4] = {
     .x = -48,
     .y = 180,
-    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT,
     .attackConfig = enemy_attackConfig2,    
     .attackWait = ENEMY_ATTACK_WAIT_TICS/2,
     .enemyCount = 3,
@@ -210,7 +210,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE5_5] = {
     .x = SCREEN_WIDTH,
     .y = 200,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT,
     .attackConfig = enemy_attackConfig1,
     .attackWait = 0,
     .enemyCount = 3,
@@ -219,7 +219,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE5_6] = {
     .x = -48,
     .y = 100,
-    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT,
     .attackConfig = enemy_attackConfig2,    
     .attackWait = 0,
     .enemyCount = 4,
@@ -229,7 +229,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE6_1] = {
     .x = SCREEN_WIDTH,
     .y = 88,
-    .animId = OBJECT_ANIM_PLAYER4_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT,
     .attackConfig = enemy_attackConfig2,    
     .attackWait = 0,
     .enemyCount = 0,
@@ -238,7 +238,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE6_2] = {
     .x = -48,
     .y = 200,
-    .animId = OBJECT_ANIM_PLAYER1_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT,
     .attackConfig = enemy_attackConfig2,    
     .attackWait = 0,
     .enemyCount = 1,
@@ -248,7 +248,7 @@ level_enemy_config_t level1_configs[] = {
   [LEVEL1_WAVE6_3] = {
     .x = SCREEN_WIDTH,
     .y = 200,
-    .animId = OBJECT_ANIM_PLAYER5_STAND_RIGHT,
+    .animId = OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT,
     .attackConfig = enemy_attackConfig2,    
     .attackWait = 0,
     .enemyCount = 2,
@@ -336,14 +336,14 @@ level1_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 static void
 level1_addDoorEnemy(void)
 {
-  enemy_add(OBJECT_ANIM_PLAYER1_STAND_RIGHT, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, enemy_attackConfig1, ENEMY_ATTACK_WAIT_TICS, level1_doorIntelligence);    
+  enemy_add(OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, enemy_attackConfig1, ENEMY_ATTACK_WAIT_TICS, level1_doorIntelligence);    
 }
 
 
 static void
 level1_addDoorEnemy2(void)
 {
-  enemy_add(OBJECT_ANIM_PLAYER5_STAND_RIGHT, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, enemy_attackConfig1, ENEMY_ATTACK_WAIT_TICS, level1_doorIntelligence);    
+  enemy_add(OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, enemy_attackConfig1, ENEMY_ATTACK_WAIT_TICS, level1_doorIntelligence);    
 }
 
 /*
@@ -355,10 +355,165 @@ static uint16_t level1_boss_attack_range[] = {
 };
 */
 
+uint16_t motorbike_attack = 1;
+fighter_data_t motorbike_data;
+static uint16_t
+level1_motorbikeIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
+{
+  switch (object_get_state(ptr)) {
+  case OBJECT_STATE_ALIVE:
+  case OBJECT_STATE_HIT:
+    __USE(deltaT);
+    __USE(data);
+    if (object_screenx(ptr) >= SCREEN_WIDTH+160) {
+      object_set_state(ptr, OBJECT_STATE_ALIVE);
+      ptr->velocity.x = -8;
+      motorbike_attack = 1;    
+    } else if (object_screenx(ptr) <= -160) {
+      object_set_state(ptr, OBJECT_STATE_ALIVE);    
+      ptr->velocity.x = 8;
+      motorbike_attack = 1;    
+    }
+    break;
+  }
+    
+  return 0;
+}
+
+object_t*
+motorbike_collision(object_t* a)
+{
+  object_t* b;
+
+#ifdef DEBUG
+  if (!game_collisions) {
+    return 0;
+  }
+#endif
+
+  int16_t a_y = object_y(a);  
+  int16_t a_x1 = object_x(a) + a->widthOffset;
+  int16_t a_x2 = object_x(a) + (a->width - a->widthOffset);
+  
+  if (game_player1) {
+    b = game_player1;
+    //if ((b->class == OBJECT_CLASS_FIGHTER) && object_get_state(b) == OBJECT_STATE_ALIVE) {      
+      int16_t b_y = object_y(b);
+      if (abs(a_y - b_y) <= 5) {
+	a_x1 = object_x(a) + a->widthOffset;
+	a_x2 = object_x(a) + (a->width - a->widthOffset);	
+	int16_t b_x1 = object_x(b) + b->widthOffset;
+	int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
+	
+	if (a_x1 < b_x2 && a_x2 > b_x1) {		  
+	  return b;
+	}
+      }
+    //}
+  }
+
+  if (game_player2) {
+    b = game_player2;
+    //if ((b->class == OBJECT_CLASS_FIGHTER) && object_get_state(b) == OBJECT_STATE_ALIVE) {      
+      int16_t b_y = object_y(b);
+      if (abs(a_y - b_y) <= 5) {
+	int16_t b_x1 = object_x(b) + b->widthOffset;
+	int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
+	
+	if (a_x1 < b_x2 && a_x2 > b_x1) {		  
+	  return b;
+	}
+      }
+    //}
+  }
+  
+  return 0;
+}
+
+void
+motorbike_update(uint16_t deltaT, object_t* ptr)
+{
+  fighter_data_t* data = (fighter_data_t*)ptr->data;    
+  level1_motorbikeIntelligence(deltaT, ptr, 0);
+  object_updatePositionNoChecks(deltaT, ptr);
+
+  switch (object_get_state(ptr)) {
+  case OBJECT_STATE_ALIVE:
+    fighter_updateSprite(ptr);
+    break;    
+  case OBJECT_STATE_FLASHING:
+    if (data->flashCount <= 0) {
+      ptr->visible = !ptr->visible;
+      data->flashCount = FIGHTER_HIT_FLASH_COUNT_TICS;
+    }
+    data->flashCount -= deltaT;
+    data->flashDurationTics -= deltaT;
+    if (data->flashDurationTics <= 0) {
+      fighter_die(ptr);
+    } 
+    break;
+  default:
+    return;
+  }
+  
+  object_t* player = motorbike_collision(ptr);
+  
+  if (player) {
+    if (player->actionId >= OBJECT_PUNCH_LEFT1 && player->actionId <= OBJECT_KICK_RIGHT) {
+      data->health -= 50;
+      star_add(ptr, ptr->velocity.x);      
+      if (data->health <= 0) {
+	object_set_state(ptr, OBJECT_STATE_FLASHING);
+	if (ptr->velocity.x > 0) {
+	  object_setAnim(ptr, OBJECT_ANIM_MOTORBIKE_BROKEN_RIGHT);
+	} else {
+	  object_setAnim(ptr, OBJECT_ANIM_MOTORBIKE_BROKEN_LEFT);
+	}
+	data->flashCount = FIGHTER_HIT_FLASH_COUNT_TICS;
+	data->flashDurationTics = FIGHTER_HIT_FLASH_DURATION_TICS;
+	sound_queueSound(SOUND_DIE01);	
+      } else {
+	object_set_state(ptr, OBJECT_STATE_HIT);
+	if (ptr->velocity.x < 0) {
+	  object_setAction(ptr, OBJECT_HIT_LEFT);
+	} else {
+	  object_setAction(ptr, OBJECT_HIT_RIGHT);
+	}      
+	switch (player->id) {
+	case OBJECT_ID_PLAYER1:    
+	  sound_queueSound(SOUND_TERENCE_PUNCH01);
+	  break;
+	case OBJECT_ID_PLAYER2:          
+	  sound_queueSound(SOUND_BUD_PUNCH01);
+	  break;            
+	}
+      }
+    } else if (motorbike_attack && player) {
+      motorbike_attack = 0;
+      //fighter_attack(ptr, player, 5, ptr->velocity.x);    
+    }
+  }  
+}
+
+static void
+level1_doAddMotorbike(void)
+{
+  int16_t x = -160;
+  uint16_t y = 150;
+
+  object_t* ptr = object_add(OBJECT_ID_ENEMY, OBJECT_CLASS_MOTORBIKE, x, y, 0, OBJECT_ANIM_MOTORBIKE_STAND_RIGHT, motorbike_update, &motorbike_data, 0);
+  motorbike_data.postAttackCount = 0;
+  motorbike_data.health = 100;
+  ptr->width = ptr->image->w;
+  ptr->widthOffset = 0;
+  enemy_count++;
+}
+
+
 static void
 level1_doAddBoss(uint16_t x)
 {
-  uint16_t y = LEVEL1_ENEMY_BOSS_START_Y;  
+  uint16_t y = LEVEL1_ENEMY_BOSS_START_Y; 
   
   object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, OBJECT_ANIM_BOSS_STAND_RIGHT, x, y, ENEMY_INITIAL_HEALTH, enemy_bossAttackConfig, level1_doorIntelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
@@ -435,23 +590,26 @@ level1_start(uint16_t argument)
 {
   __USE(argument);
   level1_addPostbox(50);
+  if (1) {
+    level1_doAddMotorbike();
+  }
   return 1;
 }
 
-#ifdef DEBUG
+//#ifdef DEBUG
 int16_t
 level1_pause(uint16_t argument)
 {
   __USE(argument);
   return 0;
 }
-#endif
+//#endif
 
 
 conductor_instruction_t level1_instructions[] = {
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_start},
 
-  //   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_pause},      
+  //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_pause},      
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_1, level1_processEnemyConfig},
 

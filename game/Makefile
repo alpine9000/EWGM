@@ -1,5 +1,5 @@
 # frequently changed config items
-#KEEP_ASM=1
+KEEP_ASM=1
 USE_BIG=1
 SFX=1
 PHOTON_TRACKLOADER=0
@@ -58,7 +58,7 @@ VASM_OPTS=-Wa,-opt-speed #-Wa,-opt-speed -Wa,-showcrit -Wa,-opt-allbra -Wa,-opt-
 ifeq ($(USE_BIG), 1)
 WHOLE_PROGRAM=-fwhole-program
 endif
-C_OPT=-Ofast #-fbbb=+V #-fbbb=sapcmefbV 
+C_OPT=-Ofast #-fbbb=+v #-fbbb=iesapcmfbrv #-fbbb=+V #-fbbb=sapcmefbV 
 BIG_FLAGS=$(WHOLE_PROGRAM)
 C_OPT_ASM_OUTPUT=-Ofast
 BASE_CFLAGS=-funsafe-loop-optimizations -Wno-overlength-strings $(REGPARAM) $(VASM_OPTS) -fomit-frame-pointer -noixemul -mcpu=68000 -m68000 -pedantic-errors -Wfatal-errors -Wall -Werror -Wextra -Wshadow -Wuninitialized -Wduplicated-cond -Wframe-larger-than=512 -Wstack-usage=512 -Wundef -Wbad-function-cast -Wparentheses $(INCLUDE) $(EXTRA_DEFINES)
@@ -240,7 +240,7 @@ out/background_%-map.c: assets/background_%.tmx out
 	@rm background_$*-sprites.c
 
 out/sprite_%.h: assets/sprite_%.png palettes/palette_%.pal
-	$(CROPPA) --width=320 --height=893 --input=assets/sprite_$*.png --output=out/sprite_$*-resized.png
+	$(CROPPA) --width=320 --height=989 --input=assets/sprite_$*.png --output=out/sprite_$*-resized.png
 	$(IMAGECON)  --quantize --colors=32 --full-color-palette --input=out/sprite_$*-resized.png --output=out/sprite_$* --output-bitplanes --output-png --output-palette --output-grey-palette-asm --output-palette-asm --use-palette=palettes/palette_$*.pal --output-mask
 	$(IMAGECON) --onebitplane-mask --quantize --colors=32 --full-color-palette --input=out/sprite_$*-resized.png --output=out/sprite_1bp_$* --output-bitplanes --output-png --output-palette --output-grey-palette-asm --output-palette-asm --use-palette=palettes/palette_$*.pal --output-mask
 	cat out/sprite_$*.bin | $(BIN2C) > out/sprite_$*.h
@@ -396,6 +396,7 @@ endif
 	-@#rm adf_big.c
 
 fast_big.c: $(FAST_C_OBJS) $(C_SRCS)
+	-@etags *.c *.h
 	cat $(C_SRCS) > fast_big.c
 
 out/fast/big.o: fast_big.c

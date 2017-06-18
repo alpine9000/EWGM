@@ -16,4 +16,7 @@ thing_addStar(object_t* ptr, int16_t dx, int16_t yOffset);
 
 void
 thing_updatePosition(uint16_t deltaT, object_t* ptr);
+
+object_t*
+thing_collision(object_t* a);
 #endif 

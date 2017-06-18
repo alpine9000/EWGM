@@ -113,7 +113,7 @@ fighter_attackCollision(object_t* a, object_collision_t* collision, uint16_t thr
 }
 
 
-static void
+void
 fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
 {
   if (ptr->class == OBJECT_CLASS_THING) {
@@ -121,7 +121,7 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
     return;
   }
   
-  if (object_get_state(ptr) == OBJECT_STATE_HIT) {
+  if (object_get_state(ptr) != OBJECT_STATE_ALIVE) {
     return;
   }
   
@@ -264,7 +264,7 @@ fighter_doAttack(object_t* ptr, fighter_data_t* data)
 }
 
 
-static void
+void
 fighter_updateSprite(object_t* ptr)
 {
   object_set_z(ptr, object_y(ptr));

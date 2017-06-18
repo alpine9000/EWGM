@@ -63,4 +63,13 @@ fighter_update(uint16_t deltaT, object_t* ptr);
 
 uint16_t
 fighter_nullIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data);
+
+void
+fighter_updateSprite(object_t* ptr);
+
+void
+fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx);
+
+void
+fighter_die(object_t* ptr);
 #endif

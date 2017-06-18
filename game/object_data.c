@@ -1,63 +1,63 @@
 #include "game.h"
 
 object_animation_t object_animations[] = {
-  [OBJECT_ANIM_PLAYER1_RUN_RIGHT] = {
-    .start = SPRITE_PLAYER1_RUN_RIGHT_1,
-    .stop = SPRITE_PLAYER1_RUN_RIGHT_4,
+  [OBJECT_ANIM_ENEMY_LEVEL1_1_RUN_RIGHT] = {
+    .start = SPRITE_ENEMY_LEVEL1_1_RUN_RIGHT_1,
+    .stop = SPRITE_ENEMY_LEVEL1_1_RUN_RIGHT_4,
     .speed = 2,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_PLAYER1_STAND_RIGHT] = {
-    .start = SPRITE_PLAYER1_STAND_RIGHT,
-    .stop = SPRITE_PLAYER1_STAND_RIGHT,
+  [OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT] = {
+    .start = SPRITE_ENEMY_LEVEL1_1_STAND_RIGHT,
+    .stop = SPRITE_ENEMY_LEVEL1_1_STAND_RIGHT,
     .speed = 0,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_PLAYER1_RUN_LEFT] = {
-    .start = SPRITE_PLAYER1_RUN_LEFT_1,
-    .stop = SPRITE_PLAYER1_RUN_LEFT_4,
+  [OBJECT_ANIM_ENEMY_LEVEL1_1_RUN_LEFT] = {
+    .start = SPRITE_ENEMY_LEVEL1_1_RUN_LEFT_1,
+    .stop = SPRITE_ENEMY_LEVEL1_1_RUN_LEFT_4,
     .speed = 2,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_PLAYER1_STAND_LEFT] = {
-    .start = SPRITE_PLAYER1_STAND_LEFT,
-    .stop = SPRITE_PLAYER1_STAND_LEFT,
+  [OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_LEFT] = {
+    .start = SPRITE_ENEMY_LEVEL1_1_STAND_LEFT,
+    .stop = SPRITE_ENEMY_LEVEL1_1_STAND_LEFT,
     .speed = 0,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_PLAYER1_PUNCH_LEFT1] = {
-    .start = SPRITE_PLAYER1_PUNCH_LEFT_1,
-    .stop = SPRITE_PLAYER1_PUNCH_LEFT_1,
+  [OBJECT_ANIM_ENEMY_LEVEL1_1_PUNCH_LEFT1] = {
+    .start = SPRITE_ENEMY_LEVEL1_1_PUNCH_LEFT_1,
+    .stop = SPRITE_ENEMY_LEVEL1_1_PUNCH_LEFT_1,
     .speed = 0,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_PLAYER1_PUNCH_LEFT2] = {
-    .start = SPRITE_PLAYER1_PUNCH_LEFT_2,
-    .stop = SPRITE_PLAYER1_PUNCH_LEFT_2,
+  [OBJECT_ANIM_ENEMY_LEVEL1_1_PUNCH_LEFT2] = {
+    .start = SPRITE_ENEMY_LEVEL1_1_PUNCH_LEFT_2,
+    .stop = SPRITE_ENEMY_LEVEL1_1_PUNCH_LEFT_2,
     .speed = 0,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_PLAYER1_PUNCH_RIGHT1] = {
-    .start = SPRITE_PLAYER1_PUNCH_RIGHT_1,
-    .stop = SPRITE_PLAYER1_PUNCH_RIGHT_1,
+  [OBJECT_ANIM_ENEMY_LEVEL1_1_PUNCH_RIGHT1] = {
+    .start = SPRITE_ENEMY_LEVEL1_1_PUNCH_RIGHT_1,
+    .stop = SPRITE_ENEMY_LEVEL1_1_PUNCH_RIGHT_1,
     .speed = 0,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_PLAYER1_PUNCH_RIGHT2] = {
-    .start = SPRITE_PLAYER1_PUNCH_RIGHT_2,
-    .stop = SPRITE_PLAYER1_PUNCH_RIGHT_2,
+  [OBJECT_ANIM_ENEMY_LEVEL1_1_PUNCH_RIGHT2] = {
+    .start = SPRITE_ENEMY_LEVEL1_1_PUNCH_RIGHT_2,
+    .stop = SPRITE_ENEMY_LEVEL1_1_PUNCH_RIGHT_2,
     .speed = 0,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_PLAYER1_HIT_LEFT] = {
-    .start = SPRITE_PLAYER1_HIT_LEFT,
-    .stop = SPRITE_PLAYER1_HIT_LEFT,
+  [OBJECT_ANIM_ENEMY_LEVEL1_1_HIT_LEFT] = {
+    .start = SPRITE_ENEMY_LEVEL1_1_HIT_LEFT,
+    .stop = SPRITE_ENEMY_LEVEL1_1_HIT_LEFT,
     .speed = 0,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_PLAYER1_HIT_RIGHT] = {
-    .start = SPRITE_PLAYER1_HIT_RIGHT,
-    .stop = SPRITE_PLAYER1_HIT_RIGHT,
+  [OBJECT_ANIM_ENEMY_LEVEL1_1_HIT_RIGHT] = {
+    .start = SPRITE_ENEMY_LEVEL1_1_HIT_RIGHT,
+    .stop = SPRITE_ENEMY_LEVEL1_1_HIT_RIGHT,
     .speed = 0,
     .facing = FACING_RIGHT
   },          
@@ -209,130 +209,67 @@ object_animation_t object_animations[] = {
   },                
 
   // =================================
-  [OBJECT_ANIM_PLAYER4_RUN_RIGHT] = {
-    .start = SPRITE_PLAYER4_RUN_RIGHT_1,
-    .stop = SPRITE_PLAYER4_RUN_RIGHT_4,
+  [OBJECT_ANIM_ENEMY_LEVEL1_2_RUN_RIGHT] = {
+    .start = SPRITE_ENEMY_LEVEL1_2_RUN_RIGHT_1,
+    .stop = SPRITE_ENEMY_LEVEL1_2_RUN_RIGHT_4,
     .speed = 2,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_PLAYER4_STAND_RIGHT] = {
-    .start = SPRITE_PLAYER4_STAND_RIGHT,
-    .stop = SPRITE_PLAYER4_STAND_RIGHT,
+  [OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT] = {
+    .start = SPRITE_ENEMY_LEVEL1_2_STAND_RIGHT,
+    .stop = SPRITE_ENEMY_LEVEL1_2_STAND_RIGHT,
     .speed = 0,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_PLAYER4_RUN_LEFT] = {
-    .start = SPRITE_PLAYER4_RUN_LEFT_1,
-    .stop = SPRITE_PLAYER4_RUN_LEFT_4,
+  [OBJECT_ANIM_ENEMY_LEVEL1_2_RUN_LEFT] = {
+    .start = SPRITE_ENEMY_LEVEL1_2_RUN_LEFT_1,
+    .stop = SPRITE_ENEMY_LEVEL1_2_RUN_LEFT_4,
     .speed = 2,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_PLAYER4_STAND_LEFT] = {
-    .start = SPRITE_PLAYER4_STAND_LEFT,
-    .stop = SPRITE_PLAYER4_STAND_LEFT,
+  [OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_LEFT] = {
+    .start = SPRITE_ENEMY_LEVEL1_2_STAND_LEFT,
+    .stop = SPRITE_ENEMY_LEVEL1_2_STAND_LEFT,
     .speed = 0,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_PLAYER4_PUNCH_LEFT1] = {
-    .start = SPRITE_PLAYER4_PUNCH_LEFT_1,
-    .stop = SPRITE_PLAYER4_PUNCH_LEFT_1,
+  [OBJECT_ANIM_ENEMY_LEVEL1_2_PUNCH_LEFT1] = {
+    .start = SPRITE_ENEMY_LEVEL1_2_PUNCH_LEFT_1,
+    .stop = SPRITE_ENEMY_LEVEL1_2_PUNCH_LEFT_1,
     .speed = 0,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_PLAYER4_PUNCH_LEFT2] = {
-    .start = SPRITE_PLAYER4_PUNCH_LEFT_2,
-    .stop = SPRITE_PLAYER4_PUNCH_LEFT_2,
+  [OBJECT_ANIM_ENEMY_LEVEL1_2_PUNCH_LEFT2] = {
+    .start = SPRITE_ENEMY_LEVEL1_2_PUNCH_LEFT_2,
+    .stop = SPRITE_ENEMY_LEVEL1_2_PUNCH_LEFT_2,
     .speed = 0,
     .facing = FACING_LEFT
   },      
-  [OBJECT_ANIM_PLAYER4_PUNCH_RIGHT1] = {
-    .start = SPRITE_PLAYER4_PUNCH_RIGHT_1,
-    .stop = SPRITE_PLAYER4_PUNCH_RIGHT_1,
+  [OBJECT_ANIM_ENEMY_LEVEL1_2_PUNCH_RIGHT1] = {
+    .start = SPRITE_ENEMY_LEVEL1_2_PUNCH_RIGHT_1,
+    .stop = SPRITE_ENEMY_LEVEL1_2_PUNCH_RIGHT_1,
     .speed = 0,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_PLAYER4_PUNCH_RIGHT2] = {
-    .start = SPRITE_PLAYER4_PUNCH_RIGHT_2,
-    .stop = SPRITE_PLAYER4_PUNCH_RIGHT_2,
+  [OBJECT_ANIM_ENEMY_LEVEL1_2_PUNCH_RIGHT2] = {
+    .start = SPRITE_ENEMY_LEVEL1_2_PUNCH_RIGHT_2,
+    .stop = SPRITE_ENEMY_LEVEL1_2_PUNCH_RIGHT_2,
     .speed = 0,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_PLAYER4_HIT_LEFT] = {
-    .start = SPRITE_PLAYER4_HIT_LEFT,
-    .stop = SPRITE_PLAYER4_HIT_LEFT,
+  [OBJECT_ANIM_ENEMY_LEVEL1_2_HIT_LEFT] = {
+    .start = SPRITE_ENEMY_LEVEL1_2_HIT_LEFT,
+    .stop = SPRITE_ENEMY_LEVEL1_2_HIT_LEFT,
     .speed = 0,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_PLAYER4_HIT_RIGHT] = {
-    .start = SPRITE_PLAYER4_HIT_RIGHT,
-    .stop = SPRITE_PLAYER4_HIT_RIGHT,
+  [OBJECT_ANIM_ENEMY_LEVEL1_2_HIT_RIGHT] = {
+    .start = SPRITE_ENEMY_LEVEL1_2_HIT_RIGHT,
+    .stop = SPRITE_ENEMY_LEVEL1_2_HIT_RIGHT,
     .speed = 0,
     .facing = FACING_RIGHT
   },  
 
-
-  // =================================
-  [OBJECT_ANIM_PLAYER5_RUN_RIGHT] = {
-    .start = SPRITE_PLAYER5_RUN_RIGHT_1,
-    .stop = SPRITE_PLAYER5_RUN_RIGHT_4,
-    .speed = 2,
-    .facing = FACING_RIGHT
-  },
-  [OBJECT_ANIM_PLAYER5_STAND_RIGHT] = {
-    .start = SPRITE_PLAYER5_STAND_RIGHT,
-    .stop = SPRITE_PLAYER5_STAND_RIGHT,
-    .speed = 0,
-    .facing = FACING_RIGHT
-  },
-  [OBJECT_ANIM_PLAYER5_RUN_LEFT] = {
-    .start = SPRITE_PLAYER5_RUN_LEFT_1,
-    .stop = SPRITE_PLAYER5_RUN_LEFT_4,
-    .speed = 2,
-    .facing = FACING_LEFT
-  },
-  [OBJECT_ANIM_PLAYER5_STAND_LEFT] = {
-    .start = SPRITE_PLAYER5_STAND_LEFT,
-    .stop = SPRITE_PLAYER5_STAND_LEFT,
-    .speed = 0,
-    .facing = FACING_LEFT
-  },
-  [OBJECT_ANIM_PLAYER5_PUNCH_LEFT1] = {
-    .start = SPRITE_PLAYER5_PUNCH_LEFT_1,
-    .stop = SPRITE_PLAYER5_PUNCH_LEFT_1,
-    .speed = 0,
-    .facing = FACING_LEFT
-  },
-  [OBJECT_ANIM_PLAYER5_PUNCH_LEFT2] = {
-    .start = SPRITE_PLAYER5_PUNCH_LEFT_2,
-    .stop = SPRITE_PLAYER5_PUNCH_LEFT_2,
-    .speed = 0,
-    .facing = FACING_LEFT
-  },      
-  [OBJECT_ANIM_PLAYER5_PUNCH_RIGHT1] = {
-    .start = SPRITE_PLAYER5_PUNCH_RIGHT_1,
-    .stop = SPRITE_PLAYER5_PUNCH_RIGHT_1,
-    .speed = 0,
-    .facing = FACING_RIGHT
-  },
-  [OBJECT_ANIM_PLAYER5_PUNCH_RIGHT2] = {
-    .start = SPRITE_PLAYER5_PUNCH_RIGHT_2,
-    .stop = SPRITE_PLAYER5_PUNCH_RIGHT_2,
-    .speed = 0,
-    .facing = FACING_RIGHT
-  },
-  [OBJECT_ANIM_PLAYER5_HIT_LEFT] = {
-    .start = SPRITE_PLAYER5_HIT_LEFT,
-    .stop = SPRITE_PLAYER5_HIT_LEFT,
-    .speed = 0,
-    .facing = FACING_LEFT
-  },
-  [OBJECT_ANIM_PLAYER5_HIT_RIGHT] = {
-    .start = SPRITE_PLAYER5_HIT_RIGHT,
-    .stop = SPRITE_PLAYER5_HIT_RIGHT,
-    .speed = 0,
-    .facing = FACING_RIGHT
-  },  
-  
 
   // =================================
   [OBJECT_ANIM_BOSS_RUN_RIGHT] = {
@@ -392,6 +329,45 @@ object_animation_t object_animations[] = {
   [OBJECT_ANIM_BOSS_HIT_RIGHT] = {
     .start = SPRITE_BOSS_HIT_RIGHT,
     .stop = SPRITE_BOSS_HIT_RIGHT,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+
+  // =================================
+
+  [OBJECT_ANIM_MOTORBIKE_RUN_RIGHT] = {
+    .start = SPRITE_MOTORBIKE_RIDE_RIGHT_1,
+    .stop = SPRITE_MOTORBIKE_RIDE_RIGHT_2,
+    .speed = ENEMY_MOTORBIKE_RIDE_ANIM_SPEED,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_MOTORBIKE_STAND_RIGHT] = {
+    .start = SPRITE_MOTORBIKE_RIDE_RIGHT_1,
+    .stop = SPRITE_MOTORBIKE_RIDE_RIGHT_1,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_MOTORBIKE_RUN_LEFT] = {
+    .start = SPRITE_MOTORBIKE_RIDE_LEFT_1,
+    .stop = SPRITE_MOTORBIKE_RIDE_LEFT_2,
+    .speed = ENEMY_MOTORBIKE_RIDE_ANIM_SPEED,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_MOTORBIKE_STAND_LEFT] = {
+    .start = SPRITE_MOTORBIKE_RIDE_LEFT_1,
+    .stop = SPRITE_MOTORBIKE_RIDE_LEFT_1,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_MOTORBIKE_HIT_LEFT] = {
+    .start = SPRITE_MOTORBIKE_HIT_LEFT,
+    .stop = SPRITE_MOTORBIKE_HIT_LEFT,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_MOTORBIKE_HIT_RIGHT] = {
+    .start = SPRITE_MOTORBIKE_HIT_RIGHT,
+    .stop = SPRITE_MOTORBIKE_HIT_RIGHT,
     .speed = 0,
     .facing = FACING_RIGHT
   },  
@@ -532,138 +508,152 @@ object_animation_t object_animations[] = {
     .speed = 0,
     .facing = FACING_RIGHT
   },    
-  
+
+  // =================================  
+  [OBJECT_ANIM_MOTORBIKE_BROKEN_LEFT] = {
+    .start = SPRITE_MOTORBIKE_BROKEN_LEFT,
+    .stop = SPRITE_MOTORBIKE_BROKEN_LEFT,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+
+  [OBJECT_ANIM_MOTORBIKE_BROKEN_RIGHT] = {
+    .start = SPRITE_MOTORBIKE_BROKEN_RIGHT,
+    .stop = SPRITE_MOTORBIKE_BROKEN_RIGHT,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },  
 };
 
 
 object_image_t object_imageAtlas[] = {
-  [SPRITE_PLAYER1_STAND_RIGHT] = {
+  [SPRITE_ENEMY_LEVEL1_1_STAND_RIGHT] = {
     .x = 0,
     .y = 0,
     .w = 32,
-    .h = 53,
+    .h = 52,
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_PLAYER1_RUN_RIGHT_1] = {
+  [SPRITE_ENEMY_LEVEL1_1_RUN_RIGHT_1] = {
     .x = 32,
     .y = 0,
     .w = 32,
-    .h = 53,
-    .dx = 1,
+    .h = 52,
+    .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_PLAYER1_RUN_RIGHT_2] = {
+  [SPRITE_ENEMY_LEVEL1_1_RUN_RIGHT_2] = {
     .x = 64,
     .y = 0,
     .w = 32,
-    .h = 53,
-    .dx = 1,
-    .dy = 0,    
-  },
-  [SPRITE_PLAYER1_RUN_RIGHT_3] = {
-    .x = 96,
-    .y = 0,
-    .w = 32,
-    .h = 53,
-    .dx = -1,
-    .dy = 0,    
-  },
-  [SPRITE_PLAYER1_RUN_RIGHT_4] = {
-    .x = 32,
-    .y = 0,
-    .w = 32,
-    .h = 53,
-    .dx = 1,
-    .dy = 0,    
-    },
-  [SPRITE_PLAYER1_STAND_LEFT] = {
-    .x = 192,
-    .y = 54,
-    .w = 32,
-    .h = 53,
+    .h = 52,
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_PLAYER1_RUN_LEFT_1] = {
-    .x = 160,
-    .y = 54,
+  [SPRITE_ENEMY_LEVEL1_1_RUN_RIGHT_3] = {
+    .x = 96,
+    .y = 0,
     .w = 32,
-    .h = 53,
-    .dx = -1,
+    .h = 52,
+    .dx = -2,
     .dy = 0,    
   },
-  [SPRITE_PLAYER1_RUN_LEFT_2] = {
-    .x = 128,
-    .y = 54,
+  [SPRITE_ENEMY_LEVEL1_1_RUN_RIGHT_4] = {
+    .x = 32,
+    .y = 0,
     .w = 32,
-    .h = 53,
-    .dx = -1,
+    .h = 52,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_ENEMY_LEVEL1_1_STAND_LEFT] = {
+    .x = 160,
+    .y = 52,
+    .w = 32,
+    .h = 52,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL1_1_RUN_LEFT_1] = {
+    .x = 128,
+    .y = 52,
+    .w = 32,
+    .h = 52,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL1_1_RUN_LEFT_2] = {
+    .x = 96,
+    .y = 52,
+    .w = 32,
+    .h = 52,
+    .dx = 0,
     .dy = 0,   
   },
-  [SPRITE_PLAYER1_RUN_LEFT_3] = {
+  [SPRITE_ENEMY_LEVEL1_1_RUN_LEFT_3] = {
+    .x = 64,
+    .y = 52,
+    .w = 32,
+    .h = 52,
+    .dx = 2,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL1_1_RUN_LEFT_4] = {
     .x = 96,
-    .y = 54,
+    .y = 52,
     .w = 32,
-    .h = 53,
-    .dx = 1,
+    .h = 52,
+    .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_PLAYER1_RUN_LEFT_4] = {
-    .x = 128,
-    .y = 54,
+  [SPRITE_ENEMY_LEVEL1_1_PUNCH_LEFT_1] = {
+    .x = 192,
+    .y = 0,
     .w = 32,
-    .h = 53,
-    .dx = -1,
-    .dy = 0,    
-  },
-  [SPRITE_PLAYER1_PUNCH_LEFT_1] = {
-    .x = 32,
-    .y = 54,
-    .w = 32,
-    .h = 53,
+    .h = 52,
     .dx = -3,
     .dy = 0,    
     },
-  [SPRITE_PLAYER1_PUNCH_LEFT_2] = {
-    .x = 64,
-    .y = 54,
+  [SPRITE_ENEMY_LEVEL1_1_PUNCH_LEFT_2] = {
+    .x = 192,
+    .y = 52,
     .w = 32,
-    .h = 53,
+    .h = 52,
     .dx = -2,
     .dy = 0,    
     },
-  [SPRITE_PLAYER1_PUNCH_RIGHT_1] = {
-    .x = 160,
-    .y = 0,
-    .w = 32,
-    .h = 53,
-    .dx = 3,
-    .dy = 0,    
-    },
-  [SPRITE_PLAYER1_PUNCH_RIGHT_2] = {
+  [SPRITE_ENEMY_LEVEL1_1_PUNCH_RIGHT_1] = {
     .x = 128,
     .y = 0,
     .w = 32,
-    .h = 53,
-    .dx = 4,
+    .h = 52,
+    .dx = 2,
+    .dy = 0,    
+    },
+  [SPRITE_ENEMY_LEVEL1_1_PUNCH_RIGHT_2] = {
+    .x = 160,
+    .y = 0,
+    .w = 32,
+    .h = 52,
+    .dx = 3,
     .dy = 0,    
     },
   
-  [SPRITE_PLAYER1_HIT_RIGHT] = {
+  [SPRITE_ENEMY_LEVEL1_1_HIT_RIGHT] = {
     .x = 0,
-    .y = 54,
-    .w = 32,
-    .h = 53,
-    .dx = -3,
+    .y = 52,
+    .w = 48,
+    .h = 52,
+    .dx = -4,
     .dy = 0,    
     },
-  [SPRITE_PLAYER1_HIT_LEFT] = {
-    .x = 192,
-    .y = 0,
-    .w = 32,
-    .h = 53,
-    .dx = 3,
+  [SPRITE_ENEMY_LEVEL1_1_HIT_LEFT] = {
+    .x = 208,
+    .y = 731,
+    .w = 48,
+    .h = 52,
+    .dx = -2,
     .dy = 0,    
     },
   //==============================
@@ -988,8 +978,8 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
   [SPRITE_PLAYER3_KICK_LEFT_2] = {
-    .x = 160,
-    .y = 731,
+    .x = 208,
+    .y = 927,
     .w = 48,
     .h = 60,
     .dx = -8,
@@ -1013,8 +1003,8 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
   [SPRITE_PLAYER3_KICK_RIGHT_2] = {
-    .x = 112,
-    .y = 731,
+    .x = 160,
+    .y = 927,
     .w = 48,
     .h = 60,
     .dx = -3,
@@ -1030,7 +1020,7 @@ object_image_t object_imageAtlas[] = {
     },            
   
   //==============================
-  [SPRITE_PLAYER4_STAND_RIGHT] = {
+  [SPRITE_ENEMY_LEVEL1_2_STAND_RIGHT] = {
     .x = 0,
     .y = 563,
     .w = 48,
@@ -1038,7 +1028,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_PLAYER4_RUN_RIGHT_1] = {
+  [SPRITE_ENEMY_LEVEL1_2_RUN_RIGHT_1] = {
     .x = 48,
     .y = 563,
     .w = 48,
@@ -1046,7 +1036,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_PLAYER4_RUN_RIGHT_2] = {
+  [SPRITE_ENEMY_LEVEL1_2_RUN_RIGHT_2] = {
     .x = 96,
     .y = 563,
     .w = 48,
@@ -1054,7 +1044,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_PLAYER4_RUN_RIGHT_3] = {
+  [SPRITE_ENEMY_LEVEL1_2_RUN_RIGHT_3] = {
     .x = 144,
     .y = 563,
     .w = 48,
@@ -1062,7 +1052,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-    [SPRITE_PLAYER4_RUN_RIGHT_4] = {
+    [SPRITE_ENEMY_LEVEL1_2_RUN_RIGHT_4] = {
     .x = 96,
     .y = 563,
     .w = 48,
@@ -1070,7 +1060,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_PLAYER4_STAND_LEFT] = {
+  [SPRITE_ENEMY_LEVEL1_2_STAND_LEFT] = {
     .x = 192,
     .y = 675,
     .w = 48,
@@ -1078,7 +1068,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_PLAYER4_RUN_LEFT_1] = {
+  [SPRITE_ENEMY_LEVEL1_2_RUN_LEFT_1] = {
     .x = 144,
     .y = 675,
     .w = 48,
@@ -1086,7 +1076,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_PLAYER4_RUN_LEFT_2] = {
+  [SPRITE_ENEMY_LEVEL1_2_RUN_LEFT_2] = {
     .x = 96,
     .y = 675,
     .w = 48,
@@ -1094,7 +1084,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,   
   },
-  [SPRITE_PLAYER4_RUN_LEFT_3] = {
+  [SPRITE_ENEMY_LEVEL1_2_RUN_LEFT_3] = {
     .x = 48,
     .y = 675,
     .w = 48,
@@ -1102,7 +1092,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-    [SPRITE_PLAYER4_RUN_LEFT_4] = {
+    [SPRITE_ENEMY_LEVEL1_2_RUN_LEFT_4] = {
     .x = 96,
     .y = 675,
     .w = 48,
@@ -1111,7 +1101,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
 
-  [SPRITE_PLAYER4_PUNCH_LEFT_1] = {
+  [SPRITE_ENEMY_LEVEL1_2_PUNCH_LEFT_1] = {
     .x = 144,
     .y = 619,
     .w = 48,
@@ -1119,7 +1109,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -3,
     .dy = 0,    
     },
-  [SPRITE_PLAYER4_PUNCH_LEFT_2] = {
+  [SPRITE_ENEMY_LEVEL1_2_PUNCH_LEFT_2] = {
     .x = 0,
     .y = 675,
     .w = 48,
@@ -1127,7 +1117,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -2,
     .dy = 0,    
     },
-  [SPRITE_PLAYER4_PUNCH_RIGHT_1] = {
+  [SPRITE_ENEMY_LEVEL1_2_PUNCH_RIGHT_1] = {
     .x = 192,
     .y = 563,
     .w = 48,
@@ -1135,7 +1125,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 2,
     .dy = 0,    
     },
-  [SPRITE_PLAYER4_PUNCH_RIGHT_2] = {
+  [SPRITE_ENEMY_LEVEL1_2_PUNCH_RIGHT_2] = {
     .x = 0,
     .y = 619,
     .w = 48,
@@ -1143,7 +1133,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },  
-  [SPRITE_PLAYER4_HIT_LEFT] = {
+  [SPRITE_ENEMY_LEVEL1_2_HIT_LEFT] = {
     .x = 96,
     .y = 619,
     .w = 48,
@@ -1151,7 +1141,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_PLAYER4_HIT_RIGHT] = {
+  [SPRITE_ENEMY_LEVEL1_2_HIT_RIGHT] = {
     .x = 48,
     .y = 619,
     .w = 48,
@@ -1160,137 +1150,6 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
 
-
-  //==============================
-  [SPRITE_PLAYER5_STAND_RIGHT] = {
-    .x = 0,
-    .y = 787,
-    .w = 32,
-    .h = 53,
-    .dx = 0,
-    .dy = 0,    
-  },
-  [SPRITE_PLAYER5_RUN_RIGHT_1] = {
-    .x = 32,
-    .y = 787,
-    .w = 32,
-    .h = 53,
-    .dx = 0,
-    .dy = 0,    
-  },
-  [SPRITE_PLAYER5_RUN_RIGHT_2] = {
-    .x = 64,
-    .y = 787,
-    .w = 32,
-    .h = 53,
-    .dx = 0,
-    .dy = 0,    
-  },
-  [SPRITE_PLAYER5_RUN_RIGHT_3] = {
-    .x = 240,
-    .y = 682,
-    .w = 32,
-    .h = 53,
-    .dx = -2,
-    .dy = 0,    
-  },
-  [SPRITE_PLAYER5_RUN_RIGHT_4] = {
-    .x = 64,
-    .y = 787,
-    .w = 32,
-    .h = 53,
-    .dx = 0,
-    .dy = 0,    
-    },
-  [SPRITE_PLAYER5_STAND_LEFT] = {
-    .x = 192,
-    .y = 792,
-    .w = 32,
-    .h = 53,
-    .dx = 0,
-    .dy = 0,    
-  },
-  [SPRITE_PLAYER5_RUN_LEFT_1] = {
-    .x = 160,
-    .y = 792,
-    .w = 32,
-    .h = 53,
-    .dx = -2,
-    .dy = 0,    
-  },
-  [SPRITE_PLAYER5_RUN_LEFT_2] = {
-    .x = 128,
-    .y = 792,
-    .w = 32,
-    .h = 53,
-    .dx = -2,
-    .dy = 0,   
-  },
-  [SPRITE_PLAYER5_RUN_LEFT_3] = {
-    .x = 96,
-    .y = 792,
-    .w = 32,
-    .h = 53,
-    .dx = 0,
-    .dy = 0,    
-  },
-    [SPRITE_PLAYER5_RUN_LEFT_4] = {
-    .x = 128,
-    .y = 792,
-    .w = 32,
-    .h = 53,
-    .dx = -2,
-    .dy = 0,    
-    },
-
-  [SPRITE_PLAYER5_PUNCH_LEFT_1] = {
-    .x = 32,
-    .y = 840,
-    .w = 32,
-    .h = 53,
-    .dx = -5,
-    .dy = 0,    
-    },
-  [SPRITE_PLAYER5_PUNCH_LEFT_2] = {
-    .x = 64,
-    .y = 840,
-    .w = 32,
-    .h = 53,
-    .dx = -4,
-    .dy = 0,    
-    },
-  [SPRITE_PLAYER5_PUNCH_RIGHT_1] = {
-    .x = 208,
-    .y = 735,
-    .w = 32,
-    .h = 53,
-    .dx = 3,
-    .dy = 0,    
-    },
-  [SPRITE_PLAYER5_PUNCH_RIGHT_2] = {
-    .x = 240,
-    .y = 735,
-    .w = 32,
-    .h = 53,
-    .dx = 2,
-    .dy = 0,    
-    },  
-  [SPRITE_PLAYER5_HIT_LEFT] = {
-    .x = 240,
-    .y = 788,
-    .w = 32,
-    .h = 53,
-    .dx = 0,
-    .dy = 0,    
-    },
-  [SPRITE_PLAYER5_HIT_RIGHT] = {
-    .x = 0,
-    .y = 840,
-    .w = 32,
-    .h = 53,
-    .dx = -2,
-    .dy = 0,    
-    },
   
   //==============================
   [SPRITE_BOSS_STAND_RIGHT] = {
@@ -1438,6 +1297,75 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
+
+  //===========================
+
+  [SPRITE_MOTORBIKE_RIDE_RIGHT_1] = {
+    .x = 0,
+    .y = 803,
+    .w = 80,
+    .h = 62,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_MOTORBIKE_RIDE_RIGHT_2] = {
+    .x = 80,
+    .y = 803,
+    .w = 80,
+    .h = 62,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_MOTORBIKE_HIT_RIGHT] = {
+    .x = 0,
+    .y = 865,
+    .w = 80,
+    .h = 62,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_MOTORBIKE_BROKEN_RIGHT] = {
+    .x = 160,
+    .y = 803,
+    .w = 80,
+    .h = 62,
+    .dx = 0,
+    .dy = 0,    
+  },  
+  [SPRITE_MOTORBIKE_RIDE_LEFT_1] = {
+    .x = 80,
+    .y = 865,
+    .w = 80,
+    .h = 62,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_MOTORBIKE_RIDE_LEFT_2] = {
+    .x = 160,
+    .y = 865,
+    .w = 80,
+    .h = 62,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_MOTORBIKE_HIT_LEFT] = {
+    .x = 80,
+    .y = 927,
+    .w = 80,
+    .h = 62,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_MOTORBIKE_BROKEN_LEFT] = {
+    .x = 0,
+    .y = 927,
+    .w = 80,
+    .h = 62,
+    .dx = 0,
+    .dy = 0,    
+  },
+
+
   //==========================
   [SPRITE_HAND] = {
     .x = 208,
@@ -1498,7 +1426,7 @@ object_image_t object_imageAtlas[] = {
 
   [SPRITE_DEATHMATCH] = {
     .x = 96,
-    .y = 848,
+    .y = 787,
     .w = 96,
     .h = 8,
     .dx = 0,
@@ -1507,7 +1435,7 @@ object_image_t object_imageAtlas[] = {
 
   [SPRITE_LEVELCOMPLETE] = {
     .x = 96,
-    .y = 856,
+    .y = 795,
     .w = 119,
     .h = 8,
     .dx = 0,
