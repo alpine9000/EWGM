@@ -152,9 +152,17 @@ _logo_logoBitplanesEnd:
 	data_c
 	align 4
 	if SFX==1
+	xdef _sound_motorbike
+_sound_motorbike:
+	incbin "out/motorbike.raw"
+	xdef _sound_rev
+_sound_rev:
+	incbin "out/rev.raw"
+
 	xdef _sound_Bud_Punch01
 _sound_Bud_Punch01:	
 	incbin "out/Bud_Punch01.raw"	
+
 	xdef _sound_enemy01
 _sound_enemy01:	
 	incbin "out/enemy01.raw"

@@ -175,7 +175,8 @@ object_init(void)
 }
 
 
-static void
+//static
+void
 object_updateAnimation(uint16_t deltaT, object_t *ptr)
 {
   if (ptr->frameCounter >= ptr->anim->speed) {

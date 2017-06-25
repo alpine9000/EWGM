@@ -9,7 +9,7 @@
 #define CONFIG_OCS_FAST    2
 #define CONFIG_WORKBENCH   3
 
-#define DEBUG                         1
+//#define DEBUG                         1
 
 #ifdef DEBUG
 #define SCRIPTING                     1
@@ -210,6 +210,7 @@ enum {
 #include "alarm.h"
 #include "thing.h"
 #include "star.h"
+#include "motorbike.h"
 
 extern object_t* game_player1;
 extern object_t* game_player2;

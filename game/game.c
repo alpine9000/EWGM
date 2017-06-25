@@ -989,6 +989,17 @@ game_processKeyboard()
       game_refreshScoreboard();
     }
     break;    
+  case 'F':
+    {
+      static uint16_t sfxId = 0;
+      sound_endLoop();
+      sound_queueSound(sfxId);
+      sfxId++;
+      if (sfxId == SOUND_LAST) {
+	sfxId = 0;
+      }
+    }
+    break;
   case 'X':
     game_collectTotal = !game_collectTotal;
     break;

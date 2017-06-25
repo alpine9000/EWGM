@@ -532,6 +532,9 @@ object_setAnim(object_t* ptr, int16_t anim);
 //void
 //object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t oh);
 
+void
+object_updateAnimation(uint16_t deltaT, object_t *ptr);
+
 int16_t
 object_collision(int16_t deltaT, object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy);
 #endif
