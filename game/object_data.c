@@ -458,6 +458,68 @@ object_animation_t object_animations[] = {
   },
 
   // =================================
+  [OBJECT_ANIM_ENEMY_LEVEL2_3_RUN_RIGHT] = {
+    .start = SPRITE_ENEMY_LEVEL2_3_RUN_RIGHT_1,
+    .stop = SPRITE_ENEMY_LEVEL2_3_RUN_RIGHT_4,
+    .speed = ENEMY_ENEMY_LEVEL2_3_RUN_ANIM_SPEED,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_3_STAND_RIGHT] = {
+    .start = SPRITE_ENEMY_LEVEL2_3_STAND_RIGHT,
+    .stop = SPRITE_ENEMY_LEVEL2_3_STAND_RIGHT,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_3_RUN_LEFT] = {
+    .start = SPRITE_ENEMY_LEVEL2_3_RUN_LEFT_1,
+    .stop = SPRITE_ENEMY_LEVEL2_3_RUN_LEFT_4,
+    .speed = ENEMY_ENEMY_LEVEL2_3_RUN_ANIM_SPEED,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_3_STAND_LEFT] = {
+    .start = SPRITE_ENEMY_LEVEL2_3_STAND_LEFT,
+    .stop = SPRITE_ENEMY_LEVEL2_3_STAND_LEFT,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_3_ATTACK_LEFT1] = {
+    .start = SPRITE_ENEMY_LEVEL2_3_ATTACK_LEFT_1,
+    .stop = SPRITE_ENEMY_LEVEL2_3_ATTACK_LEFT_3,
+    .speed = ENEMY_ENEMY_LEVEL2_3_ATTACK_TICS_PER_FRAME,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_3_ATTACK_LEFT2] = {
+    .start = SPRITE_ENEMY_LEVEL2_3_ATTACK_LEFT_1,
+    .stop = SPRITE_ENEMY_LEVEL2_3_ATTACK_LEFT_3,
+    .speed = ENEMY_ENEMY_LEVEL2_3_ATTACK_TICS_PER_FRAME,
+    .facing = FACING_LEFT
+  },      
+  [OBJECT_ANIM_ENEMY_LEVEL2_3_ATTACK_RIGHT1] = {
+    .start = SPRITE_ENEMY_LEVEL2_3_ATTACK_RIGHT_1,
+    .stop = SPRITE_ENEMY_LEVEL2_3_ATTACK_RIGHT_3,
+    .speed = ENEMY_ENEMY_LEVEL2_3_ATTACK_TICS_PER_FRAME,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_3_ATTACK_RIGHT2] = {
+    .start = SPRITE_ENEMY_LEVEL2_3_ATTACK_RIGHT_1,
+    .stop = SPRITE_ENEMY_LEVEL2_3_ATTACK_RIGHT_3,
+    .speed = ENEMY_ENEMY_LEVEL2_3_ATTACK_TICS_PER_FRAME,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_3_HIT_LEFT] = {
+    .start = SPRITE_ENEMY_LEVEL2_3_HIT_LEFT,
+    .stop = SPRITE_ENEMY_LEVEL2_3_HIT_LEFT,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_3_HIT_RIGHT] = {
+    .start = SPRITE_ENEMY_LEVEL2_3_HIT_RIGHT,
+    .stop = SPRITE_ENEMY_LEVEL2_3_HIT_RIGHT,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  
+  // =================================
 
   [OBJECT_ANIM_MOTORBIKE_RUN_RIGHT] = {
     .start = SPRITE_MOTORBIKE_RIDE_RIGHT_1,
@@ -1684,6 +1746,154 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
 
+  //==============================
+  [SPRITE_ENEMY_LEVEL2_3_STAND_RIGHT] = {
+    .x = 225,
+    .y = 0,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL2_3_RUN_RIGHT_1] = {
+    .x = 64,
+    .y = 336,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL2_3_RUN_RIGHT_2] = {
+    .x = 160,
+    .y = 336,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL2_3_RUN_RIGHT_3] = {
+    .x = 192,
+    .y = 395,
+    .w = 48,
+    .h = 56,
+    .dx = -1,
+    .dy = 0,    
+  },
+    [SPRITE_ENEMY_LEVEL2_3_RUN_RIGHT_4] = {
+    .x = 160,
+    .y = 336,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_ENEMY_LEVEL2_3_STAND_LEFT] = {
+    .x = 224,
+    .y = 56,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL2_3_RUN_LEFT_1] = {
+    .x = 112,
+    .y = 336,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL2_3_RUN_LEFT_2] = {
+    .x = 48,
+    .y = 507,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,   
+  },
+  [SPRITE_ENEMY_LEVEL2_3_RUN_LEFT_3] = {
+    .x = 0,
+    .y = 451,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+  },
+    [SPRITE_ENEMY_LEVEL2_3_RUN_LEFT_4] = {
+    .x = 48,
+    .y = 507,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+    },
+
+  [SPRITE_ENEMY_LEVEL2_3_ATTACK_LEFT_1] = {
+    .x = 192,
+    .y = 451,
+    .w = 48,
+    .h = 56,
+    .dx = 1,
+    .dy = 0,    
+    },
+  [SPRITE_ENEMY_LEVEL2_3_ATTACK_LEFT_2] = {
+    .x = 144,
+    .y = 451,
+    .w = 48,
+    .h = 56,
+    .dx = -11,
+    .dy = 0,    
+    },
+  [SPRITE_ENEMY_LEVEL2_3_ATTACK_LEFT_3] = {
+    .x = 48,
+    .y = 451,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+    },  
+  [SPRITE_ENEMY_LEVEL2_3_ATTACK_RIGHT_1] = {
+    .x = 0,
+    .y = 395,
+    .w = 48,
+    .h = 56,
+    .dx = -12,
+    .dy = 0,    
+    },
+  [SPRITE_ENEMY_LEVEL2_3_ATTACK_RIGHT_2] = {
+    .x = 48,
+    .y = 395,
+    .w = 48,
+    .h = 56,
+    .dx = -1,
+    .dy = 0,    
+    },
+  [SPRITE_ENEMY_LEVEL2_3_ATTACK_RIGHT_3] = {
+    .x = 144,
+    .y = 395,
+    .w = 48,
+    .h = 56,
+    .dx = -1,
+    .dy = 0,    
+    },    
+  [SPRITE_ENEMY_LEVEL2_3_HIT_LEFT] = {
+    .x = 96,
+    .y = 451,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_ENEMY_LEVEL2_3_HIT_RIGHT] = {
+    .x = 96,
+    .y = 395,
+    .w = 48,
+    .h = 56,
+    .dx = 0,
+    .dy = 0,    
+    },
+  
+  
   //===========================
 
   [SPRITE_MOTORBIKE_RIDE_RIGHT_1] = {
