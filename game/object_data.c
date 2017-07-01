@@ -649,7 +649,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
   [SPRITE_ENEMY_LEVEL1_1_HIT_LEFT] = {
-    .x = 208,
+    .x = 224,
     .y = 731,
     .w = 48,
     .h = 52,
@@ -979,7 +979,7 @@ object_image_t object_imageAtlas[] = {
     },
   [SPRITE_PLAYER3_KICK_LEFT_2] = {
     .x = 208,
-    .y = 927,
+    .y = 911,
     .w = 48,
     .h = 60,
     .dx = -8,
@@ -1004,7 +1004,7 @@ object_image_t object_imageAtlas[] = {
     },
   [SPRITE_PLAYER3_KICK_RIGHT_2] = {
     .x = 160,
-    .y = 927,
+    .y = 911,
     .w = 48,
     .h = 60,
     .dx = -3,
@@ -1302,7 +1302,7 @@ object_image_t object_imageAtlas[] = {
 
   [SPRITE_MOTORBIKE_RIDE_RIGHT_1] = {
     .x = 0,
-    .y = 803,
+    .y = 787,
     .w = 80,
     .h = 62,
     .dx = 0,
@@ -1310,7 +1310,7 @@ object_image_t object_imageAtlas[] = {
   },
   [SPRITE_MOTORBIKE_RIDE_RIGHT_2] = {
     .x = 80,
-    .y = 803,
+    .y = 787,
     .w = 80,
     .h = 62,
     .dx = 0,
@@ -1318,7 +1318,7 @@ object_image_t object_imageAtlas[] = {
   },
   [SPRITE_MOTORBIKE_HIT_RIGHT] = {
     .x = 0,
-    .y = 865,
+    .y = 849,
     .w = 80,
     .h = 62,
     .dx = 0,
@@ -1326,7 +1326,7 @@ object_image_t object_imageAtlas[] = {
   },
   [SPRITE_MOTORBIKE_BROKEN_RIGHT] = {
     .x = 160,
-    .y = 803,
+    .y = 787,
     .w = 80,
     .h = 62,
     .dx = 0,
@@ -1334,7 +1334,7 @@ object_image_t object_imageAtlas[] = {
   },  
   [SPRITE_MOTORBIKE_RIDE_LEFT_1] = {
     .x = 80,
-    .y = 865,
+    .y = 849,
     .w = 80,
     .h = 62,
     .dx = 0,
@@ -1342,7 +1342,7 @@ object_image_t object_imageAtlas[] = {
   },
   [SPRITE_MOTORBIKE_RIDE_LEFT_2] = {
     .x = 160,
-    .y = 865,
+    .y = 849,
     .w = 80,
     .h = 62,
     .dx = 0,
@@ -1350,7 +1350,7 @@ object_image_t object_imageAtlas[] = {
     },
   [SPRITE_MOTORBIKE_HIT_LEFT] = {
     .x = 80,
-    .y = 927,
+    .y = 911,
     .w = 80,
     .h = 62,
     .dx = 0,
@@ -1358,7 +1358,7 @@ object_image_t object_imageAtlas[] = {
   },
   [SPRITE_MOTORBIKE_BROKEN_LEFT] = {
     .x = 0,
-    .y = 927,
+    .y = 911,
     .w = 80,
     .h = 62,
     .dx = 0,
@@ -1407,8 +1407,8 @@ object_image_t object_imageAtlas[] = {
 
   //==========================
   [SPRITE_GAMEOVER] = {
-    .x = 144,
-    .y = 544,
+    .x = 112,
+    .y = 736,
     .w = 80,
     .h = 8,
     .dx = 0,
@@ -1416,8 +1416,8 @@ object_image_t object_imageAtlas[] = {
     },
 
     [SPRITE_GAMECOMPLETE] = {
-    .x = 144,
-    .y = 552,
+    .x = 112,
+    .y = 744,
     .w = 110,
     .h = 8,
     .dx = 0,
@@ -1425,8 +1425,8 @@ object_image_t object_imageAtlas[] = {
     },
 
   [SPRITE_DEATHMATCH] = {
-    .x = 96,
-    .y = 787,
+    .x = 112,
+    .y = 752,
     .w = 96,
     .h = 8,
     .dx = 0,
@@ -1434,8 +1434,8 @@ object_image_t object_imageAtlas[] = {
     },
 
   [SPRITE_LEVELCOMPLETE] = {
-    .x = 96,
-    .y = 795,
+    .x = 144,
+    .y = 545,
     .w = 119,
     .h = 8,
     .dx = 0,

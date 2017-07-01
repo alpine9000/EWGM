@@ -937,6 +937,105 @@ game_updateScoreboard(void)
 #endif    
 }
 
+static void
+game_waitForNextFrame(void)
+{
+  hw_waitVerticalBlank();
+
+  sound_vbl();  
+  
+  switch (hw_verticalBlankCount-game_lastVerticalBlankCount) {
+    case 0:
+      if (game_25fps) {
+	hw_waitVerticalBlank();
+	hw_waitVerticalBlank();	
+      } else {
+	hw_waitVerticalBlank();
+      }
+      break;
+    case 1:
+      if (game_25fps) {
+	hw_waitVerticalBlank();
+      }
+      break;
+    case 2:
+      if (game_25fps) {
+	break;
+      }
+#ifdef GAME_TURTLE
+    default:
+#ifdef DEBUG
+      if (game_collectTotal) {
+#endif
+      game_turtle = 5;
+      game_missedFrameCount++;      
+#ifdef DEBUG
+      }
+#endif
+#endif
+    }
+      
+    game_lastVerticalBlankCount = hw_verticalBlankCount;
+}
+		    
+
+void
+game_showDeathMatch(void)
+{
+
+  if (!game_player1 || !game_player2) {
+    return;
+  }
+  game_player1->velocity.x = 0;
+  game_player1->velocity.y = 0;
+  game_player2->velocity.x = 0;
+  game_player2->velocity.y = 0;  
+  ((fighter_data_t*)(game_player1->data))->intelligence = fighter_nullIntelligence;
+  ((fighter_data_t*)(game_player2->data))->intelligence = fighter_nullIntelligence;  
+
+  object_t* dm = object_add(OBJECT_ID_DEATHMATCH, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-48), -4, 0,OBJECT_ANIM_DEATHMATCH, 0, 0, 0);
+  object_set_z(dm, 4096);
+  uint32_t frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;
+  int16_t y;
+  for (y = -16; y <= (PLAYAREA_HEIGHT/2)-4; y+=4) {
+    object_set_py_no_checks(dm, y*OBJECT_PHYSICS_FACTOR);
+    frame = hw_verticalBlankCount;
+    game_deltaT = frame-lastFrame;
+    lastFrame = frame;
+    game_render(game_deltaT);
+    game_waitForNextFrame();
+    game_switchFrameBuffers();
+  }
+  
+  for (uint16_t i = 0; i < 7; i++) {
+    game_render(1);
+    game_waitForNextFrame();
+    game_switchFrameBuffers();      
+    game_waitForNextFrame();
+    game_waitForNextFrame();
+    game_waitForNextFrame();
+    game_waitForNextFrame();
+    game_waitForNextFrame();
+    game_waitForNextFrame();
+    dm->visible = !dm->visible;      
+  }
+  
+  dm->visible = 1;
+  frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;    
+  for (y = y - 2; y >= -8; y-=4) {
+    object_set_py_no_checks(dm, y*OBJECT_PHYSICS_FACTOR);
+    frame = hw_verticalBlankCount;
+    game_deltaT = frame-lastFrame;
+    lastFrame = frame;
+    game_render(game_deltaT);
+    game_waitForNextFrame();
+    game_switchFrameBuffers();
+  }
+  game_lastVerticalBlankCount = hw_verticalBlankCount;
+
+  ((fighter_data_t*)(game_player1->data))->intelligence = player_intelligence;
+  ((fighter_data_t*)(game_player2->data))->intelligence = player_intelligence;    
+} 
 
 static __NOINLINE void
 game_pauseToggle(void)
@@ -969,6 +1068,13 @@ game_processKeyboard()
   case 'C':
     //game_collisions = !game_collisions;
     game_setGameComplete();
+    break;
+  case 'U':
+    game_level = LEVEL_NUM_LEVELS;
+    game_setGameComplete();    
+    break;
+  case 'K':
+    game_showDeathMatch();
     break;
 #ifdef DEBUG
   case 'Y':
@@ -1081,47 +1187,6 @@ game_processKeyboard()
 }
 
 
-static void
-game_waitForNextFrame(void)
-{
-  hw_waitVerticalBlank();
-
-  sound_vbl();  
-  
-  switch (hw_verticalBlankCount-game_lastVerticalBlankCount) {
-    case 0:
-      if (game_25fps) {
-	hw_waitVerticalBlank();
-	hw_waitVerticalBlank();	
-      } else {
-	hw_waitVerticalBlank();
-      }
-      break;
-    case 1:
-      if (game_25fps) {
-	hw_waitVerticalBlank();
-      }
-      break;
-    case 2:
-      if (game_25fps) {
-	break;
-      }
-#ifdef GAME_TURTLE
-    default:
-#ifdef DEBUG
-      if (game_collectTotal) {
-#endif
-      game_turtle = 5;
-      game_missedFrameCount++;      
-#ifdef DEBUG
-      }
-#endif
-#endif
-    }
-      
-    game_lastVerticalBlankCount = hw_verticalBlankCount;
-}
-		    
 
 static void
 game_waitForMenuExit(int16_t messageAnimId, int16_t offset)
@@ -1234,65 +1299,6 @@ game_levelCompleteSequence(void)
   
   game_waitForMenuExit(OBJECT_ANIM_LEVELCOMPLETE, 55);
 }
-
-
-void
-game_showDeathMatch(void)
-{
-
-  if (!game_player1 || !game_player2) {
-    return;
-  }
-  game_player1->velocity.x = 0;
-  game_player1->velocity.y = 0;
-  game_player2->velocity.x = 0;
-  game_player2->velocity.y = 0;  
-  ((fighter_data_t*)(game_player1->data))->intelligence = fighter_nullIntelligence;
-  ((fighter_data_t*)(game_player2->data))->intelligence = fighter_nullIntelligence;  
-  
-  object_t* dm = object_add(OBJECT_ID_DEATHMATCH, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-48), -4, 0,OBJECT_ANIM_DEATHMATCH, 0, 0, 0);
-  object_set_z(dm, 4096);
-  uint32_t frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;
-  int16_t y;
-  for (y = -16; y <= (PLAYAREA_HEIGHT/2)-4; y+=4) {
-    object_set_py_no_checks(dm, y*OBJECT_PHYSICS_FACTOR);
-    frame = hw_verticalBlankCount;
-    game_deltaT = frame-lastFrame;
-    lastFrame = frame;
-    game_render(game_deltaT);
-    game_waitForNextFrame();
-    game_switchFrameBuffers();
-  }
-  
-  for (uint16_t i = 0; i < 7; i++) {
-    game_render(1);
-    game_waitForNextFrame();
-    game_switchFrameBuffers();      
-    game_waitForNextFrame();
-    game_waitForNextFrame();
-    game_waitForNextFrame();
-    game_waitForNextFrame();
-    game_waitForNextFrame();
-    game_waitForNextFrame();
-    dm->visible = !dm->visible;      
-  }
-  
-  dm->visible = 1;
-  frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;    
-  for (y = y - 2; y >= -8; y-=4) {
-    object_set_py_no_checks(dm, y*OBJECT_PHYSICS_FACTOR);
-    frame = hw_verticalBlankCount;
-    game_deltaT = frame-lastFrame;
-    lastFrame = frame;
-    game_render(game_deltaT);
-    game_waitForNextFrame();
-    game_switchFrameBuffers();
-  }
-  game_lastVerticalBlankCount = hw_verticalBlankCount;
-
-  ((fighter_data_t*)(game_player1->data))->intelligence = player_intelligence;
-  ((fighter_data_t*)(game_player2->data))->intelligence = player_intelligence;    
-} 
 
 
 static void
@@ -1465,7 +1471,7 @@ game_loop()
       } else if (game_loopControl == GAME_LOOP_CONTROL_GAME_COMPLETE) {
 	game_waitForNextFrame();
 	game_switchFrameBuffers();
-	if (game_level + 1 == LEVEL_NUM_LEVELS) {
+	if (game_level + 1 >= LEVEL_NUM_LEVELS) {
 	  game_gameCompleteSequence();
 	} else {
 	  game_levelCompleteSequence();	  

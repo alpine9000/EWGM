@@ -15,11 +15,11 @@ __attribute__((aligned (4))) __SECTION_RANDOM_C uint32_t music_module2[(MAX_P61_
 #endif
 
 static __SECTION_DISK uint8_t music_level_a[] DISK_SECTOR_ALIGN = {
-#include "out/P61.jojo_ingame.h"
+#include "out/P61.jojo_ingame.lz.h"
  } ;
 
 static __SECTION_DISK uint8_t music_intro[] DISK_SECTOR_ALIGN = {
-#include "out/P61.intro.h"
+#include "out/P61.intro.lz.h"
  } ;
 
 typedef struct {
@@ -43,6 +43,14 @@ __EXTERNAL void* music_spare_ptr = music_module2;
 #endif
 static uint16_t music_currentModule = 0xFFFF;
 
+static void
+music_mute(void)
+{
+  P61_Master = 0;
+  P61_Target = 0;
+  hw_waitVerticalBlank();
+  hw_waitVerticalBlank();
+}
 void 
 music_play(uint16_t moduleIndex)
 {
@@ -53,15 +61,11 @@ music_play(uint16_t moduleIndex)
   P61_InitPos = music_songs[moduleIndex].start;
   if (music_currentModule == 0xffff || music_songs[moduleIndex].data != music_songs[music_currentModule].data) {
 #if MUSIC_PARALLEL_LOAD==1
-    disk_loadData(music_spare_ptr, music_songs[moduleIndex].data, music_songs[moduleIndex].length);
+    disk_loadCompressedData(music_spare_ptr, music_songs[moduleIndex].data, music_songs[moduleIndex].length, 0);
     music_current_ptr = music_current_ptr == music_module1 ? music_module2 : music_module1;
     music_spare_ptr = music_spare_ptr == music_module1 ? music_module2 : music_module1;
 #else
-    P61_Master = 0;
-    P61_Target = 0;
-    hw_waitVerticalBlank();
-    hw_waitVerticalBlank();    
-    disk_loadData(music_current_ptr, music_songs[moduleIndex].data, music_songs[moduleIndex].length);
+    disk_loadCompressedData(music_current_ptr, music_songs[moduleIndex].data, music_songs[moduleIndex].length, music_mute);
 #endif
   }
   music_currentModule = moduleIndex;

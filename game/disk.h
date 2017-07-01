@@ -18,7 +18,7 @@ disk_loadData(void* dest, void* src, int32_t size);
 
 #ifdef GAME_COMPRESS_DATA 
 uint16_t
-disk_loadCompressedData(void* dest, void* src, int32_t size);
+disk_loadCompressedData(void* dest, void* src, int32_t size, void(*predecompressCallback)(void));
 #endif
 
 uint16_t

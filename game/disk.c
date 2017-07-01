@@ -53,7 +53,7 @@ td_doInit(void)
 #ifdef GAME_COMPRESS_DATA
 __EXTERNAL
 __NOINLINE uint16_t
-disk_loadCompressedData(void* dest, void* src, int32_t size)
+disk_loadCompressedData(void* dest, void* src, int32_t size, void(*predecompressCallback)(void))
 {
 #ifdef DEBUG
   if (size >= GAME_MAX_COMPRESS_DATA_SIZE) {
@@ -61,6 +61,9 @@ disk_loadCompressedData(void* dest, void* src, int32_t size)
   }
 #endif
   uint16_t result = disk_loadData(disk_buffer, src, size);
+  if (predecompressCallback) {
+    predecompressCallback();
+  }
   disk_depack(disk_buffer, dest);
   return result;
 }

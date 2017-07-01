@@ -3,7 +3,7 @@
 USE_BIG=1
 SFX=1
 PHOTON_TRACKLOADER=0
-MUSIC_PARALLEL_LOAD=1
+MUSIC_PARALLEL_LOAD=0
 
 ADF_DEFINES=-DTRACKLOADER=1 -DFASTRAM=0 -DGAME_CONFIG=CONFIG_OCS_512 -Iout/adf
 FAST_DEFINES=-DTRACKLOADER=1 -DFASTRAM=1 -DGAME_CONFIG=CONFIG_OCS_FAST -DGAME_COMPRESS_DATA=1 -Iout/fast
@@ -77,7 +77,7 @@ LEVEL_FILES=$(addsuffix .h,$(addprefix out/sprite_, $(LEVELS)))\
 LEVEL_FAST_BIN_FILES=$(addsuffix .bin,$(addprefix out/fast/level_c_data_, $(LEVELS))) $(addsuffix .bin,$(addprefix out/fast/level_f_data_, $(LEVELS)))
 LEVEL_WB_BIN_FILES=$(addsuffix .bin,$(addprefix out/workbench/level_data_, $(LEVELS)))
 MAX_P61_SIZE=$(shell ls -Sl assets/P61*.bin | awk '{print $$5}' | head -1)
-MODULE_HEADERS=$(addprefix out/, $(MODULES:.bin=.h))
+MODULE_HEADERS=$(addprefix out/, $(MODULES:.bin=.lz.h))
 IMAGEDATA=$(addprefix out/, $(IMAGES:.png=.bin))
 RAW_SOUND_FILES=$(addprefix out/, $(SOUND_FILES:.wav=.raw))
 ASSETS=$(IMAGEDATA) $(RAW_SOUND_FILES)
@@ -246,7 +246,7 @@ out/background_%-map.c: assets/background_%.tmx out
 	@rm background_$*-sprites.c
 
 out/sprite_%.h: assets/sprite_%.png palettes/palette_%.pal
-	$(CROPPA) --width=320 --height=989 --input=assets/sprite_$*.png --output=out/sprite_$*-resized.png
+	$(CROPPA) --width=320 --height=973 --input=assets/sprite_$*.png --output=out/sprite_$*-resized.png
 	$(IMAGECON)  --quantize --colors=32 --full-color-palette --input=out/sprite_$*-resized.png --output=out/sprite_$* --output-bitplanes --output-png --output-palette --output-grey-palette-asm --output-palette-asm --use-palette=palettes/palette_$*.pal --output-mask
 	$(IMAGECON) --onebitplane-mask --quantize --colors=32 --full-color-palette --input=out/sprite_$*-resized.png --output=out/sprite_1bp_$* --output-bitplanes --output-png --output-palette --output-grey-palette-asm --output-palette-asm --use-palette=palettes/palette_$*.pal --output-mask
 	cat out/sprite_$*.bin | $(BIN2C) > out/sprite_$*.h
@@ -266,6 +266,10 @@ out/level_recording_%.h: recordings/level%.raw
 out/demo.h: recordings/demo.raw
 	echo recordings/demo.raw 
 	cat recordings/demo.raw | $(BIN2C) > out/demo.h
+
+out/%.lz.h: assets/%.bin
+	../tools/doynamite68k/out/lz -o out/$*.bin.lz assets/$*.bin
+	cat out/$*.bin.lz | $(BIN2C) > out/$*.lz.h
 
 out/%.h: assets/%.bin
 	cat assets/$*.bin | $(BIN2C) > out/$*.h
@@ -322,17 +326,23 @@ out/fast/leveldata_f_%.c: out/fast/level_f_data_%.bin
 	../tools/doynamite68k/out/lz -o out/fast/level_f_data_$*.bin.lz out/fast/level_f_data_$*.bin
 	cat out/fast/level_f_data_$*.bin.lz | $(BIN2C) > $@
 
-out/workbench/level_data_1.o: $(LEVEL_FILES)
-out/workbench/level_data_2.o: $(LEVEL_FILES)
-out/workbench/level_data_3.o: $(LEVEL_FILES)
+out/workbench/level_data_f_1.o: $(LEVEL_FILES)
+out/workbench/level_data_f_2.o: $(LEVEL_FILES)
+out/workbench/level_data_f_3.o: $(LEVEL_FILES)
+out/workbench/level_data_c_1.o: $(LEVEL_FILES)
+out/workbench/level_data_c_2.o: $(LEVEL_FILES)
+out/workbench/level_data_c_3.o: $(LEVEL_FILES)
 .SECONDARY: $(LEVEL_WB_BIN_FILES)
-out/workbench/level_data_%.bin: out/workbench/level_data_%.o
-	$(LD) -brawbin1 out/workbench/level_data_$*.o -o out/workbench/level_data_$*.bin
-out/workbench/leveldata_%.c: out/workbench/level_data_%.bin
-	#cat out/workbench/level_data_$*.bin | $(BIN2C) > $@
-	../tools/doynamite68k/out/lz -o out/workbench/level_data_$*.bin.lz out/workbench/level_data_$*.bin
-	cp out/workbench/level_data_$*.bin out/workbench/level_data_$*.bin.orig
-	cat out/workbench/level_data_$*.bin.lz | $(BIN2C) > $@
+out/workbench/level_c_data_%.bin: out/workbench/level_c_data_%.o
+	$(LD) -brawbin1 out/workbench/level_c_data_$*.o -o out/workbench/level_c_data_$*.bin
+out/workbench/level_f_data_%.bin: out/workbench/level_f_data_%.o
+	$(LD) -brawbin1 out/workbench/level_f_data_$*.o -o out/workbench/level_f_data_$*.bin
+out/workbench/leveldata_c_%.c: out/workbench/level_c_data_%.bin
+	../tools/doynamite68k/out/lz -o out/workbench/level_c_data_$*.bin.lz out/workbench/level_c_data_$*.bin
+	cat out/workbench/level_c_data_$*.bin.lz | $(BIN2C) > $@
+out/workbench/leveldata_f_%.c: out/workbench/level_f_data_%.bin
+	../tools/doynamite68k/out/lz -o out/workbench/level_f_data_$*.bin.lz out/workbench/level_f_data_$*.bin
+	cat out/workbench/level_f_data_$*.bin.lz | $(BIN2C) > $@
 
 out/adf/level_data_1.o: $(LEVEL_FILES)
 out/adf/level_data_2.o: $(LEVEL_FILES)

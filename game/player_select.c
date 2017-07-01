@@ -56,7 +56,7 @@ player_select(void)
   extern uint8_t player_selectBitplanes;
 #ifdef GAME_COMPRESS_DATA
   extern uint8_t player_selectBitplanesEnd;  
-  disk_loadCompressedData((void*)game_menuBuffer, (void*)&player_selectBitplanes, &player_selectBitplanesEnd-&player_selectBitplanes);
+  disk_loadCompressedData((void*)game_menuBuffer, (void*)&player_selectBitplanes, &player_selectBitplanesEnd-&player_selectBitplanes, 0);
 #else
   disk_loadData((void*)game_menuBuffer, (void*)&player_selectBitplanes, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
 #endif

@@ -119,8 +119,8 @@ level_load(uint16_t index)
   
 
 #ifdef GAME_COMPRESS_DATA 
-  disk_loadCompressedData(&levelChip, level_levels[index].levelChipData, level_levels[index].chipDataSize);
-  disk_loadCompressedData(&levelFast, level_levels[index].levelFastData, level_levels[index].fastDataSize);  
+  disk_loadCompressedData(&levelChip, level_levels[index].levelChipData, level_levels[index].chipDataSize, 0);
+  disk_loadCompressedData(&levelFast, level_levels[index].levelFastData, level_levels[index].fastDataSize, 0);  
 #else
   disk_loadData(&level, level_levels[index].levelData, sizeof(level_t));
 #endif

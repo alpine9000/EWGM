@@ -451,7 +451,7 @@ level1_start(uint16_t argument)
 {
   __USE(argument);
   level1_addPostbox(50);
-  if (0) {
+  if (1) {
     level1_doAddMotorbike();
   }
   return 1;

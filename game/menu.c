@@ -9,7 +9,7 @@ static frame_buffer_t menu_frameBuffer;
 #define MENU_TOP_COLOR_SELECTED    0xffb
 #define MENU_BOTTOM_COLOR_SELECTED 0xfb5
 
-#ifndef GAME_TRIPLE_BUFFER
+#if MUSIC_PARALLEL_LOAD==0
 static __SECTION_RANDOM_C uint8_t menu_offscreenBuffer[(SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH*9)+2];
 #else
 __EXTERNAL void* music_spare_ptr;
@@ -622,7 +622,7 @@ menu_loop(menu_mode_t mode)
 #ifdef GAME_COMPRESS_DATA
   extern uint8_t menu_menuBitplanes;
   extern uint8_t menu_menuBitplanesEnd;  
-  disk_loadCompressedData((void*)game_menuBuffer, (void*)menu_frameBuffer, &menu_menuBitplanesEnd-&menu_menuBitplanes);
+  disk_loadCompressedData((void*)game_menuBuffer, (void*)menu_frameBuffer, &menu_menuBitplanesEnd-&menu_menuBitplanes, 0);
 #else
   disk_loadData((void*)game_menuBuffer, (void*)menu_frameBuffer, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
 #endif
