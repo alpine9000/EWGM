@@ -1341,7 +1341,6 @@ game_checkStack(void)
 __EXTERNAL void
 game_loop()
 {
-
   hw_verticalBlankCount = 0;
   P61_Target = 0;
   P61_Master = 0;
@@ -1354,9 +1353,9 @@ game_loop()
   custom->color[0] = 0;
 
   game_ctor();
-
+  
 #if FASTRAM==1
-  //  message_ask(itoh(hw_fastRamStart, 8));
+  //message_ask(itoh(hw_fastRamStart, 8));
 #endif
 
   logo_load();
@@ -1372,6 +1371,7 @@ game_loop()
   
   hiscore_ctor();
 
+  
  menu:
 #ifdef DEBUG
   game_checkStack();
@@ -1383,7 +1383,7 @@ game_loop()
     goto done;
 #endif
   }
-
+  
   if (menuCommand == MENU_COMMAND_MENU) {
     goto menu;
   }
@@ -1393,7 +1393,7 @@ game_loop()
   game_player2Score = 0;
   
  restart:
-  game_disableCopperEffects();  
+  game_disableCopperEffects();
   game_init(menuCommand);
 
   for (;;) {

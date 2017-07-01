@@ -291,8 +291,9 @@ level1_processEnemyConfig(uint16_t argument)
 
 
 static void
-level1_song3(void)
+level1_song3(void* data)
 {
+  __USE(data);
   music_play(3);
   music_toggle();
 }
@@ -334,15 +335,17 @@ level1_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 
 
 static void
-level1_addDoorEnemy(void)
+level1_addDoorEnemy(void* data)
 {
+  __USE(data);
   enemy_add(OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, enemy_attackConfig1, ENEMY_ATTACK_WAIT_TICS, level1_doorIntelligence);    
 }
 
 
 static void
-level1_addDoorEnemy2(void)
+level1_addDoorEnemy2(void* data)
 {
+  __USE(data);  
   enemy_add(OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, enemy_attackConfig1, ENEMY_ATTACK_WAIT_TICS, level1_doorIntelligence);    
 }
 
@@ -390,8 +393,9 @@ level1_doAddBoss(uint16_t x)
 
 
 static void
-level1_addBoss(void)
+level1_addBoss(void* data)
 {
+  __USE(data);
   level1_doAddBoss(LEVEL1_ENEMY_BOSS_START_X);
 }
 
@@ -408,8 +412,9 @@ level1_scroll(uint16_t argument)
 }
 
 static void
-level1_removeDoor(void)
+level1_removeDoor(void* data)
 {
+  __USE(data);
   object_set_state(level1_door, OBJECT_STATE_REMOVED);
 }
 
@@ -430,13 +435,13 @@ level1_wave3(uint16_t argument)
 
   if (music_enabled()) {
     music_toggle();
-    alarm_add(50, level1_song3);    
+    alarm_add(50, level1_song3, 0);    
   }
   
-  alarm_add(100, level1_addDoorEnemy);
-  alarm_add(200, level1_addDoorEnemy2);
-  alarm_add(300, level1_addBoss);
-  alarm_add(400, level1_removeDoor);  
+  alarm_add(100, level1_addDoorEnemy, 0);
+  alarm_add(200, level1_addDoorEnemy2, 0);
+  alarm_add(300, level1_addBoss, 0);
+  alarm_add(400, level1_removeDoor, 0);  
   return 1;
 }
 
@@ -446,7 +451,7 @@ level1_start(uint16_t argument)
 {
   __USE(argument);
   level1_addPostbox(50);
-  if (1) {
+  if (0) {
     level1_doAddMotorbike();
   }
   return 1;

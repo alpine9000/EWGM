@@ -116,14 +116,14 @@ fighter_attackCollision(object_t* a, object_collision_t* collision, uint16_t thr
 void
 fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
 {
-  if (ptr->class == OBJECT_CLASS_THING) {
-    thing_attack(ptr, dx); 
-    return;
-  }
+  //  if (ptr->class == OBJECT_CLASS_THING) {
+  // thing_attack(ptr, dx); 
+  // return;
+  //}
   
-  if (object_get_state(ptr) != OBJECT_STATE_ALIVE) {
-    return;
-  }
+  //  if (object_get_state(ptr) != OBJECT_STATE_ALIVE) {
+  //  return;
+  // }
   
   fighter_data_t* data = (fighter_data_t*)ptr->data;  
   if (data->postAttackCount > 0) {
@@ -222,11 +222,26 @@ fighter_checkAttack(object_t* ptr, fighter_data_t* data)
   if (!data->attackChecked && attackConfig->hitAnimTic == ptr->frameCounter) {
     object_collision_t collision;
     if (fighter_attackCollision(ptr, &collision, attackConfig->rangeX, data->attackRangeY)) {
+
+
       if (ptr->anim->facing == FACING_RIGHT && collision.right) {
-	fighter_attack(ptr, collision.right, attackConfig->dammage, 1);
+	if (object_get_state(collision.right) == OBJECT_STATE_ALIVE) {
+	  collision.right->hit.attacker = ptr;
+	  collision.right->hit.dammage = attackConfig->dammage;
+	  collision.right->hit.dx = 1;
+	  object_set_state(collision.right, OBJECT_STATE_ABOUT_TO_BE_HIT);
+	}
+	//	fighter_attack(ptr, collision.right, attackConfig->dammage, 1);
       } else if (ptr->anim->facing == FACING_LEFT && collision.left) {
-	fighter_attack(ptr, collision.left, attackConfig->dammage, -1);
+	if (object_get_state(collision.left) == OBJECT_STATE_ALIVE) {
+	  collision.left->hit.attacker = ptr;
+	  collision.left->hit.dammage = attackConfig->dammage;
+	  collision.left->hit.dx = -1;
+	  object_set_state(collision.left, OBJECT_STATE_ABOUT_TO_BE_HIT);
+	}
+	//	fighter_attack(ptr, collision.left, attackConfig->dammage, -1);
       }
+      
     } 
     data->attackChecked = 1;
   }
@@ -382,6 +397,10 @@ fighter_update(uint16_t deltaT, object_t* ptr)
       }
     }
   } else {
+    if (object_get_state(ptr) == OBJECT_STATE_ABOUT_TO_BE_HIT) {
+      fighter_attack(ptr->hit.attacker, ptr, ptr->hit.dammage, ptr->hit.dx);
+    }
+    
     if (object_get_state(ptr) == OBJECT_STATE_HIT) {
       fighter_updatePositionUnderAttack(deltaT, ptr, data);
       object_updatePositionNoChecks(deltaT, ptr);

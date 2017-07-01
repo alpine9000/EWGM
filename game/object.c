@@ -256,8 +256,55 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
 #endif
 }
 
+#if 0
+static int16_t object_overlaps(object_position_t* position, object_position_t* position)
+{
+  int16_t px = ptr->save.position->x&0xfff0;
+  int16_t py = ptr->save.position->y&0xfff0;
+
+  ox = o->save.position->x&0xfff0;
+      oy = o->save.position->y&0xfff0;
+      if (ox <= ((px + ptr->save.position->w)&0xfff0)+TILE_WIDTH &&
+	  ((ox + o->save.position->w)&0xfff0) + TILE_WIDTH >= px &&
+	  oy <= ((py + ptr->save.position->h)&0xfff0)+TILE_HEIGHT &&
+	  ((o->save.position->h + oy)&0xfff0) + TILE_HEIGHT  >= py) {
+
+	return 1;
+      }
+}
+#endif
 
 #ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
+//static
+int16_t
+object_wasDirty(object_t* ptr)
+{
+  object_t* o = object_activeList;
+
+
+  int16_t px = ptr->save.position->x&0xfff0;
+  int16_t py = ptr->save.position->y&0xfff0;
+  
+  while (o) {
+    if (o != ptr) {
+      int16_t ox = o->save.position->x&0xfff0;
+      int16_t oy = o->save.position->y&0xfff0;
+      if (ox <= ((px + ptr->save.position->w)&0xfff0)+TILE_WIDTH &&
+	  ((ox + o->save.position->w)&0xfff0) + TILE_WIDTH >= px &&
+	  oy <= ((py + ptr->save.position->h)&0xfff0)+TILE_HEIGHT &&
+	  ((o->save.position->h + oy)&0xfff0) + TILE_HEIGHT  >= py) {
+
+	return 1;
+      }
+    }
+    o = o->next;
+  }
+
+
+  return 0;
+}
+
+
 static int16_t
 object_dirty(object_t* ptr)
 {
@@ -267,74 +314,118 @@ object_dirty(object_t* ptr)
       return 1;
   }
 
-  int16_t px = ptr->save.position->x-TILE_WIDTH;
-  int16_t py = ptr->save.position->y-TILE_HEIGHT;  
+  #if 0
+  int16_t sx = ((object_screenx(ptr)/*-TILE_WIDTH*/)>>4)<<4;
+  int16_t sy = ((object_screeny(ptr)/*-TILE_HEIGHT*/)>>4)<<4;
   
   while (o) {
     if (o != ptr) {
-      int16_t ox = o->save.position->x-TILE_WIDTH;
-      int16_t oy = o->save.position->y-TILE_HEIGHT;	
-      if (ox <= px + ptr->save.position->w+TILE_WIDTH &&
-	  ox + o->save.position->w + TILE_WIDTH >= px &&
-	  oy <= py + ptr->save.position->h+TILE_HEIGHT &&
-	  o->save.position->h + TILE_HEIGHT + oy >= py) {
+      int16_t ox = ((object_screenx(o)/*-TILE_WIDTH*/)>>4)<<4;
+      int16_t oy = ((object_screeny(o)/*-TILE_HEIGHT*/)>>4)<<4;
+      if (ox <= (((sx + ptr->image->w/*+TILE_WIDTH*/)>>4)<<4)+TILE_WIDTH &&
+	  (((ox + o->image->w /*+ TILE_WIDTH*/)>>4)<<4)+TILE_WIDTH >= sx &&
+	  oy <= (((sy + ptr->image->h/*+TILE_HEIGHT*/)>>4)<<4)+TILE_HEIGHT &&
+	  (((o->image->h /*+ TILE_HEIGHT*/ + oy)>>4)<<4)+TILE_HEIGHT >= sy) {
 	return 1;
       }
     }
     o = o->next;
   }
+  #else
+  int16_t sx = ((object_screenx(ptr))>>4)<<4;
+  int16_t sy = ((object_screeny(ptr)));
   
+  while (o) {
+    if (o != ptr) {
+      int16_t ox = ((object_screenx(o))>>4)<<4;
+      int16_t oy = ((object_screeny(o)));
+      if (ox <= (((sx + ptr->image->w)>>4)<<4)+TILE_WIDTH &&
+	  (((ox + o->image->w)>>4)<<4)+TILE_WIDTH >= sx &&
+	  oy <= (((sy + ptr->image->h))) &&
+	  (((o->image->h + oy))) >= sy) {
+	return 1;
+      }
+    }
+    o = o->next;
+  }
+  #endif
+
+
   return 0;
 }
 #endif
 
+static object_t*
+object_updateObject(uint16_t deltaT, object_t* ptr)
+{
+  if (ptr->update) {
+    ptr->update(deltaT, ptr);
+  }
+  if (object_get_state(ptr) == OBJECT_STATE_REMOVED) {
+    if (ptr->deadRenderCount == 2) {
+      if (ptr == game_player1) {
+	game_player1 = 0;
+      } else if (ptr == game_player2) {
+	game_player2 = 0;
+      }
+      object_free(ptr);
+      ptr = 0;
+    } else {
+      ptr->deadRenderCount++;
+    }
+  }
+
+  return ptr;
+}
+
 static void
-object_restoreBackground(frame_buffer_t fb)
+object_restoreBackground(uint16_t deltaT, frame_buffer_t fb)
 {
   static uint16_t frame = 0;
   uint16_t i = 0;
   object_t* ptr = object_activeList;
 
   while (ptr != 0) {
+    object_t* next = ptr->next;
+    if (object_updateObject(deltaT, ptr)) {
 #ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
-    uint16_t dirty = 0;
+      uint16_t cleared = 0;
 #endif
-    if (!ptr->tileRender) {
+      if (!ptr->tileRender) {
 #ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
-      /* Don't change the order of these checks, they are optimised */
-      if (object_get_state(ptr) == OBJECT_STATE_REMOVED ||
-	  ptr->imageIndex != ptr->save.position->imageIndex ||	    
-	  (object_y(ptr)-ptr->image->h) != ptr->save.position->y ||
-	  (object_x(ptr)+ptr->image->dx) != ptr->save.position->x ||
-	  ptr->visible != ptr->save.position->visible) {
+	/* Don't change the order of these checks, they are optimised */
+	if (object_get_state(ptr) == OBJECT_STATE_REMOVED ||
+	    ptr->imageIndex != ptr->save.position->imageIndex ||	    
+	    (object_y(ptr)-ptr->image->h) != ptr->save.position->y ||
+	    (object_x(ptr)+ptr->image->dx) != ptr->save.position->x ||
+	    ptr->visible != ptr->save.position->visible) {
 #ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
-	dirty = 1;
+	  cleared = 1;
 #endif
 #endif	
-	object_clear(frame, fb, ptr->save.position->x, ptr->save.position->y, ptr->save.position->w, ptr->save.position->h);
+	  object_clear(frame, fb, ptr->save.position->x, ptr->save.position->y, ptr->save.position->w, ptr->save.position->h);
 #ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
-      }
+	}
 #endif
+      }
+      
+      object_zBuffer[i] = ptr;
+      i++;
+      ptr->save.position->x = object_x(ptr)+ptr->image->dx;
+      ptr->save.position->y = object_y(ptr)-ptr->image->h;
+      ptr->save.position->w = ptr->image->w;
+      ptr->save.position->h = ptr->image->h;    
+#ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
+      ptr->save.position->imageIndex = ptr->imageIndex;
+      ptr->save.position->visible = ptr->visible;
+#endif
+#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS    
+      ptr->cleared = cleared;
+#endif
+      ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];            
     }
 
-    object_zBuffer[i] = ptr;
-    i++;
-    ptr->save.position->x = object_x(ptr)+ptr->image->dx;
-    ptr->save.position->y = object_y(ptr)-ptr->image->h;
-    ptr->save.position->w = ptr->image->w;
-    ptr->save.position->h = ptr->image->h;    
-#ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
-    ptr->save.position->imageIndex = ptr->imageIndex;
-    ptr->save.position->visible = ptr->visible;
-#endif
-    ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];
-
-#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS    
-    ptr->save.position->dirty = !dirty ? object_dirty(ptr) : 1;
-#endif
-
-
-    ptr = ptr->next;
+    ptr = next;
   }
 
   frame++;    
@@ -414,10 +505,20 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
     }
 
 #ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
-    if (ptr->save.position->dirty) {
+    uint16_t redraw = ptr->cleared;
+    object_position_t* position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];
+    if (!redraw) {      
+      redraw = position->dirty;
+      position->dirty = object_dirty(ptr);
+    } else {
+      position->dirty = 1;
+    }
+    
+    if (redraw) {
 #endif
       gfx_renderSprite(fb, sx, sy, screenx, screeny, w, h);
 #ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
+
     }
 #endif
   }
@@ -455,8 +556,12 @@ object_update(uint16_t deltaT)
 void
 object_render(frame_buffer_t fb, uint16_t deltaT)
 {
+  object_restoreBackground(deltaT, fb);  
+  if (0) {
   object_update(deltaT);
-  object_restoreBackground(fb);
+  }
+
+  //  object_restoreBackground(fb);
 
    sort_z(object_count, object_zBuffer);
 
@@ -470,7 +575,7 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
 }
 
 int16_t
-object_collision(int16_t deltaT, object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy)
+object_collision(int32_t deltaT, object_t* a, object_collision_t* collision, uint32_t thresholdx, int32_t thresholdy)
 {
   int32_t vy = a->velocity.y;
   int32_t vx = a->velocity.x;
@@ -545,12 +650,10 @@ object_add(uint16_t id, uint16_t class, int16_t x, int16_t y, int16_t dx, int16_
   ptr->save.position = &ptr->save.positions[0];  
   ptr->save.positions[0].w = 0;
   ptr->save.positions[1].w = 0;
+  ptr->save.positions[0].dirty = 1;
+  ptr->save.positions[1].dirty = 1;    
   ptr->save.positions[0].x = -1;
   ptr->save.positions[1].y = -1;  
-#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
-  ptr->save.positions[0].dirty = 1;
-  ptr->save.positions[0].dirty = 1;
-#endif
   ptr->anim = &object_animations[anim];
   ptr->animId = anim;
   ptr->baseId = anim;

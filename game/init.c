@@ -25,7 +25,7 @@ memory_ctor(void)
 
 __EXTERNAL void
 init_amiga(void) 
-{
+{  
   custom->dmacon = 0x7ff;  /* disable all dma */
   custom->intena = 0x7fff; /* disable all interrupts */
 
@@ -52,5 +52,5 @@ init_amiga(void)
   
 #ifdef GAME_KEYBOARD_ENABLED
   keyboard_ctor();
-#endif
+#endif  
 }

@@ -12,6 +12,9 @@ typedef struct _thing{
   int16_t hasBonus;
   int16_t brokenId;
   int16_t junkStartId;
+
+  uint16_t junkType;
+  int16_t addJunkDx;
 } thing_data_t;
 
 static int16_t thing_count;
@@ -177,6 +180,10 @@ thing_update(uint16_t deltaT, object_t* ptr)
 {
   thing_data_t* data = ptr->data;
 
+  if (object_get_state(ptr) == OBJECT_STATE_ABOUT_TO_BE_HIT) {
+    thing_attack(ptr, ptr->hit.dx);
+  }
+  
   if (data->underAttack) {
     if (object_py(ptr) >= data->attack_py && ptr->velocity.y > 0) {
       object_set_py(ptr, data->attack_py);
@@ -241,6 +248,29 @@ thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t yOffset, uint1
   jptr->velocity.x = dx*4;
 }
 
+static void
+thing_addJunks(void* _ptr)
+{
+  object_t* ptr = _ptr;
+  thing_data_t* data = ptr->data;
+  thing_addJunk(ptr, data->junkStartId, data->addJunkDx, 0, 0);
+  thing_addJunk(ptr, data->junkStartId+1, data->addJunkDx*2, 20, 0);        
+  thing_addJunk(ptr, data->junkStartId+2, -data->addJunkDx, 0, 0);          
+}
+
+
+static void
+thing_addBonusJunk(void* _ptr)
+{
+  object_t* ptr = _ptr;
+  thing_data_t* data = ptr->data;
+  if (data->hasBonus == 1) {
+    thing_addJunk(ptr, OBJECT_ANIM_BONUS_BURGER, -data->addJunkDx, 0, 1);
+  } else if (data->hasBonus == 2) {
+    thing_addJunk(ptr, OBJECT_ANIM_BONUS_COLA, data->addJunkDx, 0, 1);
+  }
+  data->hasBonus--;  
+}
 
 void
 thing_attack(object_t* ptr, int16_t dx)
@@ -250,16 +280,20 @@ thing_attack(object_t* ptr, int16_t dx)
     sound_queueSound(SOUND_BUD_PUNCH01);
     if (ptr->animId != data->brokenId) {
       object_setAnim(ptr, data->brokenId);
-      thing_addJunk(ptr, data->junkStartId, dx, 0, 0);
+      data->addJunkDx  = dx;
+      alarm_add(0, thing_addJunks, ptr);
+      /* thing_addJunk(ptr, data->junkStartId, dx, 0, 0);
       thing_addJunk(ptr, data->junkStartId+1, dx*2, 20, 0);        
-      thing_addJunk(ptr, data->junkStartId+2, -dx, 0, 0);          
+      thing_addJunk(ptr, data->junkStartId+2, -dx, 0, 0);          */
     } else if (data->hasBonus) {
-      if (data->hasBonus == 1) {
+      object_setAnim(ptr, data->brokenId);
+      data->addJunkDx  = dx;
+      alarm_add(0, thing_addBonusJunk, ptr);      
+      /* if (data->hasBonus == 1) {
 	thing_addJunk(ptr, OBJECT_ANIM_BONUS_BURGER, -dx, 0, 1);
       } else if (data->hasBonus == 2) {
 	thing_addJunk(ptr, OBJECT_ANIM_BONUS_COLA, dx, 0, 1);
-      }
-      data->hasBonus--;
+	}*/
     }
 
     data->underAttack = 1; 
@@ -267,4 +301,6 @@ thing_attack(object_t* ptr, int16_t dx)
     ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
     ptr->velocity.x = dx;    
   }
+
+  object_set_state(ptr, OBJECT_STATE_ALIVE);
 }

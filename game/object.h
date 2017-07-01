@@ -291,6 +291,7 @@ typedef enum {
   OBJECT_STATE_ALIVE,
   OBJECT_STATE_REMOVED,
   OBJECT_STATE_DEAD,
+  OBJECT_STATE_ABOUT_TO_BE_HIT,
   OBJECT_STATE_HIT,
   OBJECT_STATE_FLASHING
 } object_state_t;
@@ -339,9 +340,7 @@ typedef struct {
   int16_t h;
   uint16_t imageIndex;
   uint16_t visible;
-#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
   uint16_t dirty;
-#endif
 } object_position_t;
 #endif
 
@@ -357,6 +356,12 @@ typedef struct {
 #endif
 } object_save_t;
 
+
+typedef struct {
+  struct object* attacker;
+  uint16_t dammage;
+  int16_t dx;
+} object_hit_config_t;
 
 
 typedef struct object {
@@ -393,6 +398,12 @@ typedef struct object {
 
   volatile uint8_t* joystickButton;
   volatile uint8_t* joystickPos;
+  
+#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
+  uint16_t cleared;
+#endif
+
+  object_hit_config_t hit;
 } object_t;
 
 
@@ -536,5 +547,5 @@ void
 object_updateAnimation(uint16_t deltaT, object_t *ptr);
 
 int16_t
-object_collision(int16_t deltaT, object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy);
+object_collision(int32_t deltaT, object_t* a, object_collision_t* collision, uint32_t thresholdx, int32_t thresholdy);
 #endif

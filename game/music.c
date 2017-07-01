@@ -57,6 +57,10 @@ music_play(uint16_t moduleIndex)
     music_current_ptr = music_current_ptr == music_module1 ? music_module2 : music_module1;
     music_spare_ptr = music_spare_ptr == music_module1 ? music_module2 : music_module1;
 #else
+    P61_Master = 0;
+    P61_Target = 0;
+    hw_waitVerticalBlank();
+    hw_waitVerticalBlank();    
     disk_loadData(music_current_ptr, music_songs[moduleIndex].data, music_songs[moduleIndex].length);
 #endif
   }

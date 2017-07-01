@@ -1,6 +1,6 @@
 #include "game.h"
 
-#define MOTORBIKE_SPEED 4
+#define MOTORBIKE_SPEED 16
 enum {
   MOTORBIKE_ENTERING_SCREEN,
   MOTORBIKE_WAIT,

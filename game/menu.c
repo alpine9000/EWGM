@@ -9,8 +9,12 @@ static frame_buffer_t menu_frameBuffer;
 #define MENU_TOP_COLOR_SELECTED    0xffb
 #define MENU_BOTTOM_COLOR_SELECTED 0xfb5
 
+#ifndef GAME_TRIPLE_BUFFER
 static __SECTION_RANDOM_C uint8_t menu_offscreenBuffer[(SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH*9)+2];
-static frame_buffer_t menu_offscreen = &menu_offscreenBuffer[0];
+#else
+#define menu_offscreenBuffer game_backScreenBuffer
+#endif
+static frame_buffer_t menu_offscreen;// = &menu_offscreenBuffer[0];
 static frame_buffer_t menu_scrollerFB;
 static uint16_t menu_scrollerCounter;
 static char* menu_scrollerPtr;
@@ -580,6 +584,7 @@ menu_scroller(char* text)
 __EXTERNAL menu_command_t
 menu_loop(menu_mode_t mode)
 {
+  menu_offscreen = &menu_offscreenBuffer[0];  
   extern uint8_t menu_menuBitplanes;
   menu_frameBuffer = &menu_menuBitplanes;
   menu_command_t command;
