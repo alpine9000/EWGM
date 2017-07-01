@@ -12,7 +12,6 @@ TODO.txt
 art
 .DS_Store
 *.dep
-assets/P61.*
 assets/*.gif
 assets/*.save
 bin

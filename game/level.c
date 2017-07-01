@@ -1,20 +1,32 @@
 #include "game.h"
 
-__SECTION_RANDOM_C level_t level;
+__SECTION_RANDOM_C level_chip_t levelChip;
+__SECTION_RANDOM level_fast_t levelFast;
 
-__SECTION_DISK uint8_t level_level1_data[] DISK_SECTOR_ALIGN = {
-  #include "leveldata_1.c"
+__SECTION_DISK uint8_t level_level1_c_data[] DISK_SECTOR_ALIGN = {
+  #include "leveldata_c_1.c"
 };
-__SECTION_DISK uint8_t level_level2_data[] DISK_SECTOR_ALIGN = {
-  #include "leveldata_2.c"
+__SECTION_DISK uint8_t level_level1_f_data[] DISK_SECTOR_ALIGN = {
+  #include "leveldata_f_1.c"
 };
-__SECTION_DISK uint8_t level_level3_data[] DISK_SECTOR_ALIGN = {
-  #include "leveldata_3.c"
+__SECTION_DISK uint8_t level_level2_c_data[] DISK_SECTOR_ALIGN = {
+  #include "leveldata_c_2.c"
+};
+__SECTION_DISK uint8_t level_level2_f_data[] DISK_SECTOR_ALIGN = {
+  #include "leveldata_f_2.c"
+};
+__SECTION_DISK uint8_t level_level3_c_data[] DISK_SECTOR_ALIGN = {
+  #include "leveldata_c_3.c"
+};
+__SECTION_DISK uint8_t level_level3_f_data[] DISK_SECTOR_ALIGN = {
+  #include "leveldata_f_3.c"
 };
 
 typedef struct {
-  level_t* levelData;
-  uint32_t dataSize;
+  void* levelChipData;
+  void* levelFastData;  
+  uint32_t chipDataSize;
+  uint32_t fastDataSize;  
   uint16_t moduleIndex;
   conductor_instruction_t* instructions;
   char* readyMessage;
@@ -22,22 +34,28 @@ typedef struct {
 
 level_config_t level_levels[LEVEL_NUM_LEVELS] = {
   { 
-    .levelData = (level_t*)level_level1_data,
-    .dataSize = sizeof(level_level1_data),
+    .levelChipData = level_level1_c_data,
+    .levelFastData = level_level1_f_data,    
+    .chipDataSize = sizeof(level_level1_c_data),
+    .fastDataSize = sizeof(level_level1_f_data),    
     .instructions = level1_instructions,
     .moduleIndex = 0,
     .readyMessage = I18N_LEVEL1_READY
   },
   { 
-    .levelData = (level_t*)level_level2_data,
-    .dataSize = sizeof(level_level2_data),    
+    .levelChipData = level_level2_c_data,
+    .levelFastData = level_level2_f_data,        
+    .chipDataSize = sizeof(level_level2_c_data),
+    .fastDataSize = sizeof(level_level2_f_data),        
     .instructions = level1_instructions,
     .moduleIndex = 0,
     .readyMessage = I18N_LEVEL2_READY    
   },
   { 
-    .levelData = (level_t*)level_level3_data,
-    .dataSize = sizeof(level_level3_data),    
+    .levelChipData = level_level3_c_data,
+    .levelFastData = level_level3_f_data,        
+    .chipDataSize = sizeof(level_level3_c_data),
+    .fastDataSize = sizeof(level_level3_f_data),            
     .instructions = level1_instructions,
     .moduleIndex = 0,
     .readyMessage = I18N_LEVEL3_READY    
@@ -101,15 +119,16 @@ level_load(uint16_t index)
   
 
 #ifdef GAME_COMPRESS_DATA 
-  disk_loadCompressedData(&level, level_levels[index].levelData, level_levels[index].dataSize);
+  disk_loadCompressedData(&levelChip, level_levels[index].levelChipData, level_levels[index].chipDataSize);
+  disk_loadCompressedData(&levelFast, level_levels[index].levelFastData, level_levels[index].fastDataSize);  
 #else
   disk_loadData(&level, level_levels[index].levelData, sizeof(level_t));
 #endif
   
-  level.instructions = level_levels[index].instructions;
-  level.moduleIndex = level_levels[index].moduleIndex;
+  levelFast.instructions = level_levels[index].instructions;
+  levelFast.moduleIndex = level_levels[index].moduleIndex;
 #ifdef GAME_RECORDING
-  level.record = (record_t*)&level.recordData;
+  levelFast.record = (record_t*)&levelFast.recordData;
 #endif
 
   if (!game_demo) {

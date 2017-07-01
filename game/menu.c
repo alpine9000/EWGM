@@ -12,7 +12,8 @@ static frame_buffer_t menu_frameBuffer;
 #ifndef GAME_TRIPLE_BUFFER
 static __SECTION_RANDOM_C uint8_t menu_offscreenBuffer[(SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH*9)+2];
 #else
-#define menu_offscreenBuffer game_backScreenBuffer
+__EXTERNAL void* music_spare_ptr;
+#define menu_offscreenBuffer ((uint8_t*)music_spare_ptr)
 #endif
 static frame_buffer_t menu_offscreen;// = &menu_offscreenBuffer[0];
 static frame_buffer_t menu_scrollerFB;

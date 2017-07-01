@@ -301,7 +301,7 @@ game_complete(void)
   game_loopControl = GAME_LOOP_CONTROL_GOTO_MENU;
 
   game_disableCopperEffects();  
-  palette_fadeFrom(level.palette, 32, 0, 32);  
+  palette_fadeFrom(levelFast.palette, 32, 0, 32);  
 
 #ifdef GAME_KEYBOARD_ENABLED
   if (game_player1Score > 0) {
@@ -682,7 +682,7 @@ game_loadLevel(menu_command_t command)
   
   enemy_init();
 
-  conductor_init(level.instructions);  
+  conductor_init(levelFast.instructions);  
 
 #ifdef OBJECT_Z_BUFFER_COLLISION
   object_initZbuffer();
@@ -698,7 +698,7 @@ game_loadLevel(menu_command_t command)
 
   hw_waitVerticalBlank();
 
-  palette_fadeTo(level.palette, 32, 0);
+  palette_fadeTo(levelFast.palette, 32, 0);
 
   hw_waitVerticalBlank();  
   game_setBigFontColor(GAME_COUNTDOWN_COLOR_TOP_OK, GAME_COUNTDOWN_COLOR_BOTTOM_OK);  
@@ -759,11 +759,11 @@ game_scrollBackground(void)
     uint16_t x = (uint32_t)game_cameraX+(uint32_t)screenX;
     uint16_t c = i+scroll;
     if (c < MAP_TILE_HEIGHT) {
-      uint16_t offset = level.tileAddresses[x>>4][c];
-      gfx_quickRenderTile(game_offScreenBuffer, screenX, c << 4, level.tileBitplanes+offset);
-      gfx_quickRenderTile(game_onScreenBuffer, screenX, c << 4, level.tileBitplanes+offset);
+      uint16_t offset = levelFast.tileAddresses[x>>4][c];
+      gfx_quickRenderTile(game_offScreenBuffer, screenX, c << 4, levelChip.tileBitplanes+offset);
+      gfx_quickRenderTile(game_onScreenBuffer, screenX, c << 4, levelChip.tileBitplanes+offset);
 #ifdef GAME_TRIPLE_BUFFER
-      gfx_quickRenderTile(game_backScreenBuffer, screenX, c << 4, level.tileBitplanes+offset);
+      gfx_quickRenderTile(game_backScreenBuffer, screenX, c << 4, levelChip.tileBitplanes+offset);
 #endif
     }
   }
@@ -948,13 +948,13 @@ game_pauseToggle(void)
       music_toggle();
     }
     game_disableCopperEffects();  
-    palette_fade(level.palette, level.greyPalette, 32, 16);
+    palette_fade(levelFast.palette, levelFast.greyPalette, 32, 16);
     game_paused = 1;
   } else {
     if (music) {
       music_toggle();
     }
-    palette_fade(level.greyPalette, level.palette, 32, 16);
+    palette_fade(levelFast.greyPalette, levelFast.palette, 32, 16);
     game_enableCopperEffects();
     game_paused = 0;
     game_levelTicCounter = 0;
@@ -1051,7 +1051,7 @@ game_processKeyboard()
       game_numPlayers = 1;
     }
     game_disableCopperEffects();    
-    palette_fadeFrom(level.palette, 32, 0, 32);
+    palette_fadeFrom(levelFast.palette, 32, 0, 32);
     return 1;
     break;
   case '2':
@@ -1437,7 +1437,7 @@ game_loop()
 #endif
       game_turtle--;
     } else if (game_turtle == 1) {
-      custom->color[21] = level.palette[21];
+      custom->color[21] = levelFast.palette[21];
       game_turtle--;
     }
 #endif

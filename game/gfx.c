@@ -68,8 +68,8 @@ __INLINE void
 gfx_screenWidthBitBlit(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   volatile struct Custom* _custom = CUSTOM;
-  frame_buffer_t source = level.spriteBitplanes;
-  frame_buffer_t mask = level.spriteMask;
+  frame_buffer_t source = levelChip.spriteBitplanes;
+  frame_buffer_t mask = levelChip.spriteMask;
   uint32_t widthWords =  ((w+15)>>4)+1;
   int32_t shift = (dx&0xf);
   
@@ -303,8 +303,8 @@ __INLINE void
 gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   volatile struct Custom* _custom = CUSTOM;
-  frame_buffer_t source = level.spriteBitplanes;
-  frame_buffer_t mask = level.spriteMask;
+  frame_buffer_t source = levelChip.spriteBitplanes;
+  frame_buffer_t mask = levelChip.spriteMask;
   uint32_t widthWords =  ((w+15)>>4)+1;
   int32_t shift = (dx&0xf);
   
@@ -336,8 +336,8 @@ __INLINE void
 gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   volatile struct Custom* _custom = CUSTOM;
-  frame_buffer_t source = level.spriteBitplanes;
-  frame_buffer_t mask = level.spriteMask;
+  frame_buffer_t source = levelChip.spriteBitplanes;
+  frame_buffer_t mask = levelChip.spriteMask;
   uint32_t widthWords =  ((w+15)>>4)+1;
   int32_t shift = (dx&0xf);
   

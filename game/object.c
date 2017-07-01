@@ -446,8 +446,8 @@ object_tileRender(frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t
 	int16_t screenX = 0xf+(x<<4)-game_cameraX-game_screenScrollX;
 	int16_t screenY = y << 4;
 	if (screenY >= 0 && screenX >= 0 && screenX <= SCREEN_WIDTH+TILE_WIDTH) {
-	  uint16_t tile = level.tileAddresses[x][y];	      
-	  gfx_quickRenderTile(fb, screenX, screenY, level.tileBitplanes+tile);
+	  uint16_t tile = levelFast.tileAddresses[x][y];	      
+	  gfx_quickRenderTile(fb, screenX, screenY, levelChip.tileBitplanes+tile);
 	}
       }
     }

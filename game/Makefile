@@ -74,7 +74,7 @@ LEVEL_FILES=$(addsuffix .h,$(addprefix out/sprite_, $(LEVELS)))\
 	    $(addsuffix .h,$(addprefix out/tile_, $(LEVELS)))\
 	    $(addsuffix -map.c,$(addprefix out/background_, $(LEVELS)))\
 	    $(addsuffix .h,$(addprefix out/level_recording_, $(LEVELS)))
-LEVEL_FAST_BIN_FILES=$(addsuffix .bin,$(addprefix out/fast/level_data_, $(LEVELS)))
+LEVEL_FAST_BIN_FILES=$(addsuffix .bin,$(addprefix out/fast/level_c_data_, $(LEVELS))) $(addsuffix .bin,$(addprefix out/fast/level_f_data_, $(LEVELS)))
 LEVEL_WB_BIN_FILES=$(addsuffix .bin,$(addprefix out/workbench/level_data_, $(LEVELS)))
 MAX_P61_SIZE=$(shell ls -Sl assets/P61*.bin | awk '{print $$5}' | head -1)
 MODULE_HEADERS=$(addprefix out/, $(MODULES:.bin=.h))
@@ -89,14 +89,14 @@ else
 OBJS=$(ASM_OBJS) $(C_OBJS) 
 endif
 ADF_C_OBJS=$(addprefix out/adf/, $(C_OBJS))
-ADF_LEVEL_UNCOMPRESSED=$(addsuffix .c,$(addprefix out/adf/leveldata_, $(LEVELS)))
+ADF_LEVEL_UNCOMPRESSED=$(addsuffix .c,$(addprefix out/adf/leveldata_f_, $(LEVELS))) $(addsuffix .c,$(addprefix out/adf/leveldata_c_, $(LEVELS)))
 ADF_OBJS=$(addprefix out/adf/, $(OBJS))
 FAST_C_OBJS=$(addprefix out/fast/, $(C_OBJS))
-FAST_LEVEL_OBJS=$(addsuffix .o,$(addprefix out/fast/leveldata_, $(LEVELS)))
+FAST_LEVEL_OBJS=$(addsuffix .o,$(addprefix out/fast/leveldata_f_, $(LEVELS))) $(addsuffix .o,$(addprefix out/fast/leveldata_c_, $(LEVELS)))
 FAST_OBJS=$(addprefix out/fast/, $(OBJS))
-FAST_LEVEL_COMPRESSED=$(addsuffix .c,$(addprefix out/fast/leveldata_, $(LEVELS)))
+FAST_LEVEL_COMPRESSED=$(addsuffix .c,$(addprefix out/fast/leveldata_f_, $(LEVELS))) $(addsuffix .c,$(addprefix out/fast/leveldata_c_, $(LEVELS)))
 WORKBENCH_C_OBJS=$(addprefix out/workbench/, $(C_OBJS))
-WORKBENCH_LEVEL_COMPRESSED=$(addsuffix .c,$(addprefix out/workbench/leveldata_, $(LEVELS)))
+WORKBENCH_LEVEL_COMPRESSED=$(addsuffix .c,$(addprefix out/workbench/leveldata_f_, $(LEVELS))) $(addsuffix .c,$(addprefix out/workbench/leveldata_c_, $(LEVELS)))
 WORKBENCH_OBJS=$(addprefix out/workbench/, $(OBJS))
 ALL_OBJS=out/adf/main.o $(ADF_OBJS)
 ALL_FAST_OBJS=out/fast/main.o $(FAST_OBJS)
@@ -304,15 +304,23 @@ out/font%.bin: assets/font%.png palettes/font.pal
 	$(IMAGECON) --input $< $(IMAGECON_ARGS) --output-bitplanes --output-grey-palette-asm --output-palette-asm --output-palette --output out/font$* --colors=2 --use-palette=palettes/font.pal --full-color-palette-file --output-mask --transparent-color=0,0,0 --output-png
 
 
-out/fast/level_data_1.o: $(LEVEL_FILES)
-out/fast/level_data_2.o: $(LEVEL_FILES)
-out/fast/level_data_3.o: $(LEVEL_FILES)
+out/fast/level_c_data_1.o: $(LEVEL_FILES)
+out/fast/level_f_data_1.o: $(LEVEL_FILES)
+out/fast/level_c_data_2.o: $(LEVEL_FILES)
+out/fast/level_f_data_2.o: $(LEVEL_FILES)
+out/fast/level_c_data_3.o: $(LEVEL_FILES)
+out/fast/level_f_data_3.o: $(LEVEL_FILES)
 .SECONDARY : $(LEVEL_FAST_BIN_FILES)
-out/fast/level_data_%.bin: out/fast/level_data_%.o
-	$(LD) -brawbin1 out/fast/level_data_$*.o -o out/fast/level_data_$*.bin
-out/fast/leveldata_%.c: out/fast/level_data_%.bin
-	../tools/doynamite68k/out/lz -o out/fast/level_data_$*.bin.lz out/fast/level_data_$*.bin
-	cat out/fast/level_data_$*.bin.lz | $(BIN2C) > $@
+out/fast/level_c_data_%.bin: out/fast/level_c_data_%.o
+	$(LD) -brawbin1 out/fast/level_c_data_$*.o -o out/fast/level_c_data_$*.bin
+out/fast/leveldata_c_%.c: out/fast/level_c_data_%.bin
+	../tools/doynamite68k/out/lz -o out/fast/level_c_data_$*.bin.lz out/fast/level_c_data_$*.bin
+	cat out/fast/level_c_data_$*.bin.lz | $(BIN2C) > $@
+out/fast/level_f_data_%.bin: out/fast/level_f_data_%.o
+	$(LD) -brawbin1 out/fast/level_f_data_$*.o -o out/fast/level_f_data_$*.bin
+out/fast/leveldata_f_%.c: out/fast/level_f_data_%.bin
+	../tools/doynamite68k/out/lz -o out/fast/level_f_data_$*.bin.lz out/fast/level_f_data_$*.bin
+	cat out/fast/level_f_data_$*.bin.lz | $(BIN2C) > $@
 
 out/workbench/level_data_1.o: $(LEVEL_FILES)
 out/workbench/level_data_2.o: $(LEVEL_FILES)
