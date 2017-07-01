@@ -613,6 +613,7 @@ game_loadLevel(menu_command_t command)
   } else {
     player1_character = 1;
   }
+
   
   level_load(game_level);
   
@@ -654,8 +655,8 @@ game_loadLevel(menu_command_t command)
 
 
   if (game_numPlayers == 2 || player1_character == 1) {
-        game_player1 = (game_level == 0 || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80) : 0;
-    //    game_player1 = (game_level == 0 || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT, 80) : 0;    
+    //        game_player1 = (game_level == 0 || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80) : 0;
+        game_player1 = (game_level == 0 || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_ENEMY_LEVEL2_1_STAND_RIGHT, 80) : 0;    
     game_player1->joystickPos = &hw_joystickPos;
     game_player1->joystickButton = &hw_joystickButton;
   } else {

@@ -62,6 +62,68 @@ object_animation_t object_animations[] = {
     .facing = FACING_RIGHT
   },          
   // =================================
+
+  [OBJECT_ANIM_ENEMY_LEVEL2_1_RUN_RIGHT] = {
+    .start = SPRITE_ENEMY_LEVEL2_1_RUN_RIGHT_1,
+    .stop = SPRITE_ENEMY_LEVEL2_1_RUN_RIGHT_4,
+    .speed = 2,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_1_STAND_RIGHT] = {
+    .start = SPRITE_ENEMY_LEVEL2_1_STAND_RIGHT,
+    .stop = SPRITE_ENEMY_LEVEL2_1_STAND_RIGHT,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_1_RUN_LEFT] = {
+    .start = SPRITE_ENEMY_LEVEL2_1_RUN_LEFT_1,
+    .stop = SPRITE_ENEMY_LEVEL2_1_RUN_LEFT_4,
+    .speed = 2,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_1_STAND_LEFT] = {
+    .start = SPRITE_ENEMY_LEVEL2_1_STAND_LEFT,
+    .stop = SPRITE_ENEMY_LEVEL2_1_STAND_LEFT,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_1_PUNCH_LEFT1] = {
+    .start = SPRITE_ENEMY_LEVEL2_1_PUNCH_LEFT_1,
+    .stop = SPRITE_ENEMY_LEVEL2_1_PUNCH_LEFT_1,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_1_PUNCH_LEFT2] = {
+    .start = SPRITE_ENEMY_LEVEL2_1_PUNCH_LEFT_2,
+    .stop = SPRITE_ENEMY_LEVEL2_1_PUNCH_LEFT_2,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_1_PUNCH_RIGHT1] = {
+    .start = SPRITE_ENEMY_LEVEL2_1_PUNCH_RIGHT_1,
+    .stop = SPRITE_ENEMY_LEVEL2_1_PUNCH_RIGHT_1,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_1_PUNCH_RIGHT2] = {
+    .start = SPRITE_ENEMY_LEVEL2_1_PUNCH_RIGHT_2,
+    .stop = SPRITE_ENEMY_LEVEL2_1_PUNCH_RIGHT_2,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_1_HIT_LEFT] = {
+    .start = SPRITE_ENEMY_LEVEL2_1_HIT_LEFT,
+    .stop = SPRITE_ENEMY_LEVEL2_1_HIT_LEFT,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_ENEMY_LEVEL2_1_HIT_RIGHT] = {
+    .start = SPRITE_ENEMY_LEVEL2_1_HIT_RIGHT,
+    .stop = SPRITE_ENEMY_LEVEL2_1_HIT_RIGHT,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },          
+  // =================================  
   [OBJECT_ANIM_PLAYER2_RUN_RIGHT] = {
     .start =SPRITE_PLAYER2_RUN_RIGHT_1,
     .stop = SPRITE_PLAYER2_RUN_RIGHT_4,
@@ -657,6 +719,136 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
   //==============================
+  [SPRITE_ENEMY_LEVEL2_1_STAND_RIGHT] = {
+    .x = 0,
+    .y = 0,
+    .w = 32,
+    .h = 52,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL2_1_RUN_RIGHT_1] = {
+    .x = 32,
+    .y = 0,
+    .w = 32,
+    .h = 52,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL2_1_RUN_RIGHT_2] = {
+    .x = 64,
+    .y = 0,
+    .w = 32,
+    .h = 52,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL2_1_RUN_RIGHT_3] = {
+    .x = 96,
+    .y = 0,
+    .w = 32,
+    .h = 52,
+    .dx = -5,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL2_1_RUN_RIGHT_4] = {
+    .x = 32,
+    .y = 0,
+    .w = 32,
+    .h = 52,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_ENEMY_LEVEL2_1_STAND_LEFT] = {
+    .x = 160,
+    .y = 52,
+    .w = 32,
+    .h = 52,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL2_1_RUN_LEFT_1] = {
+    .x = 128,
+    .y = 52,
+    .w = 32,
+    .h = 52,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL2_1_RUN_LEFT_2] = {
+    .x = 96,
+    .y = 52,
+    .w = 32,
+    .h = 52,
+    .dx = 0,
+    .dy = 0,   
+  },
+  [SPRITE_ENEMY_LEVEL2_1_RUN_LEFT_3] = {
+    .x = 64,
+    .y = 52,
+    .w = 32,
+    .h = 52,
+    .dx = 5,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL2_1_RUN_LEFT_4] = {
+    .x = 96,
+    .y = 52,
+    .w = 32,
+    .h = 52,
+    .dx = 0,
+    .dy = 0,    
+  },
+  [SPRITE_ENEMY_LEVEL2_1_PUNCH_LEFT_1] = {
+    .x = 192,
+    .y = 0,
+    .w = 32,
+    .h = 52,
+    .dx = -1,
+    .dy = 0,    
+    },
+  [SPRITE_ENEMY_LEVEL2_1_PUNCH_LEFT_2] = {
+    .x = 192,
+    .y = 52,
+    .w = 32,
+    .h = 52,
+    .dx = 0,
+    .dy = 0,    
+    },
+  [SPRITE_ENEMY_LEVEL2_1_PUNCH_RIGHT_1] = {
+    .x = 128,
+    .y = 0,
+    .w = 32,
+    .h = 52,
+    .dx = 2,
+    .dy = 0,    
+    },
+  [SPRITE_ENEMY_LEVEL2_1_PUNCH_RIGHT_2] = {
+    .x = 160,
+    .y = 0,
+    .w = 32,
+    .h = 52,
+    .dx = 1,
+    .dy = 0,    
+    },
+  
+  [SPRITE_ENEMY_LEVEL2_1_HIT_RIGHT] = {
+    .x = 0,
+    .y = 52,
+    .w = 48,
+    .h = 52,
+    .dx = -4,
+    .dy = 0,    
+    },
+  [SPRITE_ENEMY_LEVEL2_1_HIT_LEFT] = {
+    .x = 224,
+    .y = 731,
+    .w = 48,
+    .h = 52,
+    .dx = 0,
+    .dy = 0,    
+    },
+  //==============================  
   [SPRITE_PLAYER2_STAND_RIGHT] = {
     .x = 0,
     .y = 108,

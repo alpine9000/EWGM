@@ -47,7 +47,7 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
     .levelFastData = level_level2_f_data,        
     .chipDataSize = sizeof(level_level2_c_data),
     .fastDataSize = sizeof(level_level2_f_data),        
-    .instructions = level1_instructions,
+    .instructions = level2_instructions,
     .moduleIndex = 0,
     .readyMessage = I18N_LEVEL2_READY    
   },
@@ -90,6 +90,7 @@ level_readyMessage(void)
 void
 level_load(uint16_t index)
 {
+  index++;
   if (!game_scoreboardLoaded) {
     message_loading(I18N_LOADING);    
     extern uint8_t scoreBoardBitplanes;

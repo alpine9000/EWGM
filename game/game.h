@@ -193,6 +193,7 @@ enum {
 #include "record.h"
 #include "conductor.h"
 #include "level1.h"
+#include "level2.h"
 #include "level.h"
 #include "mouse.h"
 #include "tile.h"

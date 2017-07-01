@@ -32,6 +32,16 @@ typedef struct {
 extern level_chip_t levelChip;
 extern level_fast_t levelFast;
 
+typedef struct {
+  int16_t x;
+  int16_t y;
+  fighter_attack_config_t* attackConfig;
+  uint16_t attackWait;
+  int16_t enemyCount;
+  uint16_t animId;
+  uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data);
+} level_enemy_config_t;
+
 
 void
 level_load(uint16_t index);

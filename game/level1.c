@@ -3,16 +3,6 @@
 #define LEVEL1_ENEMY_BOSS_START_Y (7+56)
 #define LEVEL1_ENEMY_BOSS_START_X (GAME_WORLD_WIDTH-96)
 
-typedef struct {
-  int16_t x;
-  int16_t y;
-  fighter_attack_config_t* attackConfig;
-  uint16_t attackWait;
-  int16_t enemyCount;
-  uint16_t animId;
-  uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data);
-} level_enemy_config_t;
-
 enum {
   LEVEL1_WAVE1_1,
   LEVEL1_WAVE1_2,
