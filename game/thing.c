@@ -119,9 +119,16 @@ thing_updatePosition(uint16_t deltaT, object_t* ptr)
 
   object_set_px(ptr, lastX + vx);
   object_set_py_no_checks(ptr, lastY + vy);
-    
+
+  thing_data_t* data = ptr->data;  
+  if (object_py(ptr) > data->attack_py+2) { // allow a tiny bounce 
+    object_set_py_no_checks(ptr, data->attack_py);
+  }
+  
   ptr->velocity.dx = object_px(ptr) - lastX;
   ptr->velocity.dy = object_py(ptr) - lastY;
+
+  
 }
 
 
@@ -143,7 +150,7 @@ thing_collision(object_t* a)
   if (game_player1) {
     b = game_player1;
     //if ((b->class == OBJECT_CLASS_FIGHTER) && object_get_state(b) == OBJECT_STATE_ALIVE) {      
-      int16_t b_y = object_y(b);
+      int16_t b_y = object_z(b);
       if (abs(a_y - b_y) <= 1) {
 	a_x1 = object_x(a) + a->widthOffset;
 	a_x2 = object_x(a) + (a->width - a->widthOffset);	
@@ -214,12 +221,12 @@ thing_update(uint16_t deltaT, object_t* ptr)
 
 
 object_t*
-thing_add(uint16_t id, uint16_t animId, uint16_t brokenId, uint16_t junkStartId, int16_t x, int16_t y)
+thing_add(uint16_t id, uint16_t animId, uint16_t brokenId, uint16_t junkStartId, int16_t x, int16_t y, int16_t numBonus)
 {
   thing_data_t* data = thing_getFree();
   data->underAttack = 0;
   data->attackable = 1;
-  data->hasBonus = 2;
+  data->hasBonus = numBonus;
   data->bonus = 0;
   data->brokenId = brokenId;
   data->junkStartId = junkStartId;
@@ -276,7 +283,7 @@ void
 thing_attack(object_t* ptr, int16_t dx)
 {
   thing_data_t* data = ptr->data;
-  if (data->attackable) {
+  if (!data->underAttack && data->attackable) {
     sound_queueSound(SOUND_BUD_PUNCH01);
     if (ptr->animId != data->brokenId) {
       object_setAnim(ptr, data->brokenId);
@@ -296,8 +303,9 @@ thing_attack(object_t* ptr, int16_t dx)
 	}*/
     }
 
-    data->underAttack = 1; 
-    data->attack_py = object_py(ptr); 
+    data->underAttack = 1;
+    int16_t r = (random()%6)-3;
+    data->attack_py = (object_z(ptr) + r)*OBJECT_PHYSICS_FACTOR;//object_py(ptr); 
     ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
     ptr->velocity.x = dx;    
   }

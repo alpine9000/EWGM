@@ -654,6 +654,44 @@ object_animation_t object_animations[] = {
     .facing = FACING_RIGHT
   },
   // =================================
+  [OBJECT_ANIM_SIXPACK1] = {
+    .start = SPRITE_SIXPACK1,
+    .stop = SPRITE_SIXPACK1,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_SIXPACK2] = {
+    .start = SPRITE_SIXPACK2,
+    .stop = SPRITE_SIXPACK2,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_SIXPACK3] = {
+    .start = SPRITE_SIXPACK3,
+    .stop = SPRITE_SIXPACK3,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  // =================================
+  [OBJECT_ANIM_TABLE] = {
+    .start = SPRITE_TABLE,
+    .stop = SPRITE_TABLE,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_CHAIR1] = {
+    .start = SPRITE_CHAIR1,
+    .stop = SPRITE_CHAIR1,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_CHAIR2] = {
+    .start = SPRITE_CHAIR2,
+    .stop = SPRITE_CHAIR2,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },      
+  // =================================
   [OBJECT_ANIM_POSTBOX_JUNK1] = {
     .start = SPRITE_POSTBOX_JUNK1,
     .stop = SPRITE_POSTBOX_JUNK1,
@@ -1766,7 +1804,7 @@ object_image_t object_imageAtlas[] = {
   [SPRITE_ENEMY_LEVEL2_3_RUN_RIGHT_2] = {
     .x = 160,
     .y = 336,
-    .w = 48,
+    .w = 32,
     .h = 56,
     .dx = 0,
     .dy = 0,    
@@ -1782,7 +1820,7 @@ object_image_t object_imageAtlas[] = {
     [SPRITE_ENEMY_LEVEL2_3_RUN_RIGHT_4] = {
     .x = 160,
     .y = 336,
-    .w = 48,
+    .w = 32,
     .h = 56,
     .dx = 0,
     .dy = 0,    
@@ -1804,9 +1842,9 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
   },
   [SPRITE_ENEMY_LEVEL2_3_RUN_LEFT_2] = {
-    .x = 48,
-    .y = 507,
-    .w = 48,
+    .x = 240,
+    .y = 336,
+    .w = 32,
     .h = 56,
     .dx = 0,
     .dy = 0,   
@@ -1820,9 +1858,9 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
   },
     [SPRITE_ENEMY_LEVEL2_3_RUN_LEFT_4] = {
-    .x = 48,
-    .y = 507,
-    .w = 48,
+    .x = 240,
+    .y = 336,
+    .w = 32,
     .h = 56,
     .dx = 0,
     .dy = 0,    
@@ -2098,6 +2136,31 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
+  //==========================  
+    [SPRITE_SIXPACK1] = {
+    .x = 240,
+    .y = 400,
+    .w = 27,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,    
+    },
+    [SPRITE_SIXPACK2] = {
+    .x = 240,
+    .y = 416,
+    .w = 27,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,    
+    },
+    [SPRITE_SIXPACK3] = {
+    .x = 240,
+    .y = 432,
+    .w = 27,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,    
+    },    
   //==========================
   [SPRITE_POSTBOX_JUNK1] = {
     .x = 96,
@@ -2124,6 +2187,31 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },      
 
+  //==========================  
+    [SPRITE_TABLE] = {
+    .x = 96,
+    .y = 944,
+    .w = 55,
+    .h = 29,
+    .dx = 0,
+    .dy = 0,    
+    },
+    [SPRITE_CHAIR1] = {
+    .x = 240,
+    .y = 481,
+    .w = 23,
+    .h = 32,
+    .dx = 0,
+    .dy = 0,    
+    },
+    [SPRITE_CHAIR2] = {
+    .x = 240,
+    .y = 513,
+    .w = 23,
+    .h = 32,
+    .dx = 0,
+    .dy = 0,    
+    },      
   
   //==========================
   [SPRITE_BONUS_BURGER] = {

@@ -602,7 +602,7 @@ object_collision(int32_t deltaT, object_t* a, object_collision_t* collision, uin
   
   while (b) {
     if (b->collidable && b != a) {
-      int32_t b_y = ((object_y(b)));
+      int32_t b_y = ((object_z(b)));
 
       if (abs(a_y - b_y) <= thresholdy) {
 	int32_t b_x1 = ((object_x(b))) + b->widthOffset;

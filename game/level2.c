@@ -56,11 +56,33 @@ level2_scroll(uint16_t argument)
 }
 */
 
+static int16_t
+level2_addSixPack(uint16_t argument)
+{
+  int16_t y = 120;
+  object_t* ptr = thing_add(OBJECT_ID_SIXPACK, OBJECT_ANIM_SIXPACK1, OBJECT_ANIM_SIXPACK1, 0, game_cameraX+argument, y, 0);
+  object_set_z(ptr, object_y(ptr)+32);
+  ptr = thing_add(OBJECT_ID_SIXPACK, OBJECT_ANIM_SIXPACK2, OBJECT_ANIM_SIXPACK2, 0, game_cameraX+argument, y+16, 0);
+  object_set_z(ptr, object_y(ptr)+16);
+  thing_add(OBJECT_ID_SIXPACK, OBJECT_ANIM_SIXPACK3, OBJECT_ANIM_SIXPACK3, 0, game_cameraX+argument, 120+32, 2);  
+  return 1;
+}
+
+static int16_t
+level2_addTableAndChairs(uint16_t argument)
+{
+  thing_add(OBJECT_ID_TABLE, OBJECT_ANIM_TABLE, OBJECT_ANIM_TABLE, 0, game_cameraX+argument, 180, 0);
+  thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR1, OBJECT_ANIM_CHAIR1, 0, game_cameraX+argument+45, 180, 0);
+  thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR2, OBJECT_ANIM_CHAIR2, 0, game_cameraX+argument-15, 180, 0);  
+  return 1;
+}
+
 int16_t
 level2_start(uint16_t argument)
 {
   __USE(argument);
-  //  level1_addPostbox(50);
+  level2_addSixPack(50);
+  level2_addTableAndChairs(100);
   //if (1) {
   // level1_doAddMotorbike();
   //}

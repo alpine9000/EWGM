@@ -90,7 +90,7 @@ fighter_attackCollision(object_t* a, object_collision_t* collision, uint16_t thr
   
   while (b) {
     if (b->collidable && b != a) {
-      int16_t b_y = ((object_y(b)));
+      int16_t b_y = ((object_z(b)));
 
       if (abs(a_y - b_y) <= thresholdy) {
 	int16_t b_x1 = ((object_x(b))) + b->widthOffset;
