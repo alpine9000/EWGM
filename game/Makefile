@@ -61,7 +61,7 @@ endif
 C_OPT=-Ofast #-fbbb=+v #-fbbb=iesapcmfbrv #-fbbb=+V #-fbbb=sapcmefbV 
 BIG_FLAGS=$(WHOLE_PROGRAM)
 C_OPT_ASM_OUTPUT=-Ofast
-BASE_CFLAGS=-funsafe-loop-optimizations -Wno-overlength-strings $(REGPARAM) $(VASM_OPTS) -fomit-frame-pointer -noixemul -mcpu=68000 -m68000 -pedantic-errors -Wfatal-errors -Wall -Werror -Wextra -Wshadow -Wuninitialized -Wduplicated-cond -Wframe-larger-than=512 -Wstack-usage=512 -Wundef -Wbad-function-cast -Wparentheses $(INCLUDE) $(EXTRA_DEFINES)
+BASE_CFLAGS=-funsafe-loop-optimizations -Wno-overlength-strings $(REGPARAM) $(VASM_OPTS) -fomit-frame-pointer -noixemul -mcpu=68000 -m68000 -pedantic-errors -Wfatal-errors -Wall -Werror -Wextra -Wshadow -Wuninitialized -Wduplicated-cond -Wframe-larger-than=1024 -Wstack-usage=1024 -Wundef -Wbad-function-cast -Wparentheses $(INCLUDE) $(EXTRA_DEFINES)
 C_LIBS=libgcc/out/gcc.lib
 C_LIBS_WB=$(NDK)/lib/amiga.lib libgcc/out/gcc.lib
 CFLAGS=$(C_OPT) $(BASE_CFLAGS)

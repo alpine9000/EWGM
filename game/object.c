@@ -314,24 +314,6 @@ object_dirty(object_t* ptr)
       return 1;
   }
 
-  #if 0
-  int16_t sx = ((object_screenx(ptr)/*-TILE_WIDTH*/)>>4)<<4;
-  int16_t sy = ((object_screeny(ptr)/*-TILE_HEIGHT*/)>>4)<<4;
-  
-  while (o) {
-    if (o != ptr) {
-      int16_t ox = ((object_screenx(o)/*-TILE_WIDTH*/)>>4)<<4;
-      int16_t oy = ((object_screeny(o)/*-TILE_HEIGHT*/)>>4)<<4;
-      if (ox <= (((sx + ptr->image->w/*+TILE_WIDTH*/)>>4)<<4)+TILE_WIDTH &&
-	  (((ox + o->image->w /*+ TILE_WIDTH*/)>>4)<<4)+TILE_WIDTH >= sx &&
-	  oy <= (((sy + ptr->image->h/*+TILE_HEIGHT*/)>>4)<<4)+TILE_HEIGHT &&
-	  (((o->image->h /*+ TILE_HEIGHT*/ + oy)>>4)<<4)+TILE_HEIGHT >= sy) {
-	return 1;
-      }
-    }
-    o = o->next;
-  }
-  #else
   int16_t sx = ((object_screenx(ptr))>>4)<<4;
   int16_t sy = ((object_screeny(ptr)));
   
@@ -343,12 +325,12 @@ object_dirty(object_t* ptr)
 	  (((ox + o->image->w)>>4)<<4)+TILE_WIDTH >= sx &&
 	  oy <= (((sy + ptr->image->h))) &&
 	  (((o->image->h + oy))) >= sy) {
-	return 1;
+	return 1;	
       }
     }
     o = o->next;
   }
-  #endif
+
 
 
   return 0;
@@ -519,6 +501,8 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
       gfx_renderSprite(fb, sx, sy, screenx, screeny, w, h);
 #ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
 
+    } else {
+      //      gfx_renderBlackSprite(fb, sx, sy, screenx, screeny, w, h);
     }
 #endif
   }

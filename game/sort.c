@@ -696,6 +696,357 @@ SWAP(8, 9);
 }
 #endif
 
+#if OBJECT_MAX_OBJECTS > 16
+static void sort17(object_t **d){
+  SWAP(0, 1);
+
+SWAP(2, 3);
+
+SWAP(0, 2);
+
+SWAP(1, 3);
+
+SWAP(1, 2);
+
+SWAP(4, 5);
+
+SWAP(6, 7);
+
+SWAP(4, 6);
+
+SWAP(5, 7);
+
+SWAP(5, 6);
+
+SWAP(0, 4);
+
+SWAP(1, 5);
+
+SWAP(1, 4);
+
+SWAP(2, 6);
+
+SWAP(3, 7);
+
+SWAP(3, 6);
+
+SWAP(2, 4);
+
+SWAP(3, 5);
+
+SWAP(3, 4);
+
+SWAP(8, 9);
+
+SWAP(10, 11);
+
+SWAP(8, 10);
+
+SWAP(9, 11);
+
+SWAP(9, 10);
+
+SWAP(12, 13);
+
+SWAP(15, 16);
+
+SWAP(14, 16);
+
+SWAP(14, 15);
+
+SWAP(12, 15);
+
+SWAP(12, 14);
+
+SWAP(13, 16);
+
+SWAP(13, 15);
+
+SWAP(13, 14);
+
+SWAP(8, 13);
+
+SWAP(8, 12);
+
+SWAP(9, 14);
+
+SWAP(9, 13);
+
+SWAP(9, 12);
+
+SWAP(10, 15);
+
+SWAP(11, 16);
+
+SWAP(11, 15);
+
+SWAP(10, 13);
+
+SWAP(10, 12);
+
+SWAP(11, 14);
+
+SWAP(11, 13);
+
+SWAP(11, 12);
+
+SWAP(0, 9);
+
+SWAP(0, 8);
+
+SWAP(1, 10);
+
+SWAP(1, 9);
+
+SWAP(1, 8);
+
+SWAP(2, 11);
+
+SWAP(3, 12);
+
+SWAP(3, 11);
+
+SWAP(2, 9);
+
+SWAP(2, 8);
+
+SWAP(3, 10);
+
+SWAP(3, 9);
+
+SWAP(3, 8);
+
+SWAP(4, 13);
+
+SWAP(5, 14);
+
+SWAP(5, 13);
+
+SWAP(6, 15);
+
+SWAP(7, 16);
+
+SWAP(7, 15);
+
+SWAP(6, 13);
+
+SWAP(7, 14);
+
+SWAP(7, 13);
+
+SWAP(4, 9);
+
+SWAP(4, 8);
+
+SWAP(5, 10);
+
+SWAP(5, 9);
+
+SWAP(5, 8);
+
+SWAP(6, 11);
+
+SWAP(7, 12);
+
+SWAP(7, 11);
+
+SWAP(6, 9);
+
+SWAP(6, 8);
+
+SWAP(7, 10);
+
+SWAP(7, 9);
+
+ SWAP(7, 8);
+
+}
+#endif
+
+#if OBJECT_MAX_OBJECTS > 17
+static void sort18(object_t **d){
+SWAP(0, 1);
+
+SWAP(2, 3);
+
+SWAP(0, 2);
+
+SWAP(1, 3);
+
+SWAP(1, 2);
+
+SWAP(4, 5);
+
+SWAP(7, 8);
+
+SWAP(6, 8);
+
+SWAP(6, 7);
+
+SWAP(4, 7);
+
+SWAP(4, 6);
+
+SWAP(5, 8);
+
+SWAP(5, 7);
+
+SWAP(5, 6);
+
+SWAP(0, 5);
+
+SWAP(0, 4);
+
+SWAP(1, 6);
+
+SWAP(1, 5);
+
+SWAP(1, 4);
+
+SWAP(2, 7);
+
+SWAP(3, 8);
+
+SWAP(3, 7);
+
+SWAP(2, 5);
+
+SWAP(2, 4);
+
+SWAP(3, 6);
+
+SWAP(3, 5);
+
+SWAP(3, 4);
+
+SWAP(9, 10);
+
+SWAP(11, 12);
+
+SWAP(9, 11);
+
+SWAP(10, 12);
+
+SWAP(10, 11);
+
+SWAP(13, 14);
+
+SWAP(16, 17);
+
+SWAP(15, 17);
+
+SWAP(15, 16);
+
+SWAP(13, 16);
+
+SWAP(13, 15);
+
+SWAP(14, 17);
+
+SWAP(14, 16);
+
+SWAP(14, 15);
+
+SWAP(9, 14);
+
+SWAP(9, 13);
+
+SWAP(10, 15);
+
+SWAP(10, 14);
+
+SWAP(10, 13);
+
+SWAP(11, 16);
+
+SWAP(12, 17);
+
+SWAP(12, 16);
+
+SWAP(11, 14);
+
+SWAP(11, 13);
+
+SWAP(12, 15);
+
+SWAP(12, 14);
+
+SWAP(12, 13);
+
+SWAP(0, 9);
+
+SWAP(1, 10);
+
+SWAP(1, 9);
+
+SWAP(2, 11);
+
+SWAP(3, 12);
+
+SWAP(3, 11);
+
+SWAP(2, 9);
+
+SWAP(3, 10);
+
+SWAP(3, 9);
+
+SWAP(4, 13);
+
+SWAP(5, 14);
+
+SWAP(5, 13);
+
+SWAP(6, 15);
+
+SWAP(7, 16);
+
+SWAP(8, 17);
+
+SWAP(8, 16);
+
+SWAP(7, 15);
+
+SWAP(8, 15);
+
+SWAP(6, 13);
+
+SWAP(7, 14);
+
+SWAP(8, 14);
+
+SWAP(7, 13);
+
+SWAP(8, 13);
+
+SWAP(4, 9);
+
+SWAP(5, 10);
+
+SWAP(5, 9);
+
+SWAP(6, 11);
+
+SWAP(7, 12);
+
+SWAP(8, 12);
+
+SWAP(7, 11);
+
+SWAP(8, 11);
+
+SWAP(6, 9);
+
+SWAP(7, 10);
+
+SWAP(8, 10);
+
+SWAP(7, 9);
+
+SWAP(8, 9);
+}
+#endif
+
 static void(*sort_zs[OBJECT_MAX_OBJECTS+1])(object_t**) = {
   sort0,
   sort0,
@@ -733,7 +1084,13 @@ static void(*sort_zs[OBJECT_MAX_OBJECTS+1])(object_t**) = {
 #endif
 #if OBJECT_MAX_OBJECTS > 15
   sort16,
-#endif           
+#endif
+#if OBJECT_MAX_OBJECTS > 16
+  sort17,
+#endif
+#if OBJECT_MAX_OBJECTS > 17
+  sort18,
+#endif               
 };
   
 

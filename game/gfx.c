@@ -379,6 +379,55 @@ gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_
     _custom->bltsize = bltsize;    
   }
 }
+
+
+__INLINE void
+gfx_renderBlackSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
+{
+  volatile struct Custom* _custom = CUSTOM;
+  frame_buffer_t source = levelChip.spriteBitplanes;
+  frame_buffer_t mask = levelChip.spriteMask;
+  uint32_t widthWords =  ((w+15)>>4)+1;
+  int32_t shift = (dx&0xf);
+  
+  dest += gfx_dyOffsetsLUT[dy] + (dx>>3);
+  source += gfx_dySpriteOffsetsLUT[sy] + (sx>>3);
+  mask += gfx_dySpriteMaskOffsetsLUT[sy] + (sx>>3);
+
+  uint16_t bltsize = (h)<<6 | widthWords;
+
+  uint16_t bltamod = (SPRITE_SHEET_WIDTH_BYTES-(widthWords<<1));
+  uint16_t bltbmod = (SPRITE_SHEET_WIDTH_BYTES*(SCREEN_BIT_DEPTH-1))+(SPRITE_SHEET_WIDTH_BYTES-(widthWords<<1));
+  uint16_t bltdmod = (FRAME_BUFFER_WIDTH_BYTES*(SCREEN_BIT_DEPTH-1))+(FRAME_BUFFER_WIDTH_BYTES-(widthWords<<1));
+  hw_waitBlitter();   
+  //  _custom->bltafwm = 0xffff;
+  _custom->bltalwm = 0x0000;
+  _custom->bltcon0 = (SRCA|SRCB|SRCC|DEST|0xca|shift<<ASHIFTSHIFT);
+  _custom->bltcon1 = shift<<BSHIFTSHIFT;
+  _custom->bltamod = bltamod;
+  _custom->bltbmod = bltbmod;
+  _custom->bltcmod = bltdmod;
+  _custom->bltdmod = bltdmod;
+  _custom->bltapt = (uint8_t*)mask;
+  _custom->bltbpt = (uint8_t*)mask;
+  _custom->bltcpt = (uint8_t*)dest;
+  _custom->bltdpt = (uint8_t*)dest;
+  _custom->bltsize = bltsize;
+  
+  frame_buffer_t s = source;
+  frame_buffer_t d = dest;
+  
+  for (uint16_t i = 0; i < SCREEN_BIT_DEPTH-1; i++) {
+    s += SPRITE_SHEET_WIDTH_BYTES;
+    d += FRAME_BUFFER_WIDTH_BYTES;
+    hw_waitBlitter();    
+    _custom->bltapt = (uint8_t*)mask;
+    _custom->bltbpt = (uint8_t*)s;
+    _custom->bltcpt = (uint8_t*)d;
+    _custom->bltdpt = (uint8_t*)d;
+    _custom->bltsize = bltsize;    
+  }
+}
 #endif
 
 

@@ -59,12 +59,14 @@ enemy_strikingDistanceX(object_t* a, object_t* b)
 static int16_t
 enemy_strikingDistanceX(object_t* a, object_t* b)
 {
-  //  fighter_data_t* a_data = a->data;
   fighter_data_t* b_data = b->data;    
-  //  uint16_t thresholdx = b_data->attackRange[OBJECT_PUNCH_LEFT2];
-  uint16_t thresholdx = b_data->attackConfig[OBJECT_PUNCH_LEFT2].rangeX;
-    //  int16_t a_widthOffset = a_data->widthOffset;
-  //int16_t b_widthOffset = b_data->widthOffset;
+  uint16_t thresholdx;
+  if (b_data->numAttacks == 1) {
+    thresholdx = b_data->attackConfig[OBJECT_PUNCH_LEFT1].rangeX;
+  } else {
+    thresholdx = b_data->attackConfig[OBJECT_PUNCH_LEFT2].rangeX;
+  }
+
   int16_t a_widthOffset = a->widthOffset;
   int16_t b_widthOffset = b->widthOffset;  
   int16_t a_x1 = (((object_px(a)) / OBJECT_PHYSICS_FACTOR) + a_widthOffset);
@@ -125,80 +127,71 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
     } else if (object_x(ptr)-game_cameraX >= SCREEN_WIDTH) {
       data->walkAbout = rand & 0x7f; //ENEMY_WALKABOUT_TICS;
       ptr->velocity.x = -1;      
-    } else if ((object_collision(deltaT, ptr, &collision, ENEMY_INTERCEPT_X_RANGE, ENEMY_INTERCEPT_Y_THRESHOLD))) {
-      switch ((rand >> 8) & 0x7) {
-      case 0:
-      case 1:
-	ptr->velocity.x = 0;
-	ptr->velocity.y = 0;	
-	break;	
-      case 2:
-	ptr->velocity.x = -1;
-	ptr->velocity.y = 0;
-	break;
-      case 3:
-	ptr->velocity.x = 1;
-	ptr->velocity.y = 0;
-	break;	
-      case 4:
-	ptr->velocity.x = -1;
-	ptr->velocity.y = -1;
-	break;	
-      case 5:
-	ptr->velocity.x = -1;
-	ptr->velocity.y = 1;	
-	break;
-      case 6:
-	ptr->velocity.x = 1;
-	ptr->velocity.y = 1;
-	break;
-      case 7:
-	ptr->velocity.x = 1;
-	ptr->velocity.y = -1;	      		
-	break;
-      }
-      data->walkAbout = rand & 0x7f;//ENEMY_WALKABOUT_TICS;
     } else {
-
-#ifdef ENEMY_RUNAWAY
-      if (data->lastState == OBJECT_STATE_HIT && (((rand >> 8) & 0x3F) == 0)) {
-	if (object_x(player) > object_x(ptr)) {
-	  ptr->velocity.x = -1;
-	} else {
-	  ptr->velocity.x = 1;	  
-	}
-	data->lastState = OBJECT_STATE_ALIVE;
-	data->walkAbout = ENEMY_WALKABOUT_TICS*2;
-      } else {
-#endif
-	ptr->velocity.x = enemy_strikingDistanceX(player, ptr);	
-	if (abs(object_y(ptr)-object_y(player)) <= data->attackRangeY) {
-	  if (ptr->velocity.x == 0) {
-	    if (data->enemyAttackWait <= 0) {
-	      data->enemyAttackWait = data->enemyAttackWaitTics;
-	      attack = 1;
-	    } else {
-	      data->enemyAttackWait-=deltaT;
-	    }
-	  } 
-	  ptr->velocity.y = 0;
-	}
-	else if (object_y(ptr) < object_y(player)) {
-	  ptr->velocity.y = data->speed;
-	  if (((rand >> 8) & 0x3) == 0) {
-	    ptr->velocity.x = 0;
-	    data->walkAbout = rand & 0x7f;
-	  }	
-	} else if (object_y(ptr) > object_y(player)) {
-	  ptr->velocity.y = -data->speed;
-	  if (((rand >> 8) & 0xff) == 0) {
-	    ptr->velocity.x = 0;
-	    data->walkAbout = 10;
-	  }		
-	}
-#ifdef ENEMY_RUNAWAY
+      ptr->velocity.x = enemy_strikingDistanceX(player, ptr);
+      if (abs(object_y(ptr)-object_y(player)) <= data->attackRangeY) {
+	if (ptr->velocity.x == 0) {
+	  if (data->enemyAttackWait <= 0) {
+	    data->enemyAttackWait = data->enemyAttackWaitTics;
+	    attack = 1;
+	  } else {
+	    data->enemyAttackWait-=deltaT;
+	  }
+	} 
+	ptr->velocity.y = 0;
       }
-#endif
+      else if (object_y(ptr) < object_y(player)) {
+	ptr->velocity.y = data->speed;
+	if (((rand >> 8) & 0x3) == 0) {
+	  ptr->velocity.x = 0;
+	  data->walkAbout = rand & 0x7f;
+	}	
+      } else if (object_y(ptr) > object_y(player)) {
+	ptr->velocity.y = -data->speed;
+	if (((rand >> 8) & 0xff) == 0) {
+	  ptr->velocity.x = 0;
+	  data->walkAbout = 10;
+	}		
+      }
+
+      if (!attack) {
+	if ((object_collision(deltaT, ptr, &collision, ENEMY_INTERCEPT_X_RANGE, ENEMY_INTERCEPT_Y_THRESHOLD*2))) {
+	  switch ((rand >> 8) & 0x7) {
+	  case 0:
+	    attack = 1;
+	    break;
+	  case 1:
+	    ptr->velocity.x = 0;
+	    ptr->velocity.y = 0;	
+	    break;	
+	  case 2:
+	    ptr->velocity.x = -1;
+	    ptr->velocity.y = 0;
+	    break;
+	  case 3:
+	    ptr->velocity.x = 1;
+	    ptr->velocity.y = 0;
+	    break;	
+	  case 4:
+	    ptr->velocity.x = -1;
+	    ptr->velocity.y = -1;
+	    break;	
+	  case 5:
+	    ptr->velocity.x = -1;
+	    ptr->velocity.y = 1;	
+	    break;
+	  case 6:
+	    ptr->velocity.x = 1;
+	    ptr->velocity.y = 1;
+	    break;
+	  case 7:
+	    ptr->velocity.x = 1;
+	    ptr->velocity.y = -1;	      		
+	    break;
+	  }
+	  data->walkAbout = rand & 0x7f;//ENEMY_WALKABOUT_TICS;
+	}
+      }
     }
   }
 
@@ -207,13 +200,15 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 }
 
 
-void __NOINLINE
-enemy_add(uint16_t animId, uint16_t x, uint16_t y, fighter_attack_config_t* attackConfig, uint16_t attackWait, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data))
+object_t* __NOINLINE
+//enemy_add(uint16_t animId, uint16_t x, uint16_t y, fighter_attack_config_t* attackConfig, uint16_t attackWait, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data))
+enemy_add(uint16_t animId, uint16_t x, uint16_t y, enemy_config_t* config)
 {
+  uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data)  = config->intelligence;
   if (intelligence == 0) {
     intelligence = enemy_intelligence;
   }
-  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, animId, x, y, ENEMY_INITIAL_HEALTH, attackConfig, intelligence);
+  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, animId, x, y, ENEMY_INITIAL_HEALTH, config->attackConfig, intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   ptr->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->width = OBJECT_WIDTH;
@@ -222,12 +217,16 @@ enemy_add(uint16_t animId, uint16_t x, uint16_t y, fighter_attack_config_t* atta
     data->enemyAttackWaitTics = ENEMY_ATTACK_WAIT_TICS;
     data->enemyAttackWait = ENEMY_ATTACK_WAIT_TICS;  
   } else {
-    data->enemyAttackWaitTics = attackWait;
-    data->enemyAttackWait = attackWait;
+    data->enemyAttackWaitTics = config->attackWait;
+    data->enemyAttackWait = config->attackWait;
   }
   
-  data->numAttacks = 2;
+  data->numAttacks = config->numAttacks;
+  data->attackRangeY = config->attackRangeY;
+  data->postAttackInvincibleTics = config->postAttackInvincibleTics;
+    
   enemy_count++;
+  return ptr;
 }
 
 void
@@ -324,7 +323,7 @@ fighter_attack_config_t enemy_bossAttackConfig[] = {
   [OBJECT_PUNCH_LEFT1] = {
     .rangeX = ENEMY_BOSS_ATTACK_RANGE,
     .dammage = ENEMY_BOSS_ATTACK_DAMMAGE,
-    .durationTics = ENEMY_ATTACK_DURATION_TICS,
+    .durationTics = ENEMY_ATTACK_DURATION_TICS*2,
     .hitAnimTic = ENEMY_BOSS_ATTACK_TICS_PER_FRAME,
     .vx = 0,
     .vy = 0,
@@ -334,7 +333,7 @@ fighter_attack_config_t enemy_bossAttackConfig[] = {
   [OBJECT_PUNCH_RIGHT1] =  {
     .rangeX = ENEMY_BOSS_ATTACK_RANGE,
     .dammage = ENEMY_BOSS_ATTACK_DAMMAGE,
-    .durationTics = ENEMY_ATTACK_DURATION_TICS,
+    .durationTics = ENEMY_ATTACK_DURATION_TICS*2,
     .hitAnimTic = ENEMY_BOSS_ATTACK_TICS_PER_FRAME,
     .vx = 0,
     .vy = 0,
@@ -342,3 +341,6 @@ fighter_attack_config_t enemy_bossAttackConfig[] = {
   },
 
 };
+
+
+

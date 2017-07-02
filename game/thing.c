@@ -1,6 +1,6 @@
 #include "game.h"
 
-#define THING_MAX_THINGS 6
+#define THING_MAX_THINGS 12
 
 typedef struct _thing{
   struct _thing* prev;
