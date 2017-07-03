@@ -3,7 +3,7 @@
 #define SOUND_LATCH_SCANLINES 5
 
 #if SFX==1
-extern UWORD sound_Terence_punch01, sound_Terence_punch02, sound_Bud_Punch01, sound_enemy01, sound_enemy02, sound_enemy03, sound_pop, sound_coin, sound_rev, sound_motorbike;
+extern UWORD sound_Terence_punch01, sound_Terence_punch02, sound_Bud_Punch01, sound_enemy01, sound_enemy02, sound_enemy03, sound_pop, sound_coin, sound_rev, sound_motorbike, sound_shoot;
 
 static void 
 sound_playBud_Punch01(void);
@@ -25,6 +25,8 @@ static void
 sound_playRev(void);
 static void
 sound_playMotorbike(void);
+static void
+sound_playShoot(void);
 
 
 typedef struct {
@@ -106,7 +108,14 @@ static sound_config_t sound_queue[] = {
     .interrupt = 0,
     .loop = 1,
     .play = &sound_playMotorbike
-  },      
+  },
+  [SOUND_SHOOT] = {
+    .count = 0,
+    .delay = 1,
+    .interrupt = 1,
+    .loop = 0,
+    .play = &sound_playShoot
+  }  
 };
 
 static int16_t sound_next = -1;
@@ -210,6 +219,13 @@ static void
 sound_playEnemy01(void)
 {
   _sound_hwPlay(sound_Bud_Punch01, 321, 64, (4711/2)+(4410/2)*2);  
+}
+
+
+static void 
+sound_playShoot(void)
+{
+  _sound_hwPlay(sound_shoot, 321, 64, 11244/2);  
 }
 
 static void 

@@ -229,7 +229,7 @@ motorbike_update(uint16_t deltaT, object_t* ptr)
 void
 motorbike_add(int16_t x, int16_t y)
 {
-  object_t* ptr = object_add(OBJECT_ID_ENEMY, OBJECT_CLASS_MOTORBIKE, x, y, 0, OBJECT_ANIM_MOTORBIKE_STAND_RIGHT, motorbike_update, &motorbike_data, 0);
+  object_t* ptr = object_add(OBJECT_ID_ENEMY, OBJECT_CLASS_FIGHTER, x, y, 0, OBJECT_ANIM_MOTORBIKE_STAND_RIGHT, motorbike_update, &motorbike_data, 0);
   motorbike_data.postAttackCount = 0;
   motorbike_data.health = 100;
   motorbike_data.attack_py = -1;

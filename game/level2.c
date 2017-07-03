@@ -4,7 +4,7 @@
 enum {
   LEVEL2_WAVE1_1,
   LEVEL2_WAVE1_2,
-  LEVEL2_WAVE1_3,   
+  LEVEL2_WAVE1_3,
 };
 
 enum {
@@ -143,6 +143,20 @@ level2_start(uint16_t argument)
   return 1;
 }
 
+int16_t
+level2_boss(uint16_t argument)
+{
+  __USE(argument);
+  level2_addSixPack(argument+50);
+  level2_addTableAndChairs(argument+100, 180);
+  level2_addTableAndChairs(argument+220, 180);
+  //if (1) {                                                                                                                    
+  // level1_doAddMotorbike();                                                                                                   
+  //}                                                                                                                           
+  return 1;
+}
+
+
 //#ifdef DEBUG
 int16_t
 level2_pause(uint16_t argument)
@@ -152,17 +166,34 @@ level2_pause(uint16_t argument)
 }
 //#endif
 
+int16_t
+level2_addBoss(uint16_t argument)
+{
+  __USE(argument);
+  //#define PLAYER_ATTACK_DURATION_TICS  (ENEMY_BOSS2_ATTACK_TICS_PER_FRAME*3)
+  gunfighter_add(argument+SCREEN_WIDTH*2, 150);
+  level2_addSixPack(argument+50);
+  level2_addTableAndChairs(argument+100, 180);
+  level2_addTableAndChairs(argument+220, 180);
+  
+  return 1;
+}
 
 conductor_instruction_t level2_instructions[] = {
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level2_start},
 
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_1, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_2, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_3, level2_processEnemyConfig},    
 
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH/2, level_scroll},  
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_1, level2_processEnemyConfig},
+  //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_2, level2_processEnemyConfig},
+  //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_3, level2_processEnemyConfig},    
   
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level2_pause},      
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH*2, level_scroll},
+
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, SCREEN_WIDTH, level2_addBoss},  
+
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level2_pause},    
+
+    {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_3, level2_processEnemyConfig},      
 
   {CONDUCTOR_INSTRUCTION_END}
 };

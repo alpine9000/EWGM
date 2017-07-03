@@ -12,6 +12,7 @@ typedef enum {
   SOUND_MENU,
   SOUND_REV,
   SOUND_MOTORBIKE,
+  SOUND_SHOOT,
   SOUND_LAST
 } sound_t;
 

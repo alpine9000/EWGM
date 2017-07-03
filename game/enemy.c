@@ -131,12 +131,18 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
       ptr->velocity.x = enemy_strikingDistanceX(player, ptr);
       if (abs(object_y(ptr)-object_y(player)) <= data->attackRangeY) {
 	if (ptr->velocity.x == 0) {
-	  if (data->enemyAttackWait <= 0) {
-	    data->enemyAttackWait = data->enemyAttackWaitTics;
-	    attack = 1;
+	  if ((object_x(ptr) > object_x(player) && ptr->anim->facing == FACING_LEFT) ||
+	      (object_x(ptr) <= object_x(player) && ptr->anim->facing == FACING_RIGHT))	{
+	    if (data->enemyAttackWait <= 0) {
+	      data->enemyAttackWait = data->enemyAttackWaitTics;
+	      attack = 1;
+	    } else {
+	      data->enemyAttackWait-=deltaT;
+	    }	    
 	  } else {
-	    data->enemyAttackWait-=deltaT;
+	    ptr->velocity.x = ptr->anim->facing == FACING_LEFT ? 1 : -1;
 	  }
+
 	} 
 	ptr->velocity.y = 0;
       }

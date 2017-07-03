@@ -70,7 +70,8 @@ fighter_init(void)
 }
 
 
-static int16_t
+
+int16_t
 fighter_attackCollision(object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy)
 {
   int16_t _collision = 0;
@@ -219,7 +220,7 @@ fighter_checkAttack(object_t* ptr, fighter_data_t* data)
 {
   fighter_attack_config_t* attackConfig = &data->attackConfig[ptr->actionId];
   
-  if (!data->attackChecked && attackConfig->hitAnimTic == ptr->frameCounter) {
+  if (!data->attackChecked && attackConfig->hitAnimTic == ptr->frameCounter && attackConfig->dammage > 0) {
     object_collision_t collision;
     if (fighter_attackCollision(ptr, &collision, attackConfig->rangeX, data->attackRangeY)) {
 

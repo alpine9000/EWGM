@@ -212,6 +212,7 @@ enum {
 #include "thing.h"
 #include "star.h"
 #include "motorbike.h"
+#include "gunfighter.h"
 
 extern object_t* game_player1;
 extern object_t* game_player2;
