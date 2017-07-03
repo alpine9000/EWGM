@@ -200,13 +200,15 @@ thing_update(uint16_t deltaT, object_t* ptr)
       if (!data->bonus && !data->attackable) {
 	object_set_state(ptr, OBJECT_STATE_REMOVED);
       } else {
-	object_set_z(ptr, object_y(ptr));
+	object_set_z(ptr, object_y(ptr));	
       }
     } else {
       ptr->velocity.y += deltaT;
     }
 
     thing_updatePosition(deltaT, ptr);
+
+    object_set_z(ptr, data->attack_py/OBJECT_PHYSICS_FACTOR);      
   } else if (data->bonus) {
     object_t* collision = thing_collision(ptr);
     if (collision) {
@@ -243,7 +245,17 @@ thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t yOffset, uint1
   thing_data_t* junk = thing_getFree();
   junk->underAttack = 1;
   junk->attackable = 0;
-  junk->attack_py = object_py(ptr);
+
+  int16_t proposedY = object_y(ptr);
+  
+  if (proposedY >= PLAYAREA_HEIGHT) {
+    proposedY = PLAYAREA_HEIGHT-2;
+  } else if (proposedY <= GAME_PAVEMENT_START) {
+    proposedY = GAME_PAVEMENT_START+2;
+  }
+
+  junk->attack_py =   proposedY*OBJECT_PHYSICS_FACTOR;
+
   junk->hasBonus = 0;
   junk->bonus = bonus;
   int16_t x = object_x(ptr) + (dx > 0 ? ptr->image->w : 0);
@@ -305,7 +317,16 @@ thing_attack(object_t* ptr, int16_t dx)
 
     data->underAttack = 1;
     int16_t r = (random()%6)-3;
-    data->attack_py = (object_z(ptr) + r)*OBJECT_PHYSICS_FACTOR;//object_py(ptr); 
+    int16_t proposedY = (object_z(ptr) + r);
+
+    if (proposedY >= PLAYAREA_HEIGHT) {
+      proposedY = PLAYAREA_HEIGHT-2;
+    } else if (proposedY <= GAME_PAVEMENT_START) {
+      proposedY = GAME_PAVEMENT_START+2;
+    }
+    
+    data->attack_py = proposedY*OBJECT_PHYSICS_FACTOR;//object_py(ptr);    
+    
     ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
     ptr->velocity.x = dx;    
   }

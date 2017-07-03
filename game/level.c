@@ -90,7 +90,7 @@ level_readyMessage(void)
 void
 level_load(uint16_t index)
 {
-    index++;
+      index++;
   if (!game_scoreboardLoaded) {
     message_loading(I18N_LOADING);    
     extern uint8_t scoreBoardBitplanes;
@@ -143,4 +143,16 @@ level_load(uint16_t index)
   }
   
   message_screenOff();
+}
+
+
+int16_t
+level_scroll(uint16_t argument)
+{
+  if (enemy_count == 0) {
+    conductor_setScrollTarget(argument);
+    return 1;
+  }
+
+  return 0;
 }

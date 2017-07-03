@@ -44,4 +44,6 @@ typedef struct {
 void
 level_load(uint16_t index);
 
+int16_t
+level_scroll(uint16_t argument);
 #endif

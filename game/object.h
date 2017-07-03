@@ -437,11 +437,12 @@ typedef struct {
 typedef struct {
   int16_t x;
   int16_t y;
+  int16_t z;
   int16_t w;
   int16_t h;
   uint16_t imageIndex;
   uint16_t visible;
-  uint16_t dirty;
+  //  uint16_t dirty;
 } object_position_t;
 #endif
 
@@ -502,6 +503,8 @@ typedef struct object {
   
 #ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
   uint16_t cleared;
+  uint16_t redrawn;
+  uint16_t zIndex;
 #endif
 
   object_hit_config_t hit;
@@ -582,6 +585,7 @@ object_set_state(object_t* ptr, uint16_t state) {
 
 #define object_screenx(ptr) (ptr->image->dx + 0xf + ptr->_x-game_cameraX-game_screenScrollX)
 #define object_screeny(ptr) (ptr->image->dy + (ptr->_y-ptr->image->h))
+#define object_x_to_screenx(x) (0xf + x-game_cameraX-game_screenScrollX)
 
 inline static void
 object_set_px(object_t* ptr, int16_t px)

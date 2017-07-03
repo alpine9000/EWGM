@@ -58,7 +58,7 @@ VASM_OPTS=-Wa,-opt-speed #-Wa,-opt-speed -Wa,-showcrit -Wa,-opt-allbra -Wa,-opt-
 ifeq ($(USE_BIG), 1)
 WHOLE_PROGRAM=-fwhole-program
 endif
-C_OPT=-Ofast #-fbbb=+v #-fbbb=iesapcmfbrv #-fbbb=+V #-fbbb=sapcmefbV 
+C_OPT=-Ofast #-fbbb=sapcmfbvei #r #-fbbb=+v #-fbbb=iesapcmfbrv #-fbbb=+V #-fbbb=sapcmefbV 
 BIG_FLAGS=$(WHOLE_PROGRAM)
 C_OPT_ASM_OUTPUT=-Ofast
 BASE_CFLAGS=-funsafe-loop-optimizations -Wno-overlength-strings $(REGPARAM) $(VASM_OPTS) -fomit-frame-pointer -noixemul -mcpu=68000 -m68000 -pedantic-errors -Wfatal-errors -Wall -Werror -Wextra -Wshadow -Wuninitialized -Wduplicated-cond -Wframe-larger-than=1024 -Wstack-usage=1024 -Wundef -Wbad-function-cast -Wparentheses $(INCLUDE) $(EXTRA_DEFINES)

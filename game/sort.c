@@ -2,8 +2,10 @@
 
 // http://pages.ripco.net/~jgamble/nw.html
 
-#define _min(a, b) (d[a]->_z<d[b]->_z?d[a]:d[b])
-#define _max(a, b) (d[a]->_z<d[b]->_z?d[b]:d[a]) 
+//#define _min(a, b) (d[a]->_z<d[b]->_z?d[a]:d[b])
+//#define _max(a, b) (d[a]->_z<d[b]->_z?d[b]:d[a]) 
+#define _min(a,b) ((d[a]->_z<d[b]->_z) ? d[a] : ((d[a]->_z>d[b]->_z) ? d[b] : (d[a] > d[b] ? d[a] : d[b])))
+#define _max(a,b) ((d[a]->_z>d[b]->_z) ? d[a] : ((d[a]->_z<d[b]->_z) ? d[b] : (d[a] < d[b] ? d[a] : d[b])))
 #define SWAP(x,y) { object_t* a = _min(x,y);object_t* b = _max(x,y); d[x] = a; d[y] = b; }
 
 
@@ -211,45 +213,83 @@ static void sort11(object_t **d){
 
 #if OBJECT_MAX_OBJECTS > 11
 static void sort12(object_t **d){
-  SWAP(0,1);
-  SWAP(2,3);
-  SWAP(4,5);
-  SWAP(6,7);
-  SWAP(8,9);
-  SWAP(10,11);  
-  SWAP(1,3);
-  SWAP(5,7);
-  SWAP(9,11);
-  SWAP(0,2);
-  SWAP(4,6);
-  SWAP(8,10);  
-  SWAP(1,2);
-  SWAP(5,6);
-  SWAP(9,10);
-  SWAP(0,4);
-  SWAP(7,11);  
-  SWAP(1,5);
-  SWAP(6,10);
-  SWAP(3,7);
-  SWAP(4,8);  
-  SWAP(5,9);
-  SWAP(2,6);
-  SWAP(0,4);
-  SWAP(7,11);
-  SWAP(3,8);  
-  SWAP(1,5);
-  SWAP(6,10);
-  SWAP(2,3);
-  SWAP(8,9);  
-  SWAP(1,4);
-  SWAP(7,10);
-  SWAP(3,5);
-  SWAP(6,8);  
-  SWAP(2,4);
-  SWAP(7,9);
-  SWAP(5,6);  
-  SWAP(3,4);
-  SWAP(7,8); 
+SWAP(0, 1);
+
+SWAP(2, 3);
+
+SWAP(4, 5);
+
+SWAP(6, 7);
+
+SWAP(8, 9);
+
+SWAP(10, 11);
+
+SWAP(1, 3);
+
+SWAP(5, 7);
+
+SWAP(9, 11);
+
+SWAP(0, 2);
+
+SWAP(4, 6);
+
+SWAP(8, 10);
+
+SWAP(1, 2);
+
+SWAP(5, 6);
+
+SWAP(9, 10);
+
+SWAP(1, 5);
+
+SWAP(6, 10);
+
+SWAP(5, 9);
+
+SWAP(2, 6);
+
+SWAP(1, 5);
+
+SWAP(6, 10);
+
+SWAP(0, 4);
+
+SWAP(7, 11);
+
+SWAP(3, 7);
+
+SWAP(4, 8);
+
+SWAP(0, 4);
+
+SWAP(7, 11);
+
+SWAP(1, 4);
+
+SWAP(7, 10);
+
+SWAP(3, 8);
+
+SWAP(2, 3);
+
+SWAP(8, 9);
+
+SWAP(2, 4);
+
+SWAP(7, 9);
+
+SWAP(3, 5);
+
+SWAP(6, 8);
+
+SWAP(3, 4);
+
+SWAP(5, 6);
+
+SWAP(7, 8);
 }
 #endif
 
