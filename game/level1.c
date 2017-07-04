@@ -1,6 +1,6 @@
 #include "game.h"
 
-#define LEVEL1_ENEMY_BOSS_START_Y (7+56)
+#define LEVEL1_ENEMY_BOSS_START_Y (6+56)
 #define LEVEL1_ENEMY_BOSS_START_X (GAME_WORLD_WIDTH-96)
 
 static uint16_t
@@ -418,7 +418,7 @@ level1_wave3(uint16_t argument)
   level1_door =  object_add(/*id*/OBJECT_ID_DOOR,
 			       /*class*/OBJECT_CLASS_DECORATION,
 			       /*x*/LEVEL1_ENEMY_BOSS_START_X,
-			       /*y*/64,
+			       /*y*/LEVEL1_ENEMY_BOSS_START_Y+1,
 			       /*dx*/0,
 			       /*anim id*/OBJECT_ANIM_DOOR,
 			       /*update*/0,

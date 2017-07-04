@@ -90,7 +90,7 @@ level_readyMessage(void)
 void
 level_load(uint16_t index)
 {
-      index++;
+  //      index++;
   if (!game_scoreboardLoaded) {
     message_loading(I18N_LOADING);    
     extern uint8_t scoreBoardBitplanes;

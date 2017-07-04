@@ -389,7 +389,7 @@ object_tileRender(frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t
 	int16_t screenX = 0xf+(x<<4)-game_cameraX-game_screenScrollX;
 	int16_t screenY = y << 4;
 	if (screenY >= 0 && screenX >= 0 && screenX <= SCREEN_WIDTH+TILE_WIDTH) {
-	  uint16_t tile = levelFast.tileAddresses[x][y];	      
+          uint16_t tile = levelFast.tileAddresses[x][y];	      
 	  gfx_quickRenderTile(fb, screenX, screenY, levelChip.tileBitplanes+tile);
 	}
       }
@@ -444,6 +444,8 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
     if (ptr->tileRender) {
       gfx_setupRenderTile();
       object_tileRender(fb, object_x(ptr)+ptr->image->dx, object_y(ptr)-h, w, h);
+      ptr->cleared = 1;
+      ptr->redrawn = 1;
       return;
     }
 

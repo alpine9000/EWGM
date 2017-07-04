@@ -1131,6 +1131,7 @@ game_processKeyboard()
     break;
   case 'S':
     record_setState(RECORD_IDLE);
+    game_collectTotal = !game_collectTotal;    
     break;
 #ifdef DEBUG
   case 'L':
