@@ -46,6 +46,9 @@ typedef struct fighter_data {
   int16_t postAttackCount;
   int16_t speed;
   fighter_attack_config_t* attackConfig;
+  void (*killEnemyCallback)(object_t* me, object_t* victim);
+  void (*hitEnemyCallback)(object_t* me, object_t* victim);
+  void (*dieCallback)(object_t* me);    
 #ifdef ENEMY_RUNAWAY
   uint16_t lastState;
 #endif
@@ -56,7 +59,7 @@ void
 fighter_init(void);
 
 object_t*
-fighter_add(uint16_t id, uint16_t animId, int16_t x, int16_t y, uint16_t initialHealth, fighter_attack_config_t* attackConfig, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, struct fighter_data* data));
+fighter_add(uint16_t id, uint16_t attributes, uint16_t animId, int16_t x, int16_t y, uint16_t initialHealth, fighter_attack_config_t* attackConfig, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, struct fighter_data* data));
 
 void
 fighter_update(uint16_t deltaT, object_t* ptr);

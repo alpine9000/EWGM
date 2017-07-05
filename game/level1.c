@@ -416,7 +416,7 @@ level1_wave3(uint16_t argument)
 {
   __USE(argument);
   level1_door =  object_add(/*id*/OBJECT_ID_DOOR,
-			       /*class*/OBJECT_CLASS_DECORATION,
+			       /*class*/0,
 			       /*x*/LEVEL1_ENEMY_BOSS_START_X,
 			       /*y*/LEVEL1_ENEMY_BOSS_START_Y+1,
 			       /*dx*/0,

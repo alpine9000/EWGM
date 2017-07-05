@@ -232,7 +232,7 @@ thing_add(uint16_t id, uint16_t animId, uint16_t brokenId, uint16_t junkStartId,
   data->bonus = 0;
   data->brokenId = brokenId;
   data->junkStartId = junkStartId;
-  object_t* ptr = object_add(id, OBJECT_CLASS_THING, x, y, 0, animId, thing_update, data, thing_addFree);
+  object_t* ptr = object_add(id, OBJECT_ATTRIBUTE_COLLIDABLE, x, y, 0, animId, thing_update, data, thing_addFree);
   ptr->width = ptr->image->w;
   ptr->widthOffset = 0;
   return ptr;
@@ -260,7 +260,7 @@ thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t yOffset, uint1
   junk->bonus = bonus;
   int16_t x = object_x(ptr) + (dx > 0 ? ptr->image->w : 0);
  
-  object_t* jptr = object_add(OBJECT_ID_JUNK, OBJECT_CLASS_JUNK, x, yOffset+object_y(ptr)-40, 0, animId, thing_update, junk, thing_addFree);
+  object_t* jptr = object_add(OBJECT_ID_JUNK, 0, x, yOffset+object_y(ptr)-40, 0, animId, thing_update, junk, thing_addFree);
   jptr->widthOffset = 0;
   jptr->width = jptr->image->w;
   jptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;

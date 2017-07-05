@@ -90,7 +90,7 @@ fighter_attackCollision(object_t* a, object_collision_t* collision, uint16_t thr
   int16_t a_x2 = (((object_x(a))) + (a->width - a->widthOffset)) + thresholdx;
   
   while (b) {
-    if (b->collidable && b != a) {
+    if (b->collisionsEnabled && b != a) {
       int16_t b_y = ((object_z(b)));
 
       if (abs(a_y - b_y) <= thresholdy) {
@@ -114,19 +114,32 @@ fighter_attackCollision(object_t* a, object_collision_t* collision, uint16_t thr
 }
 
 
+
+static void
+fighter_killEnemyCallback(object_t* me, object_t* victim)
+{
+  __USE(me);
+  __USE(victim);
+  sound_queueSound(SOUND_DIE03);
+}
+
+static void
+fighter_hitEnemyCallback(object_t* me, object_t* victim)
+{
+  __USE(me);
+  __USE(victim);
+  sound_queueSound(SOUND_ENEMY_PUNCH01);      
+}
+
+__EXTERNAL
+int xxx;
+
 void
 fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
-{
-  //  if (ptr->class == OBJECT_CLASS_THING) {
-  // thing_attack(ptr, dx); 
-  // return;
-  //}
-  
-  //  if (object_get_state(ptr) != OBJECT_STATE_ALIVE) {
-  //  return;
-  // }
-  
+{  
   fighter_data_t* data = (fighter_data_t*)ptr->data;  
+  fighter_data_t* attackerData = attacker->data;
+  
   if (data->postAttackCount > 0) {
     return;
   }
@@ -137,51 +150,30 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
   
   object_set_z(ptr, object_y(ptr));
   data->attack_py = object_py(ptr);
-
-  if (ptr->id != OBJECT_ID_ENEMY && attacker->id != OBJECT_ID_ENEMY) {
-    data->health -= (dammage/4);
+     
+  if (ptr->attributes & OBJECT_ATTRIBUTE_PLAYER && attacker->attributes & OBJECT_ATTRIBUTE_PLAYER) {
+   data->health -= (dammage/4);
   } else {
     data->health -= dammage;
   }
+  
   if (data->health <= 0) {
-    data->health = 0;
-    switch (attacker->id) {
-    case OBJECT_ID_PLAYER1:
-      game_player1Score += game_killScore;
-      sound_queueSound(SOUND_DIE01);
-      break;
-    case OBJECT_ID_PLAYER2:
-      game_player2Score += game_killScore;
-      sound_queueSound(SOUND_DIE02);
-      break;
-    default:
-      sound_queueSound(SOUND_DIE03);
-      break;
-    }
+    data->health = 0;    
+    attackerData->killEnemyCallback(attacker, ptr);
     ptr->velocity.y = -8*OBJECT_PHYSICS_FACTOR;
     ptr->velocity.x = dx*2;
   } else {
-    switch (attacker->id) {
-    case OBJECT_ID_PLAYER1:    
-      sound_queueSound(SOUND_TERENCE_PUNCH01);
-      break;
-    case OBJECT_ID_PLAYER2:          
-      sound_queueSound(SOUND_BUD_PUNCH01);
-      break;
-    default:
-      sound_queueSound(SOUND_ENEMY_PUNCH01);      
-      break;
-    }
+    attackerData->hitEnemyCallback(attacker, ptr);
     ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
     ptr->velocity.x = dx;
   }
 
-  switch(ptr->id) {
-  case OBJECT_ID_PLAYER1:        
-    game_updatePlayer1Health(GAME_PLAYER1_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player1->data)->health);    
+  switch (ptr->id) {
+  case OBJECT_ID_PLAYER1:
+    game_updatePlayer1Health(GAME_PLAYER1_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player1->data)->health);
     break;
-  case OBJECT_ID_PLAYER2:        
-    game_updatePlayer2Health(GAME_PLAYER2_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player2->data)->health);    
+  case OBJECT_ID_PLAYER2:
+    game_updatePlayer2Health(GAME_PLAYER2_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player2->data)->health);
     break;
   }
   
@@ -311,43 +303,27 @@ fighter_updateSprite(object_t* ptr)
   }
 }
 
+static void
+fighter_dieCallback(object_t* me)
+{
+  __USE(me);
+  enemy_count--;
+  if (enemy_count == 0) {
+    if (conductor_complete()) {
+      if (game_numPlayers == 2 && game_player1 && game_player2) {
+	game_loopControl = GAME_LOOP_CONTROL_DISPLAY_DEATHMATCH;
+      } else {
+	game_setGameComplete();
+      }
+    }
+  }
+}
 
 void
 fighter_die(object_t* ptr)
 {
   object_set_state(ptr, OBJECT_STATE_REMOVED);
-  switch (ptr->id) {
-  case OBJECT_ID_ENEMY:
-    enemy_count--;
-    if (enemy_count == 0) {
-      if (conductor_complete()) {
-	if (game_numPlayers == 2 && game_player1 && game_player2) {
-	  game_loopControl = GAME_LOOP_CONTROL_DISPLAY_DEATHMATCH;
-	} else {
-	  game_setGameComplete();
-	}
-      }
-    }
-    break;	  
-  case OBJECT_ID_PLAYER1:
-    game_player1 = 0;
-    game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
-    if (!game_player2) {
-      game_setGameOver();	    
-    } else if (game_loopControl == GAME_LOOP_CONTROL_DEATHMATCH) {
-      game_setGameComplete();
-    }
-    break;
-  case OBJECT_ID_PLAYER2:
-    game_player2 = 0;
-    if (!game_player1) {
-      game_setGameOver();	    
-    } else if (game_loopControl == GAME_LOOP_CONTROL_DEATHMATCH) {      
-      game_setGameComplete();
-    }	  
-    game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);	  	  
-    break;
-  }
+  ((fighter_data_t*)ptr->data)->dieCallback(ptr);  
 }
 
 uint16_t
@@ -385,7 +361,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
     data->attackQueued = 0;
     fighter_doAttack(ptr, data);
   } else if (data->attackCount) {
-    fighter_checkAttack(ptr, data);
+    //    fighter_checkAttack(ptr, data);
     if (data->attackJump) {
       if (object_py(ptr) >= data->attackJumpY) {
 	object_set_py(ptr, data->attackJumpY);
@@ -430,7 +406,7 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 	}
       }
       ptr->velocity.ix = 0;      
-      if (ptr->collidable && (ptr->velocity.x || ptr->velocity.y)) {
+      if (ptr->collisionsEnabled && (ptr->velocity.x || ptr->velocity.y)) {
 	object_collision_t collision;	
 	if (object_collision(deltaT, ptr, &collision, 0, 2)) {
 	  if (ptr->velocity.x > 0 && collision.right) {	  
@@ -462,12 +438,12 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 
 
 __NOINLINE object_t*
-fighter_add(uint16_t id, uint16_t animId, int16_t x, int16_t y, uint16_t initialHealth,  fighter_attack_config_t* attackConfig, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, struct fighter_data* data))
+fighter_add(uint16_t id, uint16_t attributes, uint16_t animId, int16_t x, int16_t y, uint16_t initialHealth,  fighter_attack_config_t* attackConfig, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, struct fighter_data* data))
 {
   fighter_data_t* data = fighter_getFree();
   data->buttonReleased = 0;
 
-  if (id == OBJECT_ID_ENEMY && game_difficulty == GAME_DIFFICULTY_EASY) {
+  if (!(attributes & OBJECT_ATTRIBUTE_PLAYER) && game_difficulty == GAME_DIFFICULTY_EASY) {
     data->attackConfig = enemy_attackConfig1;
   } else {
     data->attackConfig = attackConfig;
@@ -486,5 +462,9 @@ fighter_add(uint16_t id, uint16_t animId, int16_t x, int16_t y, uint16_t initial
 #ifdef ENEMY_RUNAWAY
   data->lastState = OBJECT_STATE_ALIVE;
 #endif
-  return object_add(id, OBJECT_CLASS_FIGHTER, x, y, 0, animId, fighter_update, data, fighter_addFree);
+  data->killEnemyCallback = fighter_killEnemyCallback;
+  data->hitEnemyCallback = fighter_hitEnemyCallback;
+  data->dieCallback = fighter_dieCallback;
+  object_t* ptr = object_add(id, OBJECT_ATTRIBUTE_COLLIDABLE, x, y, 0, animId, fighter_update, data, fighter_addFree);
+  return ptr;
 }

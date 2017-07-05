@@ -248,7 +248,7 @@ game_ctor(void)
 
   game_demo = 0;
 #ifdef DEBUG
-  //   game_startReplay = 1;
+  game_startReplay = 1;
 #endif
   game_numPlayers = 1;
   game_scoreboardLoaded = 0;
@@ -388,8 +388,8 @@ game_refreshScoreboard(void)
 #ifdef DEBUG
   if (game_scoreBoardMode == 0) {
 #endif
-    game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_BLANK_GAME_OVER);    
-    game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_BLANK_GAME_OVER);
+    game_scoreBoardPlayer1Text(I18N_BLANK_GAME_OVER);    
+    game_scoreBoardPlayer2Text(I18N_BLANK_GAME_OVER);
     game_scoreBoardPlayer1Score(I18N_BLANK_GAME_OVER);
     game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
     
@@ -407,7 +407,7 @@ game_refreshScoreboard(void)
       game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, 0);
       if (game_numPlayers == 1) {
 	game_scoreBoardPlayer2Score(I18N_PRESS_2);      
-	game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_TO_PLAY);
+	game_scoreBoardPlayer2Text(I18N_TO_PLAY);
       }
     }
 
@@ -415,7 +415,7 @@ game_refreshScoreboard(void)
       game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, 0);
       if (game_numPlayers == 1) {
 	game_scoreBoardPlayer1Score(I18N_PRESS_2);      
-	game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_TO_PLAY);
+	game_scoreBoardPlayer1Text(I18N_TO_PLAY);
       }      
     }
 
@@ -451,13 +451,15 @@ game_startRecord(void)
 #endif
 
 __NOINLINE void
-game_scoreBoardPlayerText(uint16_t playerId, char* text)
+game_scoreBoardPlayer1Text(char* text)
 {
-  if (playerId == OBJECT_ID_PLAYER1) {
     text_drawText8(game_scoreBoardFrameBuffer, text, 224-3*8, 17);
-  } else {
-    text_drawText8(game_scoreBoardFrameBuffer, text, 48, 17);
-  }
+}
+
+__NOINLINE void
+game_scoreBoardPlayer2Text(char* text)
+{
+  text_drawText8(game_scoreBoardFrameBuffer, text, 48, 17);
 }
 
 
@@ -655,7 +657,7 @@ game_loadLevel(menu_command_t command)
 
 
   if (game_numPlayers == 2 || player1_character == 1) {
-    game_player1 = (game_level == 0 || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80) : 0;
+    game_player1 = (game_level == 0 || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER1_STAND_RIGHT, 80) : 0;
     //        game_player1 = (game_level == 0 || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_BOSS2_STAND_RIGHT, 80) : 0;    
     game_player1->joystickPos = &hw_joystickPos;
     game_player1->joystickButton = &hw_joystickButton;
@@ -664,7 +666,7 @@ game_loadLevel(menu_command_t command)
   }
   
   if (game_numPlayers == 2 || player1_character == 0) {
-    game_player2 = (game_level == 0 || game_player2) ? player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER3_STAND_RIGHT, SCREEN_WIDTH-80) : 0;
+    game_player2 = (game_level == 0 || game_player2) ? player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER2_STAND_RIGHT, SCREEN_WIDTH-80) : 0;
     game_player2->joystickPos = &hw_joystickPos;
     game_player2->joystickButton = &hw_joystickButton;    
   } else {
@@ -994,7 +996,7 @@ game_showDeathMatch(void)
   ((fighter_data_t*)(game_player1->data))->intelligence = fighter_nullIntelligence;
   ((fighter_data_t*)(game_player2->data))->intelligence = fighter_nullIntelligence;  
 
-  object_t* dm = object_add(OBJECT_ID_DEATHMATCH, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-48), -4, 0,OBJECT_ANIM_DEATHMATCH, 0, 0, 0);
+  object_t* dm = object_add(OBJECT_ID_DEATHMATCH, 0, game_cameraX+(SCREEN_WIDTH/2-48), -4, 0,OBJECT_ANIM_DEATHMATCH, 0, 0, 0);
   object_set_z(dm, 4096);
   uint32_t frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;
   int16_t y;
@@ -1167,8 +1169,8 @@ game_processKeyboard()
       game_numPlayers = 2;
       game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
       game_lastPlayer2Score = 0xffffffff;
-      game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_BLANK_GAME_OVER);
-      game_player2 = player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER3_STAND_RIGHT, game_cameraX+SCREEN_WIDTH-80);
+      game_scoreBoardPlayer2Text(I18N_BLANK_GAME_OVER);
+      game_player2 = player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER2_STAND_RIGHT, game_cameraX+SCREEN_WIDTH-80);
       game_player2->joystickPos = &hw_joystick2Pos;
       game_player2->joystickButton = &hw_joystick2Button;          
       game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);      
@@ -1176,8 +1178,8 @@ game_processKeyboard()
       game_numPlayers = 2;
       game_scoreBoardPlayer1Score(I18N_BLANK_GAME_OVER);
       game_lastPlayer1Score = 0xffffffff;
-      game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_BLANK_GAME_OVER);
-      game_player1 = player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80);
+      game_scoreBoardPlayer1Text(I18N_BLANK_GAME_OVER);
+      game_player1 = player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER1_STAND_RIGHT, 80);
       game_player1->joystickPos = &hw_joystick2Pos;
       game_player1->joystickButton = &hw_joystick2Button;          
       game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);      
@@ -1201,7 +1203,7 @@ game_waitForMenuExit(int16_t messageAnimId, int16_t offset)
     ((fighter_data_t*)(game_player2->data))->intelligence = fighter_nullIntelligence;
   }  
 
-  object_t* gameOver = object_add(OBJECT_ID_GAMEOVER, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-offset), -4, 0, messageAnimId, 0, 0, 0);
+  object_t* gameOver = object_add(OBJECT_ID_GAMEOVER, 0, game_cameraX+(SCREEN_WIDTH/2-offset), -4, 0, messageAnimId, 0, 0, 0);
   object_set_z(gameOver, 4096);
   
   uint32_t frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;
@@ -1215,7 +1217,7 @@ game_waitForMenuExit(int16_t messageAnimId, int16_t offset)
     game_switchFrameBuffers();
   }
 
-  object_t* joystick = object_add(OBJECT_ID_JOYSTICK, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-16),PLAYAREA_HEIGHT-32, 0, OBJECT_ANIM_JOYSTICK, 0, 0, 0);
+  object_t* joystick = object_add(OBJECT_ID_JOYSTICK, 0, game_cameraX+(SCREEN_WIDTH/2-16),PLAYAREA_HEIGHT-32, 0, OBJECT_ANIM_JOYSTICK, 0, 0, 0);
   object_set_z(joystick, 4096);     
 
   for (int16_t y = PLAYAREA_HEIGHT-32; y >  (PLAYAREA_HEIGHT/2)+32; y-=8) {
@@ -1270,8 +1272,8 @@ game_setGameComplete(void)
 static void
 game_gameOverSequence(void)
 {
-  game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
-  game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);
+  game_scoreBoardPlayer1Text(I18N_GAME_OVER);
+  game_scoreBoardPlayer2Text(I18N_GAME_OVER);
   
   if (game_numPlayers == 1) {
     game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
@@ -1286,8 +1288,8 @@ static void
 game_gameCompleteSequence(void)
 {
   music_play(4);  
-  game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
-  game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);
+  game_scoreBoardPlayer1Text(I18N_GAME_OVER);
+  game_scoreBoardPlayer2Text(I18N_GAME_OVER);
   
   game_waitForMenuExit(OBJECT_ANIM_GAMECOMPLETE, 55);
   game_complete();  

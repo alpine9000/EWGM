@@ -107,34 +107,30 @@ motorbike_collision(object_t* a)
   
   if (game_player1) {
     b = game_player1;
-    //if ((b->class == OBJECT_CLASS_FIGHTER) && object_get_state(b) == OBJECT_STATE_ALIVE) {      
-      int16_t b_y = object_y(b);
-      if (abs(a_y - b_y) <= 5) {
-	a_x1 = object_x(a) + a->widthOffset;
-	a_x2 = object_x(a) + (a->width - a->widthOffset);	
-	int16_t b_x1 = object_x(b) + b->widthOffset;
-	int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
-	
-	if (a_x1 < b_x2 && a_x2 > b_x1) {		  
-	  return b;
-	}
+    int16_t b_y = object_y(b);
+    if (abs(a_y - b_y) <= 5) {
+      a_x1 = object_x(a) + a->widthOffset;
+      a_x2 = object_x(a) + (a->width - a->widthOffset);	
+      int16_t b_x1 = object_x(b) + b->widthOffset;
+      int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
+      
+      if (a_x1 < b_x2 && a_x2 > b_x1) {		  
+	return b;
       }
-    //}
+    }
   }
 
   if (game_player2) {
     b = game_player2;
-    //if ((b->class == OBJECT_CLASS_FIGHTER) && object_get_state(b) == OBJECT_STATE_ALIVE) {      
-      int16_t b_y = object_y(b);
-      if (abs(a_y - b_y) <= 5) {
-	int16_t b_x1 = object_x(b) + b->widthOffset;
-	int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
-	
-	if (a_x1 < b_x2 && a_x2 > b_x1) {		  
-	  return b;
-	}
+    int16_t b_y = object_y(b);
+    if (abs(a_y - b_y) <= 5) {
+      int16_t b_x1 = object_x(b) + b->widthOffset;
+      int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
+      
+      if (a_x1 < b_x2 && a_x2 > b_x1) {		  
+	return b;
       }
-    //}
+    }
   }
   
   return 0;
@@ -208,15 +204,10 @@ motorbike_update(uint16_t deltaT, object_t* ptr)
 	  object_setAction(ptr, OBJECT_HIT_LEFT);
 	} else {
 	  object_setAction(ptr, OBJECT_HIT_RIGHT);
-	}      
-	switch (player->id) {
-	case OBJECT_ID_PLAYER1:    
-	  sound_queueSound(SOUND_TERENCE_PUNCH01);
-	  break;
-	case OBJECT_ID_PLAYER2:          
-	  sound_queueSound(SOUND_BUD_PUNCH01);
-	  break;            
 	}
+
+	fighter_data_t* playerData = player->data;
+	playerData->hitEnemyCallback(player, ptr);
       }
     } else if (motorbike_state == MOTORBIKE_GO && player) {
       motorbike_state = MOTORBIKE_POST_ATTACK;
@@ -229,7 +220,7 @@ motorbike_update(uint16_t deltaT, object_t* ptr)
 void
 motorbike_add(int16_t x, int16_t y)
 {
-  object_t* ptr = object_add(OBJECT_ID_ENEMY, OBJECT_CLASS_FIGHTER, x, y, 0, OBJECT_ANIM_MOTORBIKE_STAND_RIGHT, motorbike_update, &motorbike_data, 0);
+  object_t* ptr = object_add(OBJECT_ID_ENEMY, OBJECT_ATTRIBUTE_COLLIDABLE, x, y, 0, OBJECT_ANIM_MOTORBIKE_STAND_RIGHT, motorbike_update, &motorbike_data, 0);
   motorbike_data.postAttackCount = 0;
   motorbike_data.health = 100;
   motorbike_data.attack_py = -1;

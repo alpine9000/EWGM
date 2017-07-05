@@ -226,7 +226,9 @@ game_requestCameraX(int16_t targetCameraX);
 void
 game_switchFrameBuffers(void);
 void
-game_scoreBoardPlayerText(uint16_t playerId, char* text);
+game_scoreBoardPlayer1Text(char* text);
+void
+game_scoreBoardPlayer2Text(char* text);
 void
 game_setGameOver(void);
 void

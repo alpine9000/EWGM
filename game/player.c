@@ -141,11 +141,73 @@ fighter_attack_config_t player_attackConfig[] = {
     .jump = 1    
   } 
 };
-    
+
+static void
+player_player1KillCallback(object_t* me, object_t* victim)
+{
+  __USE(me);
+  __USE(victim);
+  game_player1Score += game_killScore;
+  sound_queueSound(SOUND_DIE01);  
+}
+
+static void
+player_player1HitCallback(object_t* me, object_t* victim)
+{
+  __USE(me);
+  __USE(victim);
+  sound_queueSound(SOUND_TERENCE_PUNCH01);  
+}
+
+static void
+player_player2KillCallback(object_t* me, object_t* victim)
+{
+  __USE(me);
+  __USE(victim);
+
+  game_player2Score += game_killScore;
+  sound_queueSound(SOUND_DIE02);  
+}
+
+static void
+player_player2HitCallback(object_t* me, object_t* victim)
+{
+  __USE(me);
+  __USE(victim);
+  sound_queueSound(SOUND_BUD_PUNCH01);  
+}
+
+static void
+player_player1DieCallback(object_t* me)
+{
+  __USE(me);
+  game_player1 = 0;
+  game_scoreBoardPlayer2Text(I18N_GAME_OVER);
+  if (!game_player2) {
+    game_setGameOver();	    
+  } else if (game_loopControl == GAME_LOOP_CONTROL_DEATHMATCH) {
+    game_setGameComplete();
+  }
+}
+
+
+static void
+player_player2DieCallback(object_t* me)
+{
+  __USE(me);  
+  game_player2 = 0;
+  if (!game_player1) {
+    game_setGameOver();	    
+  } else if (game_loopControl == GAME_LOOP_CONTROL_DEATHMATCH) {      
+    game_setGameComplete();
+  }	  
+  game_scoreBoardPlayer2Text(I18N_GAME_OVER);	  	  
+}
+
 object_t*
 player_init(uint16_t id, uint16_t animId, int16_t x)
 {
-  object_t* ptr = fighter_add(id, animId, x, 100, PLAYER_INITIAL_HEALTH, player_attackConfig, player_intelligence);
+  object_t* ptr = fighter_add(id, OBJECT_ATTRIBUTE_PLAYER, animId, x, 100, PLAYER_INITIAL_HEALTH, player_attackConfig, player_intelligence);
   fighter_data_t* data = (fighter_data_t*)ptr->data;
   data->numAttacks = 2;
   data->flashCount = FIGHTER_SPAWN_FLASH_COUNT_TICS;
@@ -153,8 +215,14 @@ player_init(uint16_t id, uint16_t animId, int16_t x)
   uint16_t width;
   if (id == OBJECT_ID_PLAYER1) {
     width = PLAYER_PLAYER1_WIDTH;
+    data->hitEnemyCallback = player_player1HitCallback;
+    data->killEnemyCallback = player_player1KillCallback;
+    data->dieCallback = player_player1DieCallback;    
   } else {
     width = PLAYER_PLAYER2_WIDTH;
+    data->hitEnemyCallback = player_player2HitCallback;
+    data->killEnemyCallback = player_player2KillCallback;
+    data->dieCallback = player_player2DieCallback;
   }
   ptr->widthOffset = (OBJECT_WIDTH-width)/2;
   ptr->width = OBJECT_WIDTH;

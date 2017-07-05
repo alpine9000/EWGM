@@ -1,6 +1,6 @@
 #include "game.h"
 
-#define GUNFIGHTER_ATTACK_DURATION_TICS (ENEMY_BOSS2_ATTACK_TICS_PER_FRAME*3)
+#define GUNFIGHTER_ATTACK_DURATION_TICS (ENEMY_GUNFIGHTER_ATTACK_TICS_PER_FRAME*3)
 #define GUNFIGHTER_BULLET_SPEED 8
 #define GUNFIGHTER_BULLET_HEIGHT 24
 #define GUNFIGHTER_ATTACK_RANGE         (SCREEN_WIDTH/2)
@@ -100,8 +100,7 @@ gunfighter_addBullet(void* _ptr)
     animId = OBJECT_ANIM_BULLET_RIGHT;
   } 
 
-  /* OBJECT_ID_ENEMY means it acts like an enemy when it hits something */
-  gunfighter_bullet = object_add(OBJECT_ID_ENEMY, OBJECT_CLASS_THING, x, object_y(ptr)-GUNFIGHTER_BULLET_HEIGHT, 0,
+  gunfighter_bullet = object_add(OBJECT_ID_BULLET, OBJECT_ATTRIBUTE_COLLIDABLE, x, object_y(ptr)-GUNFIGHTER_BULLET_HEIGHT, 0,
 				 animId,
 				 gunfighter_bulletUpdate, 0, gunfighter_freeBullet);
 
@@ -121,7 +120,7 @@ gunfighter_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
     gunfighter_attackQueued = 1;
   }
   
-  if (gunfighter_attackQueued && !gunfighter_bullet && data->attackCount < (ENEMY_BOSS2_ATTACK_TICS_PER_FRAME*2) && data->attackCount > 0) {
+  if (gunfighter_attackQueued && !gunfighter_bullet && data->attackCount < (ENEMY_GUNFIGHTER_ATTACK_TICS_PER_FRAME*2) && data->attackCount > 0) {
     alarm_add(0, gunfighter_addBullet, ptr);
     data->attackQueued = 0;
     gunfighter_attackQueued = 0;
@@ -141,5 +140,5 @@ gunfighter_add(int16_t x, int16_t y)
 {
   gunfighter_attackQueued = 0;
   gunfighter_bullet = 0;
-  gunfighter = enemy_add(OBJECT_ANIM_BOSS2_STAND_RIGHT, x, y, &gunfighter_config);  
+  gunfighter = enemy_add(OBJECT_ANIM_GUNFIGHTER_STAND_RIGHT, x, y, &gunfighter_config);  
 }

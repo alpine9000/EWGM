@@ -124,8 +124,81 @@ object_animation_t object_animations[] = {
     .facing = FACING_RIGHT
   },          
   // =================================  
+  [OBJECT_ANIM_PLAYER1_RUN_RIGHT] = {
+    .start =SPRITE_PLAYER1_RUN_RIGHT_1,
+    .stop = SPRITE_PLAYER1_RUN_RIGHT_4,
+    .speed = 2,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PLAYER1_STAND_RIGHT] = {
+    .start = SPRITE_PLAYER1_STAND_RIGHT,
+    .stop = SPRITE_PLAYER1_STAND_RIGHT,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PLAYER1_RUN_LEFT] = {
+    .start = SPRITE_PLAYER1_RUN_LEFT_1,
+    .stop = SPRITE_PLAYER1_RUN_LEFT_4,
+    .speed = 2,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PLAYER1_STAND_LEFT] = {
+    .start = SPRITE_PLAYER1_STAND_LEFT,
+    .stop = SPRITE_PLAYER1_STAND_LEFT,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PLAYER1_PUNCH_LEFT1] = {
+    .start =SPRITE_PLAYER1_PUNCH_LEFT_1,
+    .stop = SPRITE_PLAYER1_PUNCH_LEFT_1,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PLAYER1_PUNCH_LEFT2] = {
+    .start = SPRITE_PLAYER1_PUNCH_LEFT_2,
+    .stop = SPRITE_PLAYER1_PUNCH_LEFT_2,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },      
+  [OBJECT_ANIM_PLAYER1_PUNCH_RIGHT1] = {
+    .start = SPRITE_PLAYER1_PUNCH_RIGHT_1,
+    .stop = SPRITE_PLAYER1_PUNCH_RIGHT_1,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PLAYER1_PUNCH_RIGHT2] = {
+    .start = SPRITE_PLAYER1_PUNCH_RIGHT_2,
+    .stop = SPRITE_PLAYER1_PUNCH_RIGHT_2,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PLAYER1_HIT_LEFT] = {
+    .start = SPRITE_PLAYER1_HIT_LEFT,
+    .stop = SPRITE_PLAYER1_HIT_LEFT,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PLAYER1_HIT_RIGHT] = {
+    .start = SPRITE_PLAYER1_HIT_RIGHT,
+    .stop = SPRITE_PLAYER1_HIT_RIGHT,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PLAYER1_KICK_LEFT] = {
+    .start = SPRITE_PLAYER1_KICK_LEFT_1,
+    .stop = SPRITE_PLAYER1_KICK_LEFT_3,
+    .speed = 8,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PLAYER1_KICK_RIGHT] = {
+    .start = SPRITE_PLAYER1_KICK_RIGHT_1,
+    .stop = SPRITE_PLAYER1_KICK_RIGHT_3,
+    .speed = 8,
+    .facing = FACING_RIGHT
+  },              
+  // =================================
   [OBJECT_ANIM_PLAYER2_RUN_RIGHT] = {
-    .start =SPRITE_PLAYER2_RUN_RIGHT_1,
+    .start = SPRITE_PLAYER2_RUN_RIGHT_1,
     .stop = SPRITE_PLAYER2_RUN_RIGHT_4,
     .speed = 2,
     .facing = FACING_RIGHT
@@ -149,7 +222,7 @@ object_animation_t object_animations[] = {
     .facing = FACING_LEFT
   },
   [OBJECT_ANIM_PLAYER2_PUNCH_LEFT1] = {
-    .start =SPRITE_PLAYER2_PUNCH_LEFT_1,
+    .start = SPRITE_PLAYER2_PUNCH_LEFT_1,
     .stop = SPRITE_PLAYER2_PUNCH_LEFT_1,
     .speed = 0,
     .facing = FACING_LEFT
@@ -193,79 +266,6 @@ object_animation_t object_animations[] = {
   [OBJECT_ANIM_PLAYER2_KICK_RIGHT] = {
     .start = SPRITE_PLAYER2_KICK_RIGHT_1,
     .stop = SPRITE_PLAYER2_KICK_RIGHT_3,
-    .speed = 8,
-    .facing = FACING_RIGHT
-  },              
-  // =================================
-  [OBJECT_ANIM_PLAYER3_RUN_RIGHT] = {
-    .start = SPRITE_PLAYER3_RUN_RIGHT_1,
-    .stop = SPRITE_PLAYER3_RUN_RIGHT_4,
-    .speed = 2,
-    .facing = FACING_RIGHT
-  },
-  [OBJECT_ANIM_PLAYER3_STAND_RIGHT] = {
-    .start = SPRITE_PLAYER3_STAND_RIGHT,
-    .stop = SPRITE_PLAYER3_STAND_RIGHT,
-    .speed = 0,
-    .facing = FACING_RIGHT
-  },
-  [OBJECT_ANIM_PLAYER3_RUN_LEFT] = {
-    .start = SPRITE_PLAYER3_RUN_LEFT_1,
-    .stop = SPRITE_PLAYER3_RUN_LEFT_4,
-    .speed = 2,
-    .facing = FACING_LEFT
-  },
-  [OBJECT_ANIM_PLAYER3_STAND_LEFT] = {
-    .start = SPRITE_PLAYER3_STAND_LEFT,
-    .stop = SPRITE_PLAYER3_STAND_LEFT,
-    .speed = 0,
-    .facing = FACING_LEFT
-  },
-  [OBJECT_ANIM_PLAYER3_PUNCH_LEFT1] = {
-    .start = SPRITE_PLAYER3_PUNCH_LEFT_1,
-    .stop = SPRITE_PLAYER3_PUNCH_LEFT_1,
-    .speed = 0,
-    .facing = FACING_LEFT
-  },
-  [OBJECT_ANIM_PLAYER3_PUNCH_LEFT2] = {
-    .start = SPRITE_PLAYER3_PUNCH_LEFT_2,
-    .stop = SPRITE_PLAYER3_PUNCH_LEFT_2,
-    .speed = 0,
-    .facing = FACING_LEFT
-  },      
-  [OBJECT_ANIM_PLAYER3_PUNCH_RIGHT1] = {
-    .start = SPRITE_PLAYER3_PUNCH_RIGHT_1,
-    .stop = SPRITE_PLAYER3_PUNCH_RIGHT_1,
-    .speed = 0,
-    .facing = FACING_RIGHT
-  },
-  [OBJECT_ANIM_PLAYER3_PUNCH_RIGHT2] = {
-    .start = SPRITE_PLAYER3_PUNCH_RIGHT_2,
-    .stop = SPRITE_PLAYER3_PUNCH_RIGHT_2,
-    .speed = 0,
-    .facing = FACING_RIGHT
-  },
-  [OBJECT_ANIM_PLAYER3_HIT_LEFT] = {
-    .start = SPRITE_PLAYER3_HIT_LEFT,
-    .stop = SPRITE_PLAYER3_HIT_LEFT,
-    .speed = 0,
-    .facing = FACING_LEFT
-  },
-  [OBJECT_ANIM_PLAYER3_HIT_RIGHT] = {
-    .start = SPRITE_PLAYER3_HIT_RIGHT,
-    .stop = SPRITE_PLAYER3_HIT_RIGHT,
-    .speed = 0,
-    .facing = FACING_RIGHT
-  },
-  [OBJECT_ANIM_PLAYER3_KICK_LEFT] = {
-    .start = SPRITE_PLAYER3_KICK_LEFT_1,
-    .stop = SPRITE_PLAYER3_KICK_LEFT_3,
-    .speed = 8,
-    .facing = FACING_LEFT
-  },
-  [OBJECT_ANIM_PLAYER3_KICK_RIGHT] = {
-    .start = SPRITE_PLAYER3_KICK_RIGHT_1,
-    .stop = SPRITE_PLAYER3_KICK_RIGHT_3,
     .speed = 8,
     .facing = FACING_RIGHT
   },                
@@ -459,63 +459,63 @@ object_animation_t object_animations[] = {
 
 
   // =================================
-  [OBJECT_ANIM_BOSS2_RUN_RIGHT] = {
-    .start = SPRITE_BOSS2_RUN_RIGHT_1,
-    .stop = SPRITE_BOSS2_RUN_RIGHT_4,
-    .speed = ENEMY_BOSS2_RUN_ANIM_SPEED,
+  [OBJECT_ANIM_GUNFIGHTER_RUN_RIGHT] = {
+    .start = SPRITE_GUNFIGHTER_RUN_RIGHT_1,
+    .stop = SPRITE_GUNFIGHTER_RUN_RIGHT_4,
+    .speed = ENEMY_GUNFIGHTER_RUN_ANIM_SPEED,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_BOSS2_STAND_RIGHT] = {
-    .start = SPRITE_BOSS2_STAND_RIGHT,
-    .stop = SPRITE_BOSS2_STAND_RIGHT,
+  [OBJECT_ANIM_GUNFIGHTER_STAND_RIGHT] = {
+    .start = SPRITE_GUNFIGHTER_STAND_RIGHT,
+    .stop = SPRITE_GUNFIGHTER_STAND_RIGHT,
     .speed = 0,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_BOSS2_RUN_LEFT] = {
-    .start = SPRITE_BOSS2_RUN_LEFT_1,
-    .stop = SPRITE_BOSS2_RUN_LEFT_4,
-    .speed = ENEMY_BOSS2_RUN_ANIM_SPEED,
+  [OBJECT_ANIM_GUNFIGHTER_RUN_LEFT] = {
+    .start = SPRITE_GUNFIGHTER_RUN_LEFT_1,
+    .stop = SPRITE_GUNFIGHTER_RUN_LEFT_4,
+    .speed = ENEMY_GUNFIGHTER_RUN_ANIM_SPEED,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_BOSS2_STAND_LEFT] = {
-    .start = SPRITE_BOSS2_STAND_LEFT,
-    .stop = SPRITE_BOSS2_STAND_LEFT,
+  [OBJECT_ANIM_GUNFIGHTER_STAND_LEFT] = {
+    .start = SPRITE_GUNFIGHTER_STAND_LEFT,
+    .stop = SPRITE_GUNFIGHTER_STAND_LEFT,
     .speed = 0,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_BOSS2_ATTACK_LEFT1] = {
-    .start = SPRITE_BOSS2_ATTACK_LEFT_1,
-    .stop = SPRITE_BOSS2_ATTACK_LEFT_3,
-    .speed = ENEMY_BOSS2_ATTACK_TICS_PER_FRAME,
+  [OBJECT_ANIM_GUNFIGHTER_ATTACK_LEFT1] = {
+    .start = SPRITE_GUNFIGHTER_ATTACK_LEFT_1,
+    .stop = SPRITE_GUNFIGHTER_ATTACK_LEFT_3,
+    .speed = ENEMY_GUNFIGHTER_ATTACK_TICS_PER_FRAME,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_BOSS2_ATTACK_LEFT2] = {
-    .start = SPRITE_BOSS2_ATTACK_LEFT_1,
-    .stop = SPRITE_BOSS2_ATTACK_LEFT_3,
-    .speed = ENEMY_BOSS2_ATTACK_TICS_PER_FRAME,
+  [OBJECT_ANIM_GUNFIGHTER_ATTACK_LEFT2] = {
+    .start = SPRITE_GUNFIGHTER_ATTACK_LEFT_1,
+    .stop = SPRITE_GUNFIGHTER_ATTACK_LEFT_3,
+    .speed = ENEMY_GUNFIGHTER_ATTACK_TICS_PER_FRAME,
     .facing = FACING_LEFT
   },      
-  [OBJECT_ANIM_BOSS2_ATTACK_RIGHT1] = {
-    .start = SPRITE_BOSS2_ATTACK_RIGHT_1,
-    .stop = SPRITE_BOSS2_ATTACK_RIGHT_3,
-    .speed = ENEMY_BOSS2_ATTACK_TICS_PER_FRAME,
+  [OBJECT_ANIM_GUNFIGHTER_ATTACK_RIGHT1] = {
+    .start = SPRITE_GUNFIGHTER_ATTACK_RIGHT_1,
+    .stop = SPRITE_GUNFIGHTER_ATTACK_RIGHT_3,
+    .speed = ENEMY_GUNFIGHTER_ATTACK_TICS_PER_FRAME,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_BOSS2_ATTACK_RIGHT2] = {
-    .start = SPRITE_BOSS2_ATTACK_RIGHT_1,
-    .stop = SPRITE_BOSS2_ATTACK_RIGHT_3,
-    .speed = ENEMY_BOSS2_ATTACK_TICS_PER_FRAME,
+  [OBJECT_ANIM_GUNFIGHTER_ATTACK_RIGHT2] = {
+    .start = SPRITE_GUNFIGHTER_ATTACK_RIGHT_1,
+    .stop = SPRITE_GUNFIGHTER_ATTACK_RIGHT_3,
+    .speed = ENEMY_GUNFIGHTER_ATTACK_TICS_PER_FRAME,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_BOSS2_HIT_LEFT] = {
-    .start = SPRITE_BOSS2_HIT_LEFT,
-    .stop = SPRITE_BOSS2_HIT_LEFT,
+  [OBJECT_ANIM_GUNFIGHTER_HIT_LEFT] = {
+    .start = SPRITE_GUNFIGHTER_HIT_LEFT,
+    .stop = SPRITE_GUNFIGHTER_HIT_LEFT,
     .speed = 0,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_BOSS2_HIT_RIGHT] = {
-    .start = SPRITE_BOSS2_HIT_RIGHT,
-    .stop = SPRITE_BOSS2_HIT_RIGHT,
+  [OBJECT_ANIM_GUNFIGHTER_HIT_RIGHT] = {
+    .start = SPRITE_GUNFIGHTER_HIT_RIGHT,
+    .stop = SPRITE_GUNFIGHTER_HIT_RIGHT,
     .speed = 0,
     .facing = FACING_RIGHT
   },
@@ -1092,7 +1092,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
   //==============================  
-  [SPRITE_PLAYER2_STAND_RIGHT] = {
+  [SPRITE_PLAYER1_STAND_RIGHT] = {
     .x = 0,
     .y = 108,
     .w = 32,
@@ -1100,7 +1100,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_PLAYER2_RUN_RIGHT_1] = {
+  [SPRITE_PLAYER1_RUN_RIGHT_1] = {
     .x = 32,
     .y = 108,
     .w = 32,
@@ -1108,7 +1108,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 1,
     .dy = 0,    
   },
-  [SPRITE_PLAYER2_RUN_RIGHT_2] = {
+  [SPRITE_PLAYER1_RUN_RIGHT_2] = {
     .x = 64,
     .y = 108,
     .w = 32,
@@ -1116,7 +1116,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 1,
     .dy = 0,    
   },
-  [SPRITE_PLAYER2_RUN_RIGHT_3] = {
+  [SPRITE_PLAYER1_RUN_RIGHT_3] = {
     .x = 96,
     .y = 108,
     .w = 32,
@@ -1124,7 +1124,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -2,
     .dy = 0,    
   },
-    [SPRITE_PLAYER2_RUN_RIGHT_4] = {
+    [SPRITE_PLAYER1_RUN_RIGHT_4] = {
     .x = 32,
     .y = 108,
     .w = 32,
@@ -1132,7 +1132,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 1,
     .dy = 0,    
     },
-  [SPRITE_PLAYER2_STAND_LEFT] = {
+  [SPRITE_PLAYER1_STAND_LEFT] = {
     .x = 192,
     .y = 162,
     .w = 32,
@@ -1140,7 +1140,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_PLAYER2_RUN_LEFT_1] = {
+  [SPRITE_PLAYER1_RUN_LEFT_1] = {
     .x = 160,
     .y = 162,
     .w = 32,
@@ -1148,7 +1148,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -1,
     .dy = 0,    
   },
-  [SPRITE_PLAYER2_RUN_LEFT_2] = {
+  [SPRITE_PLAYER1_RUN_LEFT_2] = {
     .x = 128,
     .y = 162,
     .w = 32,
@@ -1156,7 +1156,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -1,
     .dy = 0,   
   },
-  [SPRITE_PLAYER2_RUN_LEFT_3] = {
+  [SPRITE_PLAYER1_RUN_LEFT_3] = {
     .x = 96,
     .y = 162,
     .w = 32,
@@ -1165,7 +1165,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
   },
 
-  [SPRITE_PLAYER2_RUN_LEFT_4] = {
+  [SPRITE_PLAYER1_RUN_LEFT_4] = {
     .x = 128,
     .y = 162,
     .w = 32,
@@ -1174,7 +1174,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
 
-  [SPRITE_PLAYER2_PUNCH_LEFT_1] = {
+  [SPRITE_PLAYER1_PUNCH_LEFT_1] = {
     .x = 224,
     .y = 162,
     .w = 48,
@@ -1182,7 +1182,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -4,
     .dy = 0,    
     },
-  [SPRITE_PLAYER2_PUNCH_LEFT_2] = {
+  [SPRITE_PLAYER1_PUNCH_LEFT_2] = {
     .x = 64,
     .y = 162,
     .w = 32,
@@ -1190,7 +1190,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -3,
     .dy = 0,    
     },
-  [SPRITE_PLAYER2_PUNCH_RIGHT_1] = {
+  [SPRITE_PLAYER1_PUNCH_RIGHT_1] = {
     .x = 160,
     .y = 108,
     .w = 48,
@@ -1198,7 +1198,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 3,
     .dy = 0,    
     },
-  [SPRITE_PLAYER2_PUNCH_RIGHT_2] = {
+  [SPRITE_PLAYER1_PUNCH_RIGHT_2] = {
     .x = 128,
     .y = 108,
     .w = 32,
@@ -1206,7 +1206,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 3,
     .dy = 0,    
     },
-  [SPRITE_PLAYER2_HIT_LEFT] = {
+  [SPRITE_PLAYER1_HIT_LEFT] = {
     .x = 0,
     .y = 162,
     .w = 32,
@@ -1214,7 +1214,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_PLAYER2_HIT_RIGHT] = {
+  [SPRITE_PLAYER1_HIT_RIGHT] = {
     .x = 32,
     .y = 162,
     .w = 32,
@@ -1223,7 +1223,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
 
-  [SPRITE_PLAYER2_KICK_LEFT_1] = {
+  [SPRITE_PLAYER1_KICK_LEFT_1] = {
     .x = 80,
     .y = 731,
     .w = 32,
@@ -1231,7 +1231,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_PLAYER2_KICK_LEFT_2] = {
+  [SPRITE_PLAYER1_KICK_LEFT_2] = {
     .x = 192,
     .y = 619,
     .w = 48,
@@ -1239,7 +1239,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -6,
     .dy = 0,    
     },
-  [SPRITE_PLAYER2_KICK_LEFT_3] = {
+  [SPRITE_PLAYER1_KICK_LEFT_3] = {
     .x = 80,
     .y = 731,
     .w = 32,
@@ -1248,7 +1248,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
 
-  [SPRITE_PLAYER2_KICK_RIGHT_1] = {
+  [SPRITE_PLAYER1_KICK_RIGHT_1] = {
     .x = 0,
     .y = 731,
     .w = 32,
@@ -1256,7 +1256,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_PLAYER2_KICK_RIGHT_2] = {
+  [SPRITE_PLAYER1_KICK_RIGHT_2] = {
     .x = 32,
     .y = 731,
     .w = 48,
@@ -1264,7 +1264,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_PLAYER2_KICK_RIGHT_3] = {
+  [SPRITE_PLAYER1_KICK_RIGHT_3] = {
     .x = 0,
     .y = 731,
     .w = 32,
@@ -1274,7 +1274,7 @@ object_image_t object_imageAtlas[] = {
     },            
 
   //==============================
-  [SPRITE_PLAYER3_STAND_RIGHT] = {
+  [SPRITE_PLAYER2_STAND_RIGHT] = {
     .x = 0,
     .y = 215,
     .w = 32,
@@ -1282,7 +1282,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_PLAYER3_RUN_RIGHT_1] = {
+  [SPRITE_PLAYER2_RUN_RIGHT_1] = {
     .x = 32,
     .y = 215,
     .w = 48,
@@ -1290,7 +1290,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_PLAYER3_RUN_RIGHT_2] = {
+  [SPRITE_PLAYER2_RUN_RIGHT_2] = {
     .x = 80,
     .y = 215,
     .w = 32,
@@ -1298,7 +1298,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_PLAYER3_RUN_RIGHT_3] = {
+  [SPRITE_PLAYER2_RUN_RIGHT_3] = {
     .x = 112,
     .y = 215,
     .w = 48,
@@ -1306,7 +1306,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -5,
     .dy = 0,    
   },
-    [SPRITE_PLAYER3_RUN_RIGHT_4] = {
+    [SPRITE_PLAYER2_RUN_RIGHT_4] = {
     .x = 80,
     .y = 215,
     .w = 32,
@@ -1314,7 +1314,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_PLAYER3_STAND_LEFT] = {
+  [SPRITE_PLAYER2_STAND_LEFT] = {
     .x = 240,
     .y = 275,
     .w = 32,
@@ -1322,7 +1322,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_PLAYER3_RUN_LEFT_1] = {
+  [SPRITE_PLAYER2_RUN_LEFT_1] = {
     .x = 192,
     .y = 275,
     .w = 48,
@@ -1330,7 +1330,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -6,
     .dy = 0,    
   },
-  [SPRITE_PLAYER3_RUN_LEFT_2] = {
+  [SPRITE_PLAYER2_RUN_LEFT_2] = {
     .x = 160,
     .y = 275,
     .w = 32,
@@ -1338,7 +1338,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,   
   },
-  [SPRITE_PLAYER3_RUN_LEFT_3] = {
+  [SPRITE_PLAYER2_RUN_LEFT_3] = {
     .x = 112,
     .y = 275,
     .w = 48,
@@ -1346,7 +1346,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -3,
     .dy = 0,    
   },
-    [SPRITE_PLAYER3_RUN_LEFT_4] = {
+    [SPRITE_PLAYER2_RUN_LEFT_4] = {
     .x = 160,
     .y = 275,
     .w = 32,
@@ -1355,7 +1355,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
 
-  [SPRITE_PLAYER3_PUNCH_LEFT_1] = {
+  [SPRITE_PLAYER2_PUNCH_LEFT_1] = {
     .x = 16,
     .y = 275,
     .w = 48,
@@ -1363,7 +1363,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -19,
     .dy = 0,    
     },
-  [SPRITE_PLAYER3_PUNCH_LEFT_2] = {
+  [SPRITE_PLAYER2_PUNCH_LEFT_2] = {
     .x = 64,
     .y = 275,
     .w = 48,
@@ -1371,7 +1371,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -19,
     .dy = 0,    
     },
-  [SPRITE_PLAYER3_PUNCH_RIGHT_1] = {
+  [SPRITE_PLAYER2_PUNCH_RIGHT_1] = {
     .x = 208,
     .y = 215,
     .w = 48,
@@ -1379,7 +1379,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 1,
     .dy = 0,    
     },
-  [SPRITE_PLAYER3_PUNCH_RIGHT_2] = {
+  [SPRITE_PLAYER2_PUNCH_RIGHT_2] = {
     .x = 160,
     .y = 215,
     .w = 48,
@@ -1387,7 +1387,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 1,
     .dy = 0,    
     },  
-  [SPRITE_PLAYER3_HIT_LEFT] = {
+  [SPRITE_PLAYER2_HIT_LEFT] = {
     .x = 32,
     .y = 335,
     .w = 32,
@@ -1395,7 +1395,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_PLAYER3_HIT_RIGHT] = {
+  [SPRITE_PLAYER2_HIT_RIGHT] = {
     .x = 0,
     .y = 335,
     .w = 32,
@@ -1404,7 +1404,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
 
-  [SPRITE_PLAYER3_KICK_LEFT_1] = {
+  [SPRITE_PLAYER2_KICK_LEFT_1] = {
     .x = 240,
     .y = 560,
     .w = 32,
@@ -1412,7 +1412,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -2,
     .dy = 0,    
     },
-  [SPRITE_PLAYER3_KICK_LEFT_2] = {
+  [SPRITE_PLAYER2_KICK_LEFT_2] = {
     .x = 208,
     .y = 911,
     .w = 48,
@@ -1420,7 +1420,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -8,
     .dy = 0,    
     },
-  [SPRITE_PLAYER3_KICK_LEFT_3] = {
+  [SPRITE_PLAYER2_KICK_LEFT_3] = {
     .x = 240,
     .y = 560,
     .w = 32,
@@ -1429,7 +1429,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
 
-  [SPRITE_PLAYER3_KICK_RIGHT_1] = {
+  [SPRITE_PLAYER2_KICK_RIGHT_1] = {
     .x = 240,
     .y = 621,
     .w = 32,
@@ -1437,7 +1437,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 1,
     .dy = 0,    
     },
-  [SPRITE_PLAYER3_KICK_RIGHT_2] = {
+  [SPRITE_PLAYER2_KICK_RIGHT_2] = {
     .x = 160,
     .y = 911,
     .w = 48,
@@ -1445,7 +1445,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -3,
     .dy = 0,    
     },
-  [SPRITE_PLAYER3_KICK_RIGHT_3] = {
+  [SPRITE_PLAYER2_KICK_RIGHT_3] = {
     .x = 240,
     .y = 621,
     .w = 32,
@@ -1866,7 +1866,7 @@ object_image_t object_imageAtlas[] = {
     },
 
   //==============================
-  [SPRITE_BOSS2_STAND_RIGHT] = {
+  [SPRITE_GUNFIGHTER_STAND_RIGHT] = {
     .x = 0,
     .y = 786,
     .w = 48,
@@ -1874,7 +1874,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_BOSS2_RUN_RIGHT_1] = {
+  [SPRITE_GUNFIGHTER_RUN_RIGHT_1] = {
     .x = 48,
     .y = 786,
     .w = 48,
@@ -1882,7 +1882,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_BOSS2_RUN_RIGHT_2] = {
+  [SPRITE_GUNFIGHTER_RUN_RIGHT_2] = {
     .x = 96,
     .y = 786,
     .w = 48,
@@ -1890,7 +1890,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_BOSS2_RUN_RIGHT_3] = {
+  [SPRITE_GUNFIGHTER_RUN_RIGHT_3] = {
     .x = 144,
     .y = 786,
     .w = 48,
@@ -1898,7 +1898,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -1,
     .dy = 0,    
   },
-    [SPRITE_BOSS2_RUN_RIGHT_4] = {
+    [SPRITE_GUNFIGHTER_RUN_RIGHT_4] = {
     .x = 96,
     .y = 786,
     .w = 48,
@@ -1906,7 +1906,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_BOSS2_STAND_LEFT] = {
+  [SPRITE_GUNFIGHTER_STAND_LEFT] = {
     .x = 192,
     .y = 842,
     .w = 48,
@@ -1914,7 +1914,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_BOSS2_RUN_LEFT_1] = {
+  [SPRITE_GUNFIGHTER_RUN_LEFT_1] = {
     .x = 144,
     .y = 842,
     .w = 48,
@@ -1922,7 +1922,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_BOSS2_RUN_LEFT_2] = {
+  [SPRITE_GUNFIGHTER_RUN_LEFT_2] = {
     .x = 96,
     .y = 842,
     .w = 48,
@@ -1930,7 +1930,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,   
   },
-  [SPRITE_BOSS2_RUN_LEFT_3] = {
+  [SPRITE_GUNFIGHTER_RUN_LEFT_3] = {
     .x = 48,
     .y = 842,
     .w = 48,
@@ -1938,7 +1938,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-    [SPRITE_BOSS2_RUN_LEFT_4] = {
+    [SPRITE_GUNFIGHTER_RUN_LEFT_4] = {
     .x = 96,
     .y = 842,
     .w = 48,
@@ -1947,7 +1947,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
 
-  [SPRITE_BOSS2_ATTACK_LEFT_1] = {
+  [SPRITE_GUNFIGHTER_ATTACK_LEFT_1] = {
     .x = 0,
     .y = 842,
     .w = 48,
@@ -1955,7 +1955,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_BOSS2_ATTACK_LEFT_2] = {
+  [SPRITE_GUNFIGHTER_ATTACK_LEFT_2] = {
     .x = 48,
     .y = 917,
     .w = 48,
@@ -1963,7 +1963,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_BOSS2_ATTACK_LEFT_3] = {
+  [SPRITE_GUNFIGHTER_ATTACK_LEFT_3] = {
     .x = 0,
     .y = 842,
     .w = 48,
@@ -1972,7 +1972,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },  
 
-  [SPRITE_BOSS2_ATTACK_RIGHT_1] = {
+  [SPRITE_GUNFIGHTER_ATTACK_RIGHT_1] = {
     .x = 192,
     .y = 786,
     .w = 48,
@@ -1980,7 +1980,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_BOSS2_ATTACK_RIGHT_2] = {
+  [SPRITE_GUNFIGHTER_ATTACK_RIGHT_2] = {
     .x = 0,
     .y = 917,
     .w = 48,
@@ -1988,7 +1988,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_BOSS2_ATTACK_RIGHT_3] = {
+  [SPRITE_GUNFIGHTER_ATTACK_RIGHT_3] = {
     .x = 192,
     .y = 786,
     .w = 48,
@@ -1997,7 +1997,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },  
 
-  [SPRITE_BOSS2_HIT_LEFT] = {
+  [SPRITE_GUNFIGHTER_HIT_LEFT] = {
     .x = 96,
     .y = 451,
     .w = 48,
@@ -2005,7 +2005,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_BOSS2_HIT_RIGHT] = {
+  [SPRITE_GUNFIGHTER_HIT_RIGHT] = {
     .x = 96,
     .y = 395,
     .w = 48,

@@ -245,8 +245,8 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
 #endif
 	    screenX >= 0 && screenX <= SCREEN_WIDTH+TILE_WIDTH) {
 	  if (object_tileDirty[x][y] != frame) {
-	    uint16_t tile = level.tileAddresses[x][y];	      
-	    gfx_quickRenderTile(fb, screenX, screenY, level.tileBitplanes+tile);
+	    uint16_t tile = levelFast.tileAddresses[x][y];	      
+	    gfx_quickRenderTile(fb, screenX, screenY, levelChip.tileBitplanes+tile);
 	    object_tileDirty[x][y] = frame;	    
 	  }
 	}
@@ -561,7 +561,7 @@ object_collision(int32_t deltaT, object_t* a, object_collision_t* collision, uin
   int32_t a_x2 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + (a->width - a->widthOffset)) + thresholdx;
   
   while (b) {
-    if (b->collidable && b != a) {
+    if (b->collisionsEnabled && b != a) {
       int32_t b_y = ((object_z(b)));
 
       if (abs(a_y - b_y) <= thresholdy) {
@@ -591,7 +591,7 @@ object_collision(int32_t deltaT, object_t* a, object_collision_t* collision, uin
 
 
 __NOINLINE object_t*
-object_add(uint16_t id, uint16_t class, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data, void (*freeData)(void*))
+object_add(uint16_t id, uint16_t attributes, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data, void (*freeData)(void*))
 {
 #ifdef DEBUG
   if (object_count >= OBJECT_MAX_OBJECTS) {
@@ -602,9 +602,9 @@ object_add(uint16_t id, uint16_t class, int16_t x, int16_t y, int16_t dx, int16_
 
   object_t* ptr = object_getFree();
   object_set_state(ptr, OBJECT_STATE_ALIVE);
-  ptr->class = class;
-  ptr->visible = 1;
   ptr->id = id;
+  ptr->attributes = attributes;
+  ptr->visible = 1;
   ptr->velocity.x = dx;
   ptr->velocity.y = 0;
   ptr->save.position = &ptr->save.positions[0];  
@@ -633,7 +633,7 @@ object_add(uint16_t id, uint16_t class, int16_t x, int16_t y, int16_t dx, int16_
   ptr->freeData = freeData;
   ptr->tileRender = 0;
 
-  ptr->collidable = (ptr->class == OBJECT_CLASS_FIGHTER || ptr->class == OBJECT_CLASS_THING);
+  ptr->collisionsEnabled = ptr ->collidableObject = (ptr->attributes & OBJECT_ATTRIBUTE_COLLIDABLE);
   object_addToActive(ptr);
   return ptr;
 }
