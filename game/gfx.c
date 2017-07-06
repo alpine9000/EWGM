@@ -422,7 +422,7 @@ gfx_renderBlackSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, i
     d += FRAME_BUFFER_WIDTH_BYTES;
     hw_waitBlitter();    
     _custom->bltapt = (uint8_t*)mask;
-    _custom->bltbpt = (uint8_t*)s;
+    _custom->bltbpt = (uint8_t*)mask;
     _custom->bltcpt = (uint8_t*)d;
     _custom->bltdpt = (uint8_t*)d;
     _custom->bltsize = bltsize;    

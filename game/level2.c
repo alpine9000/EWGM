@@ -13,6 +13,40 @@ enum {
 };
 
 #define LEVEL2_BASEBALL_ATTACK_DURATION_TICS (ENEMY_ENEMY_LEVEL2_3_ATTACK_TICS_PER_FRAME*3)
+#define LEVEL2_BOSS_ATTACK_RANGE         (SCREEN_WIDTH/2)
+#define LEVEL2_BOSS_ATTACK_DURATION_TICS (ENEMY_LEVEL2_BOSS_ATTACK_TICS_PER_FRAME*3)
+
+static fighter_attack_config_t level2_boss_attackConfig[] = {
+  [OBJECT_PUNCH_LEFT1] = {
+    .rangeX = LEVEL2_BOSS_ATTACK_RANGE,
+    .dammage = 0,
+    .durationTics = LEVEL2_BOSS_ATTACK_DURATION_TICS,
+    .hitAnimTic = ENEMY_LEVEL2_BOSS_ATTACK_TICS_PER_FRAME*2,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  },
+  [OBJECT_PUNCH_RIGHT1] =  {
+    .rangeX = LEVEL2_BOSS_ATTACK_RANGE,
+    .dammage = 0,
+    .durationTics = LEVEL2_BOSS_ATTACK_DURATION_TICS,
+    .hitAnimTic = ENEMY_LEVEL2_BOSS_ATTACK_TICS_PER_FRAME*2,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0    
+  }
+};
+
+static enemy_config_t level2_boss_config = {
+  .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
+  .attackConfig = level2_boss_attackConfig,
+  .attackWait = ENEMY_ATTACK_WAIT_TICS,
+  .postAttackInvincibleTics = 0,
+  .numAttacks = 1,
+  .speed = 8,
+  .intelligence = gunfighter_intelligence
+};
+
 
 fighter_attack_config_t level2_baseballAttackConfig[] = {
 [OBJECT_PUNCH_LEFT1] = {
@@ -95,18 +129,6 @@ level2_processEnemyConfig(uint16_t argument)
   return 1;
 }
 
-/*
-static int16_t
-level2_scroll(uint16_t argument)
-{
-  if (enemy_count == 0) {
-    conductor_setScrollTarget(argument);
-    return 1;
-  }
-
-  return 0;
-}
-*/
 
 static int16_t
 level2_addSixPack(uint16_t argument)
@@ -119,6 +141,7 @@ level2_addSixPack(uint16_t argument)
   thing_add(OBJECT_ID_SIXPACK, OBJECT_ANIM_SIXPACK3, OBJECT_ANIM_SIXPACK3, 0, game_cameraX+argument, y+32, 2);  
   return 1;
 }
+
 
 static int16_t
 level2_addTableAndChairs(uint16_t x, int16_t y)
@@ -137,22 +160,6 @@ level2_start(uint16_t argument)
   level2_addSixPack(50);
   level2_addTableAndChairs(100, 180);
   level2_addTableAndChairs(220, 180);
-  //if (1) {
-  // level1_doAddMotorbike();
-  //}
-  return 1;
-}
-
-int16_t
-level2_boss(uint16_t argument)
-{
-  __USE(argument);
-  level2_addSixPack(argument+50);
-  level2_addTableAndChairs(argument+100, 180);
-  level2_addTableAndChairs(argument+220, 180);
-  //if (1) {                                                                                                                    
-  // level1_doAddMotorbike();                                                                                                   
-  //}                                                                                                                           
   return 1;
 }
 
@@ -166,12 +173,20 @@ level2_pause(uint16_t argument)
 }
 //#endif
 
+gunfighter_config_t leve2_gunfighterConfig = {
+  .animId = OBJECT_ANIM_LEVEL2_BOSS_STAND_RIGHT,
+  .bulletAnimId = OBJECT_ANIM_BULLET_RIGHT,
+  .bulletSpeed = 8,
+  .bulletHeight = 24,
+  .bulletDammage = 0,
+  .bulletXOffsetLeft = 0,
+  .bulletXOffsetRight = OBJECT_WIDTH,  
+};
+
 int16_t
 level2_addBoss(uint16_t argument)
-{
-  __USE(argument);
-  //#define PLAYER_ATTACK_DURATION_TICS  (ENEMY_BOSS2_ATTACK_TICS_PER_FRAME*3)
-  gunfighter_add(argument+SCREEN_WIDTH*2, 150);
+{  
+  gunfighter_add(&leve2_gunfighterConfig, &level2_boss_config, argument+SCREEN_WIDTH*2, 150);
   level2_addSixPack(argument+50);
   level2_addTableAndChairs(argument+100, 180);
   level2_addTableAndChairs(argument+220, 180);
@@ -183,7 +198,7 @@ conductor_instruction_t level2_instructions[] = {
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level2_start},
 
 
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_1, level2_processEnemyConfig},
+  //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_1, level2_processEnemyConfig},
   //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_2, level2_processEnemyConfig},
   //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_3, level2_processEnemyConfig},    
   
@@ -193,7 +208,7 @@ conductor_instruction_t level2_instructions[] = {
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level2_pause},    
 
-    {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_3, level2_processEnemyConfig},      
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_3, level2_processEnemyConfig},      
 
   {CONDUCTOR_INSTRUCTION_END}
 };

@@ -72,7 +72,7 @@ fighter_init(void)
 
 
 int16_t
-fighter_attackCollision(object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy)
+fighter_attackCollision(object_t* a, object_collision_t* collision, int16_t thresholdx, uint16_t thresholdy)
 {
   int16_t _collision = 0;
   object_t* b = object_activeList;
@@ -136,7 +136,7 @@ int xxx;
 
 void
 fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
-{  
+{
   fighter_data_t* data = (fighter_data_t*)ptr->data;  
   fighter_data_t* attackerData = attacker->data;
   
@@ -361,7 +361,8 @@ fighter_update(uint16_t deltaT, object_t* ptr)
     data->attackQueued = 0;
     fighter_doAttack(ptr, data);
   } else if (data->attackCount) {
-    //    fighter_checkAttack(ptr, data);
+    /* for non immediate attacks */
+    fighter_checkAttack(ptr, data);
     if (data->attackJump) {
       if (object_py(ptr) >= data->attackJumpY) {
 	object_set_py(ptr, data->attackJumpY);

@@ -248,7 +248,9 @@ game_ctor(void)
 
   game_demo = 0;
 #ifdef DEBUG
+#ifdef GAME_AUTOSTART_REPLAY
   game_startReplay = 1;
+#endif
 #endif
   game_numPlayers = 1;
   game_scoreboardLoaded = 0;

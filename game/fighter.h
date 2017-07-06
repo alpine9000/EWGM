@@ -76,5 +76,5 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx);
 void
 fighter_die(object_t* ptr);
 int16_t
-fighter_attackCollision(object_t* a, object_collision_t* collision, uint16_t thresholdx, uint16_t thresholdy);
+fighter_attackCollision(object_t* a, object_collision_t* collision, int16_t thresholdx, uint16_t thresholdy);
 #endif

@@ -9,17 +9,19 @@
 #define CONFIG_OCS_FAST    2
 #define CONFIG_WORKBENCH   3
 
-#define DEBUG                         1
+#define DEBUG
+#define GAME_AUTOSTART_REPLAY
+//#define GAME_DEBUG_OBJECT_RENDERING 
 
 #ifdef DEBUG
-#define SCRIPTING                     1
+#define SCRIPTING
 #else
-#define RELEASE                       1
+#define RELEASE
 #endif
 
-//#define GAME_OBJECTS_BELOW_PLAYAREA_BOTTOM 1
-#define GAME_DONT_CLEAR_STATIONARY_OBJECTS 1
-#define GAME_DONT_REDRAW_CLEAN_OBJECTS 1
+//#define GAME_OBJECTS_BELOW_PLAYAREA_BOTTOM
+#define GAME_DONT_CLEAR_STATIONARY_OBJECTS
+#define GAME_DONT_REDRAW_CLEAN_OBJECTS
 
 #if GAME_CONFIG == CONFIG_OCS_512
 #include "configs/ocs512.h"

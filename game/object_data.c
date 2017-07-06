@@ -459,63 +459,63 @@ object_animation_t object_animations[] = {
 
 
   // =================================
-  [OBJECT_ANIM_GUNFIGHTER_RUN_RIGHT] = {
-    .start = SPRITE_GUNFIGHTER_RUN_RIGHT_1,
-    .stop = SPRITE_GUNFIGHTER_RUN_RIGHT_4,
-    .speed = ENEMY_GUNFIGHTER_RUN_ANIM_SPEED,
+  [OBJECT_ANIM_LEVEL2_BOSS_RUN_RIGHT] = {
+    .start = SPRITE_LEVEL2_BOSS_RUN_RIGHT_1,
+    .stop = SPRITE_LEVEL2_BOSS_RUN_RIGHT_4,
+    .speed = ENEMY_LEVEL2_BOSS_RUN_ANIM_SPEED,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_GUNFIGHTER_STAND_RIGHT] = {
-    .start = SPRITE_GUNFIGHTER_STAND_RIGHT,
-    .stop = SPRITE_GUNFIGHTER_STAND_RIGHT,
+  [OBJECT_ANIM_LEVEL2_BOSS_STAND_RIGHT] = {
+    .start = SPRITE_LEVEL2_BOSS_STAND_RIGHT,
+    .stop = SPRITE_LEVEL2_BOSS_STAND_RIGHT,
     .speed = 0,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_GUNFIGHTER_RUN_LEFT] = {
-    .start = SPRITE_GUNFIGHTER_RUN_LEFT_1,
-    .stop = SPRITE_GUNFIGHTER_RUN_LEFT_4,
-    .speed = ENEMY_GUNFIGHTER_RUN_ANIM_SPEED,
+  [OBJECT_ANIM_LEVEL2_BOSS_RUN_LEFT] = {
+    .start = SPRITE_LEVEL2_BOSS_RUN_LEFT_1,
+    .stop = SPRITE_LEVEL2_BOSS_RUN_LEFT_4,
+    .speed = ENEMY_LEVEL2_BOSS_RUN_ANIM_SPEED,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_GUNFIGHTER_STAND_LEFT] = {
-    .start = SPRITE_GUNFIGHTER_STAND_LEFT,
-    .stop = SPRITE_GUNFIGHTER_STAND_LEFT,
+  [OBJECT_ANIM_LEVEL2_BOSS_STAND_LEFT] = {
+    .start = SPRITE_LEVEL2_BOSS_STAND_LEFT,
+    .stop = SPRITE_LEVEL2_BOSS_STAND_LEFT,
     .speed = 0,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_GUNFIGHTER_ATTACK_LEFT1] = {
-    .start = SPRITE_GUNFIGHTER_ATTACK_LEFT_1,
-    .stop = SPRITE_GUNFIGHTER_ATTACK_LEFT_3,
-    .speed = ENEMY_GUNFIGHTER_ATTACK_TICS_PER_FRAME,
+  [OBJECT_ANIM_LEVEL2_BOSS_ATTACK_LEFT1] = {
+    .start = SPRITE_LEVEL2_BOSS_ATTACK_LEFT_1,
+    .stop = SPRITE_LEVEL2_BOSS_ATTACK_LEFT_3,
+    .speed = ENEMY_LEVEL2_BOSS_ATTACK_TICS_PER_FRAME,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_GUNFIGHTER_ATTACK_LEFT2] = {
-    .start = SPRITE_GUNFIGHTER_ATTACK_LEFT_1,
-    .stop = SPRITE_GUNFIGHTER_ATTACK_LEFT_3,
-    .speed = ENEMY_GUNFIGHTER_ATTACK_TICS_PER_FRAME,
+  [OBJECT_ANIM_LEVEL2_BOSS_ATTACK_LEFT2] = {
+    .start = SPRITE_LEVEL2_BOSS_ATTACK_LEFT_1,
+    .stop = SPRITE_LEVEL2_BOSS_ATTACK_LEFT_3,
+    .speed = ENEMY_LEVEL2_BOSS_ATTACK_TICS_PER_FRAME,
     .facing = FACING_LEFT
   },      
-  [OBJECT_ANIM_GUNFIGHTER_ATTACK_RIGHT1] = {
-    .start = SPRITE_GUNFIGHTER_ATTACK_RIGHT_1,
-    .stop = SPRITE_GUNFIGHTER_ATTACK_RIGHT_3,
-    .speed = ENEMY_GUNFIGHTER_ATTACK_TICS_PER_FRAME,
+  [OBJECT_ANIM_LEVEL2_BOSS_ATTACK_RIGHT1] = {
+    .start = SPRITE_LEVEL2_BOSS_ATTACK_RIGHT_1,
+    .stop = SPRITE_LEVEL2_BOSS_ATTACK_RIGHT_3,
+    .speed = ENEMY_LEVEL2_BOSS_ATTACK_TICS_PER_FRAME,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_GUNFIGHTER_ATTACK_RIGHT2] = {
-    .start = SPRITE_GUNFIGHTER_ATTACK_RIGHT_1,
-    .stop = SPRITE_GUNFIGHTER_ATTACK_RIGHT_3,
-    .speed = ENEMY_GUNFIGHTER_ATTACK_TICS_PER_FRAME,
+  [OBJECT_ANIM_LEVEL2_BOSS_ATTACK_RIGHT2] = {
+    .start = SPRITE_LEVEL2_BOSS_ATTACK_RIGHT_1,
+    .stop = SPRITE_LEVEL2_BOSS_ATTACK_RIGHT_3,
+    .speed = ENEMY_LEVEL2_BOSS_ATTACK_TICS_PER_FRAME,
     .facing = FACING_RIGHT
   },
-  [OBJECT_ANIM_GUNFIGHTER_HIT_LEFT] = {
-    .start = SPRITE_GUNFIGHTER_HIT_LEFT,
-    .stop = SPRITE_GUNFIGHTER_HIT_LEFT,
+  [OBJECT_ANIM_LEVEL2_BOSS_HIT_LEFT] = {
+    .start = SPRITE_LEVEL2_BOSS_HIT_LEFT,
+    .stop = SPRITE_LEVEL2_BOSS_HIT_LEFT,
     .speed = 0,
     .facing = FACING_LEFT
   },
-  [OBJECT_ANIM_GUNFIGHTER_HIT_RIGHT] = {
-    .start = SPRITE_GUNFIGHTER_HIT_RIGHT,
-    .stop = SPRITE_GUNFIGHTER_HIT_RIGHT,
+  [OBJECT_ANIM_LEVEL2_BOSS_HIT_RIGHT] = {
+    .start = SPRITE_LEVEL2_BOSS_HIT_RIGHT,
+    .stop = SPRITE_LEVEL2_BOSS_HIT_RIGHT,
     .speed = 0,
     .facing = FACING_RIGHT
   },
@@ -1866,7 +1866,7 @@ object_image_t object_imageAtlas[] = {
     },
 
   //==============================
-  [SPRITE_GUNFIGHTER_STAND_RIGHT] = {
+  [SPRITE_LEVEL2_BOSS_STAND_RIGHT] = {
     .x = 0,
     .y = 786,
     .w = 48,
@@ -1874,7 +1874,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_GUNFIGHTER_RUN_RIGHT_1] = {
+  [SPRITE_LEVEL2_BOSS_RUN_RIGHT_1] = {
     .x = 48,
     .y = 786,
     .w = 48,
@@ -1882,7 +1882,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_GUNFIGHTER_RUN_RIGHT_2] = {
+  [SPRITE_LEVEL2_BOSS_RUN_RIGHT_2] = {
     .x = 96,
     .y = 786,
     .w = 48,
@@ -1890,7 +1890,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_GUNFIGHTER_RUN_RIGHT_3] = {
+  [SPRITE_LEVEL2_BOSS_RUN_RIGHT_3] = {
     .x = 144,
     .y = 786,
     .w = 48,
@@ -1898,7 +1898,7 @@ object_image_t object_imageAtlas[] = {
     .dx = -1,
     .dy = 0,    
   },
-    [SPRITE_GUNFIGHTER_RUN_RIGHT_4] = {
+    [SPRITE_LEVEL2_BOSS_RUN_RIGHT_4] = {
     .x = 96,
     .y = 786,
     .w = 48,
@@ -1906,7 +1906,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_GUNFIGHTER_STAND_LEFT] = {
+  [SPRITE_LEVEL2_BOSS_STAND_LEFT] = {
     .x = 192,
     .y = 842,
     .w = 48,
@@ -1914,7 +1914,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_GUNFIGHTER_RUN_LEFT_1] = {
+  [SPRITE_LEVEL2_BOSS_RUN_LEFT_1] = {
     .x = 144,
     .y = 842,
     .w = 48,
@@ -1922,7 +1922,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-  [SPRITE_GUNFIGHTER_RUN_LEFT_2] = {
+  [SPRITE_LEVEL2_BOSS_RUN_LEFT_2] = {
     .x = 96,
     .y = 842,
     .w = 48,
@@ -1930,7 +1930,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,   
   },
-  [SPRITE_GUNFIGHTER_RUN_LEFT_3] = {
+  [SPRITE_LEVEL2_BOSS_RUN_LEFT_3] = {
     .x = 48,
     .y = 842,
     .w = 48,
@@ -1938,7 +1938,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
   },
-    [SPRITE_GUNFIGHTER_RUN_LEFT_4] = {
+    [SPRITE_LEVEL2_BOSS_RUN_LEFT_4] = {
     .x = 96,
     .y = 842,
     .w = 48,
@@ -1947,7 +1947,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },
 
-  [SPRITE_GUNFIGHTER_ATTACK_LEFT_1] = {
+  [SPRITE_LEVEL2_BOSS_ATTACK_LEFT_1] = {
     .x = 0,
     .y = 842,
     .w = 48,
@@ -1955,7 +1955,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_GUNFIGHTER_ATTACK_LEFT_2] = {
+  [SPRITE_LEVEL2_BOSS_ATTACK_LEFT_2] = {
     .x = 48,
     .y = 917,
     .w = 48,
@@ -1963,7 +1963,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_GUNFIGHTER_ATTACK_LEFT_3] = {
+  [SPRITE_LEVEL2_BOSS_ATTACK_LEFT_3] = {
     .x = 0,
     .y = 842,
     .w = 48,
@@ -1972,7 +1972,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },  
 
-  [SPRITE_GUNFIGHTER_ATTACK_RIGHT_1] = {
+  [SPRITE_LEVEL2_BOSS_ATTACK_RIGHT_1] = {
     .x = 192,
     .y = 786,
     .w = 48,
@@ -1980,7 +1980,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_GUNFIGHTER_ATTACK_RIGHT_2] = {
+  [SPRITE_LEVEL2_BOSS_ATTACK_RIGHT_2] = {
     .x = 0,
     .y = 917,
     .w = 48,
@@ -1988,7 +1988,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_GUNFIGHTER_ATTACK_RIGHT_3] = {
+  [SPRITE_LEVEL2_BOSS_ATTACK_RIGHT_3] = {
     .x = 192,
     .y = 786,
     .w = 48,
@@ -1997,7 +1997,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
     },  
 
-  [SPRITE_GUNFIGHTER_HIT_LEFT] = {
+  [SPRITE_LEVEL2_BOSS_HIT_LEFT] = {
     .x = 96,
     .y = 451,
     .w = 48,
@@ -2005,7 +2005,7 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
-  [SPRITE_GUNFIGHTER_HIT_RIGHT] = {
+  [SPRITE_LEVEL2_BOSS_HIT_RIGHT] = {
     .x = 96,
     .y = 395,
     .w = 48,
@@ -2498,7 +2498,7 @@ object_image_t object_imageAtlas[] = {
     },
   [SPRITE_BULLET_LEFT2] = {
     .x = 192,
-    .y = 20,
+    .y = 524,
     .w = 16,
     .h = 4,
     .dx = 0,

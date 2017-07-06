@@ -275,8 +275,10 @@ object_dirty(object_t* ptr)
 
       int16_t ox = (object_x_to_screenx(op->x)>>4)<<4;
       int16_t oy = op->y;
-      if (ox <= (((sx + ptr->image->w)>>4)<<4)+TILE_WIDTH &&
-	  (((ox + op->w)>>4)<<4)+TILE_WIDTH >= sx &&
+      //if (ox <= (((sx + ptr->image->w + 15)>>4)<<4)+TILE_WIDTH &&
+      if (ox <= sx + (((ptr->image->w + 15)>>4)<<4)+TILE_WIDTH &&	  
+	  //(((ox + op->w + 15)>>4)<<4)+TILE_WIDTH >= sx &&
+	  ox + (((op->w + 15)>>4)<<4)+TILE_WIDTH >= sx &&
 	  oy <= (((sy + ptr->image->h))) &&
 	  (((op->h + oy))) >= sy) {
 	if (o->cleared) {
@@ -328,7 +330,7 @@ object_updateObject(uint16_t deltaT, object_t* ptr)
 }
 
 static void
-object_restoreBackground(uint16_t deltaT, frame_buffer_t fb)
+object_restoreBackgroundAndUpdateObjects(uint16_t deltaT, frame_buffer_t fb)
 {
   static uint16_t frame = 0;
   uint16_t i = 0;
@@ -352,7 +354,7 @@ object_restoreBackground(uint16_t deltaT, frame_buffer_t fb)
 #ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
 	  cleared = 1;
 #endif
-#endif	
+#endif
 	  object_clear(frame, fb, ptr->save.position->x, ptr->save.position->y, ptr->save.position->w, ptr->save.position->h);
 #ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
 	}
@@ -456,41 +458,19 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
     }
     if (ptr->redrawn) {
 #endif
+#ifdef GAME_DEBUG_OBJECT_RENDERING
+      gfx_fillRect(fb, (screenx>>4)<<4, screeny, ((((w+15)>>4))<<4)+16, h, 26);
+#endif
       gfx_renderSprite(fb, sx, sy, screenx, screeny, w, h);
 #ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
 
-    } else {
-      //      gfx_renderBlackSprite(fb, sx, sy, screenx, screeny, w, h);
+    }
+#ifdef GAME_DEBUG_OBJECT_RENDERING
+    else {
+      gfx_renderBlackSprite(fb, sx, sy, screenx, screeny, w, h);
     }
 #endif
-  }
-}
-
-
-static void
-object_update(uint16_t deltaT)
-{
-  object_t* ptr = object_activeList;
-  
-  while (ptr) {
-    object_t* next = ptr->next;
-    if (ptr->update) {
-      ptr->update(deltaT, ptr);
-    }
-    if (object_get_state(ptr) == OBJECT_STATE_REMOVED) {
-      if (ptr->deadRenderCount == 2) {
-	if (ptr == game_player1) {
-	  game_player1 = 0;
-	} else if (ptr == game_player2) {
-	  game_player2 = 0;
-	}
-	object_free(ptr);
-	ptr = 0;
-      } else {
-	ptr->deadRenderCount++;
-      }
-    }
-    ptr = next;
+#endif
   }
 }
 
@@ -498,39 +478,28 @@ object_update(uint16_t deltaT)
 void
 object_render(frame_buffer_t fb, uint16_t deltaT)
 {
-  object_restoreBackground(deltaT, fb);  
-  if (0) {
-  object_update(deltaT);
-  }
+  object_restoreBackgroundAndUpdateObjects(deltaT, fb);  
 
-  //  object_restoreBackground(fb);
-
-   sort_z(object_count, object_zBuffer);
+  sort_z(object_count, object_zBuffer);
 
   for (int32_t i = 0; i < object_count; i++) {
     object_t* ptr = object_zBuffer[i];
     if (object_get_state(ptr) != OBJECT_STATE_REMOVED) {
       object_renderObject(fb, ptr);
     }
-  }
 
-  object_t* ptr = object_activeList;  
-  while (ptr != 0) {
-    //    if (object_get_state(ptr) != OBJECT_STATE_REMOVED) {      
-      ptr->save.position->x = object_x(ptr)+ptr->image->dx;
-      ptr->save.position->y = object_y(ptr)-ptr->image->h;
-      ptr->save.position->z = object_z(ptr);      
-      ptr->save.position->w = ptr->image->w;
-      ptr->save.position->h = ptr->image->h;    
+    ptr->save.position->x = object_x(ptr)+ptr->image->dx;
+    ptr->save.position->y = object_y(ptr)-ptr->image->h;
+    ptr->save.position->z = object_z(ptr);      
+    ptr->save.position->w = ptr->image->w;
+    ptr->save.position->h = ptr->image->h;    
 #ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
-      ptr->save.position->imageIndex = ptr->imageIndex;
-      ptr->save.position->visible = ptr->visible;
+    ptr->save.position->imageIndex = ptr->imageIndex;
+    ptr->save.position->visible = ptr->visible;
 #endif
-      
-      ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];
-      object_updateAnimation(deltaT, ptr);            
-      //    }
-    ptr = ptr->next;
+    
+    ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];
+    object_updateAnimation(deltaT, ptr);                
   }
 }
 
