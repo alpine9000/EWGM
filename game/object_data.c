@@ -790,6 +790,14 @@ object_animation_t object_animations[] = {
     .facing = FACING_RIGHT
   },
 
+  // =================================  
+  [OBJECT_ANIM_BONUS_WALLET] = {
+    .start = SPRITE_BONUS_WALLET,
+    .stop = SPRITE_POINTS_WALLET,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },  
+
   // =================================
   [OBJECT_ANIM_STAR] = {
     .start = SPRITE_STAR,
@@ -1227,7 +1235,7 @@ object_image_t object_imageAtlas[] = {
     .x = 80,
     .y = 731,
     .w = 32,
-    .h = 56,
+    .h = 55,
     .dx = 0,
     .dy = 0,    
     },
@@ -1235,7 +1243,7 @@ object_image_t object_imageAtlas[] = {
     .x = 192,
     .y = 619,
     .w = 48,
-    .h = 56,
+    .h = 55,
     .dx = -6,
     .dy = 0,    
     },
@@ -1243,7 +1251,7 @@ object_image_t object_imageAtlas[] = {
     .x = 80,
     .y = 731,
     .w = 32,
-    .h = 56,
+    .h = 55,
     .dx = 0,
     .dy = 0,    
     },
@@ -1252,7 +1260,7 @@ object_image_t object_imageAtlas[] = {
     .x = 0,
     .y = 731,
     .w = 32,
-    .h = 56,
+    .h = 55,
     .dx = 0,
     .dy = 0,    
     },
@@ -1260,7 +1268,7 @@ object_image_t object_imageAtlas[] = {
     .x = 32,
     .y = 731,
     .w = 48,
-    .h = 56,
+    .h = 55,
     .dx = 0,
     .dy = 0,    
     },
@@ -1268,7 +1276,7 @@ object_image_t object_imageAtlas[] = {
     .x = 0,
     .y = 731,
     .w = 32,
-    .h = 56,
+    .h = 55,
     .dx = 0,
     .dy = 0,    
     },            
@@ -2477,6 +2485,24 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },    
+
+  [SPRITE_BONUS_WALLET] = {
+    .x = 224,
+    .y = 528,
+    .w = 16,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,
+    },
+
+  [SPRITE_POINTS_WALLET] = {
+    .x = 208,
+    .y = 528,
+    .w = 16,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,
+    },
 
   //========================== 
   [SPRITE_STAR] = {

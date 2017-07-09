@@ -286,7 +286,7 @@ static int16_t
 level1_addPhoneBooth(uint16_t argument)
 {
   __USE(argument);
-  thing_add(OBJECT_ID_PHONEBOOTH, OBJECT_ANIM_PHONEBOOTH, OBJECT_ANIM_PHONEBOOTH_BROKEN, OBJECT_ANIM_PHONEBOOTH_JUNK1, game_cameraX+argument, 80, 2);
+  thing_add(OBJECT_ID_PHONEBOOTH, OBJECT_ANIM_PHONEBOOTH, OBJECT_ANIM_PHONEBOOTH_BROKEN, OBJECT_ANIM_PHONEBOOTH_JUNK1, game_cameraX+argument, 80, 2, THING_BONUS_TYPE_HEALTH);
   return 1;
 }
 
@@ -294,7 +294,7 @@ level1_addPhoneBooth(uint16_t argument)
 static int16_t
 level1_addPostbox(uint16_t argument)
 {
-  thing_add(OBJECT_ID_POSTBOX, OBJECT_ANIM_POSTBOX, OBJECT_ANIM_POSTBOX_BROKEN, OBJECT_ANIM_POSTBOX_JUNK1, game_cameraX+argument, 80, 2);
+  thing_add(OBJECT_ID_POSTBOX, OBJECT_ANIM_POSTBOX, OBJECT_ANIM_POSTBOX_BROKEN, OBJECT_ANIM_POSTBOX_JUNK1, game_cameraX+argument, 80, 2, THING_BONUS_TYPE_HEALTH);
   return 1;
 }
 

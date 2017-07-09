@@ -234,12 +234,13 @@ thing_update(uint16_t deltaT, object_t* ptr)
 
 
 object_t*
-thing_add(uint16_t id, uint16_t animId, uint16_t brokenId, uint16_t junkStartId, int16_t x, int16_t y, int16_t numBonus)
+thing_add(uint16_t id, uint16_t animId, uint16_t brokenId, uint16_t junkStartId, int16_t x, int16_t y, int16_t numBonus, uint16_t bonusType)
 {
   thing_data_t* data = thing_getFree();
   data->underAttack = 0;
   data->attackable = 1;
   data->hasBonus = numBonus;
+  data->bonusType = bonusType;
   data->bonus = 0;
   data->brokenId = brokenId;
   data->junkStartId = junkStartId;
@@ -252,7 +253,7 @@ thing_add(uint16_t id, uint16_t animId, uint16_t brokenId, uint16_t junkStartId,
 
 
 static void
-thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t yOffset, uint16_t bonus)
+thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t yOffset, uint16_t bonus, uint16_t bonusType)
 {
   thing_data_t* junk = thing_getFree();
   junk->underAttack = 1;
@@ -270,6 +271,7 @@ thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t yOffset, uint1
 
   junk->hasBonus = 0;
   junk->bonus = bonus;
+  junk->bonusType = bonusType;
   int16_t x = object_x(ptr) + (dx > 0 ? ptr->image->w : 0);
  
   object_t* jptr = object_add(OBJECT_ID_JUNK, 0, x, yOffset+object_y(ptr)-40, 0, animId, thing_update, OBJECT_DATA_TYPE_THING, junk, thing_addFree);
@@ -284,9 +286,9 @@ thing_addJunks(void* _ptr)
 {
   object_t* ptr = _ptr;
   thing_data_t* data = thing_data(ptr);
-  thing_addJunk(ptr, data->junkStartId, data->addJunkDx, 0, 0);
-  thing_addJunk(ptr, data->junkStartId+1, data->addJunkDx*2, 20, 0);        
-  thing_addJunk(ptr, data->junkStartId+2, -data->addJunkDx, 0, 0);          
+  thing_addJunk(ptr, data->junkStartId, data->addJunkDx, 0, 0, 0);
+  thing_addJunk(ptr, data->junkStartId+1, data->addJunkDx*2, 20, 0, 0);        
+  thing_addJunk(ptr, data->junkStartId+2, -data->addJunkDx, 0, 0, 0);          
 }
 
 
@@ -296,10 +298,20 @@ thing_addBonusJunk(void* _ptr)
   object_t* ptr = _ptr;
   thing_data_t* data = thing_data(ptr);
   if (data->hasBonus == 1) {
-    thing_addJunk(ptr, OBJECT_ANIM_BONUS_BURGER, -data->addJunkDx, 0, 1);
+    thing_addJunk(ptr, OBJECT_ANIM_BONUS_BURGER, -data->addJunkDx, 0, 1, THING_BONUS_TYPE_HEALTH);
   } else if (data->hasBonus == 2) {
-    thing_addJunk(ptr, OBJECT_ANIM_BONUS_COLA, data->addJunkDx, 0, 1);
+    thing_addJunk(ptr, OBJECT_ANIM_BONUS_COLA, data->addJunkDx, 0, 1, THING_BONUS_TYPE_HEALTH);
   }
+  data->hasBonus--;  
+}
+
+
+static void
+thing_addBonusPointsJunk(void* _ptr)
+{
+  object_t* ptr = _ptr;
+  thing_data_t* data = thing_data(ptr);
+  thing_addJunk(ptr, OBJECT_ANIM_BONUS_WALLET, -data->addJunkDx, 0, 1, THING_BONUS_TYPE_POINTS);
   data->hasBonus--;  
 }
 
@@ -319,7 +331,11 @@ thing_attack(object_t* ptr, int16_t dx)
     } else if (data->hasBonus) {
       object_setAnim(ptr, data->brokenId);
       data->addJunkDx  = dx;
-      alarm_add(0, thing_addBonusJunk, ptr);      
+      if (data->bonusType == THING_BONUS_TYPE_HEALTH) {
+	alarm_add(0, thing_addBonusJunk, ptr);
+      } else {
+	alarm_add(0, thing_addBonusPointsJunk, ptr);
+      }
       /* if (data->hasBonus == 1) {
 	thing_addJunk(ptr, OBJECT_ANIM_BONUS_BURGER, -dx, 0, 1);
       } else if (data->hasBonus == 2) {
