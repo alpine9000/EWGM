@@ -27,7 +27,8 @@ imagecon_config_t config = {
   .paletteOffset = 0,
   .maskTransparentColor = 0,
   .fullColorPaletteFile = 1,
-  .darken = 0
+  .darken = 0,
+  .amigaColors = 0
 };
 
 
@@ -183,10 +184,19 @@ generatePalettedImage(imagecon_image_t* ic)
       png_byte* ptr = &(row[x*4]);
       
       amiga_color_t color;
-      color.r = ptr[0];
-      color.g = ptr[1];
-      color.b = ptr[2];
-      color.a = ptr[3];
+
+      if (!config.amigaColors) {
+	color.r = ptr[0];
+	color.g = ptr[1];
+	color.b = ptr[2];
+	color.a = ptr[3];
+      } else {
+
+	color.r = CLAMP8(((ptr[0]+8)>>4)<<4);
+	color.g = CLAMP8(((ptr[1]+8)>>4)<<4);
+	color.b = CLAMP8(((ptr[2]+8)>>4)<<4);
+	color.a = 255;
+      }
       
       int index = -1;
       for (int i = 0; i < paletteIndex; i++) {
@@ -682,6 +692,7 @@ main(int argc, char **argv)
       {"input",   required_argument, 0, 'i'},
       {"darken",   required_argument, 0, 'd'},
       {"transparent-color",   required_argument, 0, 't'},
+      {"amiga-colors", no_argument, &config.amigaColors, 1},
       {0, 0, 0, 0}
     };
     

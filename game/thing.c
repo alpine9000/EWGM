@@ -78,6 +78,9 @@ thing_removeBonus(void* _ptr)
 void
 thing_awardBonus(object_t* ptr, object_t* collision)
 {
+  if (!thing_data(ptr)->bonus) {
+    return;
+  }
   if (collision->id == OBJECT_ID_PLAYER1) {
     ptr->velocity.y = -2;
     alarm_add(25, thing_removeBonus, ptr);    
@@ -97,7 +100,20 @@ thing_awardBonus(object_t* ptr, object_t* collision)
   }
 
   fighter_data_t* data = fighter_data(collision);
-  data->health += 40;
+  switch (thing_data(ptr)->bonusType) {
+  case THING_BONUS_TYPE_HEALTH:
+    data->health += 40;
+    break;
+  case THING_BONUS_TYPE_POINTS:
+    switch (collision->id) {
+    case OBJECT_ID_PLAYER1:
+      game_player1Score += 10000;
+      break;
+    case OBJECT_ID_PLAYER2:
+      game_player2Score += 10000;
+    }
+    break;
+  }
 
   thing_data(ptr)->bonus = 0;
   
