@@ -30,7 +30,9 @@ fighter_getFree(void)
   if (fighter_freeList) {
     fighter_freeList->prev = 0;
   }
-
+#ifdef DEBUG
+  entry->magicNumber = FIGHTER_DATA_MAGIC_NUMBER;
+#endif
   return entry;
 }
 
@@ -137,8 +139,8 @@ int xxx;
 void
 fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
 {
-  fighter_data_t* data = (fighter_data_t*)ptr->data;  
-  fighter_data_t* attackerData = attacker->data;
+  fighter_data_t* data = fighter_data(ptr);  
+  fighter_data_t* attackerData = fighter_data(attacker);
   
   if (data->postAttackCount > 0) {
     return;
@@ -170,10 +172,10 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
 
   switch (ptr->id) {
   case OBJECT_ID_PLAYER1:
-    game_updatePlayer1Health(GAME_PLAYER1_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player1->data)->health);
+    game_updatePlayer1Health(GAME_PLAYER1_HEALTH_SCOREBOARD_X, fighter_data(game_player1)->health);
     break;
   case OBJECT_ID_PLAYER2:
-    game_updatePlayer2Health(GAME_PLAYER2_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player2->data)->health);
+    game_updatePlayer2Health(GAME_PLAYER2_HEALTH_SCOREBOARD_X, fighter_data(game_player2)->health);
     break;
   }
   
@@ -323,7 +325,7 @@ void
 fighter_die(object_t* ptr)
 {
   object_set_state(ptr, OBJECT_STATE_REMOVED);
-  ((fighter_data_t*)ptr->data)->dieCallback(ptr);  
+  fighter_data(ptr)->dieCallback(ptr);  
 }
 
 uint16_t
@@ -338,7 +340,7 @@ fighter_nullIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 void
 fighter_update(uint16_t deltaT, object_t* ptr)
 {
-  fighter_data_t* data = (fighter_data_t*)ptr->data;
+  fighter_data_t* data = fighter_data(ptr);
 
   uint16_t attack = data->intelligence(deltaT, ptr, data);
 
@@ -444,7 +446,7 @@ fighter_add(uint16_t id, uint16_t attributes, uint16_t animId, int16_t x, int16_
   fighter_data_t* data = fighter_getFree();
   data->buttonReleased = 0;
 
-  if (!(attributes & OBJECT_ATTRIBUTE_PLAYER) && game_difficulty == GAME_DIFFICULTY_EASY) {
+  if (!(attributes & (OBJECT_ATTRIBUTE_PLAYER|OBJECT_ATTRIBUTE_DONT_OVERRIDE_CONFIG)) && game_difficulty == GAME_DIFFICULTY_EASY) {
     data->attackConfig = enemy_attackConfig1;
   } else {
     data->attackConfig = attackConfig;
@@ -466,6 +468,6 @@ fighter_add(uint16_t id, uint16_t attributes, uint16_t animId, int16_t x, int16_
   data->killEnemyCallback = fighter_killEnemyCallback;
   data->hitEnemyCallback = fighter_hitEnemyCallback;
   data->dieCallback = fighter_dieCallback;
-  object_t* ptr = object_add(id, OBJECT_ATTRIBUTE_COLLIDABLE, x, y, 0, animId, fighter_update, data, fighter_addFree);
+  object_t* ptr = object_add(id,attributes|OBJECT_ATTRIBUTE_COLLIDABLE, x, y, 0, animId, fighter_update, OBJECT_DATA_TYPE_FIGHTER, data, fighter_addFree);
   return ptr;
 }

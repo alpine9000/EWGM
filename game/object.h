@@ -215,7 +215,9 @@ typedef enum {
   SPRITE_CHAIR2,  
 
   SPRITE_BONUS_BURGER,
+  SPRITE_HEALTH_BURGER,  
   SPRITE_BONUS_COLA,
+  SPRITE_HEALTH_COLA,    
   SPRITE_STAR,
   SPRITE_BULLET_RIGHT1,
   SPRITE_BULLET_RIGHT2,
@@ -457,6 +459,7 @@ typedef struct {
 typedef enum {
   OBJECT_ATTRIBUTE_COLLIDABLE = 1,
   OBJECT_ATTRIBUTE_PLAYER = 2,
+  OBJECT_ATTRIBUTE_DONT_OVERRIDE_CONFIG = 4
 } object_attribute_t;
 
 typedef struct {
@@ -480,10 +483,18 @@ typedef struct {
   int16_t dx;
 } object_hit_config_t;
 
+enum {
+  OBJECT_DATA_TYPE_FIGHTER = 1,
+  OBJECT_DATA_TYPE_THING = 0
+};
+
 typedef struct object {
   uint16_t id;
   uint16_t attributes;
-  void* data;
+#ifdef DEBUG
+  uint16_t dataType;
+#endif
+  void* _data;
   struct object* next;
   struct object* prev;
   int16_t _x;
@@ -539,10 +550,21 @@ extern object_t* object_activeList;
 extern int16_t object_count;
 extern object_t* object_zBuffer[OBJECT_MAX_OBJECTS];
 
+
+#ifdef DEBUG
+#define object_set_data(ptr, type, data) (ptr->dataType = type, ptr->_data = data)
+#define _object_data(ptr, type) _object_debug_get_data(ptr, type)
+void*
+_object_debug_get_data(object_t* ptr, uint16_t dataType);
+#else
+#define object_set_data(ptr, type, data) ( ptr->_data = data)
+#define _object_data(ptr, type) (ptr->_data)
+#endif
+
 void
 object_init(void);
 object_t*
-object_add(uint16_t id, uint16_t attributes, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data, void (*freeData)(void*));
+object_add(uint16_t id, uint16_t attributes, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), uint16_t dataType, void* data, void (*freeData)(void*));
 void
 object_free(object_t* ptr);
 void

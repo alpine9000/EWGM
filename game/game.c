@@ -995,10 +995,10 @@ game_showDeathMatch(void)
   game_player1->velocity.y = 0;
   game_player2->velocity.x = 0;
   game_player2->velocity.y = 0;  
-  ((fighter_data_t*)(game_player1->data))->intelligence = fighter_nullIntelligence;
-  ((fighter_data_t*)(game_player2->data))->intelligence = fighter_nullIntelligence;  
+  fighter_data(game_player1)->intelligence = fighter_nullIntelligence;
+  fighter_data(game_player2)->intelligence = fighter_nullIntelligence;
 
-  object_t* dm = object_add(OBJECT_ID_DEATHMATCH, 0, game_cameraX+(SCREEN_WIDTH/2-48), -4, 0,OBJECT_ANIM_DEATHMATCH, 0, 0, 0);
+  object_t* dm = object_add(OBJECT_ID_DEATHMATCH, 0, game_cameraX+(SCREEN_WIDTH/2-48), -4, 0,OBJECT_ANIM_DEATHMATCH, 0, 0, 0, 0);
   object_set_z(dm, 4096);
   uint32_t frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;
   int16_t y;
@@ -1038,8 +1038,8 @@ game_showDeathMatch(void)
   }
   game_lastVerticalBlankCount = hw_verticalBlankCount;
 
-  ((fighter_data_t*)(game_player1->data))->intelligence = player_intelligence;
-  ((fighter_data_t*)(game_player2->data))->intelligence = player_intelligence;    
+  fighter_data(game_player1)->intelligence = player_intelligence;
+  fighter_data(game_player2)->intelligence = player_intelligence;    
 } 
 
 static __NOINLINE void
@@ -1135,7 +1135,9 @@ game_processKeyboard()
     break;
   case 'S':
     record_setState(RECORD_IDLE);
-    game_collectTotal = !game_collectTotal;    
+#ifdef DEBUG
+    game_collectTotal = !game_collectTotal;
+#endif
     break;
 #ifdef DEBUG
   case 'L':
@@ -1198,14 +1200,14 @@ static void
 game_waitForMenuExit(int16_t messageAnimId, int16_t offset)
 {
   if (game_player1) {
-    ((fighter_data_t*)(game_player1->data))->intelligence = fighter_nullIntelligence;
+    fighter_data(game_player1)->intelligence = fighter_nullIntelligence;
   }
   
   if (game_player2) {
-    ((fighter_data_t*)(game_player2->data))->intelligence = fighter_nullIntelligence;
+    fighter_data(game_player2)->intelligence = fighter_nullIntelligence;
   }  
 
-  object_t* gameOver = object_add(OBJECT_ID_GAMEOVER, 0, game_cameraX+(SCREEN_WIDTH/2-offset), -4, 0, messageAnimId, 0, 0, 0);
+  object_t* gameOver = object_add(OBJECT_ID_GAMEOVER, 0, game_cameraX+(SCREEN_WIDTH/2-offset), -4, 0, messageAnimId, 0, 0, 0, 0);
   object_set_z(gameOver, 4096);
   
   uint32_t frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;
@@ -1219,7 +1221,7 @@ game_waitForMenuExit(int16_t messageAnimId, int16_t offset)
     game_switchFrameBuffers();
   }
 
-  object_t* joystick = object_add(OBJECT_ID_JOYSTICK, 0, game_cameraX+(SCREEN_WIDTH/2-16),PLAYAREA_HEIGHT-32, 0, OBJECT_ANIM_JOYSTICK, 0, 0, 0);
+  object_t* joystick = object_add(OBJECT_ID_JOYSTICK, 0, game_cameraX+(SCREEN_WIDTH/2-16),PLAYAREA_HEIGHT-32, 0, OBJECT_ANIM_JOYSTICK, 0, 0, 0, 0);
   object_set_z(joystick, 4096);     
 
   for (int16_t y = PLAYAREA_HEIGHT-32; y >  (PLAYAREA_HEIGHT/2)+32; y-=8) {

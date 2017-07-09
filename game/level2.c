@@ -16,7 +16,8 @@ enum {
 #define LEVEL2_BOSS_ATTACK_RANGE         (SCREEN_WIDTH/2)
 #define LEVEL2_BOSS_ATTACK_DURATION_TICS (ENEMY_LEVEL2_BOSS_ATTACK_TICS_PER_FRAME*3)
 
-static fighter_attack_config_t level2_boss_attackConfig[] = {
+//static
+__EXTERNAL fighter_attack_config_t level2_boss_attackConfig[] = {
   [OBJECT_PUNCH_LEFT1] = {
     .rangeX = LEVEL2_BOSS_ATTACK_RANGE,
     .dammage = 0,
@@ -121,7 +122,7 @@ level2_processEnemyConfig(uint16_t argument)
   level_enemy_config_t* ptr = &level2_configs[argument];
   if (ptr->enemyCount >= 0) {
     if (ptr->enemyCount <= enemy_count) {
-      enemy_add(ptr->animId, game_cameraX + ptr->x, ptr->y, ptr->config);      
+      enemy_add(ptr->animId, 0, game_cameraX + ptr->x, ptr->y, ptr->config);      
       return 1;
     }
     return 0;

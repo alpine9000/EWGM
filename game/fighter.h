@@ -1,15 +1,18 @@
 #ifndef __FIGHTER_H
 #define __FIGHTER_H
 
-#define FIGHTER_MAX_FIGHTERS         8
-#define FIGHTER_LONG_PUNCH_RANGE     13
-#define FIGHTER_SHORT_PUNCH_RANGE    8
-//#define FIGHTER_Y_ATTACK_THRESHOLD   6
-#define FIGHTER_ENEMY_Y_ATTACK_RANGE 6
-#define FIGHTER_SPAWN_FLASH_COUNT_TICS 5
+#define FIGHTER_MAX_FIGHTERS              8
+#define FIGHTER_LONG_PUNCH_RANGE          13
+#define FIGHTER_SHORT_PUNCH_RANGE         8
+//#define FIGHTER_Y_ATTACK_THRESHOLD      6
+#define FIGHTER_ENEMY_Y_ATTACK_RANGE      6
+#define FIGHTER_SPAWN_FLASH_COUNT_TICS    5
 #define FIGHTER_SPAWN_FLASH_DURATION_TICS 100
-#define FIGHTER_HIT_FLASH_COUNT_TICS 5
-#define FIGHTER_HIT_FLASH_DURATION_TICS 75
+#define FIGHTER_HIT_FLASH_COUNT_TICS      5
+#define FIGHTER_HIT_FLASH_DURATION_TICS   75
+#define FIGHTER_DATA_MAGIC_NUMBER         0xDEADBEEF
+
+#define fighter_data(x) ((fighter_data_t*)(_object_data(x, OBJECT_DATA_TYPE_FIGHTER)))
 
 typedef struct {
   uint16_t hitAnimTic;  
@@ -23,6 +26,9 @@ typedef struct {
   
 
 typedef struct fighter_data {
+#ifdef DEBUG
+  uint32_t magicNumber;
+#endif
   struct fighter_data* prev;
   struct fighter_data* next;  
   uint16_t attackCount;

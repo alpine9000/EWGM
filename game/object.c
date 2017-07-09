@@ -99,7 +99,7 @@ void
 object_free(object_t* ptr)
 {
   if (ptr->freeData) {
-    ptr->freeData(ptr->data);
+    ptr->freeData(ptr->_data);
   }
   object_removeFromActive(ptr);
   object_addFree(ptr);
@@ -179,6 +179,7 @@ object_init(void)
 void
 object_updateAnimation(uint16_t deltaT, object_t *ptr)
 {
+  if (ptr->anim->speed) {
   if (ptr->frameCounter >= ptr->anim->speed) {
     ptr->imageIndex++;
     ptr->frameCounter = 0;
@@ -188,6 +189,7 @@ object_updateAnimation(uint16_t deltaT, object_t *ptr)
     ptr->image = &object_imageAtlas[ptr->imageIndex];
   } else {
     ptr->frameCounter+=deltaT;
+  }
   }
 }
 
@@ -560,15 +562,17 @@ object_collision(int32_t deltaT, object_t* a, object_collision_t* collision, uin
 
 
 __NOINLINE object_t*
-object_add(uint16_t id, uint16_t attributes, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), void* data, void (*freeData)(void*))
+object_add(uint16_t id, uint16_t attributes, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), uint16_t dataType, void* data, void (*freeData)(void*))
 {
 #ifdef DEBUG
   if (object_count >= OBJECT_MAX_OBJECTS) {
     PANIC("object_add: no free objects");
     return 0;
   }
-#endif
+#else
 
+#endif
+  __USE(dataType);
   object_t* ptr = object_getFree();
   object_set_state(ptr, OBJECT_STATE_ALIVE);
   ptr->id = id;
@@ -598,7 +602,7 @@ object_add(uint16_t id, uint16_t attributes, int16_t x, int16_t y, int16_t dx, i
   ptr->frameCounter = 0;
   ptr->deadRenderCount = 0;
   ptr->update = update;
-  ptr->data = data;
+  object_set_data(ptr, dataType, data);
   ptr->freeData = freeData;
   ptr->tileRender = 0;
 
@@ -606,3 +610,35 @@ object_add(uint16_t id, uint16_t attributes, int16_t x, int16_t y, int16_t dx, i
   object_addToActive(ptr);
   return ptr;
 }
+
+
+#ifdef DEBUG
+void*
+_object_debug_get_data(object_t* ptr, uint16_t dataType)
+{
+  if (ptr->dataType != dataType) {			
+     PANIC("invalid cast");                     
+  }
+
+  
+  switch (dataType) {
+  case OBJECT_DATA_TYPE_FIGHTER:
+    {
+      fighter_data_t* data = ptr->_data;
+      if (data->magicNumber != FIGHTER_DATA_MAGIC_NUMBER) {
+	PANIC("invalid fighter data");
+      }
+    }
+    break;
+  case OBJECT_DATA_TYPE_THING:
+    {
+      thing_data_t* data = ptr->_data;    
+      if (data->magicNumber != THING_DATA_MAGIC_NUMBER) {
+	PANIC("invalid thing data");
+      }
+    }
+    break;
+  }
+  return ptr->_data;
+}
+#endif

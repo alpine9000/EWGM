@@ -208,7 +208,7 @@ object_t*
 player_init(uint16_t id, uint16_t animId, int16_t x)
 {
   object_t* ptr = fighter_add(id, OBJECT_ATTRIBUTE_PLAYER, animId, x, 100, PLAYER_INITIAL_HEALTH, player_attackConfig, player_intelligence);
-  fighter_data_t* data = (fighter_data_t*)ptr->data;
+  fighter_data_t* data = fighter_data(ptr);
   data->numAttacks = 2;
   data->flashCount = FIGHTER_SPAWN_FLASH_COUNT_TICS;
   data->flashDurationTics = FIGHTER_SPAWN_FLASH_DURATION_TICS;

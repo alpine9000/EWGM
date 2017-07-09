@@ -778,14 +778,14 @@ object_animation_t object_animations[] = {
   // =================================
   [OBJECT_ANIM_BONUS_BURGER] = {
     .start = SPRITE_BONUS_BURGER,
-    .stop = SPRITE_BONUS_BURGER,
+    .stop = SPRITE_HEALTH_BURGER,
     .speed = 0,
     .facing = FACING_RIGHT
   },
   // =================================
   [OBJECT_ANIM_BONUS_COLA] = {
     .start = SPRITE_BONUS_COLA,
-    .stop = SPRITE_BONUS_COLA,
+    .stop = SPRITE_HEALTH_COLA,
     .speed = 0,
     .facing = FACING_RIGHT
   },
@@ -2460,6 +2460,23 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,    
     },
+  [SPRITE_HEALTH_BURGER] = {
+    .x = 192,
+    .y = 528,
+    .w = 16,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,    
+    },
+
+  [SPRITE_HEALTH_COLA] = {
+    .x = 192,
+    .y = 528,
+    .w = 16,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,    
+    },    
 
   //========================== 
   [SPRITE_STAR] = {

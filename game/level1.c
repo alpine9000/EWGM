@@ -305,7 +305,7 @@ level1_processEnemyConfig(uint16_t argument)
   level_enemy_config_t* ptr = &level1_configs[argument];
   if (ptr->enemyCount >= 0) {
     if (ptr->enemyCount == enemy_count) {
-      enemy_add(ptr->animId, game_cameraX + ptr->x, ptr->y, ptr->config);      
+      enemy_add(ptr->animId, 0, game_cameraX + ptr->x, ptr->y, ptr->config);      
       return 1;
     }
     return 0;
@@ -363,7 +363,7 @@ level1_addDoorEnemy(void* data)
 {
   __USE(data);
   
-  enemy_add(OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, &level1_enemy_configs[LEVEL1_DOORMAN]);    
+  enemy_add(OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT, 0, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, &level1_enemy_configs[LEVEL1_DOORMAN]);    
 }
 
 
@@ -372,7 +372,7 @@ level1_addDoorEnemy2(void* data)
 {
   __USE(data);
   
-  enemy_add(OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, &level1_enemy_configs[LEVEL1_DOORMAN]);
+  enemy_add(OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT, 0, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, &level1_enemy_configs[LEVEL1_DOORMAN]);
 }
 
 
@@ -391,7 +391,7 @@ level1_doAddBoss(uint16_t x)
 {
   uint16_t y = LEVEL1_ENEMY_BOSS_START_Y; 
 
-  enemy_add(OBJECT_ANIM_BOSS_STAND_RIGHT, x, y, &level1_enemy_configs[LEVEL1_BOSS]);
+  enemy_add(OBJECT_ANIM_BOSS_STAND_RIGHT, 0, x, y, &level1_enemy_configs[LEVEL1_BOSS]);
 }
 
 
@@ -422,6 +422,7 @@ level1_wave3(uint16_t argument)
 			       /*dx*/0,
 			       /*anim id*/OBJECT_ANIM_DOOR,
 			       /*update*/0,
+			       /*dataType*/0,
 			       /*data*/0,
 			       /*freeData*/0);
   level1_door->tileRender = 1;

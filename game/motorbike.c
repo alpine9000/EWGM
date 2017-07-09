@@ -140,7 +140,7 @@ motorbike_collision(object_t* a)
 static void
 motorbike_update(uint16_t deltaT, object_t* ptr)
 {
-  fighter_data_t* data = (fighter_data_t*)ptr->data;    
+  fighter_data_t* data = fighter_data(ptr);    
   level1_motorbikeIntelligence(deltaT, ptr, 0);
 
   if ((object_get_state(ptr) == OBJECT_STATE_HIT ||
@@ -206,7 +206,7 @@ motorbike_update(uint16_t deltaT, object_t* ptr)
 	  object_setAction(ptr, OBJECT_HIT_RIGHT);
 	}
 
-	fighter_data_t* playerData = player->data;
+	fighter_data_t* playerData = fighter_data(player);
 	playerData->hitEnemyCallback(player, ptr);
       }
     } else if (motorbike_state == MOTORBIKE_GO && player) {
@@ -220,7 +220,7 @@ motorbike_update(uint16_t deltaT, object_t* ptr)
 void
 motorbike_add(int16_t x, int16_t y)
 {
-  object_t* ptr = object_add(OBJECT_ID_ENEMY, OBJECT_ATTRIBUTE_COLLIDABLE, x, y, 0, OBJECT_ANIM_MOTORBIKE_STAND_RIGHT, motorbike_update, &motorbike_data, 0);
+  object_t* ptr = object_add(OBJECT_ID_ENEMY, OBJECT_ATTRIBUTE_COLLIDABLE, x, y, 0, OBJECT_ANIM_MOTORBIKE_STAND_RIGHT, motorbike_update, OBJECT_DATA_TYPE_FIGHTER, &motorbike_data, 0);
   motorbike_data.postAttackCount = 0;
   motorbike_data.health = 100;
   motorbike_data.attack_py = -1;

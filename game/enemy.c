@@ -59,7 +59,7 @@ enemy_strikingDistanceX(object_t* a, object_t* b)
 static int16_t
 enemy_strikingDistanceX(object_t* a, object_t* b)
 {
-  fighter_data_t* b_data = b->data;    
+  fighter_data_t* b_data = fighter_data(b);    
   uint16_t thresholdx;
   if (b_data->numAttacks == 1) {
     thresholdx = b_data->attackConfig[OBJECT_PUNCH_LEFT1].rangeX;
@@ -84,7 +84,6 @@ enemy_strikingDistanceX(object_t* a, object_t* b)
 }
 
 #endif
-
 
 uint16_t
 enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
@@ -208,14 +207,14 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 
 object_t* __NOINLINE
 //enemy_add(uint16_t animId, uint16_t x, uint16_t y, fighter_attack_config_t* attackConfig, uint16_t attackWait, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data))
-enemy_add(uint16_t animId, uint16_t x, uint16_t y, enemy_config_t* config)
+enemy_add(uint16_t animId, uint16_t attributes, uint16_t x, uint16_t y, enemy_config_t* config)
 {
   uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data)  = config->intelligence;
   if (intelligence == 0) {
     intelligence = enemy_intelligence;
   }
-  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, 0, animId, x, y, ENEMY_INITIAL_HEALTH, config->attackConfig, intelligence);
-  fighter_data_t* data = (fighter_data_t*)ptr->data;
+  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, attributes, animId, x, y, ENEMY_INITIAL_HEALTH, config->attackConfig, intelligence);
+  fighter_data_t* data = fighter_data(ptr);
   ptr->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->width = OBJECT_WIDTH;
 

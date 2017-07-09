@@ -1,6 +1,8 @@
 #include "game.h"
 
 #ifdef DEBUG
+__EXTERNAL
+
 void
 _panic(char* message)
 {

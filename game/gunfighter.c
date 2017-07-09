@@ -18,6 +18,9 @@ gunfighter_bulletKillEnemyCallback(object_t* me, object_t* attacker)
 }
 
 fighter_data_t bullet_fighterData = {
+#ifdef DEBUG
+  .magicNumber = FIGHTER_DATA_MAGIC_NUMBER,
+#endif
   .hitEnemyCallback = gunfighter_bulletHitEnemyCallback,
   .killEnemyCallback = gunfighter_bulletKillEnemyCallback,
   .postAttackCount = 0,
@@ -85,7 +88,7 @@ gunfighter_addBullet(void* _ptr)
 
   gunfighter_bullet = object_add(OBJECT_ID_BULLET, 0/*OBJECT_ATTRIBUTE_COLLIDABLE*/, x, object_y(ptr)-gunfighter_config->bulletHeight, 0,
 				 animId,
-				 gunfighter_bulletUpdate, &bullet_fighterData, gunfighter_freeBullet);
+				 gunfighter_bulletUpdate, OBJECT_DATA_TYPE_FIGHTER, &bullet_fighterData, gunfighter_freeBullet);
 
   gunfighter_bullet->velocity.x = ptr->anim->facing == FACING_RIGHT ? gunfighter_config->bulletSpeed : -gunfighter_config->bulletSpeed;
   gunfighter_bullet->velocity.y = 0;
@@ -128,5 +131,6 @@ gunfighter_add(gunfighter_config_t* gunfighterConfig, enemy_config_t* config, in
   gunfighter_config = gunfighterConfig;
   gunfighter_attackQueued = 0;
   gunfighter_bullet = 0;
-  gunfighter = enemy_add(gunfighterConfig->animId, x, y, config); 
+  gunfighter = enemy_add(gunfighterConfig->animId,OBJECT_ATTRIBUTE_DONT_OVERRIDE_CONFIG,x, y, config);
+  gunfighter->id = OBJECT_ID_LEVEL2_BOSS;
 }

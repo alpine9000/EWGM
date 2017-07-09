@@ -2,21 +2,6 @@
 
 #define THING_MAX_THINGS 12
 
-typedef struct _thing{
-  struct _thing* prev;
-  struct _thing* next;  
-  int16_t underAttack;
-  int16_t attack_py;
-  int16_t attackable;
-  int16_t bonus;
-  int16_t hasBonus;
-  int16_t brokenId;
-  int16_t junkStartId;
-
-  uint16_t junkType;
-  int16_t addJunkDx;
-} thing_data_t;
-
 static int16_t thing_count;
 static thing_data_t* thing_freeList;
 static __SECTION_RANDOM thing_data_t thing_buffer[THING_MAX_THINGS];
@@ -40,6 +25,10 @@ thing_getFree(void)
     thing_freeList->prev = 0;
   }
 
+#ifdef DEBUG
+  entry->magicNumber = THING_DATA_MAGIC_NUMBER;
+#endif
+  
   return entry;
 }
 
@@ -80,26 +69,46 @@ thing_init(void)
 
 
 void
+thing_removeBonus(void* _ptr)
+{
+  object_t* ptr = _ptr;
+  object_set_state(ptr,  OBJECT_STATE_REMOVED);
+}
+
+void
 thing_awardBonus(object_t* ptr, object_t* collision)
 {
   if (collision->id == OBJECT_ID_PLAYER1) {
-    object_set_state(ptr, OBJECT_STATE_REMOVED);    
+    ptr->velocity.y = -2;
+    alarm_add(25, thing_removeBonus, ptr);    
+    object_set_py_no_checks(ptr, object_py(ptr)-ptr->image->h*OBJECT_PHYSICS_FACTOR);
+    object_set_z(ptr, SCREEN_HEIGHT);
     sound_queueSound(SOUND_PICKUP);
+    ptr->imageIndex++;
+    ptr->image = &object_imageAtlas[ptr->imageIndex];
   } else if (collision->id == OBJECT_ID_PLAYER2) {
-    object_set_state(ptr,  OBJECT_STATE_REMOVED);
-    sound_queueSound(SOUND_PICKUP);    
+    ptr->velocity.y = -2;    
+    alarm_add(25, thing_removeBonus, ptr);
+    object_set_py_no_checks(ptr, object_py(ptr)-ptr->image->h*OBJECT_PHYSICS_FACTOR);    
+    object_set_z(ptr, SCREEN_HEIGHT);    
+    sound_queueSound(SOUND_PICKUP);
+    ptr->imageIndex++;
+    ptr->image = &object_imageAtlas[ptr->imageIndex];
   }
 
-  fighter_data_t* data = collision->data;
+  fighter_data_t* data = fighter_data(collision);
   data->health += 40;
+
+  thing_data(ptr)->bonus = 0;
+  
   if (data->health > PLAYER_INITIAL_HEALTH) {
     data->health = PLAYER_INITIAL_HEALTH;
   }
 
   if (collision->id == OBJECT_ID_PLAYER1) {
-    game_updatePlayer1Health(GAME_PLAYER1_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player1->data)->health);
+    game_updatePlayer1Health(GAME_PLAYER1_HEALTH_SCOREBOARD_X, fighter_data(game_player1)->health);
   } else {
-    game_updatePlayer2Health(GAME_PLAYER2_HEALTH_SCOREBOARD_X, ((fighter_data_t*)game_player2->data)->health);
+    game_updatePlayer2Health(GAME_PLAYER2_HEALTH_SCOREBOARD_X, fighter_data(game_player2)->health);
   }
 }
 
@@ -120,7 +129,7 @@ thing_updatePosition(uint16_t deltaT, object_t* ptr)
   object_set_px(ptr, lastX + vx);
   object_set_py_no_checks(ptr, lastY + vy);
 
-  thing_data_t* data = ptr->data;  
+  thing_data_t* data = thing_data(ptr);  
   if (object_py(ptr) > data->attack_py+2) { // allow a tiny bounce 
     object_set_py_no_checks(ptr, data->attack_py);
   }
@@ -185,7 +194,7 @@ thing_collision(object_t* a)
 void
 thing_update(uint16_t deltaT, object_t* ptr)
 {
-  thing_data_t* data = ptr->data;
+  thing_data_t* data = thing_data(ptr);
 
   if (object_get_state(ptr) == OBJECT_STATE_ABOUT_TO_BE_HIT) {
     thing_attack(ptr, ptr->hit.dx);
@@ -214,6 +223,8 @@ thing_update(uint16_t deltaT, object_t* ptr)
     if (collision) {
       thing_awardBonus(ptr, collision);
     }
+  } else if (ptr->velocity.y || ptr->velocity.x){
+    thing_updatePosition(deltaT, ptr);
   }
 
   if (object_screenx(ptr) < -ptr->image->w) {
@@ -232,7 +243,8 @@ thing_add(uint16_t id, uint16_t animId, uint16_t brokenId, uint16_t junkStartId,
   data->bonus = 0;
   data->brokenId = brokenId;
   data->junkStartId = junkStartId;
-  object_t* ptr = object_add(id, OBJECT_ATTRIBUTE_COLLIDABLE, x, y, 0, animId, thing_update, data, thing_addFree);
+  object_t* ptr = object_add(id, OBJECT_ATTRIBUTE_COLLIDABLE, x, y, 0, animId, thing_update, OBJECT_DATA_TYPE_THING, data, thing_addFree);
+  data->attack_py = object_py(ptr);
   ptr->width = ptr->image->w;
   ptr->widthOffset = 0;
   return ptr;
@@ -260,7 +272,7 @@ thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t yOffset, uint1
   junk->bonus = bonus;
   int16_t x = object_x(ptr) + (dx > 0 ? ptr->image->w : 0);
  
-  object_t* jptr = object_add(OBJECT_ID_JUNK, 0, x, yOffset+object_y(ptr)-40, 0, animId, thing_update, junk, thing_addFree);
+  object_t* jptr = object_add(OBJECT_ID_JUNK, 0, x, yOffset+object_y(ptr)-40, 0, animId, thing_update, OBJECT_DATA_TYPE_THING, junk, thing_addFree);
   jptr->widthOffset = 0;
   jptr->width = jptr->image->w;
   jptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
@@ -271,7 +283,7 @@ static void
 thing_addJunks(void* _ptr)
 {
   object_t* ptr = _ptr;
-  thing_data_t* data = ptr->data;
+  thing_data_t* data = thing_data(ptr);
   thing_addJunk(ptr, data->junkStartId, data->addJunkDx, 0, 0);
   thing_addJunk(ptr, data->junkStartId+1, data->addJunkDx*2, 20, 0);        
   thing_addJunk(ptr, data->junkStartId+2, -data->addJunkDx, 0, 0);          
@@ -282,7 +294,7 @@ static void
 thing_addBonusJunk(void* _ptr)
 {
   object_t* ptr = _ptr;
-  thing_data_t* data = ptr->data;
+  thing_data_t* data = thing_data(ptr);
   if (data->hasBonus == 1) {
     thing_addJunk(ptr, OBJECT_ANIM_BONUS_BURGER, -data->addJunkDx, 0, 1);
   } else if (data->hasBonus == 2) {
@@ -294,7 +306,7 @@ thing_addBonusJunk(void* _ptr)
 void
 thing_attack(object_t* ptr, int16_t dx)
 {
-  thing_data_t* data = ptr->data;
+  thing_data_t* data = thing_data(ptr);
   if (!data->underAttack && data->attackable) {
     sound_queueSound(SOUND_BUD_PUNCH01);
     if (ptr->animId != data->brokenId) {

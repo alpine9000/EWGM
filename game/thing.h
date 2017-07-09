@@ -1,6 +1,28 @@
 #ifndef __THING_H
 #define __THING_H
 
+#define THING_DATA_MAGIC_NUMBER 0xF00DB00B
+
+#define thing_data(x) ((thing_data_t*)(_object_data(x, OBJECT_DATA_TYPE_THING)))
+
+typedef struct _thing{
+#ifdef DEBUG
+  uint32_t magicNumber;
+#endif
+  struct _thing* prev;
+  struct _thing* next;  
+  int16_t underAttack;
+  int16_t attack_py;
+  int16_t attackable;
+  int16_t bonus;
+  int16_t hasBonus;
+  int16_t brokenId;
+  int16_t junkStartId;
+  
+  uint16_t junkType;
+  int16_t addJunkDx;
+} thing_data_t;
+
 
 void
 thing_init(void);
