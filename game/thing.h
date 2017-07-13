@@ -24,9 +24,9 @@ typedef struct _thing{
   uint16_t bonusType;
   int16_t brokenId;
   int16_t junkStartId;
-  
   uint16_t junkType;
   int16_t addJunkDx;
+  object_t* platform;
 } thing_data_t;
 
 
@@ -47,4 +47,7 @@ thing_updatePosition(uint16_t deltaT, object_t* ptr);
 
 object_t*
 thing_collision(object_t* a);
+
+object_t*
+thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t yOffset, uint16_t bonus, uint16_t bonusType);
 #endif 

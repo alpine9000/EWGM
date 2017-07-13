@@ -799,6 +799,15 @@ object_animation_t object_animations[] = {
   },  
 
   // =================================
+
+  [OBJECT_ANIM_BONUS_BEER] = {
+    .start = SPRITE_BONUS_BEER,
+    .stop = SPRITE_POINTS_BEER,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },  
+
+  // =================================  
   [OBJECT_ANIM_STAR] = {
     .start = SPRITE_STAR,
     .stop = SPRITE_STAR,
@@ -2503,6 +2512,24 @@ object_image_t object_imageAtlas[] = {
     .dx = 0,
     .dy = 0,
     },
+
+  [SPRITE_BONUS_BEER] = {
+    .x = 208,
+    .y = 512,
+    .w = 16,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,
+    },
+
+  [SPRITE_POINTS_BEER] = {
+    .x = 208,
+    .y = 528,
+    .w = 16,
+    .h = 16,
+    .dx = 0,
+    .dy = 0,
+    },  
 
   //========================== 
   [SPRITE_STAR] = {

@@ -147,10 +147,14 @@ level2_addSixPack(uint16_t argument)
 static int16_t
 level2_addTableAndChairs(uint16_t x, int16_t y)
 {
-  thing_add(OBJECT_ID_TABLE, OBJECT_ANIM_TABLE, OBJECT_ANIM_TABLE, 0, game_cameraX+x, y, 0, 0);
+  object_t* table = thing_add(OBJECT_ID_TABLE, OBJECT_ANIM_TABLE, OBJECT_ANIM_TABLE, 0, game_cameraX+x, y, 0, 0);
   thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR1, OBJECT_ANIM_CHAIR1, 0, game_cameraX+x+45, y, 1, THING_BONUS_TYPE_POINTS);
   thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR2, OBJECT_ANIM_CHAIR2, 0, game_cameraX+x-15, y, 0, 0);
 
+  object_t* beer = thing_addJunk(table, OBJECT_ANIM_BONUS_BEER, 0, -20, 1, THING_BONUS_TYPE_POINTS);
+  //  object_set_py(beer, object_py(table)+(0*OBJECT_PHYSICS_FACTOR));
+  object_set_z(beer, object_z(table)+1);
+  thing_data(beer)->platform = table;
   return 1;
 }
 

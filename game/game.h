@@ -9,8 +9,8 @@
 #define CONFIG_OCS_FAST    2
 #define CONFIG_WORKBENCH   3
 
-#define DEBUG
-#define GAME_AUTOSTART_REPLAY
+//#define DEBUG
+//#define GAME_AUTOSTART_REPLAY
 //#define GAME_DEBUG_OBJECT_RENDERING 
 
 #ifdef DEBUG
