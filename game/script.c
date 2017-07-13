@@ -3,7 +3,6 @@
 #ifdef DEBUG
 #ifdef SCRIPTING
 __EXTERNAL uint16_t script_port = 0;
-uint32_t script_breakpoint = 0xffffffff;
 
 void
 script_process(void)
@@ -18,9 +17,6 @@ script_process(void)
       keyboard_code = 0; // todo: correct code
       keyboard_key = script_port;
     }
-
-  } else if (script_port & 0x8000) {
-    script_breakpoint = script_port & 0x7fff;    
   }
 
   script_port = 0;

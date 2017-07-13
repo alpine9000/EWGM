@@ -39,7 +39,7 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
     .chipDataSize = sizeof(level_level1_c_data),
     .fastDataSize = sizeof(level_level1_f_data),    
     .instructions = level1_instructions,
-    .moduleIndex = 6,
+    .moduleIndex = 0,
     .readyMessage = I18N_LEVEL1_READY
   },
   { 

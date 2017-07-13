@@ -6,7 +6,6 @@
 void
 script_process(void);
 
-extern uint32_t script_breakpoint;
 #endif
 #endif
 #endif

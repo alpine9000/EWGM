@@ -66,69 +66,50 @@ function CheckScreenshot(filename)
 
 end
 
-
-function GameScreenshot(_state)
-   
-   if screenShotState == 0 or screenShotState == nil then
-      screenShotState = 1
-      Write("_script_port",  _state.screenShotFrame + 0x8000)
-   elseif screenShotState == 1 then
-      if uae_peek_symbol32("_game_paused") == 1 then
-	 screenShotState = 2
-	 screenShotFrame = uae_peek_symbol32("_hw_verticalBlankCount")
-      end
-   elseif screenShotState == 2 then
-      if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+screenShotWait then
-	 screenShotState = 3
-	 screenShotFrame = uae_peek_symbol32("_hw_verticalBlankCount")
-	 uae_screenshot(screenShotFilename)
-      end
-   elseif screenShotState == 3 then
-      if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+screenShotWait then
-	 CheckScreenshot(_state.filename)
-	 Write("_script_port", string.byte(' '))
-	 --Write32("_game_paused", 0)	 
-	 screenShotState = 4
-      end
-   elseif screenShotState == 4 then
-      if uae_peek_symbol32("_game_paused") == 0 then
-	 screenShotState = 0
-	 return true
-      else
-	 Write("_script_port", string.byte(' '))
-	 --Write32("_game_paused", 0)
-      end
-   end
-   return false
+function _sleep(n)
+  os.execute("sleep " .. tonumber(n))
 end
 
+function sleep (a) 
+    local sec = tonumber(os.clock() + a); 
+    while (os.clock() < sec) do 
+    end 
+end
+
+function GameScreenshot(_state)
+   local sleepTime = 0.25
+
+   if uae_peek_symbol32("_hw_verticalBlankCount") == _state.screenShotFrame then
+      uae_pause(1)
+      sleep(sleepTime)      
+      uae_screenshot(screenShotFilename)
+      sleep(sleepTime)      
+      CheckScreenshot(_state.filename)
+      uae_pause(0)
+      return true
+   end
+      
+   return false
+end
 
 function Screenshot(_state)
    if screenShotState == 0 or screenShotState == nil then
       screenShotFrame = uae_peek_symbol32("_hw_verticalBlankCount")
       screenShotState = 1
    elseif screenShotState == 1 then
-      if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+screenShotWait or
-         uae_peek_symbol32("_hw_verticalBlankCount") < screenShotFrame then	 
-	 screenShotState = 2
-	 screenShotFrame = uae_peek_symbol32("_hw_verticalBlankCount")
-	 uae_screenshot(screenShotFilename)
-      end
-   elseif screenShotState == 2 then
-      if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+screenShotWait or
-         uae_peek_symbol32("_hw_verticalBlankCount") < screenShotFrame then
-	 CheckScreenshot(_state.filename)
-	 screenShotFrame = uae_peek_symbol32("_hw_verticalBlankCount")
-	 screenShotState = 3
-      end
-   elseif screenShotState == 3 then
-      if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+screenShotWait or
-      uae_peek_symbol32("_hw_verticalBlankCount") < screenShotFrame then      
+      if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+screenShotWait then
 	 screenShotState = 0
+	 local sleepTime = 0.25
+	 uae_pause(1)
+	 sleep(sleepTime)      
+	 uae_screenshot(screenShotFilename)
+	 sleep(sleepTime)      
+	 CheckScreenshot(_state.filename)
+	 uae_pause(0)
 	 return true
       end
    end
-   return false
+   return false   
 end
 
 function WaitForMessage(_state)
@@ -259,7 +240,7 @@ level = {
    },
    ["verify level parameters"] = {
       less = {{"_game_total", 965648, 32}},
-      equal = {{"_game_player1Score", 9000, 32}, {"_game_player2Score", 13000, 32}}
+      equal = {{"_game_player1Score", 12000, 32}, {"_game_player2Score", 11000, 32}}
    },
 }
 
@@ -303,7 +284,7 @@ level1_2 = {
    },
    ["verify level parameters"] = {
       less = {{"_game_total", 965648, 32}},
-      equal = {{"_game_player1Score", 9000, 32}, {"_game_player2Score", 13000, 32}}
+      equal = {{"_game_player1Score", 12000, 32}, {"_game_player2Score", 11000, 32}}
    },
 }
 

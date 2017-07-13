@@ -247,12 +247,13 @@ game_ctor(void)
   game_difficulty = GAME_DIFFICULTY_HARD;
 
   game_demo = 0;
+  game_numPlayers = 1;
 #ifdef DEBUG
 #ifdef GAME_AUTOSTART_REPLAY
   game_startReplay = 1;
 #endif
 #endif
-  game_numPlayers = 1;
+
   game_scoreboardLoaded = 0;
   game_onScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer2;
   game_offScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer1;
@@ -279,6 +280,23 @@ game_checkCanary(void)
 }
 #endif
 
+#ifdef GAME_RECORDING
+static void
+game_startRecord(void)
+{
+  game_numPlayers = 1;
+  random_seed(1);
+  palette_black();
+  game_loadLevel(MENU_COMMAND_RECORD);
+  //  record_setState(RECORD_RECORD);
+  music_restart();
+  hw_waitVerticalBlank();
+  hw_verticalBlankCount = 0;
+  game_lastVerticalBlankCount = 0;
+}
+
+#endif
+
 static void
 game_init(menu_command_t command)
 {
@@ -293,7 +311,11 @@ game_init(menu_command_t command)
   game_frameBufferData.canary2 = 0xaaaaaaaa;
 #endif
 
-  game_startLevel(command);
+  if (command == MENU_COMMAND_RECORD) {
+    game_startRecord();
+  } else {
+    game_startLevel(command);
+  }    
 }
 
 
@@ -436,21 +458,6 @@ game_refreshScoreboard(void)
 #endif
 }
 
-#ifdef GAME_RECORDING
-static void
-game_startRecord(void)
-{
-  random_seed(1);
-  palette_black();
-  game_loadLevel(MENU_COMMAND_REPLAY);
-  record_setState(RECORD_RECORD);
-  music_restart();
-  hw_waitVerticalBlank();
-  hw_verticalBlankCount = 0;
-  game_lastVerticalBlankCount = 0;
-}
-
-#endif
 
 __NOINLINE void
 game_scoreBoardPlayer1Text(char* text)
@@ -603,7 +610,7 @@ game_loadLevel(menu_command_t command)
   
   if (game_numPlayers == 1) {
 #ifdef DEBUG
-    if (!game_startReplay) {
+    if (command != MENU_COMMAND_REPLAY && command != MENU_COMMAND_RECORD) {
 #endif
       if (game_level == 0 && !game_demo) {
 	player1_character = player_select();
@@ -857,12 +864,6 @@ debug_showRasterLine(void)
   if (game_collectTotal) {
     game_total += line;
     game_frame++;
-#ifdef SCRIPTING
-    if (game_frame == script_breakpoint) {
-      game_paused = 1;
-      script_breakpoint = 0xffffffff;
-    }
-#endif
   }
 
   return;  
@@ -1147,11 +1148,15 @@ game_processKeyboard()
 #endif
 #endif
   case ' ':
+      custom->color[0] = 0x000;
     game_paused = 0;
     game_lastVerticalBlankCount = hw_verticalBlankCount;
+    //game_lastScrollFrame = game_lastVerticalBlankCount = hw_verticalBlankCount;
     break;      
   case 'P':
-    game_pauseToggle();
+    //    game_pauseToggle();
+    custom->color[0] = 0x00f;
+    game_paused = 1;
     break;
   case 'M':
     music_toggle();
