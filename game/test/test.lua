@@ -76,7 +76,12 @@ function sleep (a)
     end 
 end
 
+function _ScreenshotSet(_state)
+   return true
+end
+
 function ScreenshotSet(_state)
+   
    if screenShotSetCount == nil then
       screenShotSetCount = 0;
    end
@@ -254,6 +259,38 @@ level = {
    ["verify level parameters"] = {
       less = {{"_game_total", 965648, 32}},
       equal = {{"_game_player1Score", 12000, 32}, {"_game_player2Score", 11000, 32}}
+   },
+}
+
+level2 = {
+   ["booting"] = {
+      waitFrames = 100,
+      writeExit = {"_script_port", string.byte('2')}, -- level 2
+      next = "game start"
+   },
+   ["game start"] = {
+      waitFrames = 100,
+      writeExit = {"_script_port", string.byte('L')}, -- start replay
+      next = "pause",
+   },
+   ["pause"] = {
+      wait = {"_hw_verticalBlankCount", 0, 32},
+      next = "screenshotSet"
+   },
+   ["screenshotSet"] = {
+      numScreenShots = 35,
+      screenShotWait = 100,
+      filename = "test/screenshots/screenshotSetL2_",
+      transition = ScreenshotSet,
+      next = "waiting for level end"
+   },
+   ["waiting for level end"] = {
+      wait = {"_game_collectTotal", 0},
+      next = "verify level parameters",
+   },
+   ["verify level parameters"] = {
+      less = {{"_game_total", 965648, 32}},
+      equal = {{"_game_player1Score", 40500, 32}, {"_game_player2Score", 0, 32}}
    },
 }
 
@@ -459,12 +496,15 @@ tests = {
    { level, "level 1, first pass"},
    { newHiscore, "new hiscore"},
    { mainMenu, "main menu"},
-   { restartReplay, "restart replay"},
-   { level1_2, "level 1, restart"},   
-   { reset, "reset"},
-   { level, "level 1,  second pass"},
-   { newHiscore2, "new hiscore, second pass"},
-   { mainMenu2, "main menu, second pass"},   
+
+   { level2, "level 2"},
+   
+--   { restartReplay, "restart replay"},
+--   { level1_2, "level 1, restart"},   
+--   { reset, "reset"},
+--   { level, "level 1,  second pass"},
+--   { newHiscore2, "new hiscore, second pass"},
+--   { mainMenu2, "main menu, second pass"},   
 }
 
 

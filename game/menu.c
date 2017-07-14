@@ -241,16 +241,23 @@ menu_processKeyboard(void)
     game_demo = '1';
     return MENU_COMMAND_REPLAY;
     break;
+  case 'L':
+    return MENU_COMMAND_REPLAY;
+    break;
   case 'R':
     return MENU_COMMAND_RECORD;
     break;
   case '1':
     game_numPlayers = 1;    
-    return MENU_COMMAND_LEVEL;
+    //return MENU_COMMAND_LEVEL;
+    game_startLevelIndex = 0;
+    return -1;
     break;
   case '2':
-    game_numPlayers = 2;
-    return MENU_COMMAND_LEVEL;
+    game_numPlayers = 1;
+    //return MENU_COMMAND_LEVEL;
+    game_startLevelIndex = 1;
+    return -1;    
     break;
 #if TRACKLOADER==0
   case KEYBOARD_CODE_ESC:

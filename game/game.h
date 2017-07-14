@@ -158,6 +158,7 @@ extern uint16_t game_scoreboardLoaded;
 #ifdef DEBUG
 extern uint16_t game_collisions;
 extern uint16_t game_startReplay;
+extern uint16_t game_startLevelIndex;
 #endif
 extern uint16_t player1_character;
 

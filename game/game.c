@@ -41,6 +41,7 @@ uint16_t game_scoreboardLoaded;
 uint16_t player1_character;
 uint16_t game_demo;
 #ifdef DEBUG
+uint16_t game_startLevelIndex;
 uint16_t game_startReplay;
 uint16_t game_collisions;
 #endif
@@ -90,6 +91,7 @@ static time_t game_lastLevelTime;
 static uint16_t game_levelTicCounter;
 static uint32_t game_lastVerticalBlankCount;
 static uint16_t game_25fps;
+static uint16_t game_newGame;
 
 #ifdef GAME_TURTLE
 static int16_t game_turtle;
@@ -612,7 +614,7 @@ game_loadLevel(menu_command_t command)
 #ifdef DEBUG
     if (command != MENU_COMMAND_REPLAY && command != MENU_COMMAND_RECORD) {
 #endif
-      if (game_level == 0 && !game_demo) {
+      if (game_newGame && !game_demo) {
 	player1_character = player_select();
       }
 #ifdef DEBUG
@@ -666,8 +668,7 @@ game_loadLevel(menu_command_t command)
 
 
   if (game_numPlayers == 2 || player1_character == 1) {
-    game_player1 = (game_level == 0 || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER1_STAND_RIGHT, 80, game_lastPlayer1Health) : 0;
-    //        game_player1 = (game_level == 0 || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_BOSS2_STAND_RIGHT, 80) : 0;    
+    game_player1 = (game_newGame || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER1_STAND_RIGHT, 80, game_lastPlayer1Health) : 0;
     game_player1->joystickPos = &hw_joystickPos;
     game_player1->joystickButton = &hw_joystickButton;
   } else {
@@ -675,7 +676,7 @@ game_loadLevel(menu_command_t command)
   }
   
   if (game_numPlayers == 2 || player1_character == 0) {
-    game_player2 = (game_level == 0 || game_player2) ? player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER2_STAND_RIGHT, SCREEN_WIDTH-80, game_lastPlayer2Health) : 0;
+    game_player2 = (game_newGame || game_player2) ? player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER2_STAND_RIGHT, SCREEN_WIDTH-80, game_lastPlayer2Health) : 0;
     game_player2->joystickPos = &hw_joystickPos;
     game_player2->joystickButton = &hw_joystickButton;    
   } else {
@@ -687,7 +688,7 @@ game_loadLevel(menu_command_t command)
     game_player2->joystickButton = &hw_joystick2Button;    
   }
 
-  if (game_level == 0) {
+  if (game_newGame) {
     game_refreshScoreboard();
   }
   
@@ -715,7 +716,8 @@ game_loadLevel(menu_command_t command)
   hw_waitVerticalBlank();  
   game_setBigFontColor(GAME_COUNTDOWN_COLOR_TOP_OK, GAME_COUNTDOWN_COLOR_BOTTOM_OK);  
   game_enableCopperEffects();
-  
+
+  game_newGame = 0;
   hw_waitVerticalBlank();
   hw_verticalBlankCount = 0;
   game_lastVerticalBlankCount = 0;
@@ -1408,7 +1410,8 @@ game_loop()
     goto menu;
   }
 
-  game_level = 0;
+  game_newGame = 1;
+  game_level = game_startLevelIndex;
   game_player1Score = 0;
   game_player2Score = 0;
   
