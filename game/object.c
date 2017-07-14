@@ -228,7 +228,7 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
       oh -= (screenY+oh) - (PLAYAREA_HEIGHT);
     }
 #endif
-    
+
     if (ow > 0 && oh > 0) {
       gfx_bitBlitWordAlignedNoMask(fb, game_backScreenBuffer, screenX, screenY, screenX, screenY, ow, oh);
     }
@@ -279,7 +279,6 @@ object_dirty(object_t* ptr)
     if (object_zBuffer[i] != ptr) {
       object_t* o = object_zBuffer[i];
       object_position_t* op = o->save.position;
-      //int16_t ox = (object_x_to_screenx(op->x)/TILE_WIDTH)*TILE_WIDTH;//>>4)<<4;
       int16_t ox = (object_x_to_screenx(op->x)>>4)<<4;
       int16_t oy = op->y;
       //if (ox <= (((sx + ptr->image->w + 15)>>4)<<4)+TILE_WIDTH &&
@@ -320,6 +319,10 @@ object_updateObject(uint16_t deltaT, object_t* ptr)
   if (ptr->update) {
     ptr->update(deltaT, ptr);
   }
+
+  ptr->_screenX = _object_screenx(ptr);
+  ptr->_screenY = _object_screeny(ptr);  
+  
   if (object_get_state(ptr) == OBJECT_STATE_REMOVED) {
     if (ptr->deadRenderCount == 2) {
       if (ptr == game_player1) {
@@ -454,8 +457,10 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
     if (ptr->tileRender) {
       gfx_setupRenderTile();
       object_tileRender(fb, object_x(ptr)+ptr->image->dx, object_y(ptr)-h, w, h);
+#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
       ptr->cleared = 1;
       ptr->redrawn = 1;
+#endif
       return;
     }
 
@@ -495,7 +500,10 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
     if (object_get_state(ptr) != OBJECT_STATE_REMOVED) {
       object_renderObject(fb, ptr);
     }
-
+  }
+  
+  for (int32_t i = 0; i < object_count; i++) {
+    object_t* ptr = object_zBuffer[i];  
     ptr->save.position->x = object_x(ptr)+ptr->image->dx;
     ptr->save.position->y = object_y(ptr)-ptr->image->h;
     ptr->save.position->z = object_z(ptr);      
@@ -504,10 +512,9 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
 #ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
     ptr->save.position->imageIndex = ptr->imageIndex;
     ptr->save.position->visible = ptr->visible;
-#endif
-    
+#endif    
     ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];
-    object_updateAnimation(deltaT, ptr);                
+    object_updateAnimation(deltaT, ptr);
   }
 }
 

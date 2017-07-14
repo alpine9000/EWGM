@@ -508,6 +508,10 @@ typedef struct object {
   int16_t _z;
   int16_t _px;
   int16_t _py;
+
+  int16_t _screenX;
+  int16_t _screenY;  
+  
   object_velocity_t velocity;
   int16_t imageIndex;
   object_image_t* image;
@@ -618,8 +622,10 @@ object_set_state(object_t* ptr, uint16_t state) {
   ptr->collisionsEnabled = (state == OBJECT_STATE_ALIVE && ptr->collidableObject) ? 1 : 0;
 }
 
-#define object_screenx(ptr) (ptr->image->dx + 0xf + ptr->_x-game_cameraX-game_screenScrollX)
-#define object_screeny(ptr) (ptr->image->dy + (ptr->_y-ptr->image->h))
+#define _object_screenx(ptr) (ptr->image->dx + 0xf + ptr->_x-game_cameraX-game_screenScrollX)
+#define _object_screeny(ptr) (/*ptr->image->dy +*/ (ptr->_y-ptr->image->h))
+#define object_screenx(ptr) (ptr->_screenX)
+#define object_screeny(ptr) (ptr->_screenY)
 #define object_x_to_screenx(x) (0xf + x-game_cameraX-game_screenScrollX)
 
 inline static void
