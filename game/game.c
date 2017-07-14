@@ -1116,7 +1116,11 @@ game_processKeyboard()
     game_collectTotal = !game_collectTotal;
     break;
   case 'T':
-    game_singleStep = 1;
+    if (!game_paused) {
+      game_paused = 1;
+    } else {
+      game_singleStep = 1;
+    }
     break;
   case 'Z':
     music_next();
@@ -1147,16 +1151,13 @@ game_processKeyboard()
     break;
 #endif
 #endif
-  case ' ':
-      custom->color[0] = 0x000;
+    case ' ':
     game_paused = 0;
-    game_lastVerticalBlankCount = hw_verticalBlankCount;
-    //game_lastScrollFrame = game_lastVerticalBlankCount = hw_verticalBlankCount;
+    // game_lastVerticalBlankCount = hw_verticalBlankCount;
+    game_lastScrollFrame = game_lastVerticalBlankCount = hw_verticalBlankCount;
     break;      
   case 'P':
-    //    game_pauseToggle();
-    custom->color[0] = 0x00f;
-    game_paused = 1;
+    game_pauseToggle();
     break;
   case 'M':
     music_toggle();

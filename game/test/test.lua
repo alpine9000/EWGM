@@ -76,6 +76,36 @@ function sleep (a)
     end 
 end
 
+function ScreenshotSet(_state)
+   if screenShotSetCount == nil then
+      screenShotSetCount = 0;
+   end
+
+   if _state.numScreenShots == screenShotSetCount then
+      screenShotSetCount = 0
+      return true
+   end
+
+   if screenShotState == 0 or screenShotState == nil then
+      screenShotFrame = uae_peek_symbol32("_hw_verticalBlankCount")
+      screenShotState = 1
+   elseif screenShotState == 1 then
+      if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+_state.screenShotWait then
+	 local sleepTime = 0.25	 
+	 screenShotState = 0
+	 uae_pause(1)
+	 sleep(sleepTime)
+	 uae_screenshot(screenShotFilename)
+	 sleep(sleepTime)
+	 CheckScreenshot(_state.filename .. screenShotSetCount .. ".png")
+	 uae_pause(0)
+	 screenShotSetCount = screenShotSetCount + 1
+      end
+   end
+
+   return false
+end
+
 function GameScreenshot(_state)
    local sleepTime = 0.25
 
@@ -208,32 +238,15 @@ level = {
    },
    ["game start"] = {
       wait = {"_hw_verticalBlankCount", 0, 32},      
-      next = "screenshot1",
+      next = "screenshotSet",
    },      
-   ["screenshot1"] = {
-      screenShotFrame = 500,
-      filename = "test/screenshots/screenshot1.png",
-      transition = GameScreenshot,
-      next = "screenshot2"
-   },
-   ["screenshot2"] = {
-      screenShotFrame = 1000,
-      filename = "test/screenshots/screenshot2.png",
-      transition = GameScreenshot,
-      next = "screenshot3"
-   },   
-   ["screenshot3"] = {
-      screenShotFrame = 3001,
-      filename = "test/screenshots/screenshot3.png",
-      transition = GameScreenshot,
-      next = "screenshot4"
-   },
-   ["screenshot4"] = {
-      screenShotFrame = 3400,
-      filename = "test/screenshots/screenshot4.png",
-      transition = GameScreenshot,
+   ["screenshotSet"] = {
+      numScreenShots = 80,
+      screenShotWait = 100,
+      filename = "test/screenshots/screenshotSet1_",
+      transition = ScreenshotSet,
       next = "waiting for level end"
-   },         
+   },
    ["waiting for level end"] = {
       wait = {"_game_collectTotal", 0},
       next = "verify level parameters",
@@ -252,32 +265,15 @@ level1_2 = {
    },
    ["game start"] = {
       wait = {"_hw_verticalBlankCount", 0, 32},      
-      next = "screenshot1",
+      next = "screenshotSet",
    },      
-   ["screenshot1"] = {
-      screenShotFrame = 500,
-      filename = "test/screenshots/screenshot1_2.png",
-      transition = GameScreenshot,
-      next = "screenshot2"
-   },
-   ["screenshot2"] = {
-      screenShotFrame = 1000,
-      filename = "test/screenshots/screenshot2_2.png",
-      transition = GameScreenshot,
-      next = "screenshot3"
-   },   
-   ["screenshot3"] = {
-      screenShotFrame = 3001,
-      filename = "test/screenshots/screenshot3_2.png",
-      transition = GameScreenshot,
-      next = "screenshot4"
-   },
-   ["screenshot4"] = {
-      screenShotFrame = 3400,
-      filename = "test/screenshots/screenshot4_2.png",
-      transition = GameScreenshot,
+   ["screenshotSet"] = {
+      numScreenShots = 80,
+      screenShotWait = 100,
+      filename = "test/screenshots/screenshotSet2_",
+      transition = ScreenshotSet,
       next = "waiting for level end"
-   },         
+   },
    ["waiting for level end"] = {
       wait = {"_game_collectTotal", 0},
       next = "verify level parameters",

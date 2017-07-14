@@ -60,5 +60,5 @@ gfx_renderPartialTile(frame_buffer_t dest, int16_t x, int16_t y, uint16_t h, fra
 void
 gfx_splitBlitNoMask(frame_buffer_t dest, frame_buffer_t src, int16_t dx, int16_t dy, int16_t sx, int16_t sy, int16_t w, int16_t _h);
 void 
-gfx_bitBlitNoMask(frame_buffer_t dest, frame_buffer_t src, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h);
+gfx_bitBlitWordAlignedNoMask(frame_buffer_t dest, frame_buffer_t src, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h);
 #endif

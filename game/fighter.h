@@ -36,7 +36,6 @@ typedef struct fighter_data {
   uint16_t attackType;
   int16_t attackRangeY;
   uint16_t numAttacks;
-  int16_t attack_py;
   uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, struct fighter_data* data);
   int16_t walkAbout; // todo: move to enemy data  
   int16_t health;
@@ -55,9 +54,6 @@ typedef struct fighter_data {
   void (*killEnemyCallback)(object_t* me, object_t* victim);
   void (*hitEnemyCallback)(object_t* me, object_t* victim);
   void (*dieCallback)(object_t* me);    
-#ifdef ENEMY_RUNAWAY
-  uint16_t lastState;
-#endif
 } fighter_data_t;
 
 
@@ -77,10 +73,11 @@ void
 fighter_updateSprite(object_t* ptr);
 
 void
-fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx);
-
-void
 fighter_die(object_t* ptr);
+
 int16_t
 fighter_attackCollision(object_t* a, object_collision_t* collision, int16_t thresholdx, uint16_t thresholdy);
+
+void
+fighter_dieCallback(object_t* me);
 #endif

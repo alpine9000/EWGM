@@ -140,12 +140,11 @@ gfx_screenWidthBitBlitNoMask(frame_buffer_t dest, frame_buffer_t src, int16_t sx
   _custom->bltsize = ((h*SCREEN_BIT_DEPTH)<<6) | widthWords;
 }
 
-
 void 
-gfx_bitBlitNoMask(frame_buffer_t dest, frame_buffer_t src, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
+gfx_bitBlitWordAlignedNoMask(frame_buffer_t dest, frame_buffer_t src, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   volatile struct Custom* _custom = CUSTOM;
-  uint32_t widthWords = ((w+15)>>4)+1;
+  uint32_t widthWords = ((w+15)>>4);//1;
   int32_t shift = 0;//(dx&0xf);
   
   dest += gfx_dyOffsetsLUT[dy] + (dx>>3);
@@ -402,7 +401,7 @@ gfx_renderBlackSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, i
   hw_waitBlitter();   
   //  _custom->bltafwm = 0xffff;
   _custom->bltalwm = 0x0000;
-  _custom->bltcon0 = (SRCA|SRCB|SRCC|DEST|0xca|shift<<ASHIFTSHIFT);
+  _custom->bltcon0 = (SRCA|SRCB|SRCC|DEST|0x0a|shift<<ASHIFTSHIFT);
   _custom->bltcon1 = shift<<BSHIFTSHIFT;
   _custom->bltamod = bltamod;
   _custom->bltbmod = bltbmod;

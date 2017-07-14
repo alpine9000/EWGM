@@ -465,7 +465,7 @@ conductor_instruction_t level1_instructions[] = {
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_start},
 
-  //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_pause},      
+  //{CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_pause},      
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_1, level1_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_2, level1_processEnemyConfig},

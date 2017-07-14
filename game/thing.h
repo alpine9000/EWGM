@@ -17,7 +17,6 @@ typedef struct _thing{
   struct _thing* prev;
   struct _thing* next;  
   int16_t underAttack;
-  int16_t attack_py;
   int16_t attackable;
   int16_t bonus;
   int16_t hasBonus;

@@ -91,9 +91,6 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   uint16_t attack = 0;
   
   if (object_get_state(ptr) != OBJECT_STATE_ALIVE) {
-#ifdef ENEMY_RUNAWAY
-    data->lastState = object_get_state(ptr);
-#endif
     return 0;
   }
   

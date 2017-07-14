@@ -145,9 +145,8 @@ thing_updatePosition(uint16_t deltaT, object_t* ptr)
   object_set_px(ptr, lastX + vx);
   object_set_py_no_checks(ptr, lastY + vy);
 
-  thing_data_t* data = thing_data(ptr);  
-  if (object_py(ptr) > data->attack_py+2) { // allow a tiny bounce 
-    object_set_py_no_checks(ptr, data->attack_py);
+  if (object_y(ptr) > object_z(ptr)+2) { // allow a tiny bounce   
+    object_set_py_no_checks(ptr, object_z(ptr)*OBJECT_PHYSICS_FACTOR);
   }
   
   ptr->velocity.dx = object_px(ptr) - lastX;
@@ -168,15 +167,15 @@ thing_collision(object_t* a)
   }
 #endif
 
-  int16_t a_y = object_y(a);  
+  int16_t a_z = object_z(a);  
   int16_t a_x1 = object_x(a) + a->widthOffset;
   int16_t a_x2 = object_x(a) + (a->width - a->widthOffset);
   
   if (game_player1) {
     b = game_player1;
     //if ((b->class == OBJECT_CLASS_FIGHTER) && object_get_state(b) == OBJECT_STATE_ALIVE) {      
-      int16_t b_y = object_z(b);
-      if (abs(a_y - b_y) <= 1) {
+      int16_t b_z = object_z(b);
+      if (abs(a_z - b_z) <= 1) {
 	a_x1 = object_x(a) + a->widthOffset;
 	a_x2 = object_x(a) + (a->width - a->widthOffset);	
 	int16_t b_x1 = object_x(b) + b->widthOffset;
@@ -192,8 +191,8 @@ thing_collision(object_t* a)
   if (game_player2) {
     b = game_player2;
     //if ((b->class == OBJECT_CLASS_FIGHTER) && object_get_state(b) == OBJECT_STATE_ALIVE) {      
-      int16_t b_y = object_y(b);
-      if (abs(a_y - b_y) <= 1) {
+      int16_t b_z = object_z(b);
+      if (abs(a_z - b_z) <= 1) {
 	int16_t b_x1 = object_x(b) + b->widthOffset;
 	int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
 	
@@ -213,7 +212,7 @@ thing_update(uint16_t deltaT, object_t* ptr)
   thing_data_t* data = thing_data(ptr);
 
   if (data->platform && object_get_state(data->platform) == OBJECT_STATE_ABOUT_TO_BE_HIT) {
-    data->attack_py = object_py(data->platform);
+    object_set_z(ptr, object_y(data->platform));
     ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
     data->platform = 0;
     data->underAttack = 1;
@@ -224,8 +223,8 @@ thing_update(uint16_t deltaT, object_t* ptr)
   }
   
   if (data->underAttack) {
-    if (object_py(ptr) >= data->attack_py && ptr->velocity.y > 0) {
-      object_set_py(ptr, data->attack_py);
+    if (object_y(ptr) >= object_z(ptr) && ptr->velocity.y > 0) {
+      object_set_py(ptr, object_z(ptr)*OBJECT_PHYSICS_FACTOR);      
       ptr->velocity.y = 0;
       ptr->velocity.x = 0;    
       data->underAttack = 0;
@@ -240,7 +239,6 @@ thing_update(uint16_t deltaT, object_t* ptr)
 
     thing_updatePosition(deltaT, ptr);
 
-    object_set_z(ptr, data->attack_py/OBJECT_PHYSICS_FACTOR);      
   } else if (data->bonus) {
     object_t* collision = thing_collision(ptr);
     if (collision) {
@@ -269,7 +267,7 @@ thing_add(uint16_t id, uint16_t animId, uint16_t brokenId, uint16_t junkStartId,
   data->brokenId = brokenId;
   data->junkStartId = junkStartId;
   object_t* ptr = object_add(id, OBJECT_ATTRIBUTE_COLLIDABLE, x, y, 0, animId, thing_update, OBJECT_DATA_TYPE_THING, data, thing_addFree);
-  data->attack_py = object_py(ptr);
+  object_set_z(ptr, object_y(ptr));
   ptr->width = ptr->image->w;
   ptr->widthOffset = 0;
   return ptr;
@@ -296,13 +294,14 @@ thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t yOffset, uint1
     proposedY = GAME_PAVEMENT_START+2;
   }
   
-  junk->attack_py =   proposedY*OBJECT_PHYSICS_FACTOR;
   junk->hasBonus = 0;
   junk->bonus = bonus;
   junk->bonusType = bonusType;
   int16_t x = object_x(ptr) + (dx > 0 ? ptr->image->w : 0);
  
   object_t* jptr = object_add(OBJECT_ID_JUNK, 0, x, yOffset+object_y(ptr), 0, animId, thing_update, OBJECT_DATA_TYPE_THING, junk, thing_addFree);
+
+    object_set_z(jptr, proposedY);  
   jptr->widthOffset = 0;
   jptr->width = jptr->image->w;
   if (dx) {
@@ -388,7 +387,7 @@ thing_attack(object_t* ptr, int16_t dx)
       proposedY = GAME_PAVEMENT_START+2;
     }
     
-    data->attack_py = proposedY*OBJECT_PHYSICS_FACTOR;//object_py(ptr);    
+    object_set_z(ptr, proposedY);
     
     ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
     ptr->velocity.x = dx;    

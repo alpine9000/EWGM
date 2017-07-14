@@ -125,6 +125,7 @@ fighter_killEnemyCallback(object_t* me, object_t* victim)
   sound_queueSound(SOUND_DIE03);
 }
 
+
 static void
 fighter_hitEnemyCallback(object_t* me, object_t* victim)
 {
@@ -133,10 +134,8 @@ fighter_hitEnemyCallback(object_t* me, object_t* victim)
   sound_queueSound(SOUND_ENEMY_PUNCH01);      
 }
 
-__EXTERNAL
-int xxx;
 
-void
+static void
 fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
 {
   fighter_data_t* data = fighter_data(ptr);  
@@ -151,7 +150,6 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
 #endif
   
   object_set_z(ptr, object_y(ptr));
-  data->attack_py = object_py(ptr);
      
   if (ptr->attributes & OBJECT_ATTRIBUTE_PLAYER && attacker->attributes & OBJECT_ATTRIBUTE_PLAYER) {
    data->health -= (dammage/4);
@@ -191,8 +189,8 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
 void
 fighter_updatePositionUnderAttack(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
-  if (object_py(ptr) >= data->attack_py && ptr->velocity.y > 0) {
-    object_set_py_no_checks(ptr, data->attack_py);
+  if (object_y(ptr) >= object_z(ptr) && ptr->velocity.y > 0) {
+    object_set_py_no_checks(ptr, object_z(ptr)*OBJECT_PHYSICS_FACTOR);
     ptr->velocity.y = 0;
     ptr->velocity.x = 0;    
     if (data->health <= 0) {
@@ -226,7 +224,6 @@ fighter_checkAttack(object_t* ptr, fighter_data_t* data)
 	  collision.right->hit.dx = 1;
 	  object_set_state(collision.right, OBJECT_STATE_ABOUT_TO_BE_HIT);
 	}
-	//	fighter_attack(ptr, collision.right, attackConfig->dammage, 1);
       } else if (ptr->anim->facing == FACING_LEFT && collision.left) {
 	if (object_get_state(collision.left) == OBJECT_STATE_ALIVE) {
 	  collision.left->hit.attacker = ptr;
@@ -234,7 +231,6 @@ fighter_checkAttack(object_t* ptr, fighter_data_t* data)
 	  collision.left->hit.dx = -1;
 	  object_set_state(collision.left, OBJECT_STATE_ABOUT_TO_BE_HIT);
 	}
-	//	fighter_attack(ptr, collision.left, attackConfig->dammage, -1);
       }
       
     } 
@@ -305,7 +301,7 @@ fighter_updateSprite(object_t* ptr)
   }
 }
 
-static void
+void
 fighter_dieCallback(object_t* me)
 {
   __USE(me);
@@ -462,9 +458,6 @@ fighter_add(uint16_t id, uint16_t attributes, uint16_t animId, int16_t x, int16_
   data->postAttackInvincibleTics = 0;
   data->postAttackCount = 0;
   data->speed = 1;
-#ifdef ENEMY_RUNAWAY
-  data->lastState = OBJECT_STATE_ALIVE;
-#endif
   data->killEnemyCallback = fighter_killEnemyCallback;
   data->hitEnemyCallback = fighter_hitEnemyCallback;
   data->dieCallback = fighter_dieCallback;

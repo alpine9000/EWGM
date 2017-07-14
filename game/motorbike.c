@@ -5,7 +5,7 @@ enum {
   MOTORBIKE_ENTERING_SCREEN,
   MOTORBIKE_WAIT,
   MOTORBIKE_GO,
-  MOTORBIKE_POST_ATTACK
+  MOTORBIKE_POST_ATTACK,
 };
 
 static uint16_t motorbike_state = MOTORBIKE_ENTERING_SCREEN;
@@ -144,11 +144,11 @@ motorbike_update(uint16_t deltaT, object_t* ptr)
   level1_motorbikeIntelligence(deltaT, ptr, 0);
 
   if ((object_get_state(ptr) == OBJECT_STATE_HIT ||
-      object_get_state(ptr) == OBJECT_STATE_FLASHING) && data->attack_py != -1) {
-    if (object_py(ptr) >= data->attack_py && ptr->velocity.y > 0) {
-      object_set_py_no_checks(ptr, data->attack_py);
+      object_get_state(ptr) == OBJECT_STATE_FLASHING) && motorbike_state == MOTORBIKE_POST_ATTACK) {
+    if (object_y(ptr) >= object_z(ptr) && ptr->velocity.y > 0) {
+      object_set_py_no_checks(ptr, object_z(ptr)*OBJECT_PHYSICS_FACTOR);
       ptr->velocity.y = 0;
-      data->attack_py = -1;
+      motorbike_state = MOTORBIKE_GO;
     } else {
       ptr->velocity.y += deltaT;
     }
@@ -176,14 +176,15 @@ motorbike_update(uint16_t deltaT, object_t* ptr)
   default:
     return;
   }
-  
+
+
   object_t* player = motorbike_collision(ptr);
-  
+
   if (player) {
-    if (player->actionId == OBJECT_KICK_LEFT || player->actionId == OBJECT_KICK_RIGHT) {
+    if (motorbike_state != MOTORBIKE_POST_ATTACK && (player->actionId == OBJECT_KICK_LEFT || player->actionId == OBJECT_KICK_RIGHT)) {
       data->health -= 50;
       star_add(ptr, ptr->velocity.x);      
-      data->attack_py = object_py(ptr);
+      object_set_z(ptr, object_y(ptr));
       motorbike_state = MOTORBIKE_POST_ATTACK;      
       if (data->health <= 0) {
 	ptr->velocity.y = -16;
@@ -211,19 +212,42 @@ motorbike_update(uint16_t deltaT, object_t* ptr)
       }
     } else if (motorbike_state == MOTORBIKE_GO && player) {
       motorbike_state = MOTORBIKE_POST_ATTACK;
-      fighter_attack(ptr, player, 25, ptr->velocity.x);    
+      player->hit.attacker = ptr;
+      player->hit.dammage = 25;
+      player->hit.dx = ptr->velocity.x;
+      object_set_state(player, OBJECT_STATE_ABOUT_TO_BE_HIT);
     }
   }  
+}
+
+
+static void
+motorbike_hitEnemyCallback(object_t* me, object_t* victim)
+{
+  __USE(me);
+  __USE(victim);
+  sound_queueSound(SOUND_ENEMY_PUNCH01);      
+}
+
+static void
+motorbike_killEnemyCallback(object_t* me, object_t* victim)
+{
+  __USE(me);
+  __USE(victim);
+  sound_queueSound(SOUND_DIE03);
 }
 
 
 void
 motorbike_add(int16_t x, int16_t y)
 {
-  object_t* ptr = object_add(OBJECT_ID_ENEMY, OBJECT_ATTRIBUTE_COLLIDABLE, x, y, 0, OBJECT_ANIM_MOTORBIKE_STAND_RIGHT, motorbike_update, OBJECT_DATA_TYPE_FIGHTER, &motorbike_data, 0);
+  object_t* ptr = object_add(OBJECT_ID_ENEMY, /*OBJECT_ATTRIBUTE_COLLIDABLE*/0, x, y, 0, OBJECT_ANIM_MOTORBIKE_STAND_RIGHT, motorbike_update, OBJECT_DATA_TYPE_FIGHTER, &motorbike_data, 0);
+  motorbike_data.magicNumber = FIGHTER_DATA_MAGIC_NUMBER;
   motorbike_data.postAttackCount = 0;
   motorbike_data.health = 100;
-  motorbike_data.attack_py = -1;
+  motorbike_data.hitEnemyCallback = motorbike_hitEnemyCallback;
+  motorbike_data.killEnemyCallback = motorbike_killEnemyCallback;
+  motorbike_data.dieCallback = fighter_dieCallback;  
   ptr->width = ptr->image->w;
   ptr->widthOffset = 0;
   enemy_count++;

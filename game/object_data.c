@@ -1142,7 +1142,7 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,    
   },
     [SPRITE_PLAYER1_RUN_RIGHT_4] = {
-    .x = 32,
+    .x = 64,
     .y = 108,
     .w = 32,
     .h = 53,
@@ -2015,16 +2015,16 @@ object_image_t object_imageAtlas[] = {
     },  
 
   [SPRITE_LEVEL2_BOSS_HIT_LEFT] = {
-    .x = 96,
-    .y = 451,
+    .x = 48,
+    .y = 507,
     .w = 48,
     .h = 56,
     .dx = 0,
     .dy = 0,    
     },
   [SPRITE_LEVEL2_BOSS_HIT_RIGHT] = {
-    .x = 96,
-    .y = 395,
+    .x = 192,
+    .y = 336,
     .w = 48,
     .h = 56,
     .dx = 0,

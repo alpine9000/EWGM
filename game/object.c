@@ -193,13 +193,17 @@ object_updateAnimation(uint16_t deltaT, object_t *ptr)
   }
 }
 
+
 static __INLINE void
 object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t oh)
 {
 #ifdef GAME_TRIPLE_BUFFER
   __USE(frame);
   if (ow) {
-    int16_t sx = (ox>>4)<<4;
+    int16_t sx = (ox/TILE_WIDTH)*TILE_WIDTH;
+    //int16_t sx = (ox>>4)<<4;
+    ow = ow+TILE_WIDTH;
+
     int16_t screenX = 0xf+(sx)-game_cameraX-game_screenScrollX;
     int16_t screenY = oy;
 
@@ -210,12 +214,11 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
 
     if (screenX < 0) {
       ow += screenX;
-      ow += 1;      
       screenX = 0;
     }
 
-    if ((screenX+ow) > SCREEN_WIDTH+TILE_WIDTH) {
-      ow -= ((screenX+ow) -(SCREEN_WIDTH+TILE_WIDTH));
+    if ((screenX+ow) > SCREEN_WIDTH+TILE_WIDTH+TILE_WIDTH) {
+      ow -= ((screenX+ow) -(SCREEN_WIDTH+TILE_WIDTH+TILE_WIDTH));
     }
 
 #ifdef GAME_OBJECTS_BELOW_PLAYAREA_BOTTOM
@@ -227,12 +230,13 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
 #endif
     
     if (ow > 0 && oh > 0) {
-      gfx_bitBlitNoMask(fb, game_backScreenBuffer, screenX, screenY, screenX, screenY, ow, oh);
+      gfx_bitBlitWordAlignedNoMask(fb, game_backScreenBuffer, screenX, screenY, screenX, screenY, ow, oh);
     }
   }
 #else  
   if (ow) {
     gfx_setupRenderTile();
+    shifting negatives is borked
     int16_t sx = ox>>4;
     int16_t sy = (oy)>>4;
     int16_t ex = (ox+ow)>>4;
@@ -266,7 +270,8 @@ object_dirty(object_t* ptr)
   if (object_screenx(ptr)+ptr->image->w > SCREEN_WIDTH) {
       return 1;
   }
-  
+
+  //int16_t sx = ((object_screenx(ptr))/TILE_WIDTH)*TILE_WIDTH;//>>4)<<4;
   int16_t sx = ((object_screenx(ptr))>>4)<<4;
   int16_t sy = object_screeny(ptr);
   
@@ -274,11 +279,11 @@ object_dirty(object_t* ptr)
     if (object_zBuffer[i] != ptr) {
       object_t* o = object_zBuffer[i];
       object_position_t* op = o->save.position;
-
+      //int16_t ox = (object_x_to_screenx(op->x)/TILE_WIDTH)*TILE_WIDTH;//>>4)<<4;
       int16_t ox = (object_x_to_screenx(op->x)>>4)<<4;
       int16_t oy = op->y;
       //if (ox <= (((sx + ptr->image->w + 15)>>4)<<4)+TILE_WIDTH &&
-      if (ox <= sx + (((ptr->image->w + 15)>>4)<<4)+TILE_WIDTH &&	  
+      if (ox <= sx + (((ptr->image->w + 15)>>4)<<4)+TILE_WIDTH &&
 	  //(((ox + op->w + 15)>>4)<<4)+TILE_WIDTH >= sx &&
 	  ox + (((op->w + 15)>>4)<<4)+TILE_WIDTH >= sx &&
 	  oy <= (((sy + ptr->image->h))) &&
@@ -292,6 +297,7 @@ object_dirty(object_t* ptr)
 
   for (int i = 0; i < object_count && object_zBuffer[i] != ptr; i++) {
     object_t* o = object_zBuffer[i];
+    //    int16_t ox = ((object_screenx(o))/TILE_WIDTH)*TILE_WIDTH;//>>4)<<4;
     int16_t ox = ((object_screenx(o))>>4)<<4;
     int16_t oy = ((object_screeny(o)));
     if (ox <= (((sx + ptr->image->w)>>4)<<4)+TILE_WIDTH &&
@@ -461,7 +467,7 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
     if (ptr->redrawn) {
 #endif
 #ifdef GAME_DEBUG_OBJECT_RENDERING
-      gfx_fillRect(fb, (screenx>>4)<<4, screeny, ((((w+15)>>4))<<4)+16, h, 26);
+      gfx_fillRect(fb, (screenx/16)*16, screeny, ((((w+15)>>4))<<4)+16, h, 26);
 #endif
       gfx_renderSprite(fb, sx, sy, screenx, screeny, w, h);
 #ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
