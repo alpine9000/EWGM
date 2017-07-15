@@ -242,6 +242,7 @@ menu_processKeyboard(void)
     return MENU_COMMAND_REPLAY;
     break;
   case 'L':
+    game_numPlayers = 1;
     return MENU_COMMAND_REPLAY;
     break;
   case 'R':

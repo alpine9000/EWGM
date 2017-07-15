@@ -182,7 +182,7 @@ player_player1DieCallback(object_t* me)
 {
   __USE(me);
   game_player1 = 0;
-  game_scoreBoardPlayer2Text(I18N_GAME_OVER);
+  game_scoreBoardPlayer1Text(I18N_GAME_OVER);
   if (!game_player2) {
     game_setGameOver();	    
   } else if (game_loopControl == GAME_LOOP_CONTROL_DEATHMATCH) {

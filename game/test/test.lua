@@ -4,7 +4,7 @@ quit = false
 screenShotFilename = "out/test-screenshot.png"
 screenShotWait = 100
 menuWait = 100
-createTestImages = 0
+createTestImages = 1
 
 function Setup()
    uae_write_symbol16("_script_port", 0)
@@ -246,7 +246,7 @@ level = {
       next = "screenshotSet",
    },      
    ["screenshotSet"] = {
-      numScreenShots = 80,
+      numScreenShots = 110,
       screenShotWait = 100,
       filename = "test/screenshots/screenshotSet1_",
       transition = ScreenshotSet,
@@ -258,7 +258,7 @@ level = {
    },
    ["verify level parameters"] = {
       less = {{"_game_total", 965648, 32}},
-      equal = {{"_game_player1Score", 12000, 32}, {"_game_player2Score", 11000, 32}}
+      equal = {{"_game_player1Score", 9000, 32}, {"_game_player2Score", 8000, 32}}
    },
 }
 
@@ -305,7 +305,7 @@ level1_2 = {
       next = "screenshotSet",
    },      
    ["screenshotSet"] = {
-      numScreenShots = 80,
+      numScreenShots = 110,
       screenShotWait = 100,
       filename = "test/screenshots/screenshotSet2_",
       transition = ScreenshotSet,
@@ -317,7 +317,7 @@ level1_2 = {
    },
    ["verify level parameters"] = {
       less = {{"_game_total", 965648, 32}},
-      equal = {{"_game_player1Score", 12000, 32}, {"_game_player2Score", 11000, 32}}
+      equal = {{"_game_player1Score", 9000, 32}, {"_game_player2Score",8000, 32}}
    },
 }
 

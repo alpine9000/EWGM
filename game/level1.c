@@ -451,6 +451,14 @@ level1_start(uint16_t argument)
   return 1;
 }
 
+static int16_t
+level1_motorbike(uint16_t argument)
+{
+  __USE(argument);
+  motorbike_add(game_cameraX-160, 150);
+  return 1;
+}
+
 //#ifdef DEBUG
 int16_t
 level1_pause(uint16_t argument)
@@ -492,12 +500,14 @@ conductor_instruction_t level1_instructions[] = {
 
 #define WAVE_5_X ((SCREEN_WIDTH*2)+150)
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, WAVE_5_X, level_scroll},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, WAVE_5_X, LEVEL1_WAVE5_1, level1_processEnemyConfig},
+  /* {CONDUCTOR_INSTRUCTION_CAMERAX, WAVE_5_X, LEVEL1_WAVE5_1, level1_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, WAVE_5_X, LEVEL1_WAVE5_2, level1_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, WAVE_5_X, LEVEL1_WAVE5_3, level1_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, WAVE_5_X, LEVEL1_WAVE5_4, level1_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, WAVE_5_X, LEVEL1_WAVE5_5, level1_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, WAVE_5_X, LEVEL1_WAVE5_6, level1_processEnemyConfig},  
+  {CONDUCTOR_INSTRUCTION_CAMERAX, WAVE_5_X, LEVEL1_WAVE5_6, level1_processEnemyConfig},  */
+
+  {CONDUCTOR_INSTRUCTION_CAMERAX, WAVE_5_X-10, 0, level1_motorbike},  
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (WAVE_5_X)+(SCREEN_WIDTH/2), level_scroll},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (WAVE_5_X)+1, SCREEN_WIDTH, level1_addPostbox},

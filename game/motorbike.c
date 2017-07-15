@@ -148,7 +148,9 @@ motorbike_update(uint16_t deltaT, object_t* ptr)
     if (object_y(ptr) >= object_z(ptr) && ptr->velocity.y > 0) {
       object_set_py_no_checks(ptr, object_z(ptr)*OBJECT_PHYSICS_FACTOR);
       ptr->velocity.y = 0;
-      motorbike_state = MOTORBIKE_GO;
+      if (object_get_state(ptr) != OBJECT_STATE_FLASHING) {
+	motorbike_state = MOTORBIKE_GO;
+      }
     } else {
       ptr->velocity.y += deltaT;
     }
