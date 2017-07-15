@@ -320,8 +320,8 @@ object_updateObject(uint16_t deltaT, object_t* ptr)
     ptr->update(deltaT, ptr);
   }
 
-  ptr->_screenX = _object_screenx(ptr);
-  ptr->_screenY = _object_screeny(ptr);  
+  //  ptr->_screenX = _object_screenx(ptr);
+  //  ptr->_screenY = _object_screeny(ptr);  
   
   if (object_get_state(ptr) == OBJECT_STATE_REMOVED) {
     if (ptr->deadRenderCount == 2) {
