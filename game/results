@@ -109,3 +109,9 @@
 
  642471 // cached screenx/y
  642932 // not cached screenx/y
+
+ - new replay
+ 608263
+ 608263
+
+ 607974 - fixed scan line calculation

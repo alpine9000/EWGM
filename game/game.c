@@ -239,7 +239,7 @@ game_check25fps(void)
 {
   uint32_t count = hw_verticalBlankCount;
   for (volatile int32_t i = 0; i < 100000; i++);
-  return hw_verticalBlankCount - count > 25;  
+  return hw_verticalBlankCount - count > 50;
 }
 
 
@@ -865,6 +865,8 @@ debug_showRasterLine(void)
 
   if (hw_verticalBlankCount-game_lastVerticalBlankCount > 1) {
     line = hw_getRasterLine() + 312;
+  } else if (hw_verticalBlankCount == game_lastVerticalBlankCount) {
+    line = line - 285;
   }
   
   if (line > game_maxRasterLine) {
