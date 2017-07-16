@@ -216,7 +216,7 @@ Notes:
     cd ../../build
     mkdir gcc
     cd gcc
-    ../../repos/gcc/configure --prefix=/usr/local/amiga/vgcc --target=m68k-amigaos --enable-languages=c --with-as=/usr/local/amiga/vgcc/bin/vasmm68k_mot
+    ../../repos/gcc/configure --prefix=/usr/local/amiga/vgcc --target=m68k-amigaosvasm --enable-languages=c --with-as=/usr/local/amiga/vgcc/bin/vasmm68k_mot
     make -j4 all-gcc
     make -j4 install-gcc
     cd ../../
