@@ -248,6 +248,7 @@ menu_processKeyboard(void)
   case 'R':
     return MENU_COMMAND_RECORD;
     break;
+#ifdef DEBUG
   case '1':
     game_numPlayers = 1;    
     //return MENU_COMMAND_LEVEL;
@@ -260,6 +261,7 @@ menu_processKeyboard(void)
     game_startLevelIndex = 1;
     return -1;    
     break;
+#endif
 #if TRACKLOADER==0
   case KEYBOARD_CODE_ESC:
   case 'Q':
@@ -593,6 +595,7 @@ menu_scroller(char* text)
 __EXTERNAL menu_command_t
 menu_loop(menu_mode_t mode)
 {
+  music_play(MUSIC_INTRO);
   menu_offscreen = &menu_offscreenBuffer[0];  
   extern uint8_t menu_menuBitplanes;
   menu_frameBuffer = &menu_menuBitplanes;

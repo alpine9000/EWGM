@@ -244,7 +244,9 @@ void
 motorbike_add(int16_t x, int16_t y)
 {
   object_t* ptr = object_add(OBJECT_ID_ENEMY, /*OBJECT_ATTRIBUTE_COLLIDABLE*/0, x, y, 0, OBJECT_ANIM_MOTORBIKE_STAND_RIGHT, motorbike_update, OBJECT_DATA_TYPE_FIGHTER, &motorbike_data, 0);
+#ifdef DEBUG
   motorbike_data.magicNumber = FIGHTER_DATA_MAGIC_NUMBER;
+#endif
   motorbike_data.postAttackCount = 0;
   motorbike_data.health = 100;
   motorbike_data.hitEnemyCallback = motorbike_hitEnemyCallback;

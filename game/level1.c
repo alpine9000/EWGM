@@ -318,7 +318,7 @@ static void
 level1_song3(void* data)
 {
   __USE(data);
-  music_play(3);
+  music_play(MUSIC_BOSS_1);
   music_toggle();
 }
 

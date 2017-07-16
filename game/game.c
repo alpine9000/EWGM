@@ -1203,7 +1203,7 @@ game_processKeyboard()
       game_scoreBoardPlayer1Score(I18N_BLANK_GAME_OVER);
       game_lastPlayer1Score = 0xffffffff;
       game_scoreBoardPlayer1Text(I18N_BLANK_GAME_OVER);
-      game_player1 = player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER1_STAND_RIGHT, 80, game_lastPlayer1Health);
+      game_player1 = player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER1_STAND_RIGHT, game_cameraX+80, game_lastPlayer1Health);
       game_player1->joystickPos = &hw_joystick2Pos;
       game_player1->joystickButton = &hw_joystick2Button;          
       game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);      
@@ -1280,6 +1280,7 @@ game_setGameOver(void)
   if (!game_over) {
     game_over = 1;
     game_loopControl = GAME_LOOP_CONTROL_GAME_OVER;
+    music_play(MUSIC_GAME_OVER);
   }
 }
 
@@ -1311,7 +1312,7 @@ game_gameOverSequence(void)
 static void
 game_gameCompleteSequence(void)
 {
-  music_play(4);  
+  music_play(MUSIC_BOSS_COMPLETE);  
   game_scoreBoardPlayer1Text(I18N_GAME_OVER);
   game_scoreBoardPlayer2Text(I18N_GAME_OVER);
   
@@ -1323,7 +1324,7 @@ game_gameCompleteSequence(void)
 static void
 game_levelCompleteSequence(void)
 {
-  music_play(4);  
+  music_play(MUSIC_BOSS_COMPLETE);  
   
   game_waitForMenuExit(OBJECT_ANIM_LEVELCOMPLETE, 55);
 }
@@ -1394,7 +1395,7 @@ game_loop()
 
   logo_load();
   
-  music_play(5);
+  music_play(MUSIC_INTRO);
 
   hw_interruptsInit(); // Don't enable interrupts until music is set up
   custom->intena = INTF_SETCLR|INTF_VERTB|INTF_INTEN;  
@@ -1423,7 +1424,11 @@ game_loop()
   }
 
   game_newGame = 1;
+#ifdef DEBUG
   game_level = game_startLevelIndex;
+#else
+  game_level = 0;
+#endif
   game_player1Score = 0;
   game_player2Score = 0;
   

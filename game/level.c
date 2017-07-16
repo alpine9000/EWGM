@@ -39,7 +39,7 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
     .chipDataSize = sizeof(level_level1_c_data),
     .fastDataSize = sizeof(level_level1_f_data),    
     .instructions = level1_instructions,
-    .moduleIndex = 0,
+    .moduleIndex = MUSIC_LEVEL_1,
     .readyMessage = I18N_LEVEL1_READY
   },
   { 
@@ -48,7 +48,7 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
     .chipDataSize = sizeof(level_level2_c_data),
     .fastDataSize = sizeof(level_level2_f_data),        
     .instructions = level2_instructions,
-    .moduleIndex = 0,
+    .moduleIndex = MUSIC_LEVEL_2,
     .readyMessage = I18N_LEVEL2_READY    
   },
   { 

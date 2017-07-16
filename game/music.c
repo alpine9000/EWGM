@@ -33,13 +33,13 @@ typedef struct {
 } music_song_t;
 
 static music_song_t music_songs[] = {
-  { music_level_a, sizeof(music_level_a), 0},  // in game 
-  { music_level_a, sizeof(music_level_a), 32}, // ?
-  { music_level_a, sizeof(music_level_a), 33}, // ?
-  { music_level_a, sizeof(music_level_a), 35}, // boss
-  { music_level_a, sizeof(music_level_a), 39}, // boss complete
-  { music_intro, sizeof(music_intro), 0},       // intro
-  { music_level_2, sizeof(music_level_2), 0},  // level2
+  [MUSIC_LEVEL_1] = { music_level_a, sizeof(music_level_a), 0},  // in game 
+  [MUSIC_UNKNOWN_1] = { music_level_a, sizeof(music_level_a), 32}, // ?
+  [MUSIC_GAME_OVER] = { music_level_a, sizeof(music_level_a), 33}, // ?
+  [MUSIC_BOSS_1] = { music_level_a, sizeof(music_level_a), 35}, // boss
+  [MUSIC_BOSS_COMPLETE] = { music_level_a, sizeof(music_level_a), 39}, // boss complete
+  [MUSIC_INTRO] = { music_intro, sizeof(music_intro), 0},       // intro
+  [MUSIC_LEVEL_2] = { music_level_2, sizeof(music_level_2), 0},  // level2
 };
 
 static void* music_current_ptr = music_module1;

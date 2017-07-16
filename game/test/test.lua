@@ -4,7 +4,7 @@ quit = false
 screenShotFilename = "out/test-screenshot.png"
 screenShotWait = 100
 menuWait = 100
-createTestImages = 1
+createTestImages = 0
 
 function Setup()
    uae_write_symbol16("_script_port", 0)
@@ -246,10 +246,14 @@ level = {
       next = "screenshotSet",
    },      
    ["screenshotSet"] = {
-      numScreenShots = 110,
+      numScreenShots = 106,
       screenShotWait = 100,
       filename = "test/screenshots/screenshotSet1_",
       transition = ScreenshotSet,
+      next = "pause"
+   },
+   ["pause"] = {
+      waitFrames = 5000,
       next = "waiting for level end"
    },
    ["waiting for level end"] = {

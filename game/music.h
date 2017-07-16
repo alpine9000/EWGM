@@ -3,6 +3,16 @@
 
 #define MUSIC_MAX_MUSIC_VOLUME 32
 
+enum {
+  MUSIC_LEVEL_1 = 0,
+  MUSIC_UNKNOWN_1,
+  MUSIC_GAME_OVER,
+  MUSIC_BOSS_1,
+  MUSIC_BOSS_COMPLETE,
+  MUSIC_INTRO,
+  MUSIC_LEVEL_2,
+};
+
 extern uint16_t P61_Target;
 extern uint16_t P61_Master;
 
