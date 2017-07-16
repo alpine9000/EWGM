@@ -364,8 +364,8 @@ fighter_update(uint16_t deltaT, object_t* ptr)
     if (data->attackJump) {
       if (object_py(ptr) >= data->attackJumpY) {
 	object_set_py(ptr, data->attackJumpY);
-      } 
-      object_updatePosition(deltaT, ptr);
+      }
+      object_updatePositionNoChecks(deltaT, ptr);
       if (object_py(ptr) >= data->attackJumpY) {
 	data->attackCount = 0;
       } else {

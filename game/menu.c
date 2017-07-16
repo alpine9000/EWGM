@@ -417,6 +417,7 @@ static void menu_refresh(void)
 static void
 menu_showHiScores(void)
 {
+  sound_playSound(SOUND_MENU);  
   menu_mode = MENU_MODE_HISCORES;
   menu_select(0);
   menu_refresh();
@@ -716,6 +717,7 @@ menu_loop(menu_mode_t mode)
       
     if (game_fire()) {
       if (menu_mode == MENU_MODE_HISCORES) {
+	sound_playSound(SOUND_MENU);
 	menu_mode = MENU_MODE_MENU;
 	menu_refresh();
       } else {
@@ -815,6 +817,7 @@ menu_scrollerRender(void)
 void
 menu_credits(void)
 {
+  sound_playSound(SOUND_MENU);  
   if (menu_scrollerMode != 2) {
     if (menu_scrollerText == menu_creditsText) {
       menu_scroller(menu_helpText);

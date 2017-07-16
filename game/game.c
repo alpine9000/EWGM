@@ -90,6 +90,7 @@ static time_t game_levelTime;
 static time_t game_lastLevelTime;
 static uint16_t game_levelTicCounter;
 static uint32_t game_lastVerticalBlankCount;
+static uint16_t game_calculated25fps;
 static uint16_t game_25fps;
 static uint16_t game_newGame;
 
@@ -237,9 +238,15 @@ game_setBigFontColor(uint16_t topColor, uint16_t bottomColor)
 static uint16_t __NOINLINE
 game_check25fps(void)
 {
-  uint32_t count = hw_verticalBlankCount;
+  volatile uint32_t count = hw_verticalBlankCount;
+
   for (volatile int32_t i = 0; i < 100000; i++);
-  return hw_verticalBlankCount - count > 50;
+
+  volatile uint32_t difference = hw_verticalBlankCount - count;
+  
+  volatile uint16_t slow = difference > 15;
+
+  return slow;
 }
 
 
@@ -265,7 +272,6 @@ game_ctor(void)
   game_backScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer3;
 #endif
   game_scoreBoardFrameBuffer = (frame_buffer_t)&game_frameBufferData.scoreBoardBuffer;
-  game_25fps = game_check25fps();
 }
 
 
@@ -649,7 +655,7 @@ game_loadLevel(menu_command_t command)
     break;
   case MENU_COMMAND_PLAY:
   default:
-    game_25fps = game_check25fps();
+    game_25fps = game_calculated25fps;
     record_setState(RECORD_IDLE);
     break;
   }
@@ -1401,6 +1407,8 @@ game_loop()
 
   hw_interruptsInit(); // Don't enable interrupts until music is set up
   custom->intena = INTF_SETCLR|INTF_VERTB|INTF_INTEN;  
+
+  game_calculated25fps = game_25fps = game_check25fps();  
   
   logo_display();
 
