@@ -1,6 +1,5 @@
 #include "game.h"
 
-
 enum {
   LEVEL2_WAVE1_1,
   LEVEL2_WAVE1_2,
@@ -12,17 +11,16 @@ enum {
   LEVEL2_BASEBALL_ENEMY = 1,
 };
 
-#define LEVEL2_BASEBALL_ATTACK_DURATION_TICS (ENEMY_ENEMY_LEVEL2_3_ATTACK_TICS_PER_FRAME*3)
-#define LEVEL2_BOSS_ATTACK_RANGE         (SCREEN_WIDTH/2)
-#define LEVEL2_BOSS_ATTACK_DURATION_TICS (ENEMY_LEVEL2_BOSS_ATTACK_TICS_PER_FRAME*3)
+#define LEVEL2_BASEBALL_ATTACK_DURATION_TICS (LEVEL2_3_ENEMY_ATTACK_TICS_PER_FRAME*3)
+#define LEVEL2_BOSS_ATTACK_RANGE         (SCREEN_WIDTH-128)
+#define LEVEL2_BOSS_ATTACK_DURATION_TICS (LEVEL2_BOSS_ATTACK_TICS_PER_FRAME*4)
 
-//static
-__EXTERNAL fighter_attack_config_t level2_boss_attackConfig[] = {
+static fighter_attack_config_t level2_boss_attackConfig[] = {
   [OBJECT_PUNCH_LEFT1] = {
     .rangeX = LEVEL2_BOSS_ATTACK_RANGE,
     .dammage = 0,
     .durationTics = LEVEL2_BOSS_ATTACK_DURATION_TICS,
-    .hitAnimTic = ENEMY_LEVEL2_BOSS_ATTACK_TICS_PER_FRAME*2,
+    .hitAnimTic = LEVEL2_BOSS_ATTACK_TICS_PER_FRAME*2,
     .vx = 0,
     .vy = 0,
     .jump = 0
@@ -31,30 +29,72 @@ __EXTERNAL fighter_attack_config_t level2_boss_attackConfig[] = {
     .rangeX = LEVEL2_BOSS_ATTACK_RANGE,
     .dammage = 0,
     .durationTics = LEVEL2_BOSS_ATTACK_DURATION_TICS,
-    .hitAnimTic = ENEMY_LEVEL2_BOSS_ATTACK_TICS_PER_FRAME*2,
+    .hitAnimTic = LEVEL2_BOSS_ATTACK_TICS_PER_FRAME*2,
     .vx = 0,
     .vy = 0,
-    .jump = 0    
+    .jump = 0
   }
 };
 
 static enemy_config_t level2_boss_config = {
   .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
   .attackConfig = level2_boss_attackConfig,
-  .attackWait = ENEMY_ATTACK_WAIT_TICS,
+  .attackWait = 5,//ENEMY_ATTACK_WAIT_TICS,
   .postAttackInvincibleTics = 0,
   .numAttacks = 1,
-  .speed = 8,
+  .randomDistanceMask = 0x0,
+  .randomFrequencyMask = 0xffff,
+  .speedX = 1,
+  .speedY = 2,
   .intelligence = gunfighter_intelligence
 };
 
 
-fighter_attack_config_t level2_baseballAttackConfig[] = {
+static fighter_attack_config_t level2_attackConfig1[] = {
+  [OBJECT_PUNCH_LEFT1] = {
+    .rangeX = FIGHTER_LONG_PUNCH_RANGE,
+    .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE,
+    .durationTics = ENEMY_DEFAULT_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  },
+  [OBJECT_PUNCH_LEFT2] =  {
+    .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
+    .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE,
+    .durationTics = ENEMY_DEFAULT_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  },
+  [OBJECT_PUNCH_RIGHT1] =  {
+    .rangeX = FIGHTER_LONG_PUNCH_RANGE,
+    .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE,
+    .durationTics = ENEMY_DEFAULT_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  },
+  [OBJECT_PUNCH_RIGHT2] =  {
+    .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
+    .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE,
+    .durationTics = ENEMY_DEFAULT_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  }
+};
+
+static fighter_attack_config_t level2_baseballAttackConfig[] = {
 [OBJECT_PUNCH_LEFT1] = {
     .rangeX = 16,
-    .dammage = ENEMY_ATTACK_DAMMAGE,
+    .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE,
     .durationTics = LEVEL2_BASEBALL_ATTACK_DURATION_TICS,
-    .hitAnimTic = ENEMY_ENEMY_LEVEL2_3_ATTACK_TICS_PER_FRAME,
+    .hitAnimTic = LEVEL2_3_ENEMY_ATTACK_TICS_PER_FRAME,
     .vx = 0,
     .vy = 0,
     .jump = 0
@@ -62,23 +102,25 @@ fighter_attack_config_t level2_baseballAttackConfig[] = {
 
   [OBJECT_PUNCH_RIGHT1] =  {
     .rangeX = 16,
-    .dammage = ENEMY_ATTACK_DAMMAGE,
+    .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE,
     .durationTics = LEVEL2_BASEBALL_ATTACK_DURATION_TICS,
-    .hitAnimTic = ENEMY_ENEMY_LEVEL2_3_ATTACK_TICS_PER_FRAME,
+    .hitAnimTic = LEVEL2_3_ENEMY_ATTACK_TICS_PER_FRAME,
     .vx = 0,
     .vy = 0,
-    .jump = 0    
+    .jump = 0
   },
 
 };
-enemy_config_t level2_enemy_configs[] = {
+
+static enemy_config_t level2_enemy_configs[] = {
   [LEVEL2_EASY_ENEMY] = {
-    .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,    
-    .attackConfig = enemy_attackConfig1,
-    .attackWait = ENEMY_ATTACK_WAIT_TICS,
+    .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
+    .attackConfig = level2_attackConfig1,
+    .attackWait = ENEMY_DEFAULT_ATTACK_WAIT_TICS,
     .postAttackInvincibleTics = 0,
     .numAttacks = ENEMY_DEFAULT_NUM_ATTACKS,
-    .speed = ENEMY_DEFAULT_SPEED,
+    .speedX = ENEMY_DEFAULT_SPEED,
+    .speedY = ENEMY_DEFAULT_SPEED,
     .intelligence = 0
   },
   [LEVEL2_BASEBALL_ENEMY] = {
@@ -87,34 +129,46 @@ enemy_config_t level2_enemy_configs[] = {
     .attackWait = 15,
     .postAttackInvincibleTics = 10,
     .numAttacks = 1,
-    .speed = ENEMY_DEFAULT_SPEED,
+    .speedX = ENEMY_DEFAULT_SPEED,
+    .speedY = ENEMY_DEFAULT_SPEED,
     .intelligence = 0
   }
 };
 
-level_enemy_config_t level2_configs[] = {
+static level_enemy_config_t level2_configs[] = {
   [LEVEL2_WAVE1_1] = {
     .x = -64,
     .y = 185,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_1_STAND_RIGHT,
     .config = &level2_enemy_configs[LEVEL2_EASY_ENEMY],
-    .enemyCount = 0,    
+    .enemyCount = 0,
   },
   [LEVEL2_WAVE1_2] = {
     .x = -34,
     .y = 105,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_2_STAND_RIGHT,
     .config = &level2_enemy_configs[LEVEL2_EASY_ENEMY],
-    .enemyCount = 0,    
+    .enemyCount = 0,
   },
   [LEVEL2_WAVE1_3] = {
     .x = SCREEN_WIDTH+64,
     .y = GAME_PAVEMENT_START+2,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_3_STAND_RIGHT,
     .config = &level2_enemy_configs[LEVEL2_BASEBALL_ENEMY],
-    .enemyCount = 0,    
-  },    
+    .enemyCount = 0,
+  },
 };
+
+static gunfighter_config_t leve2_gunfighterConfig = {
+  .animId = OBJECT_ANIM_LEVEL2_BOSS_STAND_RIGHT,
+  .bulletAnimId = OBJECT_ANIM_BULLET_RIGHT,
+  .bulletSpeed = 16,
+  .bulletHeight = 24,
+  .bulletDammage = 0,
+  .bulletXOffsetLeft = 0,
+  .bulletXOffsetRight = OBJECT_WIDTH,
+};
+
 
 static int16_t
 level2_processEnemyConfig(uint16_t argument)
@@ -122,7 +176,7 @@ level2_processEnemyConfig(uint16_t argument)
   level_enemy_config_t* ptr = &level2_configs[argument];
   if (ptr->enemyCount >= 0) {
     if (ptr->enemyCount <= enemy_count) {
-      enemy_add(ptr->animId, 0, game_cameraX + ptr->x, ptr->y, ptr->config);      
+      enemy_add(ptr->animId, 0, game_cameraX + ptr->x, ptr->y, ptr->config);
       return 1;
     }
     return 0;
@@ -139,7 +193,7 @@ level2_addSixPack(uint16_t argument)
   object_set_z(ptr, object_y(ptr)+32);
   ptr = thing_add(OBJECT_ID_SIXPACK, OBJECT_ANIM_SIXPACK2, OBJECT_ANIM_SIXPACK2, 0, game_cameraX+argument, y+16, 0, 0);
   object_set_z(ptr, object_y(ptr)+16);
-  thing_add(OBJECT_ID_SIXPACK, OBJECT_ANIM_SIXPACK3, OBJECT_ANIM_SIXPACK3, 0, game_cameraX+argument, y+32, 2, 0);  
+  thing_add(OBJECT_ID_SIXPACK, OBJECT_ANIM_SIXPACK3, OBJECT_ANIM_SIXPACK3, 0, game_cameraX+argument, y+32, 2, 0);
   return 1;
 }
 
@@ -158,7 +212,7 @@ level2_addTableAndChairs(uint16_t x, int16_t y)
   return 1;
 }
 
-int16_t
+static int16_t
 level2_start(uint16_t argument)
 {
   __USE(argument);
@@ -178,24 +232,39 @@ level2_pause(uint16_t argument)
 }
 //#endif
 
-gunfighter_config_t leve2_gunfighterConfig = {
-  .animId = OBJECT_ANIM_LEVEL2_BOSS_STAND_RIGHT,
-  .bulletAnimId = OBJECT_ANIM_BULLET_RIGHT,
-  .bulletSpeed = 8,
-  .bulletHeight = 24,
-  .bulletDammage = 0,
-  .bulletXOffsetLeft = 0,
-  .bulletXOffsetRight = OBJECT_WIDTH,  
-};
+static int16_t
+level2_bossSequence(uint16_t argument)
+{
+  if (game_player1) {
+    fighter_data(game_player1)->intelligence = fighter_nullIntelligence;
+    game_player1->velocity.x = 0;
+    game_player1->velocity.y = 0;
+  }
 
-int16_t
+  if (game_player2) {
+    fighter_data(game_player2)->intelligence = fighter_nullIntelligence;
+    game_player2->velocity.x = 0;
+    game_player2->velocity.y = 0;
+  }
+
+  game_requestCameraX(argument+(SCREEN_WIDTH/2)+1);
+  return 1;
+}
+
+static int16_t
 level2_addBoss(uint16_t argument)
-{  
-  gunfighter_add(&leve2_gunfighterConfig, &level2_boss_config, argument+SCREEN_WIDTH*2, 150);
+{
+  if (game_player1) {
+    fighter_data(game_player1)->intelligence = player_intelligence;
+  }
+  if (game_player2) {
+    fighter_data(game_player2)->intelligence = player_intelligence;
+  }
+  gunfighter_add(&leve2_gunfighterConfig, &level2_boss_config, argument+SCREEN_WIDTH, 150);
   level2_addSixPack(argument+50);
   level2_addTableAndChairs(argument+100, 180);
   level2_addTableAndChairs(argument+220, 180);
-  
+
   return 1;
 }
 
@@ -205,15 +274,17 @@ conductor_instruction_t level2_instructions[] = {
 
   //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_1, level2_processEnemyConfig},
   //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_2, level2_processEnemyConfig},
-  //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_3, level2_processEnemyConfig},    
-  
+  //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_3, level2_processEnemyConfig},
+
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH*2, level_scroll},
 
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, SCREEN_WIDTH, level2_addBoss},  
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH*2, SCREEN_WIDTH*2, level2_bossSequence},
 
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level2_pause},    
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), level2_addBoss},
 
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_3, level2_processEnemyConfig},      
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level2_pause},
+
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_3, level2_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_END}
 };

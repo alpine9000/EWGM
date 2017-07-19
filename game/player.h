@@ -9,7 +9,7 @@
 #define PLAYER_INITIAL_HEALTH       100
 
 // the following are temporary and will be refactored
-#define PLAYER_ATTACK_DAMMAGE 20
+#define PLAYER_ATTACK_DAMMAGE 100 //20
 
 
 object_t*

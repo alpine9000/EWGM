@@ -1,6 +1,5 @@
 #include "game.h"
 
-
 static void
 player_processJoystick(object_t * ptr, uint8_t joystickPos)
 {
@@ -10,7 +9,7 @@ player_processJoystick(object_t * ptr, uint8_t joystickPos)
     ptr->velocity.y = 0;
     break;
   case JOYSTICK_POS_LEFT:
-    ptr->velocity.y = 0;    
+    ptr->velocity.y = 0;
     ptr->velocity.x = -PLAYER_SPEED_X*OBJECT_PHYSICS_FACTOR;
     break;
   case JOYSTICK_POS_RIGHT:
@@ -19,15 +18,15 @@ player_processJoystick(object_t * ptr, uint8_t joystickPos)
     break;
   case JOYSTICK_POS_UP:
     ptr->velocity.y = -PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
-    ptr->velocity.x = 0;    
+    ptr->velocity.x = 0;
     break;
   case JOYSTICK_POS_DOWN:
     ptr->velocity.y = PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
-    ptr->velocity.x = 0;    
-    break;    
+    ptr->velocity.x = 0;
+    break;
   case JOYSTICK_POS_UPRIGHT:
     ptr->velocity.y = -PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
-    ptr->velocity.x = PLAYER_SPEED_X*OBJECT_PHYSICS_FACTOR;    
+    ptr->velocity.x = PLAYER_SPEED_X*OBJECT_PHYSICS_FACTOR;
     break;
   case JOYSTICK_POS_UPLEFT:
     ptr->velocity.y = -PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
@@ -35,7 +34,7 @@ player_processJoystick(object_t * ptr, uint8_t joystickPos)
     break;
   case JOYSTICK_POS_DOWNRIGHT:
     ptr->velocity.y = PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
-    ptr->velocity.x = PLAYER_SPEED_X*OBJECT_PHYSICS_FACTOR;    
+    ptr->velocity.x = PLAYER_SPEED_X*OBJECT_PHYSICS_FACTOR;
     break;
   case JOYSTICK_POS_DOWNLEFT:
     ptr->velocity.y = PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
@@ -51,7 +50,7 @@ player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   if (data->attackCount > 0 && data->attackJump) {
     return 0;
   }
-      
+
   if (object_get_state(ptr) != OBJECT_STATE_ALIVE) {
     if (object_get_state(ptr) == OBJECT_STATE_FLASHING && data->health > 0) {
       goto ok;
@@ -73,7 +72,7 @@ player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
     if (joyUp) {
       data->attackType = 2;
     }
-      
+
     attack = 1;
   }
 
@@ -83,7 +82,7 @@ player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 
   return attack;
 }
-    
+
 
 fighter_attack_config_t player_attackConfig[] = {
   [OBJECT_PUNCH_LEFT1] = {
@@ -102,7 +101,7 @@ fighter_attack_config_t player_attackConfig[] = {
     .hitAnimTic = 0,
     .vx = 0,
     .vy = 0,
-    .jump = 0    
+    .jump = 0
   },
   [OBJECT_PUNCH_RIGHT1] =  {
     .rangeX = FIGHTER_LONG_PUNCH_RANGE,
@@ -111,7 +110,7 @@ fighter_attack_config_t player_attackConfig[] = {
     .hitAnimTic = 0,
     .vx = 0,
     .vy = 0,
-    .jump = 0    
+    .jump = 0
   },
   [OBJECT_PUNCH_RIGHT2] =  {
     .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
@@ -120,26 +119,26 @@ fighter_attack_config_t player_attackConfig[] = {
     .hitAnimTic = 0,
     .vx = 0,
     .vy = 0,
-    .jump = 0    
+    .jump = 0
   } ,
   [OBJECT_KICK_LEFT] =  {
     .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
     .dammage = PLAYER_ATTACK_DAMMAGE*2,
-    .durationTics = ENEMY_ATTACK_DURATION_TICS,
-    .hitAnimTic = ENEMY_BOSS_ATTACK_TICS_PER_FRAME,
+    .durationTics = ENEMY_DEFAULT_ATTACK_DURATION_TICS,
+    .hitAnimTic = LEVEL1_BOSS_ATTACK_TICS_PER_FRAME,
     .vx = -(PLAYER_SPEED_X/2)*OBJECT_PHYSICS_FACTOR,
     .vy = -4*OBJECT_PHYSICS_FACTOR,
-    .jump = 1    
+    .jump = 1
   } ,
   [OBJECT_KICK_RIGHT] =  {
     .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
     .dammage = PLAYER_ATTACK_DAMMAGE*2,
-    .durationTics = ENEMY_ATTACK_DURATION_TICS,
-    .hitAnimTic = ENEMY_BOSS_ATTACK_TICS_PER_FRAME,
+    .durationTics = ENEMY_DEFAULT_ATTACK_DURATION_TICS,
+    .hitAnimTic = LEVEL1_BOSS_ATTACK_TICS_PER_FRAME,
     .vx = (PLAYER_SPEED_X/2)*OBJECT_PHYSICS_FACTOR,
     .vy = -4*OBJECT_PHYSICS_FACTOR,
-    .jump = 1    
-  } 
+    .jump = 1
+  }
 };
 
 static void
@@ -148,7 +147,7 @@ player_player1KillCallback(object_t* me, object_t* victim)
   __USE(me);
   __USE(victim);
   game_player1Score += game_killScore;
-  sound_queueSound(SOUND_DIE01);  
+  sound_queueSound(SOUND_DIE01);
 }
 
 static void
@@ -156,7 +155,7 @@ player_player1HitCallback(object_t* me, object_t* victim)
 {
   __USE(me);
   __USE(victim);
-  sound_queueSound(SOUND_TERENCE_PUNCH01);  
+  sound_queueSound(SOUND_TERENCE_PUNCH01);
 }
 
 static void
@@ -166,7 +165,7 @@ player_player2KillCallback(object_t* me, object_t* victim)
   __USE(victim);
 
   game_player2Score += game_killScore;
-  sound_queueSound(SOUND_DIE02);  
+  sound_queueSound(SOUND_DIE02);
 }
 
 static void
@@ -174,7 +173,7 @@ player_player2HitCallback(object_t* me, object_t* victim)
 {
   __USE(me);
   __USE(victim);
-  sound_queueSound(SOUND_BUD_PUNCH01);  
+  sound_queueSound(SOUND_BUD_PUNCH01);
 }
 
 static void
@@ -184,7 +183,7 @@ player_player1DieCallback(object_t* me)
   game_player1 = 0;
   game_scoreBoardPlayer1Text(I18N_GAME_OVER);
   if (!game_player2) {
-    game_setGameOver();	    
+    game_setGameOver();
   } else if (game_loopControl == GAME_LOOP_CONTROL_DEATHMATCH) {
     game_setGameComplete();
   }
@@ -194,14 +193,14 @@ player_player1DieCallback(object_t* me)
 static void
 player_player2DieCallback(object_t* me)
 {
-  __USE(me);  
+  __USE(me);
   game_player2 = 0;
   if (!game_player1) {
-    game_setGameOver();	    
-  } else if (game_loopControl == GAME_LOOP_CONTROL_DEATHMATCH) {      
+    game_setGameOver();
+  } else if (game_loopControl == GAME_LOOP_CONTROL_DEATHMATCH) {
     game_setGameComplete();
-  }	  
-  game_scoreBoardPlayer2Text(I18N_GAME_OVER);	  	  
+  }
+  game_scoreBoardPlayer2Text(I18N_GAME_OVER);
 }
 
 object_t*
@@ -220,7 +219,7 @@ player_init(uint16_t id, uint16_t animId, int16_t x, int16_t health)
     width = PLAYER_PLAYER1_WIDTH;
     data->hitEnemyCallback = player_player1HitCallback;
     data->killEnemyCallback = player_player1KillCallback;
-    data->dieCallback = player_player1DieCallback;    
+    data->dieCallback = player_player1DieCallback;
   } else {
     width = PLAYER_PLAYER2_WIDTH;
     data->hitEnemyCallback = player_player2HitCallback;
@@ -229,6 +228,6 @@ player_init(uint16_t id, uint16_t animId, int16_t x, int16_t health)
   }
   ptr->widthOffset = (OBJECT_WIDTH-width)/2;
   ptr->width = OBJECT_WIDTH;
-  object_set_state(ptr, OBJECT_STATE_FLASHING);  
+  object_set_state(ptr, OBJECT_STATE_FLASHING);
   return ptr;
 }
