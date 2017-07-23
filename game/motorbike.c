@@ -13,42 +13,60 @@ static uint16_t motorbike_waitCount;
 static fighter_data_t motorbike_data;
 
 static uint16_t
-level1_motorbikeIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
+level1_motorbikeIntelligence(uint16_t deltaT, object_t* ptr, __UNUSED fighter_data_t* data)
 {
   switch (object_get_state(ptr)) {
   case OBJECT_STATE_ALIVE:
   case OBJECT_STATE_HIT:
-    __USE(deltaT);
-    __USE(data);
-    if (object_screenx(ptr) >= SCREEN_WIDTH || object_screenx(ptr) < -40) {
+    if ((object_screenx(ptr) >= SCREEN_WIDTH && ptr->velocity.x > 0) || (object_screenx(ptr) < -40 && ptr->velocity.x < 0)) {
       sound_endLoop();
     }
 
     if (object_screenx(ptr) >= SCREEN_WIDTH+160) {
       object_t* player = enemy_closestPlayer(ptr);
       object_set_state(ptr, OBJECT_STATE_ALIVE);
-      if (player) {
-	object_set_py_no_checks(ptr, object_py(player));
-      }
       ptr->velocity.x = -MOTORBIKE_SPEED;
       motorbike_state = MOTORBIKE_ENTERING_SCREEN;
-      sound_queueSound(SOUND_MOTORBIKE);	  	      
-    } else if (object_screenx(ptr) <= -160) {
-      object_t* player = enemy_closestPlayer(ptr);    
-      object_set_state(ptr, OBJECT_STATE_ALIVE);
       if (player) {
-	object_set_py_no_checks(ptr, object_py(player));
-      }      
+	if (abs(object_x(player)-object_x(ptr)) < 200) {
+	  if (object_y(player) > SCREEN_HEIGHT/2) {
+	    object_set_py(ptr, (GAME_PAVEMENT_START+2)*OBJECT_PHYSICS_FACTOR);
+	  } else {
+	    object_set_py(ptr, (SCREEN_HEIGHT-10)*OBJECT_PHYSICS_FACTOR);
+	  }
+	  ptr->velocity.x = -MOTORBIKE_SPEED*2;
+	  motorbike_state = MOTORBIKE_GO;
+	} else {
+	  object_set_py_no_checks(ptr, object_py(player));
+	}
+      }
+      sound_queueSound(SOUND_MOTORBIKE);
+    } else if (object_screenx(ptr) <= -160) {
+      object_t* player = enemy_closestPlayer(ptr);
+      object_set_state(ptr, OBJECT_STATE_ALIVE);
       ptr->velocity.x = MOTORBIKE_SPEED;
       motorbike_state = MOTORBIKE_ENTERING_SCREEN;
+      if (player) {
+	if (abs(object_x(player)-object_x(ptr)) < 200) {
+	  if (object_y(player) > SCREEN_HEIGHT/2) {
+	    object_set_py(ptr, (GAME_PAVEMENT_START+2)*OBJECT_PHYSICS_FACTOR);
+	  } else {
+	    object_set_py(ptr, (SCREEN_HEIGHT-10)*OBJECT_PHYSICS_FACTOR);
+	  }
+	  ptr->velocity.x = MOTORBIKE_SPEED*2;
+	  motorbike_state = MOTORBIKE_GO;
+	} else {
+	  object_set_py_no_checks(ptr, object_py(player));
+	}
+      }
       sound_queueSound(SOUND_MOTORBIKE);
     } else if (motorbike_state == MOTORBIKE_ENTERING_SCREEN) {
       if (object_screenx(ptr) <= SCREEN_WIDTH-40 && ptr->velocity.x < 0) {
 	ptr->velocity.x = 0;
 	motorbike_state = MOTORBIKE_WAIT;
-	ptr->imageIndex = ptr->anim->start;	
+	ptr->imageIndex = ptr->anim->start;
 	motorbike_waitCount = 100;
-	sound_endLoop();	
+	sound_endLoop();
       } else if (object_screenx(ptr) >= -40 && ptr->velocity.x > 0) {
 	ptr->velocity.x	= 0;
 	motorbike_state = MOTORBIKE_WAIT;
@@ -66,7 +84,7 @@ level1_motorbikeIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* dat
 	if (motorbike_waitCount == 30*2) {
 	  object_set_py(ptr, object_py(ptr)-2*OBJECT_PHYSICS_FACTOR);
 	  object_set_px(ptr, object_px(ptr)+velx*OBJECT_PHYSICS_FACTOR);
-	  sound_queueSound(SOUND_REV);		  
+	  sound_queueSound(SOUND_REV);
 	} else if (motorbike_waitCount == 28*2) {
 	  object_set_py(ptr, object_py(ptr)+2*OBJECT_PHYSICS_FACTOR);
 	  object_set_px(ptr, object_px(ptr)+velx*OBJECT_PHYSICS_FACTOR);
@@ -78,15 +96,15 @@ level1_motorbikeIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* dat
 	  object_set_py(ptr, object_py(ptr)+2*OBJECT_PHYSICS_FACTOR);
 	  object_set_px(ptr, object_px(ptr)+velx*OBJECT_PHYSICS_FACTOR);
 	  object_updateAnimation(100, ptr);
-	  sound_queueSound(SOUND_REV);	  
+	  sound_queueSound(SOUND_REV);
 	} else {
 	  ptr->imageIndex = ptr->anim->start;
 	}
       }
-    }	       
+    }
     break;
   }
-    
+
   return 0;
 }
 
@@ -101,20 +119,20 @@ motorbike_collision(object_t* a)
   }
 #endif
 
-  int16_t a_y = object_y(a);  
+  int16_t a_y = object_y(a);
   int16_t a_x1 = object_x(a) + a->widthOffset;
   int16_t a_x2 = object_x(a) + (a->width - a->widthOffset);
-  
+
   if (game_player1) {
     b = game_player1;
     int16_t b_y = object_y(b);
     if (abs(a_y - b_y) <= 5) {
       a_x1 = object_x(a) + a->widthOffset;
-      a_x2 = object_x(a) + (a->width - a->widthOffset);	
+      a_x2 = object_x(a) + (a->width - a->widthOffset);
       int16_t b_x1 = object_x(b) + b->widthOffset;
       int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
-      
-      if (a_x1 < b_x2 && a_x2 > b_x1) {		  
+
+      if (a_x1 < b_x2 && a_x2 > b_x1) {
 	return b;
       }
     }
@@ -126,13 +144,13 @@ motorbike_collision(object_t* a)
     if (abs(a_y - b_y) <= 5) {
       int16_t b_x1 = object_x(b) + b->widthOffset;
       int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
-      
-      if (a_x1 < b_x2 && a_x2 > b_x1) {		  
+
+      if (a_x1 < b_x2 && a_x2 > b_x1) {
 	return b;
       }
     }
   }
-  
+
   return 0;
 }
 
@@ -140,7 +158,7 @@ motorbike_collision(object_t* a)
 static void
 motorbike_update(uint16_t deltaT, object_t* ptr)
 {
-  fighter_data_t* data = fighter_data(ptr);    
+  fighter_data_t* data = fighter_data(ptr);
   level1_motorbikeIntelligence(deltaT, ptr, 0);
 
   if ((object_get_state(ptr) == OBJECT_STATE_HIT ||
@@ -155,7 +173,7 @@ motorbike_update(uint16_t deltaT, object_t* ptr)
       ptr->velocity.y += deltaT;
     }
   }
-  
+
   object_updatePositionNoChecks(deltaT, ptr);
 
   switch (object_get_state(ptr)) {
@@ -163,7 +181,7 @@ motorbike_update(uint16_t deltaT, object_t* ptr)
     if (motorbike_state != MOTORBIKE_WAIT) {
       fighter_updateSprite(ptr);
     }
-    break;    
+    break;
   case OBJECT_STATE_FLASHING:
     if (data->flashCount <= 0) {
       ptr->visible = !ptr->visible;
@@ -173,7 +191,7 @@ motorbike_update(uint16_t deltaT, object_t* ptr)
     data->flashDurationTics -= deltaT;
     if (data->flashDurationTics <= 0) {
       fighter_die(ptr);
-    } 
+    }
     break;
   default:
     return;
@@ -185,9 +203,9 @@ motorbike_update(uint16_t deltaT, object_t* ptr)
   if (player) {
     if (motorbike_state != MOTORBIKE_POST_ATTACK && (player->actionId == OBJECT_KICK_LEFT || player->actionId == OBJECT_KICK_RIGHT)) {
       data->health -= 50;
-      star_add(ptr, ptr->velocity.x);      
+      star_add(ptr, ptr->velocity.x);
       object_set_z(ptr, object_y(ptr));
-      motorbike_state = MOTORBIKE_POST_ATTACK;      
+      motorbike_state = MOTORBIKE_POST_ATTACK;
       if (data->health <= 0) {
 	ptr->velocity.y = -16;
 	sound_endLoop();
@@ -219,23 +237,19 @@ motorbike_update(uint16_t deltaT, object_t* ptr)
       player->hit.dx = ptr->velocity.x;
       object_set_state(player, OBJECT_STATE_ABOUT_TO_BE_HIT);
     }
-  }  
+  }
 }
 
 
 static void
-motorbike_hitEnemyCallback(object_t* me, object_t* victim)
+motorbike_hitEnemyCallback(__UNUSED object_t* me, __UNUSED object_t* victim)
 {
-  __USE(me);
-  __USE(victim);
-  sound_queueSound(SOUND_ENEMY_PUNCH01);      
+  sound_queueSound(SOUND_ENEMY_PUNCH01);
 }
 
 static void
-motorbike_killEnemyCallback(object_t* me, object_t* victim)
+motorbike_killEnemyCallback(__UNUSED object_t* me, __UNUSED object_t* victim)
 {
-  __USE(me);
-  __USE(victim);
   sound_queueSound(SOUND_DIE03);
 }
 
@@ -251,7 +265,7 @@ motorbike_add(int16_t x, int16_t y)
   motorbike_data.health = 100;
   motorbike_data.hitEnemyCallback = motorbike_hitEnemyCallback;
   motorbike_data.killEnemyCallback = motorbike_killEnemyCallback;
-  motorbike_data.dieCallback = fighter_dieCallback;  
+  motorbike_data.dieCallback = fighter_dieCallback;
   ptr->width = ptr->image->w;
   ptr->widthOffset = 0;
   enemy_count++;

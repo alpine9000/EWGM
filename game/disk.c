@@ -21,7 +21,7 @@ LoadMFMB(__REG("a0", void* dest), __REG("d0", uint32_t startSector), __REG("d1",
 void
 td_init(void);
 
-uint32_t 
+uint32_t
 td_selectdisk(__REG("d0", uint32_t diskId));
 
 void
@@ -76,9 +76,9 @@ disk_loadData(void* dest, void* src, int32_t size)
 #if TRACKLOADER==1
   uint16_t error = 0;
 #if FASTRAM==0
-  int32_t startSector = ((((uint32_t)src)-((uint32_t)&startCode))>>9)+2; // +2 for bootblock  
+  int32_t startSector = ((((uint32_t)src)-((uint32_t)&startCode))>>9)+2; // +2 for bootblock
 #else
-  uint8_t* start;  
+  uint8_t* start;
   start = disk_dataStart;
   int32_t startSector = ((((uint32_t)src)+((uint32_t)start))>>9);
 #endif
@@ -99,7 +99,7 @@ disk_loadData(void* dest, void* src, int32_t size)
   error = td_read(startSector+(numSectors-1), 1, dest);
 
   if (!error) {
-    
+
     volatile char* d = (char*)dest+((numSectors-1)*512);
     char* s = dest;
     for (int16_t i = 0; i < 512 && d < ((char*)dest)+size; i++, d++, s++) {
@@ -134,7 +134,7 @@ disk_read(void* dest, void* src, int32_t size)
 
  retry:
   error = disk_loadData(dest, src, size);
-  
+
   if (error) {
     if (message_ask(I18N_DISK_READ_RTRY)) {
       goto retry;
@@ -146,15 +146,19 @@ disk_read(void* dest, void* src, int32_t size)
 
 
 uint16_t
+#if TRACKLOADER==1
 disk_write(void* dest, void* src, int16_t numBlocks)
+#else
+disk_write(__UNUSED void* dest, __UNUSED void* src, __UNUSED int16_t numBlocks)
+#endif
 {
   uint32_t err = 0;
 #if TRACKLOADER==1
 #if FASTRAM==0
-  int32_t startBlock = ((((uint32_t)dest)-((uint32_t)&startCode))>>9)+2; // +2 for bootblock  
+  int32_t startBlock = ((((uint32_t)dest)-((uint32_t)&startCode))>>9)+2; // +2 for bootblock
 #else
   int32_t startBlock = ((uint32_t)dest)>>9;
-#endif  
+#endif
 
 #if PHOTON_TRACKLOADER==0
 
@@ -172,8 +176,5 @@ disk_write(void* dest, void* src, int16_t numBlocks)
 
 #endif
 #endif
-  __USE(src);
-  __USE(dest);
-  __USE(numBlocks);
   return err;
 }

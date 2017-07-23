@@ -117,19 +117,15 @@ fighter_attackCollision(object_t* a, int16_t thresholdx, uint16_t thresholdy)
 
 
 static void
-fighter_killEnemyCallback(object_t* me, object_t* victim)
+fighter_killEnemyCallback(__UNUSED object_t* me, __UNUSED object_t* victim)
 {
-  __USE(me);
-  __USE(victim);
   sound_queueSound(SOUND_DIE03);
 }
 
 
 static void
-fighter_hitEnemyCallback(object_t* me, object_t* victim)
+fighter_hitEnemyCallback(__UNUSED object_t* me, __UNUSED object_t* victim)
 {
-  __USE(me);
-  __USE(victim);
   sound_queueSound(SOUND_ENEMY_PUNCH01);
 }
 
@@ -148,6 +144,8 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
 
   if (ptr->attributes & OBJECT_ATTRIBUTE_PLAYER && attacker->attributes & OBJECT_ATTRIBUTE_PLAYER) {
    data->health -= (dammage/4);
+  } else if (game_difficulty == GAME_DIFFICULTY_EASY && !(attacker->attributes & OBJECT_ATTRIBUTE_PLAYER)) {
+    data->health -= (dammage/2);
   } else {
     data->health -= dammage;
   }
@@ -288,9 +286,8 @@ fighter_updateSprite(object_t* ptr)
 
 
 void
-fighter_dieCallback(object_t* me)
+fighter_dieCallback(__UNUSED object_t* me)
 {
-  __USE(me);
   enemy_count--;
   if (enemy_count == 0) {
     if (conductor_complete()) {
@@ -313,11 +310,8 @@ fighter_die(object_t* ptr)
 
 
 uint16_t
-fighter_nullIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
+fighter_nullIntelligence(__UNUSED uint16_t deltaT, __UNUSED object_t* ptr, __UNUSED fighter_data_t* data)
 {
-  __USE(deltaT);
-  __USE(ptr);
-  __USE(data);
   return 0;
 }
 

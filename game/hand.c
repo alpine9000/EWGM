@@ -7,10 +7,8 @@ static uint16_t hand_hideNextAnimation;
 object_t* hand;
 
 static void
-hand_update(uint16_t deltaT, object_t* ptr)
+hand_update(__UNUSED uint16_t deltaT, __UNUSED object_t* ptr)
 {
-  __USE(deltaT);
-  __USE(ptr);
   if (hand_frame && (hw_verticalBlankCount - hand_frame > 25)) {
     if (hand_hideNextAnimation) {
       hand_frame = 0;
@@ -23,7 +21,7 @@ hand_update(uint16_t deltaT, object_t* ptr)
       }
     }
   }
-  object_set_px(hand, (game_cameraX+HAND_X)*OBJECT_PHYSICS_FACTOR);  
+  object_set_px(hand, (game_cameraX+HAND_X)*OBJECT_PHYSICS_FACTOR);
 }
 
 
@@ -38,9 +36,9 @@ void
 hand_show(void)
 {
   hand = object_add(OBJECT_ID_HAND, 0, HAND_X, 65, 0, OBJECT_ANIM_HAND, hand_update, 0, 0, 0);
-  object_set_z(hand, 4096);  
+  object_set_z(hand, 4096);
   hand->visible = 1;
-  sound_queueSound(SOUND_PICKUP);  
+  sound_queueSound(SOUND_PICKUP);
   hand_frame = hw_verticalBlankCount;
   hand_hideNextAnimation = 0;
 }

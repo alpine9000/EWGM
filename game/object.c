@@ -24,7 +24,7 @@ object_getFree(void)
     PANIC("object_getFree: empty list");
   }
 #endif
-  
+
   return entry;
 }
 
@@ -57,7 +57,7 @@ object_addToActive(object_t* ptr)
     ptr->next = 0;
     ptr->prev = 0;
   } else {
-    ptr->next = object_activeList;    
+    ptr->next = object_activeList;
     ptr->next->prev = ptr;
     ptr->prev = 0;
     object_activeList = ptr;
@@ -90,7 +90,7 @@ object_setAnim(object_t* ptr, int16_t anim)
     ptr->anim = &object_animations[ptr->animId];
     ptr->imageIndex = ptr->anim->start;
     ptr->image = &object_imageAtlas[ptr->imageIndex];
-    ptr->frameCounter = 0;   
+    ptr->frameCounter = 0;
   }
 }
 
@@ -123,14 +123,14 @@ object_updatePosition(uint16_t deltaT, object_t* ptr)
   if (deltaT == 2) {
     vx *= 2;
     vy *= 2;
-  }  
-  
+  }
+
   int16_t lastX = object_px(ptr);
   int16_t lastY = object_py(ptr);
 
   object_set_px(ptr, lastX + vx);
   object_set_py(ptr, lastY + vy);
-    
+
   ptr->velocity.dx = object_px(ptr) - lastX;
   ptr->velocity.dy = object_py(ptr) - lastY;
 }
@@ -145,14 +145,14 @@ object_updatePositionNoChecks(uint16_t deltaT, object_t* ptr)
   if (deltaT == 2) {
     vx *= 2;
     vy *= 2;
-  }  
-  
+  }
+
   int16_t lastX = object_px(ptr);
   int16_t lastY = object_py(ptr);
 
   object_set_px_no_checks(ptr, lastX + vx);
   object_set_py_no_checks(ptr, lastY + vy);
-    
+
   ptr->velocity.dx = object_px(ptr) - lastX;
   ptr->velocity.dy = object_py(ptr) - lastY;
 }
@@ -195,10 +195,9 @@ object_updateAnimation(uint16_t deltaT, object_t *ptr)
 
 
 static __INLINE void
-object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t oh)
+object_clear(__UNUSED uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t oh)
 {
 #ifdef GAME_TRIPLE_BUFFER
-  __USE(frame);
   if (ow) {
     int16_t sx = (ox/TILE_WIDTH)*TILE_WIDTH;
     ow = ow+TILE_WIDTH;
@@ -232,7 +231,7 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
       gfx_bitBlitWordAlignedNoMask(fb, game_backScreenBuffer, screenX, screenY, screenX, screenY, ow, oh);
     }
   }
-#else  
+#else
   if (ow) {
     gfx_setupRenderTile();
     shifting negatives is borked
@@ -250,12 +249,12 @@ object_clear(uint16_t frame, frame_buffer_t fb, int16_t ox, int16_t oy, int16_t 
 #endif
 	    screenX >= 0 && screenX <= SCREEN_WIDTH+TILE_WIDTH) {
 	  if (object_tileDirty[x][y] != frame) {
-	    uint16_t tile = levelFast.tileAddresses[x][y];	      
+	    uint16_t tile = levelFast.tileAddresses[x][y];
 	    gfx_quickRenderTile(fb, screenX, screenY, levelChip.tileBitplanes+tile);
-	    object_tileDirty[x][y] = frame;	    
+	    object_tileDirty[x][y] = frame;
 	  }
 	}
-      }	
+      }
     }
   }
 #endif
@@ -272,7 +271,7 @@ object_dirty(object_t* ptr)
 
   int16_t sx = ((object_screenx(ptr))>>4)<<4;
   int16_t sy = object_screeny(ptr);
-  
+
   for (int i = 0; i < object_count ; i++) {
     if (object_zBuffer[i] != ptr) {
       object_t* o = object_zBuffer[i];
@@ -354,7 +353,7 @@ object_restoreBackgroundAndUpdateObjects(uint16_t deltaT, frame_buffer_t fb)
 	    ptr->imageIndex != ptr->save.position->imageIndex ||
 	    (object_y(ptr)-ptr->image->h) != ptr->save.position->y ||
 	    (object_x(ptr)+ptr->image->dx) != ptr->save.position->x ||
-	    (object_z(ptr)) != ptr->save.position->z ||	    	    
+	    (object_z(ptr)) != ptr->save.position->z ||
 	    ptr->visible != ptr->save.position->visible) {
 #ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
 	  cleared = 1;
@@ -365,20 +364,20 @@ object_restoreBackgroundAndUpdateObjects(uint16_t deltaT, frame_buffer_t fb)
 	}
 #endif
       }
-      
+
       object_zBuffer[i] = ptr;
       i++;
 
-#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS    
+#ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
       ptr->cleared = cleared;
       ptr->redrawn = 0;
-#endif      
+#endif
     }
 
     ptr = next;
   }
 
-  frame++;    
+  frame++;
 }
 
 
@@ -395,7 +394,7 @@ object_tileRender(frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t
 	int16_t screenX = 0xf+(x<<4)-game_cameraX-game_screenScrollX;
 	int16_t screenY = y << 4;
 	if (screenY >= 0 && screenX >= 0 && screenX <= SCREEN_WIDTH+TILE_WIDTH) {
-          uint16_t tile = levelFast.tileAddresses[x][y];	      
+          uint16_t tile = levelFast.tileAddresses[x][y];
 	  gfx_quickRenderTile(fb, screenX, screenY, levelChip.tileBitplanes+tile);
 	}
       }
@@ -403,14 +402,14 @@ object_tileRender(frame_buffer_t fb, int16_t ox, int16_t oy, int16_t ow, int16_t
   }
 }
 
-         
+
 static void
 object_renderObject(frame_buffer_t fb, object_t* ptr)
 {
   if (!ptr->visible) {
     return;
   }
-  
+
   int16_t w = ptr->image->w;
   int16_t h = ptr->image->h;
 
@@ -418,8 +417,8 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
   int16_t screeny = object_screeny(ptr);
   int16_t sx = ptr->image->x;
   int16_t sy = ptr->image->y;
-    
-    
+
+
   if (screenx < -TILE_WIDTH) {
     int16_t tiles = (-screenx>>4)<<4;
     sx += tiles;
@@ -445,7 +444,7 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
     h -= (screeny + h)-PLAYAREA_HEIGHT;
   }
 #endif
-  
+
   if (w > 0 && h > 0) {
     if (ptr->tileRender) {
       gfx_setupRenderTile();
@@ -459,7 +458,7 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
 
 #ifdef GAME_DONT_REDRAW_CLEAN_OBJECTS
     ptr->redrawn = ptr->cleared;
-    if (!ptr->redrawn) {      
+    if (!ptr->redrawn) {
       ptr->redrawn = object_dirty(ptr);
     }
     if (ptr->redrawn) {
@@ -484,7 +483,7 @@ object_renderObject(frame_buffer_t fb, object_t* ptr)
 void
 object_render(frame_buffer_t fb, uint16_t deltaT)
 {
-  object_restoreBackgroundAndUpdateObjects(deltaT, fb);  
+  object_restoreBackgroundAndUpdateObjects(deltaT, fb);
 
   sort_z(object_count, object_zBuffer);
 
@@ -494,18 +493,18 @@ object_render(frame_buffer_t fb, uint16_t deltaT)
       object_renderObject(fb, ptr);
     }
   }
-  
+
   for (int32_t i = 0; i < object_count; i++) {
-    object_t* ptr = object_zBuffer[i];  
+    object_t* ptr = object_zBuffer[i];
     ptr->save.position->x = object_x(ptr)+ptr->image->dx;
     ptr->save.position->y = object_y(ptr)-ptr->image->h;
-    ptr->save.position->z = object_z(ptr);      
+    ptr->save.position->z = object_z(ptr);
     ptr->save.position->w = ptr->image->w;
-    ptr->save.position->h = ptr->image->h;    
+    ptr->save.position->h = ptr->image->h;
 #ifdef GAME_DONT_CLEAR_STATIONARY_OBJECTS
     ptr->save.position->imageIndex = ptr->imageIndex;
     ptr->save.position->visible = ptr->visible;
-#endif    
+#endif
     ptr->save.position = ptr->save.position == &ptr->save.positions[0] ? &ptr->save.positions[1] : &ptr->save.positions[0];
     object_updateAnimation(deltaT, ptr);
   }
@@ -517,15 +516,15 @@ object_collision(int32_t deltaT, object_t* a, object_collision_t* collision, uin
 {
   int32_t vy = a->velocity.y;
   int32_t vx = a->velocity.x;
-  
+
   if (deltaT == 2) {
     vx *= 2;
     vy *= 2;
   }
-  
+
   int32_t _collision = 0;
   object_t* b = object_activeList;
-  
+
   collision->up = collision->down = collision->left = collision->right = 0;
 
 #ifdef DEBUG
@@ -537,7 +536,7 @@ object_collision(int32_t deltaT, object_t* a, object_collision_t* collision, uin
   int32_t a_y = ((object_py(a) + vy) / OBJECT_PHYSICS_FACTOR);
   int32_t a_x1 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + a->widthOffset)-thresholdx;
   int32_t a_x2 = (((object_px(a) + vx) / OBJECT_PHYSICS_FACTOR) + (a->width - a->widthOffset)) + thresholdx;
-  
+
   while (b) {
     if (b->collisionsEnabled && b != a) {
       int32_t b_y = ((object_z(b)));
@@ -545,8 +544,8 @@ object_collision(int32_t deltaT, object_t* a, object_collision_t* collision, uin
       if (abs(a_y - b_y) <= thresholdy) {
 	int32_t b_x1 = ((object_x(b))) + b->widthOffset;
 	int32_t b_x2 = ((object_x(b))) + (b->width - b->widthOffset);
-	
-	if (a_x1 < b_x2 && a_x2 > b_x1) {		  
+
+	if (a_x1 < b_x2 && a_x2 > b_x1) {
 	  if (b_y >= a_y) {
 	    collision->up = b;
 	  } else if (b_y < a_y) {
@@ -563,13 +562,13 @@ object_collision(int32_t deltaT, object_t* a, object_collision_t* collision, uin
     }
     b = b->next;
   }
-  
+
   return _collision;
 }
 
 
 __NOINLINE object_t*
-object_add(uint16_t id, uint16_t attributes, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), uint16_t dataType, void* data, void (*freeData)(void*))
+object_add(uint16_t id, uint16_t attributes, int16_t x, int16_t y, int16_t dx, int16_t anim, void (*update)(uint16_t deltaT, object_t* ptr), __UNUSED uint16_t dataType, void* data, void (*freeData)(void*))
 {
 #ifdef DEBUG
   if (object_count >= OBJECT_MAX_OBJECTS) {
@@ -579,7 +578,6 @@ object_add(uint16_t id, uint16_t attributes, int16_t x, int16_t y, int16_t dx, i
 #else
 
 #endif
-  __USE(dataType);
   object_t* ptr = object_getFree();
   object_set_state(ptr, OBJECT_STATE_ALIVE);
   ptr->id = id;
@@ -587,15 +585,15 @@ object_add(uint16_t id, uint16_t attributes, int16_t x, int16_t y, int16_t dx, i
   ptr->visible = 1;
   ptr->velocity.x = dx;
   ptr->velocity.y = 0;
-  ptr->save.position = &ptr->save.positions[0];  
+  ptr->save.position = &ptr->save.positions[0];
   ptr->save.positions[0].w = 0;
   ptr->save.positions[1].w = 0;
   ptr->save.positions[0].x = -1;
   ptr->save.positions[1].x = -1;
   ptr->save.positions[0].y = -1;
-  ptr->save.positions[1].y = -1;    
   ptr->save.positions[1].y = -1;
-  ptr->save.positions[1].z = -1;    
+  ptr->save.positions[1].y = -1;
+  ptr->save.positions[1].z = -1;
   ptr->anim = &object_animations[anim];
   ptr->animId = anim;
   ptr->baseId = anim;
@@ -605,7 +603,7 @@ object_add(uint16_t id, uint16_t attributes, int16_t x, int16_t y, int16_t dx, i
   ptr->_x = x;
   ptr->_py = y*OBJECT_PHYSICS_FACTOR;
   ptr->_y = y;
-  object_set_z(ptr, y);  
+  object_set_z(ptr, y);
   ptr->frameCounter = 0;
   ptr->deadRenderCount = 0;
   ptr->update = update;
@@ -623,11 +621,11 @@ object_add(uint16_t id, uint16_t attributes, int16_t x, int16_t y, int16_t dx, i
 void*
 _object_debug_get_data(object_t* ptr, uint16_t dataType)
 {
-  if (ptr->dataType != dataType) {			
-     PANIC("invalid cast");                     
+  if (ptr->dataType != dataType) {
+     PANIC("invalid cast");
   }
 
-  
+
   switch (dataType) {
   case OBJECT_DATA_TYPE_FIGHTER:
     {
@@ -639,7 +637,7 @@ _object_debug_get_data(object_t* ptr, uint16_t dataType)
     break;
   case OBJECT_DATA_TYPE_THING:
     {
-      thing_data_t* data = ptr->_data;    
+      thing_data_t* data = ptr->_data;
       if (data->magicNumber != THING_DATA_MAGIC_NUMBER) {
 	PANIC("invalid thing data");
       }

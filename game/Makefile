@@ -4,6 +4,7 @@ USE_BIG=1
 SFX=1
 PHOTON_TRACKLOADER=0
 MUSIC_PARALLEL_LOAD=0
+SCAN_CHECKER=0
 
 ADF_DEFINES=-DTRACKLOADER=1 -DFASTRAM=0 -DGAME_CONFIG=CONFIG_OCS_512 -Iout/adf
 FAST_DEFINES=-DTRACKLOADER=1 -DFASTRAM=1 -DGAME_CONFIG=CONFIG_OCS_FAST -DGAME_COMPRESS_DATA=1 -Iout/fast
@@ -48,20 +49,31 @@ IMAGES=font8x8.png menu.png scoreboard.png logo.png player_select.png #popup.png
 # program arguments
 LINKER_OPTIONS=-T link.script.x
 
-VASM_ARGS=-nowarn=62 -Fhunk -quiet -esc -DSFX=$(SFX) -allmp -DMAX_P61_SIZE=$(MAX_P61_SIZE) -DMUSIC_PARALLEL_LOAD=$(MUSIC_PARALLEL_LOAD) -DPHOTON_TRACKLOADER=$(PHOTON_TRACKLOADER) 
+VASM_ARGS=-nowarn=62 -Fhunk -quiet -esc -DSFX=$(SFX) -allmp -DMAX_P61_SIZE=$(MAX_P61_SIZE) -DMUSIC_PARALLEL_LOAD=$(MUSIC_PARALLEL_LOAD) -DPHOTON_TRACKLOADER=$(PHOTON_TRACKLOADER)
 VASM_C_ARGS=-ldots -Fhunk -quiet -no-opt
 
 EXTRA_DEFINES=-DSFX=$(SFX) -DMAX_P61_SIZE=$(MAX_P61_SIZE) -DPHOTON_TRACKLOADER=$(PHOTON_TRACKLOADER) -DMUSIC_PARALLEL_LOAD=$(MUSIC_PARALLEL_LOAD)
 REGPARAM=-mregparm=2
 #VASM_OPTS=-Wa,-no-opt
-VASM_OPTS=-Wa,-opt-speed #-Wa,-opt-speed -Wa,-showcrit -Wa,-opt-allbra -Wa,-opt-brajmp -Wa,-opt-lsl  -Wa,-opt-movem -Wa,-opt-mul -Wa,-opt-div -Wa,-opt-pea #-Wa,-opt-speed
+
+
+
 ifeq ($(USE_BIG), 1)
 WHOLE_PROGRAM=-fwhole-program
 endif
-C_OPT=-Ofast #-fbbb=sapcmfbvei #r #-fbbb=+v #-fbbb=iesapcmfbrv #-fbbb=+V #-fbbb=sapcmefbV 
+C_OPT=-Ofast #-fbbb=sapcmfbvei #r #-fbbb=+v #-fbbb=iesapcmfbrv #-fbbb=+V #-fbbb=sapcmefbV
 BIG_FLAGS=$(WHOLE_PROGRAM)
 C_OPT_ASM_OUTPUT=-Ofast
-BASE_CFLAGS=-funsafe-loop-optimizations -Wno-overlength-strings $(REGPARAM) $(VASM_OPTS) -fomit-frame-pointer -noixemul -mcpu=68000 -m68000 -pedantic-errors -Wfatal-errors -Wall -Werror -Wextra -Wshadow -Wuninitialized -Wduplicated-cond -Wframe-larger-than=1024 -Wstack-usage=1024 -Wundef -Wbad-function-cast -Wparentheses $(INCLUDE) $(EXTRA_DEFINES)
+
+ifeq ($(SCAN_CHECKER), 1)
+WHOLE_PROGRAM=
+VASM_OPTS=
+BASE_CFLAGS=-Wno-overlength-strings $(REGPARAM) $(VASM_OPTS) -fomit-frame-pointer  -pedantic-errors -Wfatal-errors -Wall -Werror -Wextra -Wshadow -Wuninitialized  -Wundef -Wbad-function-cast -Wparentheses $(INCLUDE) $(EXTRA_DEFINES) -DSCAN_CHECKER
+else
+VASM_OPTS=-Wa,-opt-speed #-Wa,-opt-speed -Wa,-showcrit -Wa,-opt-allbra -Wa,-opt-brajmp -Wa,-opt-lsl  -Wa,-opt-movem -Wa,-opt-mul -Wa,-opt-div -Wa,-opt-pea #-Wa,-opt-speed
+BASE_CFLAGS=-funsafe-loop-optimizations -Wno-overlength-strings $(REGPARAM) $(VASM_OPTS) -fomit-frame-pointer -noixemul -mcpu=68000 -m68000 -pedantic-errors -Wfatal-errors -Wall -Wunused-but-set-variable -Werror -Wextra -Wshadow -Wuninitialized -Wduplicated-cond -Wframe-larger-than=1024 -Wstack-usage=1024 -Wundef -Wbad-function-cast -Wparentheses $(INCLUDE) $(EXTRA_DEFINES)
+endif
+
 C_LIBS=libgcc/out/gcc.lib
 C_LIBS_WB=$(NDK)/lib/amiga.lib libgcc/out/gcc.lib
 CFLAGS=$(C_OPT) $(BASE_CFLAGS)
@@ -81,12 +93,12 @@ MODULE_HEADERS=$(addprefix out/, $(MODULES:.bin=.lz.h))
 IMAGEDATA=$(addprefix out/, $(IMAGES:.png=.bin))
 RAW_SOUND_FILES=$(addprefix out/, $(SOUND_FILES:.wav=.raw))
 ASSETS=$(IMAGEDATA) $(RAW_SOUND_FILES)
-ASM_OBJS=$(SRCS:.s=.o) 
+ASM_OBJS=$(SRCS:.s=.o)
 C_OBJS=$(C_SRCS:.c=.o)
 ifeq ($(USE_BIG), 1)
 OBJS=$(ASM_OBJS) big.o
 else
-OBJS=$(ASM_OBJS) $(C_OBJS) 
+OBJS=$(ASM_OBJS) $(C_OBJS)
 endif
 ADF_C_OBJS=$(addprefix out/adf/, $(C_OBJS))
 ADF_LEVEL_UNCOMPRESSED=$(addsuffix .c,$(addprefix out/adf/leveldata_f_, $(LEVELS))) $(addsuffix .c,$(addprefix out/adf/leveldata_c_, $(LEVELS)))
@@ -157,7 +169,7 @@ test-fast: emulate-fast
 
 go: emulate-adf
 	cp adf_debugger.syms ~/Projects/amiga/debugger.syms
-	@rm -f default.lua
+	#@rm -f default.lua
 	 $(RUN_SCRIPT)
 
 speed: emulate-fast
@@ -168,7 +180,7 @@ speed: emulate-fast
 
 gf: emulate-fast
 	cp fast_debugger.syms ~/Projects/amiga/debugger.syms
-	@rm -f default.lua
+	#@rm -f default.lua
 	 $(RUN_SCRIPT)
 
 goaga: emulate-adf
@@ -225,11 +237,11 @@ out/enemy02.raw: assets/enemy02.wav
 	sox  -R -v 1.0 $< -b 8 -c 1 -r 11025 -e signed $@
 
 out/enemy03.raw: assets/enemy03.wav
-	sox  -R -v 1.0 $< -b 8 -c 1 -r 11025 -e signed $@	
+	sox  -R -v 1.0 $< -b 8 -c 1 -r 11025 -e signed $@
 
 #http://opengameart.org/content/10-8bit-coin-sounds
 out/coin1.raw: assets/coin1.wav
-	sox -R -v 1.0 $<  -b 8 -c 1 -r 11025 $@	
+	sox -R -v 1.0 $<  -b 8 -c 1 -r 11025 $@
 
 #http://opengameart.org/content/bubbles-pop
 out/pop.raw: assets/pop.wav
@@ -263,11 +275,11 @@ out/tile_%.h: assets/tile_%.png palettes/palette_%.pal
 
 
 out/level_recording_%.h: recordings/level%.raw
-	echo recordings/level$*.raw 
+	echo recordings/level$*.raw
 	cat recordings/level$*.raw | $(BIN2C) > out/level_recording_$*.h
 
 out/demo.h: recordings/demo.raw
-	echo recordings/demo.raw 
+	echo recordings/demo.raw
 	cat recordings/demo.raw | $(BIN2C) > out/demo.h
 
 out/%.lz.h: assets/%.bin
@@ -319,12 +331,20 @@ out/fast/level_c_data_3.o: $(LEVEL_FILES)
 out/fast/level_f_data_3.o: $(LEVEL_FILES)
 .SECONDARY : $(LEVEL_FAST_BIN_FILES)
 out/fast/level_c_data_%.bin: out/fast/level_c_data_%.o
+ifeq ($(SCAN_CHECKER), 1)
+	echo "" > out/fast/level_c_data_$*.bin
+else
 	$(LD) -brawbin1 out/fast/level_c_data_$*.o -o out/fast/level_c_data_$*.bin
+endif
 out/fast/leveldata_c_%.c: out/fast/level_c_data_%.bin
 	../tools/doynamite68k/out/lz -o out/fast/level_c_data_$*.bin.lz out/fast/level_c_data_$*.bin
 	cat out/fast/level_c_data_$*.bin.lz | $(BIN2C) > $@
 out/fast/level_f_data_%.bin: out/fast/level_f_data_%.o
+ifeq ($(SCAN_CHECKER), 1)
+	echo "" > out/fast/level_f_data_$*.bin
+else
 	$(LD) -brawbin1 out/fast/level_f_data_$*.o -o out/fast/level_f_data_$*.bin
+endif
 out/fast/leveldata_f_%.c: out/fast/level_f_data_%.bin
 	../tools/doynamite68k/out/lz -o out/fast/level_f_data_$*.bin.lz out/fast/level_f_data_$*.bin
 	cat out/fast/level_f_data_$*.bin.lz | $(BIN2C) > $@
@@ -388,7 +408,7 @@ out/adf/%.o: %.s
 
 out/adf/%.o: out/%.c
 ifeq ($(KEEP_ASM),1)
-	-@$(CC) -S $(CFLAGS_ASM_OUTPUT) $(ADF_DEFINES) $< -o out/adf/$*.s 
+	-@$(CC) -S $(CFLAGS_ASM_OUTPUT) $(ADF_DEFINES) $< -o out/adf/$*.s
 endif
 	$(CC) -c $(CFLAGS) $(ADF_DEFINES) $< -o out/adf/$*.o
 
@@ -398,13 +418,13 @@ out/fast/%.o: %.s
 
 out/fast/%.o: out/%.c
 ifeq ($(KEEP_ASM),1)
-	-@$(CC) -S $(CFLAGS_ASM_OUTPUT) $(FAST_DEFINES) $< -o out/fast/$*.s 
+	-@$(CC) -S $(CFLAGS_ASM_OUTPUT) $(FAST_DEFINES) $< -o out/fast/$*.s
 endif
 	$(CC) -c $(CFLAGS) $(FAST_DEFINES) $< -o out/fast/$*.o
 
 
 out/workbench/%.o: out/%.c
-	$(CC) $(CFLAGS) $(WORKBENCH_DEFINES) -c $< -o $@ 
+	$(CC) $(CFLAGS) $(WORKBENCH_DEFINES) -c $< -o $@
 
 adf_big.c: $(ADF_C_OBJS) $(C_SRCS)
 	cat $(C_SRCS) > adf_big.c
@@ -460,9 +480,9 @@ endif
 
 out/adf/%.o: %.c
 ifeq ($(KEEP_ASM),1)
-	$(CC) -S $(CFLAGS_ASM_OUTPUT) $(ADF_DEFINES) $< -o out/adf/$*.s 
+	$(CC) -S $(CFLAGS_ASM_OUTPUT) $(ADF_DEFINES) $< -o out/adf/$*.s
 endif
-ifeq ($(USE_BIG), 1)	
+ifeq ($(USE_BIG), 1)
 	$(CC) -c $(CFLAGS_CHECK) $(ADF_DEFINES)  $< -o out/adf/$*.o
 else
 	$(CC) -c $(CFLAGS) $(ADF_DEFINES)  $< -o out/adf/$*.o
@@ -477,9 +497,9 @@ endif
 
 out/fast/%.o: %.c
 ifeq ($(KEEP_ASM),1)
-	$(CC) -S $(CFLAGS_ASM_OUTPUT) $(FAST_DEFINES) $< -o out/fast/$*.s 
+	$(CC) -S $(CFLAGS_ASM_OUTPUT) $(FAST_DEFINES) $< -o out/fast/$*.s
 endif
-ifeq ($(USE_BIG), 1)	
+ifeq ($(USE_BIG), 1)
 	$(CC) -c $(CFLAGS_CHECK) $(FAST_DEFINES) $< -o out/fast/$*.o
 else
 	$(CC) -c $(CFLAGS) $(FAST_DEFINES)  $< -o out/fast/$*.o
@@ -493,7 +513,7 @@ endif
 
 
 out/workbench/%.o: %.c
-ifeq ($(USE_BIG), 1)	
+ifeq ($(USE_BIG), 1)
 	$(CC) -c $(CFLAGS_CHECK) $(WORKBENCH_DEFINES)  $< -o out/workbench/$*.o
 else
 	$(CC) -c $(CFLAGS) $(WORKBENCH_DEFINES) $< -o out/workbench/$*.o
@@ -504,7 +524,7 @@ endif
 	@sed -e 's/.*://' -e 's/\\$$//' < $*.d.tmp | fmt -1 | \
 	sed -e 's/^ *//' -e 's/$$/:/' >> out/workbench/$*.d
 	@rm -f $*.d.tmp
-	-@$(CC) -S $(CFLAGS) $(WORKBENCH_DEFINES)  $< -o out/workbench/$*.s 
+	-@$(CC) -S $(CFLAGS) $(WORKBENCH_DEFINES)  $< -o out/workbench/$*.s
 
 out/workbench/%.o: %.s
 	$(VASM) $(WORKBENCH_DEFINES) $(VASM_ARGS) $< -o $@ $(INCLUDE)
@@ -516,7 +536,7 @@ out/adf/main.bin: out/adf/main.o $(ADF_OBJS)
 	@cp $@.symbols adf_debugger.syms
 	@cp adf_debugger.syms debugger.syms
 	./ram_usage.sh
-ifeq ($(USE_BIG), 1)	
+ifeq ($(USE_BIG), 1)
 	-@#rm out/adf/big.o
 endif
 
@@ -525,13 +545,13 @@ out/fast/reloc.fast: out/fast/main.o $(FAST_OBJS)
 	@cat out/fast/reloc.txt | grep ", value " | cut -d " " -f3,7 | cut -d "," -f1 > $@.symbols
 	@cp $@.symbols fast_debugger.syms
 	@cp fast_debugger.syms debugger.syms
-ifeq ($(USE_BIG), 1)	
+ifeq ($(USE_BIG), 1)
 	-@#rm out/fast/big.o
 endif
 
-bin/$(GAME_NAME): bin $(ALL_TOOLS)  $(ALL_WORKBENCH_OBJS) 
+bin/$(GAME_NAME): bin $(ALL_TOOLS)  $(ALL_WORKBENCH_OBJS)
 	$(LD)  $(C_LIBS_WB) -hunkattr bss_c=2 -hunkattr code_c=2 -hunkattr data_c=2  $(ALL_WORKBENCH_OBJS) -o $@ -M > out/workbench/newgame.txt #-s
-ifeq ($(USE_BIG), 1)	
+ifeq ($(USE_BIG), 1)
 	-@#rm out/workbench/big.o
 endif
 	-cp $@ ~/A1200/BlockySkies
@@ -551,7 +571,7 @@ endif
         #ls -lh bin/BlockySkies
 
 .PHONY: clean
-clean:	
+clean:
 	rm -rf out bin *~
 	make -C libgcc clean
 	make out

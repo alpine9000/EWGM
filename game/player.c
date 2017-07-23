@@ -45,7 +45,7 @@ player_processJoystick(object_t * ptr, uint8_t joystickPos)
 
 
 uint16_t
-player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
+player_intelligence(__UNUSED uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
   if (data->attackCount > 0 && data->attackJump) {
     return 0;
@@ -59,7 +59,7 @@ player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   }
 
  ok:
-  __USE(deltaT);
+  {}
   uint16_t attack = 0;
   uint16_t buttonDown = 0;
   uint16_t joyUp = 0;
@@ -79,6 +79,7 @@ player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   if (!buttonDown) {
     data->buttonReleased = 1;
   }
+
 
   return attack;
 }
@@ -142,44 +143,34 @@ fighter_attack_config_t player_attackConfig[] = {
 };
 
 static void
-player_player1KillCallback(object_t* me, object_t* victim)
+player_player1KillCallback(__UNUSED object_t* me, __UNUSED object_t* victim)
 {
-  __USE(me);
-  __USE(victim);
   game_player1Score += game_killScore;
   sound_queueSound(SOUND_DIE01);
 }
 
 static void
-player_player1HitCallback(object_t* me, object_t* victim)
+player_player1HitCallback(__UNUSED object_t* me, __UNUSED object_t* victim)
 {
-  __USE(me);
-  __USE(victim);
   sound_queueSound(SOUND_TERENCE_PUNCH01);
 }
 
 static void
-player_player2KillCallback(object_t* me, object_t* victim)
+player_player2KillCallback(__UNUSED object_t* me, __UNUSED object_t* victim)
 {
-  __USE(me);
-  __USE(victim);
-
   game_player2Score += game_killScore;
   sound_queueSound(SOUND_DIE02);
 }
 
 static void
-player_player2HitCallback(object_t* me, object_t* victim)
+player_player2HitCallback(__UNUSED object_t* me, __UNUSED object_t* victim)
 {
-  __USE(me);
-  __USE(victim);
   sound_queueSound(SOUND_BUD_PUNCH01);
 }
 
 static void
-player_player1DieCallback(object_t* me)
+player_player1DieCallback(__UNUSED object_t* me)
 {
-  __USE(me);
   game_player1 = 0;
   game_scoreBoardPlayer1Text(I18N_GAME_OVER);
   if (!game_player2) {
@@ -191,9 +182,8 @@ player_player1DieCallback(object_t* me)
 
 
 static void
-player_player2DieCallback(object_t* me)
+player_player2DieCallback(__UNUSED object_t* me)
 {
-  __USE(me);
   game_player2 = 0;
   if (!game_player1) {
     game_setGameOver();
@@ -209,7 +199,7 @@ player_init(uint16_t id, uint16_t animId, int16_t x, int16_t health)
   if (health == 0) {
     health = PLAYER_INITIAL_HEALTH;
   }
-  object_t* ptr = fighter_add(id, OBJECT_ATTRIBUTE_PLAYER, animId, x, 100, PLAYER_INITIAL_HEALTH, player_attackConfig, player_intelligence);
+  object_t* ptr = fighter_add(id, OBJECT_ATTRIBUTE_PLAYER, animId, x, 100, health, player_attackConfig, player_intelligence);
   fighter_data_t* data = fighter_data(ptr);
   data->numAttacks = 2;
   data->flashCount = FIGHTER_SPAWN_FLASH_COUNT_TICS;

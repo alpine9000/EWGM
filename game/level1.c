@@ -3,12 +3,16 @@
 #define LEVEL1_ENEMY_BOSS_START_Y (6+56)
 #define LEVEL1_ENEMY_BOSS_START_X (GAME_WORLD_WIDTH-96)
 
-#define LEVEL1_RANDOM_DISTANCE_MASK 0x7f
-#define LEVEL1_RANDOM_FREQUENCY_MASK 0x1
+#define LEVEL1_RANDOM_DISTANCE_MASK  0x7f //0x3f
+#define LEVEL1_RANDOM_FREQUENCY_MASK 0x7 //0x1f
 
 #define LEVEL1_BOSS_ATTACK_DAMMAGE   20
 #define LEVEL1_BOSS_ATTACK_RANGE     20
 
+#define LEVEL1_EASY_ATTACK_WAIT_TICS   25
+#define LEVEL1_MEDIUM_ATTACK_WAIT_TICS 15
+#define LEVEL1_HARD_ATTACK_WAIT_TICS   0
+#define LEVEL1_BOSS_ATTACK_WAIT_TICS   15
 
 static uint16_t
 level1_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data);
@@ -159,7 +163,7 @@ static enemy_config_t level1_enemy_configs[] = {
   [LEVEL1_EASY_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level1_attackConfig1,
-    .attackWait = ENEMY_DEFAULT_ATTACK_WAIT_TICS,
+    .attackWait = LEVEL1_EASY_ATTACK_WAIT_TICS,
     .randomDistanceMask = LEVEL1_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = LEVEL1_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 0,
@@ -171,7 +175,7 @@ static enemy_config_t level1_enemy_configs[] = {
   [LEVEL1_MEDIUM_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level1_attackConfig1,
-    .attackWait = ENEMY_DEFAULT_ATTACK_WAIT_TICS/2,
+    .attackWait = LEVEL1_MEDIUM_ATTACK_WAIT_TICS,
     .randomDistanceMask = LEVEL1_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = LEVEL1_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 0,
@@ -183,7 +187,7 @@ static enemy_config_t level1_enemy_configs[] = {
   [LEVEL1_MEDIUM_STRONG_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level1_attackConfig2,
-    .attackWait = ENEMY_DEFAULT_ATTACK_WAIT_TICS/2,
+    .attackWait = LEVEL1_MEDIUM_ATTACK_WAIT_TICS,
     .randomDistanceMask = LEVEL1_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = LEVEL1_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 0,
@@ -195,7 +199,7 @@ static enemy_config_t level1_enemy_configs[] = {
   [LEVEL1_MEDIUM_FAST_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level1_attackConfig1,
-    .attackWait = 0,
+    .attackWait = LEVEL1_MEDIUM_ATTACK_WAIT_TICS,
     .postAttackInvincibleTics = 0,
     .randomDistanceMask = LEVEL1_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = LEVEL1_RANDOM_FREQUENCY_MASK,
@@ -207,7 +211,7 @@ static enemy_config_t level1_enemy_configs[] = {
   [LEVEL1_HARD_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level1_attackConfig2,
-    .attackWait = 0,
+    .attackWait = LEVEL1_HARD_ATTACK_WAIT_TICS,
     .randomDistanceMask = LEVEL1_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = LEVEL1_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 0,
@@ -218,7 +222,7 @@ static enemy_config_t level1_enemy_configs[] = {
   [LEVEL1_BOSS] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE*2,
     .attackConfig = level1_bossAttackConfig,
-    .attackWait = 10,
+    .attackWait = LEVEL1_BOSS_ATTACK_WAIT_TICS,
     .postAttackInvincibleTics = 50,
     .randomDistanceMask = LEVEL1_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = 0xffff,//LEVEL1_RANDOM_FREQUENCY_MASK,
@@ -230,7 +234,7 @@ static enemy_config_t level1_enemy_configs[] = {
   [LEVEL1_DOORMAN] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level1_attackConfig1,
-    .attackWait = ENEMY_DEFAULT_ATTACK_WAIT_TICS,
+    .attackWait = LEVEL1_MEDIUM_ATTACK_WAIT_TICS,
     .randomDistanceMask = LEVEL1_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = LEVEL1_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 0,
@@ -413,9 +417,8 @@ static level_enemy_config_t level1_configs[] = {
 
 static object_t* level1_door;
 static int16_t
-level1_addPhoneBooth(uint16_t argument)
+level1_addPhoneBooth(__UNUSED uint16_t argument)
 {
-  __USE(argument);
   thing_add(OBJECT_ID_PHONEBOOTH, OBJECT_ANIM_PHONEBOOTH, OBJECT_ANIM_PHONEBOOTH_BROKEN, OBJECT_ANIM_PHONEBOOTH_JUNK1, game_cameraX+argument, 80, 2, THING_BONUS_TYPE_HEALTH);
   return 1;
 }
@@ -445,9 +448,8 @@ level1_processEnemyConfig(uint16_t argument)
 
 
 static void
-level1_song3(void* data)
+level1_song3(__UNUSED void* data)
 {
-  __USE(data);
   music_play(MUSIC_BOSS_1);
   music_toggle();
 }
@@ -489,19 +491,15 @@ level1_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 
 
 static void
-level1_addDoorEnemy(void* data)
+level1_addDoorEnemy(__UNUSED void* data)
 {
-  __USE(data);
-
   enemy_add(OBJECT_ANIM_ENEMY_LEVEL1_1_STAND_RIGHT, 0, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, &level1_enemy_configs[LEVEL1_DOORMAN]);
 }
 
 
 static void
-level1_addDoorEnemy2(void* data)
+level1_addDoorEnemy2(__UNUSED void* data)
 {
-  __USE(data);
-
   enemy_add(OBJECT_ANIM_ENEMY_LEVEL1_2_STAND_RIGHT, 0, LEVEL1_ENEMY_BOSS_START_X, LEVEL1_ENEMY_BOSS_START_Y, &level1_enemy_configs[LEVEL1_DOORMAN]);
 }
 
@@ -527,25 +525,22 @@ level1_doAddBoss(uint16_t x)
 
 
 static void
-level1_addBoss(void* data)
+level1_addBoss(__UNUSED void* data)
 {
-  __USE(data);
   level1_doAddBoss(LEVEL1_ENEMY_BOSS_START_X);
 }
 
 
 static void
-level1_removeDoor(void* data)
+level1_removeDoor(__UNUSED void* data)
 {
-  __USE(data);
   object_set_state(level1_door, OBJECT_STATE_REMOVED);
 }
 
 
 static int16_t
-level1_wave3(uint16_t argument)
+level1_wave3(__UNUSED uint16_t argument)
 {
-  __USE(argument);
   level1_door =  object_add(/*id*/OBJECT_ID_DOOR,
 			       /*class*/0,
 			       /*x*/LEVEL1_ENEMY_BOSS_START_X,
@@ -572,19 +567,17 @@ level1_wave3(uint16_t argument)
 
 
 static int16_t
-level1_start(uint16_t argument)
+level1_start(__UNUSED uint16_t argument)
 {
-  __USE(argument);
   level1_addPostbox(50);
   //level1_doAddMotorbike();
-  //level1_doAddBoss(150);
+  // level1_doAddBoss(150);
   return 1;
 }
 
 static int16_t
-level1_motorbike(uint16_t argument)
+level1_motorbike(__UNUSED uint16_t argument)
 {
-  __USE(argument);
   motorbike_add(game_cameraX-160, 150);
   return 1;
 }
@@ -592,9 +585,8 @@ level1_motorbike(uint16_t argument)
 //#ifdef DEBUG
 //static
 int16_t
-level1_pause(uint16_t argument)
+level1_pause(__UNUSED uint16_t argument)
 {
-  __USE(argument);
   return 0;
 }
 //#endif
@@ -605,7 +597,7 @@ conductor_instruction_t level1_instructions[] = {
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_start},
 
-  //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_pause},
+  //{CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level1_pause},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_1, level1_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_2, level1_processEnemyConfig},
@@ -652,7 +644,7 @@ conductor_instruction_t level1_instructions[] = {
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3)+80, SCREEN_WIDTH, level1_addPostbox},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*4)-1, 0, level1_wave3},
-  {CONDUCTOR_INSTRUCTION_END},
+  {CONDUCTOR_INSTRUCTION_END, 0, 0, 0},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL1_WAVE1_2, level1_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (WAVE_5_X)+1, SCREEN_WIDTH, level1_addPostbox},

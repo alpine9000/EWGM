@@ -1,7 +1,7 @@
 #include "game.h"
 
-int
-strlen(char* s) 
+unsigned long
+strlen(const char* s)
 {
   int count = 0;
   while (*s++ != 0) {
@@ -97,7 +97,7 @@ strncpy(char *s1, const char *s2, size_t n)
 static char _text_hex[] = {'A', 'B', 'C', 'D', 'E', 'F'};
 static char _text_buf[9];
 
-static inline 
+static inline
 int _hexChar(int s)
 {
   int c;

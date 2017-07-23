@@ -499,9 +499,7 @@ enum {
 typedef struct object {
   uint16_t id;
   uint16_t attributes;
-#ifdef DEBUG
   uint16_t dataType;
-#endif
   void* _data;
   struct object* next;
   struct object* prev;
@@ -569,7 +567,7 @@ extern object_t* object_zBuffer[OBJECT_MAX_OBJECTS];
 void*
 _object_debug_get_data(object_t* ptr, uint16_t dataType);
 #else
-#define object_set_data(ptr, type, data) ( ptr->_data = data)
+#define object_set_data(ptr, type, data) ( ptr->dataType = type, ptr->_data = data)
 #define _object_data(ptr, type) (ptr->_data)
 #endif
 

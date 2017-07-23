@@ -566,7 +566,7 @@ game_startLevel(menu_command_t command)
     random_seed(1);
     //    music_restart();
   } else {
-    random_seed(hw_getRasterLine());
+    random_seed(hw_getRasterLine() | *((uint16_t*)0xbfd800));
   }
   game_loadLevel(command);
 }
@@ -1023,7 +1023,7 @@ game_showDeathMatch(void)
 
   object_t* dm = object_add(OBJECT_ID_DEATHMATCH, 0, game_cameraX+(SCREEN_WIDTH/2-48), -4, 0,OBJECT_ANIM_DEATHMATCH, 0, 0, 0, 0);
   object_set_z(dm, 4096);
-  uint32_t frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;
+  uint32_t frame, lastFrame = hw_verticalBlankCount;
   int16_t y;
   for (y = -16; y <= (PLAYAREA_HEIGHT/2)-4; y+=4) {
     object_set_py_no_checks(dm, y*OBJECT_PHYSICS_FACTOR);
@@ -1049,7 +1049,7 @@ game_showDeathMatch(void)
   }
 
   dm->visible = 1;
-  frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;
+  lastFrame = hw_verticalBlankCount;
   for (y = y - 2; y >= -8; y-=4) {
     object_set_py_no_checks(dm, y*OBJECT_PHYSICS_FACTOR);
     frame = hw_verticalBlankCount;
@@ -1237,7 +1237,7 @@ game_waitForMenuExit(int16_t messageAnimId, int16_t offset)
   object_t* gameOver = object_add(OBJECT_ID_GAMEOVER, 0, game_cameraX+(SCREEN_WIDTH/2-offset), -4, 0, messageAnimId, 0, 0, 0, 0);
   object_set_z(gameOver, 4096);
 
-  uint32_t frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;
+  uint32_t frame, lastFrame = hw_verticalBlankCount;
   for (int16_t y = -16; y <= (PLAYAREA_HEIGHT/2)-30; y+=2) {
     object_set_py_no_checks(gameOver, y*OBJECT_PHYSICS_FACTOR);
     frame = hw_verticalBlankCount;
@@ -1570,11 +1570,11 @@ game_loop()
 }
 
 
-void* memcpy(void* destination, void* source, size_t num)
+void* memcpy(void* destination, const void* source, size_t num)
 {
   size_t i;
   char* d = destination;
-  char* s = source;
+  const char* s = source;
   for (i = 0; i < num; i++) {
     d[i] = s[i];
   }
@@ -1583,10 +1583,10 @@ void* memcpy(void* destination, void* source, size_t num)
 
 
 int
-memcmp(void *s1, void *s2, size_t n)
+memcmp(const void *s1, const void *s2, size_t n)
 {
-  char* p1 = s1;
-  char* p2 = s2;
+  const char* p1 = s1;
+  const char* p2 = s2;
 
   for ( ; n-- ;) {
     if (*p1 != *p2) {

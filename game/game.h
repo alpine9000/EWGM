@@ -9,14 +9,14 @@
 #define CONFIG_OCS_FAST    2
 #define CONFIG_WORKBENCH   3
 
-#define DEBUG
+//#define DEBUG
 //#define GAME_AUTOSTART_REPLAY
-//#define GAME_DEBUG_OBJECT_RENDERING 
+//#define GAME_DEBUG_OBJECT_RENDERING
 
 #ifdef DEBUG
 #define SCRIPTING
 #else
-#define RELEASE
+//#define RELEASE
 #endif
 
 //#define GAME_OBJECTS_BELOW_PLAYAREA_BOTTOM
@@ -34,7 +34,7 @@
 #endif
 
 
-#define abs(a) ((a) >= 0 ? (a) : -(a))  
+#define abs(a) ((a) >= 0 ? (a) : -(a))
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
@@ -107,6 +107,30 @@ typedef LONG int32_t;
 typedef ULONG uint32_t;
 typedef ULONG size_t;
 
+#ifdef SCAN_CHECKER
+
+#define __INLINE
+#define __NOINLINE
+#define __SECTION_DATA_C
+#if TRACKLOADER==1
+#define __SECTION_RANDOM_C
+#define __SECTION_RANDOM
+#define __SECTION_DISK
+#define __SECTION_LASTTRACK
+#else
+#define __SECTION_RANDOM_C
+#define __SECTION_RANDOM
+#define __SECTION_DISK
+#define __SECTION_LASTTRACK
+#endif
+#define __EXTERNAL
+#define __REG(reg, arg)     arg
+//#define __USE(x) do { x = x; } while(0);
+#define __UNUSED            __attribute__ ((unused))
+#define __stdargs
+
+#else
+
 #define __INLINE            inline
 #define __NOINLINE          __attribute__ ((noinline))
 #define __SECTION_DATA_C    __attribute__ ((section ("data_c,data,chip")))
@@ -123,13 +147,16 @@ typedef ULONG size_t;
 #endif
 #define __EXTERNAL          __attribute__ ((externally_visible))
 #define __REG(reg, arg)     register arg asm(reg)
-#define __USE(x) do { x = x; } while(0);
+#define __UNUSED            __attribute__ ((unused))
+
+#endif
+
 #define custom ((custom_t)0xdff000)
 
 
-extern void* memcpy(void* destination, void* source, size_t num);
+extern void* memcpy(void* destination, const void* source, size_t num);
 extern void* memset(void *dst, int c, size_t n);
-extern int memcmp(void *s1, void *s2, size_t n);
+extern int memcmp(const void *s1, const void *s2, size_t n);
 
 
 typedef volatile uint8_t* frame_buffer_t;
@@ -222,7 +249,7 @@ extern object_t* game_player2;
 
 #define game_fire() ((!(hw_lastJoystickButton&0x1) && (hw_joystickButton&0x1)) || \
 			(keyboard_lastKey != keyboard_key && keyboard_key && keyboard_code == KEYBOARD_CODE_RETURN))
-void 
+void
 game_loop(void);
 uint16_t
 game_requestCameraX(int16_t targetCameraX);

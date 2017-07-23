@@ -12,7 +12,7 @@ enum {
 };
 
 #define LEVEL2_BASEBALL_ATTACK_DURATION_TICS (LEVEL2_3_ENEMY_ATTACK_TICS_PER_FRAME*3)
-#define LEVEL2_BOSS_ATTACK_RANGE         (SCREEN_WIDTH-128)
+#define LEVEL2_BOSS_ATTACK_RANGE         (SCREEN_WIDTH)
 #define LEVEL2_BOSS_ATTACK_DURATION_TICS (LEVEL2_BOSS_ATTACK_TICS_PER_FRAME*4)
 
 static fighter_attack_config_t level2_boss_attackConfig[] = {
@@ -39,7 +39,7 @@ static fighter_attack_config_t level2_boss_attackConfig[] = {
 static enemy_config_t level2_boss_config = {
   .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
   .attackConfig = level2_boss_attackConfig,
-  .attackWait = 5,//ENEMY_ATTACK_WAIT_TICS,
+  .attackWait = 0,//ENEMY_ATTACK_WAIT_TICS,
   .postAttackInvincibleTics = 0,
   .numAttacks = 1,
   .randomDistanceMask = 0x0,
@@ -159,7 +159,7 @@ static level_enemy_config_t level2_configs[] = {
   },
 };
 
-static gunfighter_config_t leve2_gunfighterConfig = {
+static gunfighter_config_t level2_gunfighterConfig = {
   .animId = OBJECT_ANIM_LEVEL2_BOSS_STAND_RIGHT,
   .bulletAnimId = OBJECT_ANIM_BULLET_RIGHT,
   .bulletSpeed = 16,
@@ -213,9 +213,8 @@ level2_addTableAndChairs(uint16_t x, int16_t y)
 }
 
 static int16_t
-level2_start(uint16_t argument)
+level2_start(__UNUSED uint16_t argument)
 {
-  __USE(argument);
   level2_addSixPack(50);
   level2_addTableAndChairs(100, 180);
   level2_addTableAndChairs(220, 180);
@@ -225,48 +224,135 @@ level2_start(uint16_t argument)
 
 //#ifdef DEBUG
 int16_t
-level2_pause(uint16_t argument)
+level2_pause(__UNUSED uint16_t argument)
 {
-  __USE(argument);
   return 0;
 }
 //#endif
 
+int16_t level2_bossSequenceTargetX;
+
+static void
+level2_restoreIntelligence(__UNUSED void* data)
+{
+  if (game_player1) {
+    game_player1->collisionsEnabled = 1;
+    fighter_data(game_player1)->intelligence = player_intelligence;
+  }
+  if (game_player2) {
+    game_player2->collisionsEnabled = 1;
+    fighter_data(game_player2)->intelligence = player_intelligence;
+  }
+}
+
+
+static void
+level2_addBoss(__UNUSED void* data)
+{
+  alarm_add(100, level2_restoreIntelligence, 0);
+  gunfighter_add(&level2_gunfighterConfig, &level2_boss_config, level2_bossSequenceTargetX+SCREEN_WIDTH, 150);
+}
+
+static void
+level2_playersReady(__UNUSED void* data)
+{
+  if (game_player1) {
+    game_player1->collisionsEnabled = 1;
+    fighter_data(game_player1)->intelligence = fighter_nullIntelligence;
+  }
+  if (game_player2) {
+    game_player2->collisionsEnabled = 1;
+    fighter_data(game_player2)->intelligence = fighter_nullIntelligence;
+  }
+
+  alarm_add(0, level2_addBoss, 0);
+}
+
+
+uint16_t
+level2_nullIntelligence(__UNUSED uint16_t deltaT, object_t* ptr, __UNUSED fighter_data_t* data)
+{
+  ptr->collisionsEnabled = 0;
+  if (object_x(ptr) < level2_bossSequenceTargetX) {
+    ptr->velocity.x = 1;
+  } else if (object_x(ptr) > level2_bossSequenceTargetX) {
+    ptr->velocity.x = -1;
+  } else {
+    ptr->velocity.x = 0;
+  }
+
+  if (ptr == game_player1) {
+    if (object_y(ptr) > 80) {
+      ptr->velocity.y = -1;
+    } else if (object_y(ptr) < 80) {
+      ptr->velocity.y = 1;
+    } else {
+      ptr->velocity.y = 0;
+    }
+  } else {
+    if (object_y(ptr) > 180) {
+      ptr->velocity.y = -1;
+    } else if (object_y(ptr) < 180) {
+      ptr->velocity.y = 1;
+    } else {
+      ptr->velocity.y = 0;
+    }
+  }
+
+  int16_t ready = 1;
+  if (game_player1) {
+    if (object_y(game_player1) != 80 || object_x(game_player1) != level2_bossSequenceTargetX) {
+      ready = 0;
+    }
+  }
+
+  if (game_player2) {
+    if (object_y(game_player2) != 180 || object_x(game_player2) != level2_bossSequenceTargetX) {
+      ready = 0;
+    }
+  }
+
+  if (ready) {
+    level2_playersReady(0);
+  }
+  return 0;
+}
+
 static int16_t
 level2_bossSequence(uint16_t argument)
 {
+  level2_bossSequenceTargetX = argument + (SCREEN_WIDTH/2) + 32;
+
   if (game_player1) {
-    fighter_data(game_player1)->intelligence = fighter_nullIntelligence;
+    fighter_data(game_player1)->intelligence = level2_nullIntelligence;
     game_player1->velocity.x = 0;
     game_player1->velocity.y = 0;
   }
 
   if (game_player2) {
-    fighter_data(game_player2)->intelligence = fighter_nullIntelligence;
+    fighter_data(game_player2)->intelligence = level2_nullIntelligence;
     game_player2->velocity.x = 0;
     game_player2->velocity.y = 0;
   }
 
-  game_requestCameraX(argument+(SCREEN_WIDTH/2)+1);
+  game_requestCameraX(argument+(SCREEN_WIDTH/2)+20);
   return 1;
 }
 
+
+#if 0
 static int16_t
 level2_addBoss(uint16_t argument)
 {
-  if (game_player1) {
-    fighter_data(game_player1)->intelligence = player_intelligence;
-  }
-  if (game_player2) {
-    fighter_data(game_player2)->intelligence = player_intelligence;
-  }
-  gunfighter_add(&leve2_gunfighterConfig, &level2_boss_config, argument+SCREEN_WIDTH, 150);
+  if (0)
+
   level2_addSixPack(argument+50);
   level2_addTableAndChairs(argument+100, 180);
   level2_addTableAndChairs(argument+220, 180);
 
   return 1;
 }
+#endif
 
 conductor_instruction_t level2_instructions[] = {
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level2_start},
@@ -280,11 +366,11 @@ conductor_instruction_t level2_instructions[] = {
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH*2, SCREEN_WIDTH*2, level2_bossSequence},
 
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), level2_addBoss},
+  //{CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), level2_addBoss},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level2_pause},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_3, level2_processEnemyConfig},
 
-  {CONDUCTOR_INSTRUCTION_END}
+  {CONDUCTOR_INSTRUCTION_END, 0, 0, 0}
 };

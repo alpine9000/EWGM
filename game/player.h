@@ -7,9 +7,7 @@
 #define PLAYER_SPEED_X              2
 #define PLAYER_SPEED_Y              1
 #define PLAYER_INITIAL_HEALTH       100
-
-// the following are temporary and will be refactored
-#define PLAYER_ATTACK_DAMMAGE 100 //20
+#define PLAYER_ATTACK_DAMMAGE       20
 
 
 object_t*

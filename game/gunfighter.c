@@ -1,19 +1,15 @@
 #include "game.h"
 
 static void
-gunfighter_bulletHitEnemyCallback(object_t* me, object_t* attacker)
+gunfighter_bulletHitEnemyCallback(__UNUSED object_t* me, __UNUSED object_t* attacker)
 {
-  __USE(me);
-  __USE(attacker);
   sound_queueSound(SOUND_ENEMY_PUNCH01);
 }
 
 
 static void
-gunfighter_bulletKillEnemyCallback(object_t* me, object_t* attacker)
+gunfighter_bulletKillEnemyCallback(__UNUSED object_t* me, __UNUSED object_t* attacker)
 {
-  __USE(me);
-  __USE(attacker);
   sound_queueSound(SOUND_DIE03);
 }
 
@@ -48,7 +44,7 @@ gunfighter_bulletUpdate(uint16_t deltaT, object_t* ptr)
     if (object_get_state(collision) == OBJECT_STATE_ALIVE) {
       collision->hit.attacker = ptr;
       collision->hit.dammage = gunfighter_config->bulletDammage;
-      collision->hit.dx = ptr->anim->facing == FACING_RIGHT ? 1 : -1;
+      collision->hit.dx = ptr->anim->facing == FACING_RIGHT ? 8 : -8;
       object_set_state(collision, OBJECT_STATE_ABOUT_TO_BE_HIT);
       object_set_state(ptr, OBJECT_STATE_REMOVED);
     }
@@ -57,9 +53,8 @@ gunfighter_bulletUpdate(uint16_t deltaT, object_t* ptr)
 
 
 static void
-gunfighter_freeBullet(void* data)
+gunfighter_freeBullet(__UNUSED void* data)
 {
-  __USE(data);
   gunfighter_bullet = 0;
 }
 
@@ -95,6 +90,13 @@ uint16_t
 gunfighter_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
   uint16_t attack = enemy_intelligence(deltaT, ptr,  data);
+
+  if (object_screenx(ptr) > (SCREEN_WIDTH-ptr->width)) {
+    attack = 0;
+    ptr->velocity.x = -fighter_data(ptr)->speedX;
+  }
+
+  data->walkAbout = 0;
 
   if (attack) {
     gunfighter_attackQueued = 1;

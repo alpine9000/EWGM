@@ -11,7 +11,7 @@ uint16_t message_textColor = 0xfff;
 
 typedef struct {
   uint16_t bpl1[SCREEN_BIT_DEPTH*2*2];
-  uint16_t color1[2];  
+  uint16_t color1[2];
   uint16_t wait[2];
   uint16_t color2[2];
   uint16_t end[2];
@@ -34,11 +34,11 @@ static  __SECTION_DATA_C  message_copper_t message_copper  = {
   .color1 = { COLOR01, 0x000},
   .wait = { ((RASTER_Y_START+PLAYAREA_HEIGHT-1)<<8)|0xe1, 0xfffe},
   .color2 = {COLOR01, 0x000},
-  
+
   .end = {0xFFFF, 0xFFFE}
 };
 
-static void 
+static void
 message_pokeCopperList(frame_buffer_t frameBuffer)
 {
   uint16_t volatile* copperPtr = (uint16_t*)&message_copper;
@@ -70,34 +70,34 @@ message_screenOn(char* message)
 #if TRACKLOADER==1
   message_message =  message;
 #endif
-  
+
   if (game_messageBuffer != game_offScreenBuffer) {
     game_switchFrameBuffers();
   }
-  
+
 #if TRACKLOADER==1
   message_loadingAnimation = 0;
   hw_interruptsGameInit();
 #endif
   custom->dmacon = DMAF_SPRITE;
-  
+
   if (message_on) {
     hw_waitVerticalBlank();
     for (uint16_t c = message_textColor; c != 0; c-=0x111) {
       message_copper.color1[1] = c;
       hw_waitVerticalBlank();
     }
-    message_copper.color1[1] = 0x000;    
+    message_copper.color1[1] = 0x000;
     palette_black();
     gfx_fillRectSmallScreen(game_messageBuffer, 0, 0, SCREEN_WIDTH, PLAYAREA_HEIGHT, 0);
-    text_drawMaskedText8Blitter(game_messageBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)+4);  
-    hw_waitBlitter();    
+    text_drawMaskedText8Blitter(game_messageBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)+4);
+    hw_waitBlitter();
     custom->bltafwm = 0xffff;
 
     for (uint16_t c = 0x0; c != message_textColor; c+=0x111) {
       message_copper.color1[1] = c;
       hw_waitVerticalBlank();
-    }    
+    }
     message_copper.color1[1] = message_textColor;
     custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
     return;
@@ -105,13 +105,13 @@ message_screenOn(char* message)
 
   hw_waitBlitter();
   hw_waitVerticalBlank();
-  message_copper.color1[1] = 0x000;  
+  message_copper.color1[1] = 0x000;
   palette_black();
-  hw_waitVerticalBlank();  
+  hw_waitVerticalBlank();
 
   //  volatile uint16_t scratch;
 
-  hw_waitBlitter();  
+  hw_waitBlitter();
   custom->dmacon = (DMAF_COPPER|DMAF_RASTER);
 
   gfx_fillRectSmallScreen(game_messageBuffer, 0, 0, SCREEN_WIDTH, PLAYAREA_HEIGHT, 0);
@@ -119,14 +119,14 @@ message_screenOn(char* message)
 #ifdef DEBUG
   game_checkCanary();
 #endif
-  
+
   text_drawMaskedText8Blitter(game_messageBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)+4);
 
   hw_waitBlitter();
   custom->bltafwm = 0xffff;
 
   /* set up playfield */
-  
+
   custom->diwstrt = (RASTER_Y_START<<8)|RASTER_X_START;
   custom->diwstop = ((SCREEN_RASTER_Y_STOP-256)<<8)|(RASTER_X_STOP-256);
 
@@ -136,16 +136,16 @@ message_screenOn(char* message)
   custom->bpl1mod = (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-SCREEN_WIDTH_BYTES;
   custom->bpl2mod = (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-SCREEN_WIDTH_BYTES;
 
-  message_pokeCopperList(game_messageBuffer);  
+  message_pokeCopperList(game_messageBuffer);
   // in case previous copper list changed color registers
   palette_black();
   /* install copper list, then enable dma and selected interrupts */
-  uint16_t volatile* copperPtr = (uint16_t*)&message_copper;  
+  uint16_t volatile* copperPtr = (uint16_t*)&message_copper;
   custom->cop1lc = (uint32_t)copperPtr;
   //  scratch = custom->copjmp1;
 
   custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
-  
+
   hw_waitVerticalBlank();
 
   //custom->color[1] = 0xfff;
@@ -159,33 +159,36 @@ message_screenOff(void)
 {
 #if TRACKLOADER==1
   message_loadingAnimation = 0;
-  hw_interruptsGameInit();  
+  hw_interruptsGameInit();
 #endif
   hw_waitBlitter();
   hw_waitVerticalBlank();
-  
+
   if (message_on) {
-    message_copper.color1[1] = 0x000;    
+    message_copper.color1[1] = 0x000;
     palette_black();
-    hw_waitVerticalBlank();    
+    hw_waitVerticalBlank();
     gfx_fillRectSmallScreen(game_messageBuffer, 0, 0, SCREEN_WIDTH, PLAYAREA_HEIGHT, 0);
-    hw_waitBlitter();    
+    hw_waitBlitter();
     hw_waitVerticalBlank();
     screen_setup((uint16_t*)&copper);
-    hw_waitVerticalBlank();    
+    hw_waitVerticalBlank();
     message_on = 0;
   }
 }
 
 __NOINLINE void
+#if TRACKLOADER==1
 message_loading(char* message)
+#else
+message_loading(__UNUSED char* message)
+#endif
 {
 
 #if TRACKLOADER==1
   message_screenOn(message);
 #else
-  __USE(message);
-  message_screenOn(" ");  
+  message_screenOn(" ");
 #endif
 
   hw_waitBlitter();
@@ -231,9 +234,9 @@ message_loadingAnimate(void)
   if (!message_loadingAnimation) {
     return;
   }
-  
+
   int16_t x;
-  
+
   switch (message_loadingState) {
   case 80:
     x = (SCREEN_WIDTH/2)+(strlen(message_message)*4);
@@ -251,9 +254,9 @@ message_loadingAnimate(void)
   case 20:
     x = (SCREEN_WIDTH/2)+(strlen(message_message)*4);
     text_drawMaskedText8Blitter(message_fb, ".", x, (SCREEN_HEIGHT/2)+4);
-    break;    
+    break;
   }
-  
+
   message_loadingState++;
 }
 #endif

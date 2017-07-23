@@ -41,9 +41,8 @@ enemy_closestPlayer(object_t* ptr)
 
 
 static uint16_t
-enemy_attackSolution(object_t* player, object_t* enemy, uint16_t deltaT)
+enemy_attackSolution(object_t* player, object_t* enemy, __UNUSED uint16_t deltaT)
 {
-  __USE(deltaT);
   fighter_data_t* enemyData = fighter_data(enemy);
   uint16_t thresholdx;
   if (enemyData->numAttacks == 1) {
@@ -143,7 +142,6 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
     return 0;
   }
   object_collision_t collision;
-  __USE(collision);
 
   if (object_x(ptr)-game_cameraX <= 0) {
     data->walkAbout = -(object_x(ptr)-game_cameraX)+1;//rand & data->walkAboutMask;//0x7f; //ENEMY_WALKABOUT_TICS;
@@ -170,7 +168,7 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 	  ptr->velocity.y = 0;
 	}
       } else if ((object_collision(deltaT, ptr, &collision, ENEMY_INTERCEPT_X_RANGE, ENEMY_INTERCEPT_Y_THRESHOLD*2))) {
-	switch ((rand >> 8) & 0x7) {
+	switch (rand & 0x7) {
 	case 0:
 	  attack = 1;
 	  break;
