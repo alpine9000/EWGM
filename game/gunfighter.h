@@ -7,11 +7,11 @@ typedef struct {
   uint16_t bulletHeight;
   uint16_t bulletDammage;
   int16_t bulletXOffsetLeft;
-  int16_t bulletXOffsetRight;  
+  int16_t bulletXOffsetRight;
 } gunfighter_config_t;
 
 
-void
+object_t*
 gunfighter_add(gunfighter_config_t* gunfighterConfig, enemy_config_t* config, int16_t x, int16_t y);
 
 uint16_t

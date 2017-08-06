@@ -17,8 +17,8 @@ thing_getFree(void)
     PANIC("thing_getFree: empty list");
   }
 #endif
-  
-  
+
+
   thing_data_t* entry = thing_freeList;
   thing_freeList = thing_freeList->next;
   if (thing_freeList) {
@@ -28,7 +28,7 @@ thing_getFree(void)
 #ifdef DEBUG
   entry->magicNumber = THING_DATA_MAGIC_NUMBER;
 #endif
-  
+
   return entry;
 }
 
@@ -83,20 +83,34 @@ thing_awardBonus(object_t* ptr, object_t* collision)
   }
   if (collision->id == OBJECT_ID_PLAYER1) {
     ptr->velocity.y = -2;
-    alarm_add(25, thing_removeBonus, ptr);    
+    alarm_add(25, thing_removeBonus, ptr);
     object_set_py_no_checks(ptr, object_py(ptr)-ptr->image->h*OBJECT_PHYSICS_FACTOR);
     object_set_z(ptr, SCREEN_HEIGHT);
     sound_queueSound(SOUND_PICKUP);
-    ptr->imageIndex++;
-    ptr->image = &object_imageAtlas[ptr->imageIndex];
+    ptr->imageIndex = 0;
+    switch (thing_data(ptr)->bonusType) {
+    case THING_BONUS_TYPE_HEALTH:
+      ptr->image = &object_imageAtlas[SPRITE_HEALTH_COLA];
+      break;
+    case THING_BONUS_TYPE_POINTS:
+      ptr->image = &object_imageAtlas[SPRITE_POINTS_WALLET];
+      break;
+    }
   } else if (collision->id == OBJECT_ID_PLAYER2) {
-    ptr->velocity.y = -2;    
+    ptr->velocity.y = -2;
     alarm_add(25, thing_removeBonus, ptr);
-    object_set_py_no_checks(ptr, object_py(ptr)-ptr->image->h*OBJECT_PHYSICS_FACTOR);    
-    object_set_z(ptr, SCREEN_HEIGHT);    
+    object_set_py_no_checks(ptr, object_py(ptr)-ptr->image->h*OBJECT_PHYSICS_FACTOR);
+    object_set_z(ptr, SCREEN_HEIGHT);
     sound_queueSound(SOUND_PICKUP);
-    ptr->imageIndex++;
-    ptr->image = &object_imageAtlas[ptr->imageIndex];
+    ptr->imageIndex = 0;
+    switch (thing_data(ptr)->bonusType) {
+    case THING_BONUS_TYPE_HEALTH:
+      ptr->image = &object_imageAtlas[SPRITE_HEALTH_COLA];
+      break;
+    case THING_BONUS_TYPE_POINTS:
+      ptr->image = &object_imageAtlas[SPRITE_POINTS_WALLET];
+      break;
+    }
   }
 
   fighter_data_t* data = fighter_data(collision);
@@ -116,7 +130,7 @@ thing_awardBonus(object_t* ptr, object_t* collision)
   }
 
   thing_data(ptr)->bonus = 0;
-  
+
   if (data->health > PLAYER_INITIAL_HEALTH) {
     data->health = PLAYER_INITIAL_HEALTH;
   }
@@ -137,22 +151,22 @@ thing_updatePosition(uint16_t deltaT, object_t* ptr)
   if (deltaT == 2) {
     vx *= 2;
     vy *= 2;
-  }  
-  
+  }
+
   int16_t lastX = object_px(ptr);
   int16_t lastY = object_py(ptr);
 
   object_set_px(ptr, lastX + vx);
   object_set_py_no_checks(ptr, lastY + vy);
 
-  if (object_y(ptr) > object_z(ptr)+2) { // allow a tiny bounce   
+  if (object_y(ptr) > object_z(ptr)+2) { // allow a tiny bounce
     object_set_py_no_checks(ptr, object_z(ptr)*OBJECT_PHYSICS_FACTOR);
   }
-  
+
   ptr->velocity.dx = object_px(ptr) - lastX;
   ptr->velocity.dy = object_py(ptr) - lastY;
 
-  
+
 }
 
 
@@ -167,21 +181,21 @@ thing_collision(object_t* a)
   }
 #endif
 
-  int16_t a_z = object_z(a);  
+  int16_t a_z = object_z(a);
   int16_t a_x1 = object_x(a) + a->widthOffset;
   int16_t a_x2 = object_x(a) + (a->width - a->widthOffset);
-  
+
   if (game_player1) {
     b = game_player1;
-    //if ((b->class == OBJECT_CLASS_FIGHTER) && object_get_state(b) == OBJECT_STATE_ALIVE) {      
+    //if ((b->class == OBJECT_CLASS_FIGHTER) && object_get_state(b) == OBJECT_STATE_ALIVE) {
       int16_t b_z = object_z(b);
       if (abs(a_z - b_z) <= 1) {
 	a_x1 = object_x(a) + a->widthOffset;
-	a_x2 = object_x(a) + (a->width - a->widthOffset);	
+	a_x2 = object_x(a) + (a->width - a->widthOffset);
 	int16_t b_x1 = object_x(b) + b->widthOffset;
 	int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
-	
-	if (a_x1 < b_x2 && a_x2 > b_x1) {		  
+
+	if (a_x1 < b_x2 && a_x2 > b_x1) {
 	  return b;
 	}
       }
@@ -190,19 +204,19 @@ thing_collision(object_t* a)
 
   if (game_player2) {
     b = game_player2;
-    //if ((b->class == OBJECT_CLASS_FIGHTER) && object_get_state(b) == OBJECT_STATE_ALIVE) {      
+    //if ((b->class == OBJECT_CLASS_FIGHTER) && object_get_state(b) == OBJECT_STATE_ALIVE) {
       int16_t b_z = object_z(b);
       if (abs(a_z - b_z) <= 1) {
 	int16_t b_x1 = object_x(b) + b->widthOffset;
 	int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
-	
-	if (a_x1 < b_x2 && a_x2 > b_x1) {		  
+
+	if (a_x1 < b_x2 && a_x2 > b_x1) {
 	  return b;
 	}
       }
     //}
   }
-  
+
   return 0;
 }
 
@@ -217,21 +231,21 @@ thing_update(uint16_t deltaT, object_t* ptr)
     data->platform = 0;
     data->underAttack = 1;
   }
-  
+
   if (object_get_state(ptr) == OBJECT_STATE_ABOUT_TO_BE_HIT) {
     thing_attack(ptr, ptr->hit.dx);
   }
-  
+
   if (data->underAttack) {
     if (object_y(ptr) >= object_z(ptr) && ptr->velocity.y > 0) {
-      object_set_py(ptr, object_z(ptr)*OBJECT_PHYSICS_FACTOR);      
+      object_set_py(ptr, object_z(ptr)*OBJECT_PHYSICS_FACTOR);
       ptr->velocity.y = 0;
-      ptr->velocity.x = 0;    
+      ptr->velocity.x = 0;
       data->underAttack = 0;
       if (!data->bonus && !data->attackable) {
 	object_set_state(ptr, OBJECT_STATE_REMOVED);
       } else {
-	object_set_z(ptr, object_y(ptr));	
+	object_set_z(ptr, object_y(ptr));
       }
     } else {
       ptr->velocity.y += deltaT;
@@ -276,7 +290,7 @@ thing_add(uint16_t id, uint16_t animId, uint16_t brokenId, uint16_t junkStartId,
 
 //static
 object_t*
-thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t yOffset, uint16_t bonus, uint16_t bonusType)
+thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t xOffset, int16_t yOffset, uint16_t bonus, uint16_t bonusType)
 {
   thing_data_t* junk = thing_getFree();
   junk->underAttack = dx != 0;
@@ -287,21 +301,21 @@ thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t yOffset, uint1
   if (!dx) {
     proposedY = yOffset+object_y(ptr);
   }
-  
+
   if (proposedY >= PLAYAREA_HEIGHT) {
     proposedY = PLAYAREA_HEIGHT-2;
   } else if (proposedY <= GAME_PAVEMENT_START) {
     proposedY = GAME_PAVEMENT_START+2;
   }
-  
+
   junk->hasBonus = 0;
   junk->bonus = bonus;
   junk->bonusType = bonusType;
-  int16_t x = object_x(ptr) + (dx > 0 ? ptr->image->w : 0);
- 
+  int16_t x = object_x(ptr) + xOffset + (dx > 0 ? ptr->image->w : 0);
+
   object_t* jptr = object_add(OBJECT_ID_JUNK, 0, x, yOffset+object_y(ptr), 0, animId, thing_update, OBJECT_DATA_TYPE_THING, junk, thing_addFree);
 
-    object_set_z(jptr, proposedY);  
+    object_set_z(jptr, proposedY);
   jptr->widthOffset = 0;
   jptr->width = jptr->image->w;
   if (dx) {
@@ -320,9 +334,9 @@ thing_addJunks(void* _ptr)
 {
   object_t* ptr = _ptr;
   thing_data_t* data = thing_data(ptr);
-  thing_addJunk(ptr, data->junkStartId, data->addJunkDx, -40, 0, 0);
-  thing_addJunk(ptr, data->junkStartId+1, data->addJunkDx*2, 20-40, 0, 0);        
-  thing_addJunk(ptr, data->junkStartId+2, -data->addJunkDx, -40, 0, 0);          
+  thing_addJunk(ptr, data->junkStartId, data->addJunkDx, 0, -40, 0, 0);
+  thing_addJunk(ptr, data->junkStartId+1, data->addJunkDx*2, 0, 20-40, 0, 0);
+  thing_addJunk(ptr, data->junkStartId+2, -data->addJunkDx, 0, -40, 0, 0);
 }
 
 
@@ -332,11 +346,11 @@ thing_addBonusJunk(void* _ptr)
   object_t* ptr = _ptr;
   thing_data_t* data = thing_data(ptr);
   if (data->hasBonus == 1) {
-    thing_addJunk(ptr, OBJECT_ANIM_BONUS_BURGER, -data->addJunkDx, -40, 1, THING_BONUS_TYPE_HEALTH);
+    thing_addJunk(ptr, OBJECT_ANIM_BONUS_BURGER, -data->addJunkDx, 0, -40, 1, THING_BONUS_TYPE_HEALTH);
   } else if (data->hasBonus == 2) {
-    thing_addJunk(ptr, OBJECT_ANIM_BONUS_COLA, data->addJunkDx, -40, 1, THING_BONUS_TYPE_HEALTH);
+    thing_addJunk(ptr, OBJECT_ANIM_BONUS_COLA, data->addJunkDx, 0, -40, 1, THING_BONUS_TYPE_HEALTH);
   }
-  data->hasBonus--;  
+  data->hasBonus--;
 }
 
 
@@ -345,8 +359,8 @@ thing_addBonusPointsJunk(void* _ptr)
 {
   object_t* ptr = _ptr;
   thing_data_t* data = thing_data(ptr);
-  thing_addJunk(ptr, OBJECT_ANIM_BONUS_WALLET, -data->addJunkDx, -40, 1, THING_BONUS_TYPE_POINTS);
-  data->hasBonus--;  
+  thing_addJunk(ptr, OBJECT_ANIM_BONUS_WALLET, -data->addJunkDx, 0, -40, 1, THING_BONUS_TYPE_POINTS);
+  data->hasBonus--;
 }
 
 void
@@ -360,7 +374,7 @@ thing_attack(object_t* ptr, int16_t dx)
       data->addJunkDx  = dx;
       alarm_add(0, thing_addJunks, ptr);
       /* thing_addJunk(ptr, data->junkStartId, dx, 0, 0);
-      thing_addJunk(ptr, data->junkStartId+1, dx*2, 20, 0);        
+      thing_addJunk(ptr, data->junkStartId+1, dx*2, 20, 0);
       thing_addJunk(ptr, data->junkStartId+2, -dx, 0, 0);          */
     } else if (data->hasBonus) {
       object_setAnim(ptr, data->brokenId);
@@ -386,11 +400,11 @@ thing_attack(object_t* ptr, int16_t dx)
     } else if (proposedY <= GAME_PAVEMENT_START) {
       proposedY = GAME_PAVEMENT_START+2;
     }
-    
+
     object_set_z(ptr, proposedY);
-    
+
     ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
-    ptr->velocity.x = dx;    
+    ptr->velocity.x = dx;
   }
 
   object_set_state(ptr, OBJECT_STATE_ALIVE);

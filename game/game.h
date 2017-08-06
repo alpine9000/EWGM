@@ -9,7 +9,7 @@
 #define CONFIG_OCS_FAST    2
 #define CONFIG_WORKBENCH   3
 
-//#define DEBUG
+#define DEBUG
 //#define GAME_AUTOSTART_REPLAY
 //#define GAME_DEBUG_OBJECT_RENDERING
 
@@ -185,6 +185,8 @@ extern uint16_t game_scoreboardLoaded;
 #ifdef DEBUG
 extern uint16_t game_collisions;
 extern uint16_t game_startReplay;
+#endif
+#ifndef RELEASE
 extern uint16_t game_startLevelIndex;
 #endif
 extern uint16_t player1_character;

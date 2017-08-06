@@ -71,7 +71,7 @@ VASM_OPTS=
 BASE_CFLAGS=-Wno-overlength-strings $(REGPARAM) $(VASM_OPTS) -fomit-frame-pointer  -pedantic-errors -Wfatal-errors -Wall -Werror -Wextra -Wshadow -Wuninitialized  -Wundef -Wbad-function-cast -Wparentheses $(INCLUDE) $(EXTRA_DEFINES) -DSCAN_CHECKER
 else
 VASM_OPTS=-Wa,-opt-speed #-Wa,-opt-speed -Wa,-showcrit -Wa,-opt-allbra -Wa,-opt-brajmp -Wa,-opt-lsl  -Wa,-opt-movem -Wa,-opt-mul -Wa,-opt-div -Wa,-opt-pea #-Wa,-opt-speed
-BASE_CFLAGS=-funsafe-loop-optimizations -Wno-overlength-strings $(REGPARAM) $(VASM_OPTS) -fomit-frame-pointer -noixemul -mcpu=68000 -m68000 -pedantic-errors -Wfatal-errors -Wall -Wunused-but-set-variable -Werror -Wextra -Wshadow -Wuninitialized -Wduplicated-cond -Wframe-larger-than=1024 -Wstack-usage=1024 -Wundef -Wbad-function-cast -Wparentheses $(INCLUDE) $(EXTRA_DEFINES)
+BASE_CFLAGS=-Wmissing-field-initializers -funsafe-loop-optimizations -Wno-overlength-strings $(REGPARAM) $(VASM_OPTS) -fomit-frame-pointer -noixemul -mcpu=68000 -m68000 -pedantic-errors -Wfatal-errors -Wall -Wunused-but-set-variable -Werror -Wextra -Wshadow -Wuninitialized -Wduplicated-cond -Wframe-larger-than=1563 -Wstack-usage=1563 -Wundef -Wbad-function-cast -Wparentheses $(INCLUDE) $(EXTRA_DEFINES)
 endif
 
 C_LIBS=libgcc/out/gcc.lib

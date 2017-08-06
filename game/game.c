@@ -41,9 +41,11 @@ uint16_t game_scoreboardLoaded;
 uint16_t player1_character;
 uint16_t game_demo;
 #ifdef DEBUG
-uint16_t game_startLevelIndex;
 uint16_t game_startReplay;
 uint16_t game_collisions;
+#endif
+#ifndef RELEASE
+uint16_t game_startLevelIndex;
 #endif
 
 static menu_command_t menuCommand;
@@ -547,8 +549,8 @@ game_startLevel(menu_command_t command)
   game_deltaT = 0;
   game_lastPlayer1Score = 0;
   game_lastPlayer2Score = 0;
-  game_lastPlayer1Health = 0;
-  game_lastPlayer2Health = 0;
+  //  game_lastPlayer1Health = 0;
+  //  game_lastPlayer2Health = 0;
   game_levelTime.min = 5;
   game_levelTime.sec10 = 0;
   game_levelTime.sec= 0;
@@ -1433,13 +1435,15 @@ game_loop()
   }
 
   game_newGame = 1;
-#ifdef DEBUG
+#ifndef RELEASE
   game_level = game_startLevelIndex;
 #else
   game_level = 0;
 #endif
   game_player1Score = 0;
   game_player2Score = 0;
+  game_lastPlayer1Health = 0;
+  game_lastPlayer2Health = 0;
 
  restart:
   game_disableCopperEffects();

@@ -159,6 +159,28 @@ object_updatePositionNoChecks(uint16_t deltaT, object_t* ptr)
 
 
 void
+object_updatePositionNoYChecks(uint16_t deltaT, object_t* ptr)
+{
+  int16_t vx = ptr->velocity.x;
+  int16_t vy = ptr->velocity.y;
+
+  if (deltaT == 2) {
+    vx *= 2;
+    vy *= 2;
+  }
+
+  int16_t lastX = object_px(ptr);
+  int16_t lastY = object_py(ptr);
+
+  object_set_px(ptr, lastX + vx);
+  object_set_py_no_checks(ptr, lastY + vy);
+
+  ptr->velocity.dx = object_px(ptr) - lastX;
+  ptr->velocity.dy = object_py(ptr) - lastY;
+}
+
+
+void
 object_init(void)
 {
   object_count = 0;

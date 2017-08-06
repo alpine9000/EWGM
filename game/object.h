@@ -1,7 +1,7 @@
 #ifndef __OBJECT_H
 #define __OBJECT_H
 
-#define OBJECT_MAX_OBJECTS    18
+#define OBJECT_MAX_OBJECTS    24
 #define OBJECT_PHYSICS_FACTOR 2
 #define OBJECT_WIDTH 32
 
@@ -583,6 +583,8 @@ void
 object_updatePosition(uint16_t deltaT, object_t* ptr);
 void
 object_updatePositionNoChecks(uint16_t deltaT, object_t* ptr);
+void
+object_updatePositionNoYChecks(uint16_t deltaT, object_t* ptr);
 void
 object_setAction(object_t* ptr, object_action_t action);
 

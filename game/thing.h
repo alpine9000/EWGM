@@ -15,7 +15,7 @@ typedef struct _thing{
   uint32_t magicNumber;
 #endif
   struct _thing* prev;
-  struct _thing* next;  
+  struct _thing* next;
   int16_t underAttack;
   int16_t attackable;
   int16_t bonus;
@@ -48,5 +48,5 @@ object_t*
 thing_collision(object_t* a);
 
 object_t*
-thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t yOffset, uint16_t bonus, uint16_t bonusType);
-#endif 
+thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t xOffset, int16_t yOffset, uint16_t bonus, uint16_t bonusType);
+#endif

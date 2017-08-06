@@ -363,7 +363,8 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 
     if (object_get_state(ptr) == OBJECT_STATE_HIT) {
       fighter_updatePositionUnderAttack(deltaT, ptr, data);
-      object_updatePositionNoChecks(deltaT, ptr);
+      //      object_updatePositionNoChecks(deltaT, ptr);
+      object_updatePositionNoYChecks(deltaT, ptr);
     } else if (object_get_state(ptr) == OBJECT_STATE_FLASHING && data->health <= 0) {
       if (data->flashCount <= 0) {
 	ptr->visible = !ptr->visible;

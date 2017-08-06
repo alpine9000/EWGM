@@ -821,7 +821,7 @@ object_animation_t object_animations[] = {
     .start = SPRITE_BULLET_RIGHT1,
     .stop = SPRITE_BULLET_RIGHT2,
     .speed = 8,
-    .facing = FACING_LEFT
+    .facing = FACING_RIGHT
   },
 
   [OBJECT_ANIM_BULLET_LEFT] = {
