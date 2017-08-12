@@ -520,7 +520,7 @@ static int16_t
 level2_addTableAndChairs(uint16_t x, int16_t y, int16_t beerX, int16_t bonusType)
 {
   object_t* table = thing_add(OBJECT_ID_TABLE, OBJECT_ANIM_TABLE, OBJECT_ANIM_TABLE, 0, x+15, y, 0, 0);
-  thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR1, OBJECT_ANIM_CHAIR1, 0, x+45+15, y, 1, THING_BONUS_TYPE_POINTS);
+  thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR1, OBJECT_ANIM_CHAIR1, 0, x+45+15, y, 1, THING_BONUS_TYPE_HEALTH);
   thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR2, OBJECT_ANIM_CHAIR2, 0, x, y, 0, 0);
 
   object_t* beer = thing_addJunk(table, OBJECT_ANIM_BONUS_BEER, 0, beerX, -20, 1, bonusType);
@@ -605,7 +605,7 @@ level2_start(__UNUSED uint16_t argument)
 static int16_t
 level2_addTableAndChairs_1(uint16_t argument)
 {
-  level2_addTableAndChairs(argument, 180, 0, THING_BONUS_TYPE_POINTS);
+  level2_addTableAndChairs(argument, 180, 0, THING_BONUS_TYPE_HEALTH);
   return 1;
 }
 
@@ -619,7 +619,7 @@ level2_addTableAndChairs_2(uint16_t argument)
 static int16_t
 level2_addTableAndChairs_3(uint16_t argument)
 {
-  level2_addTableAndChairs(argument, 180, 40, THING_BONUS_TYPE_POINTS);
+  level2_addTableAndChairs(argument, 180, 40, THING_BONUS_TYPE_HEALTH);
   return 1;
 }
 

@@ -189,7 +189,7 @@ thing_collision(object_t* a)
     b = game_player1;
     //if ((b->class == OBJECT_CLASS_FIGHTER) && object_get_state(b) == OBJECT_STATE_ALIVE) {
       int16_t b_z = object_z(b);
-      if (abs(a_z - b_z) <= 1) {
+      if (abs(a_z - b_z) <= 2) {
 	a_x1 = object_x(a) + a->widthOffset;
 	a_x2 = object_x(a) + (a->width - a->widthOffset);
 	int16_t b_x1 = object_x(b) + b->widthOffset;
@@ -206,7 +206,7 @@ thing_collision(object_t* a)
     b = game_player2;
     //if ((b->class == OBJECT_CLASS_FIGHTER) && object_get_state(b) == OBJECT_STATE_ALIVE) {
       int16_t b_z = object_z(b);
-      if (abs(a_z - b_z) <= 1) {
+      if (abs(a_z - b_z) <= 2) {
 	int16_t b_x1 = object_x(b) + b->widthOffset;
 	int16_t b_x2 = object_x(b) + (b->width - b->widthOffset);
 

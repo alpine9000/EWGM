@@ -140,7 +140,7 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
   star_add(ptr, dx);
 #endif
 
-  object_set_z(ptr, object_y(ptr));
+  //  object_set_z(ptr, object_y(ptr));
 
   if (ptr->attributes & OBJECT_ATTRIBUTE_PLAYER && attacker->attributes & OBJECT_ATTRIBUTE_PLAYER) {
    data->health -= (dammage/4);

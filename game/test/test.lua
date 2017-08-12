@@ -47,14 +47,14 @@ function CheckScreenshot(filename)
 
    screenshot1:close()
    if createTestImages == 1 then
-      io.write("CREATED: ", screenShotFilename, " ==> ", filename, "\n")      
+      io.write("CREATED: ", screenShotFilename, " ==> ", filename, "\n")
       screenshot2 = io.open(filename, "wb")
       screenshot2:write(screenshot1Data)
       screenshot2:close()
    else
-      screenshot2 = io.open(filename, "rb")      
+      screenshot2 = io.open(filename, "rb")
       local screenshot2Data = screenshot2:read("*all")
-      screenshot2:close()      
+      screenshot2:close()
       if screenshot1Data ~= screenshot2Data then
 	 io.write("FAIL: ", screenShotFilename, " != ", filename, "\n")
 	 io.flush()
@@ -70,10 +70,10 @@ function _sleep(n)
   os.execute("sleep " .. tonumber(n))
 end
 
-function sleep (a) 
-    local sec = tonumber(os.clock() + a); 
-    while (os.clock() < sec) do 
-    end 
+function sleep (a)
+    local sec = tonumber(os.clock() + a);
+    while (os.clock() < sec) do
+    end
 end
 
 function _ScreenshotSet(_state)
@@ -81,7 +81,7 @@ function _ScreenshotSet(_state)
 end
 
 function ScreenshotSet(_state)
-   
+
    if screenShotSetCount == nil then
       screenShotSetCount = 0;
    end
@@ -96,7 +96,7 @@ function ScreenshotSet(_state)
       screenShotState = 1
    elseif screenShotState == 1 then
       if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+_state.screenShotWait then
-	 local sleepTime = 0.25	 
+	 local sleepTime = 0.25
 	 screenShotState = 0
 	 uae_pause(1)
 	 sleep(sleepTime)
@@ -116,14 +116,14 @@ function GameScreenshot(_state)
 
    if uae_peek_symbol32("_hw_verticalBlankCount") == _state.screenShotFrame then
       uae_pause(1)
-      sleep(sleepTime)      
+      sleep(sleepTime)
       uae_screenshot(screenShotFilename)
-      sleep(sleepTime)      
+      sleep(sleepTime)
       CheckScreenshot(_state.filename)
       uae_pause(0)
       return true
    end
-      
+
    return false
 end
 
@@ -136,24 +136,24 @@ function Screenshot(_state)
 	 screenShotState = 0
 	 local sleepTime = 0.25
 	 uae_pause(1)
-	 sleep(sleepTime)      
+	 sleep(sleepTime)
 	 uae_screenshot(screenShotFilename)
-	 sleep(sleepTime)      
+	 sleep(sleepTime)
 	 CheckScreenshot(_state.filename)
 	 uae_pause(0)
 	 return true
       end
    end
-   return false   
+   return false
 end
 
 function WaitForMessage(_state)
    message = uae_peek_string("_message_message")
    if message == state then
-      io.write("_message_message ", state, " == ", message, "\n")         
+      io.write("_message_message ", state, " == ", message, "\n")
       return true
    end
-   io.write("_message_message ", state, " ~= ", message, "\n")      
+   io.write("_message_message ", state, " ~= ", message, "\n")
    return false
 end
 
@@ -166,7 +166,7 @@ setup = {
 mainMenu = {
    ["booting"] = {
       waitFrames = 250,
-      next = "disable scroller",      
+      next = "disable scroller",
    },
    ["disable scroller"] = {
       writeEntry = {"_script_port",  string.byte(' ')},
@@ -212,7 +212,7 @@ mainMenu = {
 mainMenu2 = {
    ["booting"] = {
       waitFrames = 250,
-      next = "disable scroller",      
+      next = "disable scroller",
    },
    ["disable scroller"] = {
       writeEntry = {"_script_port",  string.byte(' ')},
@@ -232,21 +232,21 @@ mainMenu2 = {
    ["main menu screenshot"] = {
       filename = "test/screenshots/mainmenu-2.png",
       transition = Screenshot,
-   },   
+   },
 }
 
 
 level = {
    ["booting"] = {
-      wait = {"_hw_verticalBlankCount", 1, 32},      
+      wait = {"_hw_verticalBlankCount", 1, 32},
       next = "game start"
    },
    ["game start"] = {
-      wait = {"_hw_verticalBlankCount", 0, 32},      
+      wait = {"_hw_verticalBlankCount", 0, 32},
       next = "screenshotSet",
-   },      
+   },
    ["screenshotSet"] = {
-      numScreenShots = 106,
+      numScreenShots = 96,
       screenShotWait = 100,
       filename = "test/screenshots/screenshotSet1_",
       transition = ScreenshotSet,
@@ -254,7 +254,8 @@ level = {
    },
    ["pause"] = {
       waitFrames = 5000,
-      next = "waiting for level end"
+      --      next = "waiting for level end"
+      next = "verify level parameters"
    },
    ["waiting for level end"] = {
       wait = {"_game_collectTotal", 0},
@@ -262,7 +263,7 @@ level = {
    },
    ["verify level parameters"] = {
       less = {{"_game_total", 965648, 32}},
-      equal = {{"_game_player1Score", 9000, 32}, {"_game_player2Score", 8000, 32}}
+      equal = {{"_game_player1Score", 10000, 32}, {"_game_player2Score", 8000, 32}}
    },
 }
 
@@ -282,32 +283,32 @@ level2 = {
       next = "screenshotSet"
    },
    ["screenshotSet"] = {
-      numScreenShots = 35,
+      numScreenShots = 172,
       screenShotWait = 100,
       filename = "test/screenshots/screenshotSetL2_",
       transition = ScreenshotSet,
-      next = "waiting for level end"
+      next = "verify level parameters",
    },
    ["waiting for level end"] = {
       wait = {"_game_collectTotal", 0},
       next = "verify level parameters",
    },
    ["verify level parameters"] = {
-      less = {{"_game_total", 965648, 32}},
-      equal = {{"_game_player1Score", 40500, 32}, {"_game_player2Score", 0, 32}}
+      less = {{"_game_total", 2124337, 32}},
+      equal = {{"_game_player1Score", 20000, 32}, {"_game_player2Score",7000, 32}}
    },
 }
 
 
 level1_2 = {
    ["booting"] = {
-      wait = {"_hw_verticalBlankCount", 1, 32},      
+      wait = {"_hw_verticalBlankCount", 1, 32},
       next = "game start"
    },
    ["game start"] = {
-      wait = {"_hw_verticalBlankCount", 0, 32},      
+      wait = {"_hw_verticalBlankCount", 0, 32},
       next = "screenshotSet",
-   },      
+   },
    ["screenshotSet"] = {
       numScreenShots = 110,
       screenShotWait = 100,
@@ -338,7 +339,7 @@ newHiscore = {
    },
    ["a"] = {
       waitFrames = 250,
-      writeExit = {"_script_port", string.byte('a')},      
+      writeExit = {"_script_port", string.byte('a')},
       next = "l"
    },
    ["l"] = {
@@ -384,7 +385,7 @@ newHiscore = {
    ["enter2"] = {
       writeEntry = {"_script_port", 10},
       waitFrames = 250,
-   },   
+   },
 }
 
 
@@ -400,7 +401,7 @@ newHiscore2 = {
    },
    ["a"] = {
       waitFrames = 250,
-      writeExit = {"_script_port", string.byte('1')},      
+      writeExit = {"_script_port", string.byte('1')},
       next = "l"
    },
    ["l"] = {
@@ -446,7 +447,7 @@ newHiscore2 = {
    ["enter2"] = {
       writeEntry = {"_script_port", 10},
       waitFrames = 250,
-   },   
+   },
 }
 
 
@@ -459,7 +460,7 @@ reset = {
 
 restartReplay = {
    ["booting"] = {
-      writeEntry = {"_script_port", 10},      
+      writeEntry = {"_script_port", 10},
       waitFrames = 250,
       next = "select player screenshot"
    },
@@ -471,7 +472,7 @@ restartReplay = {
    ["joystick right"] = {
       writeEntry = {"_script_port", 3},
       waitFrames = 10,
-      next = "select player screenshot2"      
+      next = "select player screenshot2"
    },
    ["select player screenshot2"] = {
       filename = "test/screenshots/select-player2.png",
@@ -482,7 +483,7 @@ restartReplay = {
       writeEntry = {"_script_port", 7},
       waitFrames = 10,
       next = "LEVEL 1 READY!"
-   },   
+   },
    ["LEVEL 1 READY!"] = {
       writeEntry = {"_script_port", 10},
       transition = WaitForMessage,
@@ -502,18 +503,18 @@ tests = {
    { mainMenu, "main menu"},
 
    { level2, "level 2"},
-   
+
 --   { restartReplay, "restart replay"},
---   { level1_2, "level 1, restart"},   
+--   { level1_2, "level 1, restart"},
 --   { reset, "reset"},
 --   { level, "level 1,  second pass"},
 --   { newHiscore2, "new hiscore, second pass"},
---   { mainMenu2, "main menu, second pass"},   
+--   { mainMenu2, "main menu, second pass"},
 }
 
 
 function EnterState(stateMachine, state)
-   stateMachine[state].startFrame = uae_peek_symbol32("_hw_verticalBlankCount") 
+   stateMachine[state].startFrame = uae_peek_symbol32("_hw_verticalBlankCount")
    io.write("enter state ", state, " - frame = ", stateMachine[state].startFrame, "\n")
    if stateMachine[state].enterState then
       stateMachine[state].enterState(stateMachine[state])
@@ -525,7 +526,7 @@ end
 
 
 function Tick(stateMachine)
-   if not quit then 
+   if not quit then
       local transition = false
       local asserts = false
 
@@ -551,7 +552,7 @@ function Tick(stateMachine)
 	    end
 	 end
       end
-      
+
       if not quit and stateMachine[state].less then
 	 asserts = true
 	 for i, less in ipairs(stateMachine[state].less) do
@@ -570,7 +571,7 @@ function Tick(stateMachine)
 	    end
 	 end
       end
-      
+
       if not quit and asserts == false then
 	 if stateMachine[state].wait then
 	    if stateMachine[state].wait[3] == 32 then
@@ -586,7 +587,7 @@ function Tick(stateMachine)
 		  transition = true
 	       end
 	    end
-	    
+
 	 else
 	    transition = true
 	 end
@@ -595,7 +596,7 @@ function Tick(stateMachine)
 	    transition = true
 	 end
       end
-      
+
       if stateMachine[state].waitFrames then
 	 if uae_peek_symbol32("_hw_verticalBlankCount") > (stateMachine[state].startFrame + stateMachine[state].waitFrames) then
 	    io.write("trigger: ",uae_peek_symbol32("_hw_verticalBlankCount"), " > ", stateMachine[state].startFrame, " + ", stateMachine[state].waitFrames, "\n")
@@ -604,21 +605,21 @@ function Tick(stateMachine)
 	    transition = false
 	 end
       end
-      
+
       if not quit and stateMachine[state].transition then
 	 transition = stateMachine[state].transition(stateMachine[state])
       end
-      
+
       if transition then
 	 if stateMachine[state].exitState then
 	    stateMachine[state].exitState()
 	 end
-	 
-	 if not quit then 
+
+	 if not quit then
 	    if  stateMachine[state].writeExit then
 	       Write(stateMachine[state].writeExit[1], stateMachine[state].writeExit[2])
 	    end
-	    
+
 	    if stateMachine[state].next then
 	       io.write("state: ", state, " -> ", stateMachine[state].next, "\n")
 	       state = stateMachine[state].next
@@ -632,21 +633,21 @@ function Tick(stateMachine)
 	       end
 	    end
 	 end
-      end	 
-      
+      end
+
       io.flush()
-      
+
       if quit then
 	 Quit()
       end
-   end   
+   end
 end
 
 
 function on_uae_vsync()
    --io.write(uae_peek_symbol32("_hw_verticalBlankCount"), "\n");
-   
-   if tests[test] then 
+
+   if tests[test] then
       Tick(tests[test][1])
    elseif not quit then
       io.write("ALL TESTS PASSED!\n")

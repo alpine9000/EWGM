@@ -38,7 +38,6 @@ gunfighter_bulletUpdate(uint16_t deltaT, object_t* ptr)
     object_set_state(ptr, OBJECT_STATE_REMOVED);
   }
 
-
   object_t* collision;
   if ((collision = fighter_attackCollision(ptr, -4, FIGHTER_ENEMY_Y_ATTACK_RANGE))) {
     if (object_get_state(collision) == OBJECT_STATE_ALIVE) {

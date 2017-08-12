@@ -551,7 +551,7 @@ game_startLevel(menu_command_t command)
   game_lastPlayer2Score = 0;
   //  game_lastPlayer1Health = 0;
   //  game_lastPlayer2Health = 0;
-  game_levelTime.min = 5;
+  game_levelTime.min = 8;
   game_levelTime.sec10 = 0;
   game_levelTime.sec= 0;
   game_lastLevelTime.value = 0;
@@ -912,6 +912,7 @@ game_updateWave(void)
 static void
 game_render(uint16_t deltaT)
 {
+  alarm_process(game_deltaT);
   object_render(game_offScreenBuffer, deltaT);
 #ifdef GAME_STARS
   star_update(deltaT);
@@ -1091,11 +1092,28 @@ game_pauseToggle(void)
   }
 }
 
+#ifdef DEBUG
+static void
+game_maxHealth(void)
+{
+  if (game_player1) {
+    fighter_data(game_player1)->health = PLAYER_INITIAL_HEALTH;
+  }
+
+  if (game_player2) {
+    fighter_data(game_player2)->health = PLAYER_INITIAL_HEALTH;
+  }
+}
+#endif
+
 static int16_t
 game_processKeyboard()
 {
   switch (keyboard_key) {
 #ifdef DEBUG
+  case 'H':
+    game_maxHealth();
+    break;
   case 'C':
     game_setGameComplete();
     break;
@@ -1235,6 +1253,18 @@ game_waitForMenuExit(int16_t messageAnimId, int16_t offset)
   if (game_player2) {
     fighter_data(game_player2)->intelligence = fighter_nullIntelligence;
   }
+
+  object_t* ptr = object_activeList;
+
+  while (ptr) {
+    if (ptr->dataType == OBJECT_DATA_TYPE_FIGHTER) {
+      ptr->velocity.x = 0;
+      ptr->velocity.y = 0;
+      fighter_data(ptr)->intelligence = fighter_nullIntelligence;
+    }
+    ptr = ptr->next;
+  }
+
 
   object_t* gameOver = object_add(OBJECT_ID_GAMEOVER, 0, game_cameraX+(SCREEN_WIDTH/2-offset), -4, 0, messageAnimId, 0, 0, 0, 0);
   object_set_z(gameOver, 4096);
@@ -1559,7 +1589,6 @@ game_loop()
 
     conductor_process();
 
-    alarm_process(game_deltaT);
     game_render(game_deltaT);
 
   skip:;
