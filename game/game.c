@@ -1429,7 +1429,7 @@ game_loop()
   game_ctor();
 
 #if FASTRAM==1
-  //message_ask(itoh(hw_fastRamStart, 8));
+
 #endif
 
   logo_load();

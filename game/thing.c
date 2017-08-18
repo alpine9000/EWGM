@@ -308,6 +308,7 @@ thing_addJunk(object_t* ptr, uint16_t animId, int16_t dx, int16_t xOffset, int16
     proposedY = GAME_PAVEMENT_START+2;
   }
 
+  junk->platform = 0;
   junk->hasBonus = 0;
   junk->bonus = bonus;
   junk->bonusType = bonusType;

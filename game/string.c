@@ -3,7 +3,7 @@
 unsigned long
 strlen(const char* s)
 {
-  int count = 0;
+  int32_t count = 0;
   while (*s++ != 0) {
     count++;
   }
@@ -98,9 +98,9 @@ static char _text_hex[] = {'A', 'B', 'C', 'D', 'E', 'F'};
 static char _text_buf[9];
 
 static inline
-int _hexChar(int s)
+int32_t _hexChar(int16_t s)
 {
-  int c;
+  int32_t c;
 
   c = (s >= 0 && s <= 9) ? s + '0' : _text_hex[s - 10];
   return c;

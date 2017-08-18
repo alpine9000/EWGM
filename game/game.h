@@ -16,7 +16,7 @@
 #ifdef DEBUG
 #define SCRIPTING
 #else
-//#define RELEASE
+#define RELEASE
 #endif
 
 //#define GAME_OBJECTS_BELOW_PLAYAREA_BOTTOM

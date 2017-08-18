@@ -202,8 +202,8 @@ hiscore_prompt(char* message)
   text_drawMaskedText8Blitter(game_messageBuffer, congrats, (SCREEN_WIDTH/2)-(strlen(congrats)*4), (SCREEN_HEIGHT/2)-22-16);
   text_drawMaskedText8Blitter(game_messageBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)-22);
 
-  int x = (SCREEN_WIDTH/2)-8;
-  int y = (SCREEN_HEIGHT/2)+22;
+  int32_t x = (SCREEN_WIDTH/2)-8;
+  int32_t y = (SCREEN_HEIGHT/2)+22;
 
   text_drawMaskedText8Blitter(game_messageBuffer, "___", x, y);
 

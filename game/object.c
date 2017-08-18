@@ -294,7 +294,7 @@ object_dirty(object_t* ptr)
   int16_t sx = ((object_screenx(ptr))>>4)<<4;
   int16_t sy = object_screeny(ptr);
 
-  for (int i = 0; i < object_count ; i++) {
+  for (int32_t i = 0; i < object_count ; i++) {
     if (object_zBuffer[i] != ptr) {
       object_t* o = object_zBuffer[i];
       object_position_t* op = o->save.position;
@@ -311,7 +311,7 @@ object_dirty(object_t* ptr)
     }
   }
 
-  for (int i = 0; i < object_count && object_zBuffer[i] != ptr; i++) {
+  for (int32_t i = 0; i < object_count && object_zBuffer[i] != ptr; i++) {
     object_t* o = object_zBuffer[i];
     int16_t ox = ((object_screenx(o))>>4)<<4;
     int16_t oy = ((object_screeny(o)));

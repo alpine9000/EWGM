@@ -262,7 +262,7 @@ level = {
       next = "verify level parameters",
    },
    ["verify level parameters"] = {
-      less = {{"_game_total", 965648, 32}},
+      less = {{"_game_total", 565616, 32}},
       equal = {{"_game_player1Score", 10000, 32}, {"_game_player2Score", 8000, 32}}
    },
 }
@@ -294,7 +294,7 @@ level2 = {
       next = "verify level parameters",
    },
    ["verify level parameters"] = {
-      less = {{"_game_total", 2124337, 32}},
+      less = {{"_game_total", 2081752, 32}},
       equal = {{"_game_player1Score", 20000, 32}, {"_game_player2Score",7000, 32}}
    },
 }
