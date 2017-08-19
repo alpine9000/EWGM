@@ -119,6 +119,10 @@ motorbike_collision(object_t* a)
   }
 #endif
 
+  if (a->velocity.x == 0) {
+    return 0;
+  }
+
   int16_t a_y = object_y(a);
   int16_t a_x1 = object_x(a) + a->widthOffset;
   int16_t a_x2 = object_x(a) + (a->width - a->widthOffset);
