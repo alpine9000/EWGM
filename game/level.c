@@ -30,7 +30,7 @@ typedef struct {
   uint16_t moduleIndex;
   conductor_instruction_t* instructions;
   char* readyMessage;
-  fighter_intelligence_t playerIntelligence;
+  fighter_intelligence_functor playerIntelligence;
 } level_config_t;
 
 level_config_t level_levels[LEVEL_NUM_LEVELS] = {
@@ -59,15 +59,16 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
     .levelFastData = level_level3_f_data,
     .chipDataSize = sizeof(level_level3_c_data),
     .fastDataSize = sizeof(level_level3_f_data),
-    .instructions = level1_instructions,
+    .instructions = level3_instructions,
     .moduleIndex = 0,
-    .readyMessage = I18N_LEVEL3_READY
+    .readyMessage = I18N_LEVEL3_READY,
+    .playerIntelligence = player_intelligence
   }
 };
 
 static uint16_t level_current = 0xFFFF;
 
-fighter_intelligence_t
+fighter_intelligence_functor
 level_playerIntelligence(void)
 {
   return level_levels[level_current].playerIntelligence;

@@ -392,20 +392,22 @@ thing_attack(object_t* ptr, int16_t dx)
 	}*/
     }
 
-    data->underAttack = 1;
-    int16_t r = (random()%6)-3;
-    int16_t proposedY = (object_z(ptr) + r);
+    //    if (!(ptr->attributes & OBJECT_ATTRIBUTE_IMMOVABLE)) {
+      data->underAttack = 1;
+      int16_t r = (random()%6)-3;
+      int16_t proposedY = (object_z(ptr) + r);
 
-    if (proposedY >= PLAYAREA_HEIGHT) {
-      proposedY = PLAYAREA_HEIGHT-2;
-    } else if (proposedY <= GAME_PAVEMENT_START) {
-      proposedY = GAME_PAVEMENT_START+2;
-    }
+      if (proposedY >= PLAYAREA_HEIGHT) {
+	proposedY = PLAYAREA_HEIGHT-2;
+      } else if (proposedY <= GAME_PAVEMENT_START) {
+	proposedY = GAME_PAVEMENT_START+2;
+      }
 
-    object_set_z(ptr, proposedY);
+      object_set_z(ptr, proposedY);
 
-    ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
-    ptr->velocity.x = dx;
+      ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
+      ptr->velocity.x = dx;
+      //    }
   }
 
   object_set_state(ptr, OBJECT_STATE_ALIVE);

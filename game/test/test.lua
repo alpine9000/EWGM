@@ -4,7 +4,7 @@ quit = false
 screenShotFilename = "out/test-screenshot.png"
 screenShotWait = 100
 menuWait = 100
-createTestImages = 0
+createTestImages = 1
 
 function Setup()
    uae_write_symbol16("_script_port", 0)
@@ -502,7 +502,7 @@ tests = {
    { newHiscore, "new hiscore"},
    { mainMenu, "main menu"},
 
-   { level2, "level 2"},
+--   { level2, "level 2"},
 
 --   { restartReplay, "restart replay"},
 --   { level1_2, "level 1, restart"},

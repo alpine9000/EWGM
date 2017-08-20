@@ -1025,8 +1025,8 @@ game_showDeathMatch(void)
   if (!game_player1 || !game_player2) {
     return;
   }
-  fighter_intelligence_t player1_intelligence = fighter_data(game_player1)->intelligence;
-  fighter_intelligence_t player2_intelligence = fighter_data(game_player2)->intelligence;
+  fighter_intelligence_functor player1_intelligence = fighter_data(game_player1)->intelligence;
+  fighter_intelligence_functor player2_intelligence = fighter_data(game_player2)->intelligence;
   game_player1->velocity.x = 0;
   game_player1->velocity.y = 0;
   game_player2->velocity.x = 0;

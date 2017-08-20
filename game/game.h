@@ -226,6 +226,7 @@ enum {
 #include "conductor.h"
 #include "level1.h"
 #include "level2.h"
+#include "level3.h"
 #include "level.h"
 #include "mouse.h"
 #include "tile.h"
