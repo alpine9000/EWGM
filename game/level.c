@@ -24,45 +24,54 @@ __SECTION_DISK uint8_t level_level3_f_data[] DISK_SECTOR_ALIGN = {
 
 typedef struct {
   void* levelChipData;
-  void* levelFastData;  
+  void* levelFastData;
   uint32_t chipDataSize;
-  uint32_t fastDataSize;  
+  uint32_t fastDataSize;
   uint16_t moduleIndex;
   conductor_instruction_t* instructions;
   char* readyMessage;
+  fighter_intelligence_t playerIntelligence;
 } level_config_t;
 
 level_config_t level_levels[LEVEL_NUM_LEVELS] = {
-  { 
+  {
     .levelChipData = level_level1_c_data,
-    .levelFastData = level_level1_f_data,    
+    .levelFastData = level_level1_f_data,
     .chipDataSize = sizeof(level_level1_c_data),
-    .fastDataSize = sizeof(level_level1_f_data),    
+    .fastDataSize = sizeof(level_level1_f_data),
     .instructions = level1_instructions,
     .moduleIndex = MUSIC_LEVEL_1,
-    .readyMessage = I18N_LEVEL1_READY
+    .readyMessage = I18N_LEVEL1_READY,
+    .playerIntelligence = player_intelligence
   },
-  { 
+  {
     .levelChipData = level_level2_c_data,
-    .levelFastData = level_level2_f_data,        
+    .levelFastData = level_level2_f_data,
     .chipDataSize = sizeof(level_level2_c_data),
-    .fastDataSize = sizeof(level_level2_f_data),        
+    .fastDataSize = sizeof(level_level2_f_data),
     .instructions = level2_instructions,
     .moduleIndex = MUSIC_LEVEL_2,
-    .readyMessage = I18N_LEVEL2_READY    
+    .readyMessage = I18N_LEVEL2_READY,
+    .playerIntelligence = level2_playerIntelligence
   },
-  { 
+  {
     .levelChipData = level_level3_c_data,
-    .levelFastData = level_level3_f_data,        
+    .levelFastData = level_level3_f_data,
     .chipDataSize = sizeof(level_level3_c_data),
-    .fastDataSize = sizeof(level_level3_f_data),            
+    .fastDataSize = sizeof(level_level3_f_data),
     .instructions = level1_instructions,
     .moduleIndex = 0,
-    .readyMessage = I18N_LEVEL3_READY    
-  }      
+    .readyMessage = I18N_LEVEL3_READY
+  }
 };
 
 static uint16_t level_current = 0xFFFF;
+
+fighter_intelligence_t
+level_playerIntelligence(void)
+{
+  return level_levels[level_current].playerIntelligence;
+}
 
 void
 level_readyMessage(void)
@@ -73,7 +82,7 @@ level_readyMessage(void)
     __USE(x);
   }
 #endif
-  
+
   message_screenOn(level_levels[level_current].readyMessage);
 
   for (uint32_t i = 0; i < 100; i++) {
@@ -92,18 +101,18 @@ level_load(uint16_t index)
 {
   //  index++;
   if (!game_scoreboardLoaded) {
-    message_loading(I18N_LOADING);    
+    message_loading(I18N_LOADING);
     extern uint8_t scoreBoardBitplanes;
     disk_loadData((void*)game_scoreBoardFrameBuffer, &scoreBoardBitplanes, SCOREBOARD_BUFFER_SIZE_BYTES);
     game_scoreboardLoaded = 1;
   }
-  
+
   if (index == level_current) {
     if (!game_demo) {
       music_play(level_levels[index].moduleIndex);
     }
     level_readyMessage();
-    message_screenOff();    
+    message_screenOff();
     return;
   }
 
@@ -117,15 +126,15 @@ level_load(uint16_t index)
   if (!message_on) {
     message_loading(I18N_LOADING);
   }
-  
 
-#ifdef GAME_COMPRESS_DATA 
+
+#ifdef GAME_COMPRESS_DATA
   disk_loadCompressedData(&levelChip, level_levels[index].levelChipData, level_levels[index].chipDataSize, 0);
-  disk_loadCompressedData(&levelFast, level_levels[index].levelFastData, level_levels[index].fastDataSize, 0);  
+  disk_loadCompressedData(&levelFast, level_levels[index].levelFastData, level_levels[index].fastDataSize, 0);
 #else
   disk_loadData(&level, level_levels[index].levelData, sizeof(level_t));
 #endif
-  
+
   levelFast.instructions = level_levels[index].instructions;
   levelFast.moduleIndex = level_levels[index].moduleIndex;
 #ifdef GAME_RECORDING
@@ -135,13 +144,13 @@ level_load(uint16_t index)
   if (!game_demo) {
     music_play(level_levels[index].moduleIndex);
   }
-  
-  level_current = index;  
+
+  level_current = index;
 
   if (!game_demo) {
     level_readyMessage();
   }
-  
+
   message_screenOff();
 }
 

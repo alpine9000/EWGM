@@ -39,11 +39,14 @@ typedef struct {
   int16_t enemyCount;
   enemy_config_t* config;
 } level_enemy_config_t;
-  
+
 
 void
 level_load(uint16_t index);
 
 int16_t
 level_scroll(uint16_t argument);
+
+fighter_intelligence_functor
+level_playerIntelligence(void);
 #endif

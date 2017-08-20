@@ -7,3 +7,6 @@
 
 
 extern conductor_instruction_t level2_instructions[];
+
+uint16_t
+level2_playerIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data);

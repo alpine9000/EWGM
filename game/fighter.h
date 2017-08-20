@@ -24,6 +24,8 @@ typedef struct {
   uint16_t jump;
 } fighter_attack_config_t;
 
+struct fighter_data;
+typedef uint16_t (*fighter_intelligence_functor)(uint16_t deltaT, object_t* ptr, struct fighter_data* data);
 
 typedef struct fighter_data {
 #ifdef DEBUG
@@ -36,7 +38,7 @@ typedef struct fighter_data {
   uint16_t attackType;
   int16_t attackRangeY;
   uint16_t numAttacks;
-  uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, struct fighter_data* data);
+  fighter_intelligence_functor intelligence;
   int16_t walkAbout;
   uint16_t randomFrequencyMask;
   uint16_t randomDistanceMask;

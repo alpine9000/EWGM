@@ -147,8 +147,14 @@ gunfighter_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 
   uint16_t attack = 0;
 
+  uint32_t rand = random();
+
   if (!gunfighter_walkabout) {
     attack = enemy_intelligence(deltaT, ptr,  data);
+    if ((rand & 0x7) == 0) {
+      attack = 0;
+      gunfighter_walkabout = 5;
+    }
   }
 
   if (!gunfighter_activated && object_screenx(ptr) > (SCREEN_WIDTH-ptr->width)) {
@@ -183,7 +189,7 @@ gunfighter_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
       } else if (collision.right) {
 	ptr->velocity.x = -data->speedX;
       }
-      uint32_t rand = random();
+
       /*
 
       switch (rand & 0x7) {

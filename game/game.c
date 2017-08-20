@@ -695,7 +695,7 @@ game_loadLevel(menu_command_t command)
     game_player2 = 0;
   }
 
-  if (game_numPlayers == 2) {
+  if (game_numPlayers == 2 && player1_character == 0) {
     if (game_player2) {
       game_player2->joystickPos = &hw_joystick2Pos;
       game_player2->joystickButton = &hw_joystick2Button;
@@ -703,6 +703,15 @@ game_loadLevel(menu_command_t command)
     if (game_player1) {
        game_player1->joystickPos = &hw_joystickPos;
        game_player1->joystickButton = &hw_joystickButton;
+    }
+  } else if (game_numPlayers == 2 && player1_character == 1) {
+    if (game_player1) {
+      game_player1->joystickPos = &hw_joystick2Pos;
+      game_player1->joystickButton = &hw_joystick2Button;
+    }
+    if (game_player2) {
+       game_player2->joystickPos = &hw_joystickPos;
+       game_player2->joystickButton = &hw_joystickButton;
     }
   }
 
@@ -1013,10 +1022,11 @@ game_waitForNextFrame(void)
 void
 game_showDeathMatch(void)
 {
-
   if (!game_player1 || !game_player2) {
     return;
   }
+  fighter_intelligence_t player1_intelligence = fighter_data(game_player1)->intelligence;
+  fighter_intelligence_t player2_intelligence = fighter_data(game_player2)->intelligence;
   game_player1->velocity.x = 0;
   game_player1->velocity.y = 0;
   game_player2->velocity.x = 0;
@@ -1064,8 +1074,8 @@ game_showDeathMatch(void)
   }
   game_lastVerticalBlankCount = hw_verticalBlankCount;
 
-  fighter_data(game_player1)->intelligence = player_intelligence;
-  fighter_data(game_player2)->intelligence = player_intelligence;
+  fighter_data(game_player1)->intelligence = player1_intelligence;
+  fighter_data(game_player2)->intelligence = player2_intelligence;
 }
 
 static __NOINLINE void

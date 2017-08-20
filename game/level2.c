@@ -46,10 +46,12 @@ enum {
 
 #define LEVEL2_RANDOM_DISTANCE_MASK    0x7f //0x3f
 #define LEVEL2_RANDOM_FREQUENCY_MASK   0x7 //0x1f
+#define LEVEL2_HARD_RANDOM_DISTANCE_MASK  0xf
+#define LEVEL2_HARD_RANDOM_FREQUENCY_MASK 0x1f
 
 #define LEVEL2_EASY_ATTACK_WAIT_TICS     15
 #define LEVEL2_MEDIUM_ATTACK_WAIT_TICS   10
-#define LEVEL2_HARD_ATTACK_WAIT_TICS     0
+#define LEVEL2_HARD_ATTACK_WAIT_TICS     5
 
 #define LEVEL2_BASEBALL_ATTACK_DURATION_TICS (LEVEL2_3_ENEMY_ATTACK_TICS_PER_FRAME*3)
 #define LEVEL2_BOSS_ATTACK_RANGE         (SCREEN_WIDTH+32)
@@ -220,9 +222,9 @@ static enemy_config_t level2_enemy_configs[] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level2_attackConfig2,
     .attackWait = LEVEL2_HARD_ATTACK_WAIT_TICS,
-    .randomDistanceMask = LEVEL2_RANDOM_DISTANCE_MASK,
-    .randomFrequencyMask = 0xffff,
-    .postAttackInvincibleTics = 5,
+    .randomDistanceMask = LEVEL2_HARD_RANDOM_DISTANCE_MASK,
+    .randomFrequencyMask = LEVEL2_HARD_RANDOM_FREQUENCY_MASK,
+    .postAttackInvincibleTics = 2,
     .numAttacks = ENEMY_DEFAULT_NUM_ATTACKS,
     .speedX = ENEMY_DEFAULT_SPEED*2,
     .speedY = ENEMY_DEFAULT_SPEED,
