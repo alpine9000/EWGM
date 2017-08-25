@@ -251,14 +251,17 @@ menu_processKeyboard(void)
 #ifndef RELEASE
   case '1':
     game_numPlayers = 1;
-    //return MENU_COMMAND_LEVEL;
     game_startLevelIndex = 0;
     return -1;
     break;
   case '2':
     game_numPlayers = 1;
-    //return MENU_COMMAND_LEVEL;
     game_startLevelIndex = 1;
+    return -1;
+    break;
+  case '3':
+    game_numPlayers = 1;
+    game_startLevelIndex = 2;
     return -1;
     break;
 #endif

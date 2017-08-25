@@ -64,15 +64,16 @@ fighter_init(void)
 
 
 
-object_t*
+fighter_collision_t*
 fighter_attackCollision(object_t* a, int16_t thresholdx, uint16_t thresholdy)
 {
+  static fighter_collision_t collision;
   object_t* b = object_activeList;
-
+  collision.num = 0;
 
 #ifdef DEBUG
   if (!game_collisions) {
-    return 0;
+    return &collision;
   }
 #endif
 
@@ -88,31 +89,30 @@ fighter_attackCollision(object_t* a, int16_t thresholdx, uint16_t thresholdy)
     a_x2 -= thresholdx;
   }
 
-  uint16_t dX = 0xffff;
-  uint16_t dY = 0xffff;
-  object_t* collision = 0;
+  //  uint16_t dX = 0xffff;
+  //  uint16_t dY = 0xffff;
 
-  while (b) {
+  while (b && collision.num < FIGHTER_MAX_ATTACK_COLLISIONS) {
     if (b->collisionsEnabled && b != a && object_get_state(b) == OBJECT_STATE_ALIVE) {
       int16_t b_y = ((object_z(b)));
 
-      if (abs(a_y - b_y) <= thresholdy && abs(a_y - b_y) < dY) {
+      if (abs(a_y - b_y) <= thresholdy/* && abs(a_y - b_y) < dY*/) {
 	int16_t b_x1 = ((object_x(b))) + b->widthOffset;
 	int16_t b_x2 = ((object_x(b))) + (b->width - b->widthOffset);
 
 	if (a_x1 < b_x2 && a_x2 > b_x1) {
-	  if (abs(b_x2-a_x1) < dX) {
-	    dX = abs(b_x2-a_x1);
-	    dY = abs(a_y - b_y);
-	    collision = b;
-	  }
+	  //	  if (abs(b_x2-a_x1) < dX) {
+	    //	    dX = abs(b_x2-a_x1);
+	    //	    dY = abs(a_y - b_y);
+	    collision.collisions[collision.num++] = b;
+	    //	  }
 	}
       }
     }
     b = b->next;
   }
 
-  return collision;
+  return &collision;
 }
 
 
@@ -206,14 +206,29 @@ fighter_checkAttack(object_t* ptr, fighter_data_t* data)
   fighter_attack_config_t* attackConfig = &data->attackConfig[ptr->actionId];
 
   if (!data->attackChecked && attackConfig->hitAnimTic == ptr->frameCounter && attackConfig->dammage > 0) {
-    object_t* collision;
-    if ((collision = fighter_attackCollision(ptr, attackConfig->rangeX, data->attackRangeY))) {
-      if (collision->dataType != OBJECT_DATA_TYPE_FIGHTER || fighter_data(collision)->postAttackCount <= 0) {
+    fighter_collision_t* _collision = fighter_attackCollision(ptr, attackConfig->rangeX, data->attackRangeY);
+    object_t* fighterCollision = 0;
+    uint16_t dX = 0xffff;
+    for (uint32_t index = 0; index < _collision->num; index++) {
+      object_t* collision = _collision->collisions[index];
+      if (collision->dataType != OBJECT_DATA_TYPE_FIGHTER) {
 	collision->hit.attacker = ptr;
 	collision->hit.dammage = attackConfig->dammage;
 	collision->hit.dx = ptr->anim->facing == FACING_RIGHT ? 1 : -1;
 	object_set_state(collision, OBJECT_STATE_ABOUT_TO_BE_HIT);
+      } else if (fighter_data(collision)->postAttackCount <= 0) {
+	if (abs(object_x(collision) - object_x(ptr)) < dX) {
+	  dX = abs(object_x(collision) - object_x(ptr));
+	  fighterCollision = collision;
+	}
       }
+    }
+
+    if (fighterCollision) {
+      fighterCollision->hit.attacker = ptr;
+      fighterCollision->hit.dammage = attackConfig->dammage;
+      fighterCollision->hit.dx = ptr->anim->facing == FACING_RIGHT ? 1 : -1;
+      object_set_state(fighterCollision, OBJECT_STATE_ABOUT_TO_BE_HIT);
     }
 
     data->attackChecked = 1;
@@ -422,7 +437,8 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 }
 
 
-__NOINLINE object_t*
+//__NOINLINE
+object_t*
 fighter_add(uint16_t id, uint16_t attributes, uint16_t animId, int16_t x, int16_t y, uint16_t initialHealth,  fighter_attack_config_t* attackConfig, uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, struct fighter_data* data))
 {
   fighter_data_t* data = fighter_getFree();

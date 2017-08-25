@@ -11,9 +11,7 @@ FAST_DEFINES=-DTRACKLOADER=1 -DFASTRAM=1 -DGAME_CONFIG=CONFIG_OCS_FAST -DGAME_CO
 WORKBENCH_DEFINES=-DTRACKLOADER=0 -DFASTRAM=0 -DGAME_CONFIG=CONFIG_WORKBENCH -DGAME_COMPRESS_DATA=1 -Iout/workbench
 
 # programs and paths
-#CC=/usr/local/amiga/vgcc/bin/m68k-amigaosvasm-gcc
-CC=/usr/local/amiga/bgcc.devel1/bin/m68k-amigaosvasm-gcc
-#CC=/usr/local/amiga/bgcc/bin/m68k-amigaosvasm-gcc
+CC=/usr/local/amiga/vgcc/bin/m68k-amigaosvasm-gcc
 VASM=/usr/local/amiga/vgcc/bin/vasmm68k_mot
 LD=/usr/local/amiga/vgcc/bin/vlink
 NDK=/usr/local/amiga/vgcc/ndk/

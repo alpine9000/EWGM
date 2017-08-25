@@ -392,7 +392,7 @@ thing_attack(object_t* ptr, int16_t dx)
 	}*/
     }
 
-    //    if (!(ptr->attributes & OBJECT_ATTRIBUTE_IMMOVABLE)) {
+    if (!(ptr->attributes & OBJECT_ATTRIBUTE_IMMOVABLE)) {
       data->underAttack = 1;
       int16_t r = (random()%6)-3;
       int16_t proposedY = (object_z(ptr) + r);
@@ -407,7 +407,12 @@ thing_attack(object_t* ptr, int16_t dx)
 
       ptr->velocity.y = -4*OBJECT_PHYSICS_FACTOR;
       ptr->velocity.x = dx;
-      //    }
+    } else {
+      data->underAttack = 1;
+      int16_t proposedY = object_z(ptr);
+      object_set_z(ptr, proposedY);
+      ptr->velocity.y = -2*OBJECT_PHYSICS_FACTOR;
+    }
   }
 
   object_set_state(ptr, OBJECT_STATE_ALIVE);

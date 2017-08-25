@@ -11,6 +11,7 @@
 #define FIGHTER_HIT_FLASH_COUNT_TICS      5
 #define FIGHTER_HIT_FLASH_DURATION_TICS   75
 #define FIGHTER_DATA_MAGIC_NUMBER         0xDEADBEEF
+#define FIGHTER_MAX_ATTACK_COLLISIONS     4
 
 #define fighter_data(x) ((fighter_data_t*)(_object_data(x, OBJECT_DATA_TYPE_FIGHTER)))
 
@@ -61,6 +62,10 @@ typedef struct fighter_data {
   void (*dieCallback)(object_t* me);
 } fighter_data_t;
 
+typedef struct {
+  uint32_t num;
+  object_t* collisions[FIGHTER_MAX_ATTACK_COLLISIONS];
+} fighter_collision_t;
 
 void
 fighter_init(void);
@@ -80,7 +85,7 @@ fighter_updateSprite(object_t* ptr);
 void
 fighter_die(object_t* ptr);
 
-object_t*
+fighter_collision_t*
 fighter_attackCollision(object_t* a, int16_t thresholdx, uint16_t thresholdy);
 
 void

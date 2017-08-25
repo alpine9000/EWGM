@@ -469,13 +469,15 @@ game_refreshScoreboard(void)
 }
 
 
-__NOINLINE void
+//__NOINLINE
+void
 game_scoreBoardPlayer1Text(char* text)
 {
     text_drawText8(game_scoreBoardFrameBuffer, text, 224-3*8, 17);
 }
 
-__NOINLINE void
+//__NOINLINE
+void
 game_scoreBoardPlayer2Text(char* text)
 {
   text_drawText8(game_scoreBoardFrameBuffer, text, 48, 17);
@@ -1078,7 +1080,7 @@ game_showDeathMatch(void)
   fighter_data(game_player2)->intelligence = player2_intelligence;
 }
 
-static __NOINLINE void
+static void __NOINLINE
 game_pauseToggle(void)
 {
   static uint16_t music;

@@ -4,7 +4,8 @@ quit = false
 screenShotFilename = "out/test-screenshot.png"
 screenShotWait = 100
 menuWait = 100
-createTestImages = 1
+createTestImages = 0
+screenShotDelay = 1.0
 
 function Setup()
    uae_write_symbol16("_script_port", 0)
@@ -96,7 +97,7 @@ function ScreenshotSet(_state)
       screenShotState = 1
    elseif screenShotState == 1 then
       if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+_state.screenShotWait then
-	 local sleepTime = 0.25
+	 local sleepTime = screenShotDelay
 	 screenShotState = 0
 	 uae_pause(1)
 	 sleep(sleepTime)
@@ -112,7 +113,7 @@ function ScreenshotSet(_state)
 end
 
 function GameScreenshot(_state)
-   local sleepTime = 0.25
+   local sleepTime = screenShotDelay
 
    if uae_peek_symbol32("_hw_verticalBlankCount") == _state.screenShotFrame then
       uae_pause(1)
@@ -134,7 +135,7 @@ function Screenshot(_state)
    elseif screenShotState == 1 then
       if uae_peek_symbol32("_hw_verticalBlankCount") > screenShotFrame+screenShotWait then
 	 screenShotState = 0
-	 local sleepTime = 0.25
+	 local sleepTime = screenShotDelay
 	 uae_pause(1)
 	 sleep(sleepTime)
 	 uae_screenshot(screenShotFilename)
@@ -250,20 +251,11 @@ level = {
       screenShotWait = 100,
       filename = "test/screenshots/screenshotSet1_",
       transition = ScreenshotSet,
-      next = "pause"
-   },
-   ["pause"] = {
-      waitFrames = 5000,
-      --      next = "waiting for level end"
       next = "verify level parameters"
    },
-   ["waiting for level end"] = {
-      wait = {"_game_collectTotal", 0},
-      next = "verify level parameters",
-   },
    ["verify level parameters"] = {
-      less = {{"_game_total", 565616, 32}},
-      equal = {{"_game_player1Score", 10000, 32}, {"_game_player2Score", 8000, 32}}
+      less = {{"_game_total", 580283, 32}}, -- 565616, 32}},
+      equal = {{"_game_player1Score", 9000, 32}, {"_game_player2Score", 7000, 32}}
    },
 }
 
