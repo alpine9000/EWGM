@@ -20,7 +20,7 @@ Notes:
     mkdir /usr/local/amiga/vgcc/ndk/include
     mkdir /usr/local/amiga/vgcc/ndk/lib
     cd ~/project
-```
+    ```
 
 1. autoconf
     ```
@@ -33,7 +33,7 @@ Notes:
     make
     make install
     cd ../..
-```
+    ```
 
 2. automake
     ```
@@ -46,7 +46,7 @@ Notes:
     make
     make install
     cd ../../
-```
+    ```
 
 3. lha
     ```
@@ -61,7 +61,7 @@ Notes:
     make
     make install
     cd ../../
-```
+    ```
 
 4. Install the NDK
     ```
@@ -73,7 +73,7 @@ Notes:
     cp -r NDK_3.9/Include/include_h/* /usr/local/amiga/vgcc/ndk/include/
     cp -r NDK_3.9/Include/linker_libs/* /usr/local/amiga/vgcc/ndk/lib
     cd ..
-```
+    ```
 
 5. pkg-config
     ```
@@ -86,7 +86,7 @@ Notes:
     make -j4
     make install
     cd ../../
-```
+    ```
 
 6. libtool
     ```
@@ -99,7 +99,7 @@ Notes:
     make
     make install
     cd ../../
-```
+    ```
 
 7. libpng
     ```
@@ -112,7 +112,7 @@ Notes:
    make
    make install
    cd ../..
-```
+   ```
 
 8. pngquant
     ```
@@ -127,7 +127,7 @@ Notes:
     cp *.h /usr/local/include/pngquant/
     cp *.a /usr/local/lib
     cd ../../..
-```
+    ```
 
 9. GraphicsMagick
     ```
@@ -140,7 +140,7 @@ Notes:
     make
     make install
     cd ../../
-```
+    ```
 
 10. CMake
     ```
@@ -150,7 +150,7 @@ Notes:
     tar zxfv ../downloads/cmake-3.5.1-Darwin-x86_64.tar.gz
     mv cmake-3.5.1-Darwin-x86_64/CMake.app /Applications
     cd ..
-```
+    ```
 
 11. TMX C Loader
     ```
@@ -162,7 +162,7 @@ Notes:
     /Applications/CMake.app/Contents/bin/cmake ..
     make install
     cd ../../..
-```
+    ```
 
 12. SOX
     ```
@@ -173,7 +173,7 @@ Notes:
     ./configure --prefix=/usr/local
     make install
     cd ../../
-```
+    ```
 
 13. vlink
   ``` 
@@ -186,7 +186,7 @@ Notes:
     make
     cp vlink /usr/local/amiga/vgcc/bin
     cd ../../
-```
+    ```
 
 14. vasm
     ```
@@ -198,14 +198,14 @@ Notes:
     make CPU=m68k SYNTAX=mot
     cp vasmm68k_mot /usr/local/amiga/vgcc/bin/
     cd ../../
-```
+    ```
 
 15. fake wget (if you don't have wget)
     ```
     echo "#\!/bin/sh" > /usr/local/bin/wget
     echo "curl -OL \$*" >>  /usr/local/bin/wget
     chmod +x /usr/local/bin/wget
-```
+    ```
 
 16. vasm amiga gcc
     ```
@@ -220,7 +220,7 @@ Notes:
     make -j4 all-gcc
     make -j4 install-gcc
     cd ../../
-```
+    ```
 
 17. vegeta
     ```
@@ -228,4 +228,4 @@ Notes:
     git clone https://github.com/alpine9000/vegeta.git
     cd vegeta
     make
-``` 
+    ``` 
