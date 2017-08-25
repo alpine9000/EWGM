@@ -5,7 +5,7 @@ screenShotFilename = "out/test-screenshot.png"
 screenShotWait = 100
 menuWait = 100
 createTestImages = 0
-screenShotDelay = 1.0
+screenShotDelay = 0.25
 
 function Setup()
    uae_write_symbol16("_script_port", 0)
@@ -67,9 +67,6 @@ function CheckScreenshot(filename)
 
 end
 
-function _sleep(n)
-  os.execute("sleep " .. tonumber(n))
-end
 
 function sleep (a)
     local sec = tonumber(os.clock() + a);
@@ -77,12 +74,13 @@ function sleep (a)
     end
 end
 
+
 function _ScreenshotSet(_state)
    return true
 end
 
-function ScreenshotSet(_state)
 
+function ScreenshotSet(_state)
    if screenShotSetCount == nil then
       screenShotSetCount = 0;
    end
@@ -112,6 +110,7 @@ function ScreenshotSet(_state)
    return false
 end
 
+
 function GameScreenshot(_state)
    local sleepTime = screenShotDelay
 
@@ -127,6 +126,7 @@ function GameScreenshot(_state)
 
    return false
 end
+
 
 function Screenshot(_state)
    if screenShotState == 0 or screenShotState == nil then
@@ -148,6 +148,7 @@ function Screenshot(_state)
    return false
 end
 
+
 function WaitForMessage(_state)
    message = uae_peek_string("_message_message")
    if message == state then
@@ -158,11 +159,13 @@ function WaitForMessage(_state)
    return false
 end
 
+
 setup = {
    ["startup"] = {
       exitState = Setup
    }
 }
+
 
 mainMenu = {
    ["booting"] = {
@@ -209,6 +212,7 @@ mainMenu = {
       waitFrames = 100
    }
 }
+
 
 mainMenu2 = {
    ["booting"] = {
@@ -259,6 +263,7 @@ level = {
    },
 }
 
+
 level2 = {
    ["booting"] = {
       waitFrames = 100,
@@ -287,7 +292,7 @@ level2 = {
    },
    ["verify level parameters"] = {
       less = {{"_game_total", 2081752, 32}},
-      equal = {{"_game_player1Score", 20000, 32}, {"_game_player2Score",7000, 32}}
+      equal = {{"_game_player1Score", 27000, 32}, {"_game_player2Score",0, 32}}
    },
 }
 
@@ -450,6 +455,7 @@ reset = {
    }
 }
 
+
 restartReplay = {
    ["booting"] = {
       writeEntry = {"_script_port", 10},
@@ -488,13 +494,14 @@ restartReplay = {
    }
 }
 
+
 tests = {
    { setup, "setup" },
    { level, "level 1, first pass"},
    { newHiscore, "new hiscore"},
    { mainMenu, "main menu"},
 
---   { level2, "level 2"},
+   { level2, "level 2"},
 
 --   { restartReplay, "restart replay"},
 --   { level1_2, "level 1, restart"},

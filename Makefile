@@ -4,7 +4,8 @@ SUBDIRS=tools/makeadf \
 	tools/fade\
 	tools/resize\
 	tools/croppa\
-	tools/bin2c
+	tools/bin2c\
+	tools/doynamite68k
 
 .PHONY: subdirs $(SUBDIRS)
 
