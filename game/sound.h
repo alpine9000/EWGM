@@ -9,7 +9,11 @@ typedef enum {
   SOUND_DIE02,
   SOUND_DIE03,  
   SOUND_PICKUP,
-  SOUND_MENU
+  SOUND_MENU,
+  SOUND_REV,
+  SOUND_MOTORBIKE,
+  SOUND_SHOOT,
+  SOUND_LAST
 } sound_t;
 
 #if SFX==1

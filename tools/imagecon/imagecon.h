@@ -12,7 +12,7 @@
 #include <png.h>
 #include <pngquant/libimagequant.h>
 
-#define MAX_PALETTE 32
+#define MAX_PALETTE 64
 
 #define RGB24TORGB12(x) (x >> 4)
 #define CLAMP(x) (x > 255.0 ? 255.0 : (x < -255.0 ? -255.0 : x))
@@ -52,6 +52,7 @@ typedef struct {
   float darken;
   char** argv;  
   int overrideIndex;
+  int amigaColors;
   amiga_color_t overrideColor;
 } imagecon_config_t;
 

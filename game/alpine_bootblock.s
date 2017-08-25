@@ -3,8 +3,9 @@
 *** see http://coppershade.org/asmskool/SOURCES/Photon-snippets/DDE5-BootLoader.S
 *** this version hacked by alpine9000	
 
-	include "../include/registers.i"
+	; include "../include/registers.i"
 
+	section .text
 LoaderVars	equ	$100		;Useful variables, see CPUinfo:
 Loader		equ	$120		;start of load script
 
@@ -42,12 +43,21 @@ BootCode:	;gathers some data, turns off OS, copies itself to $100
 	jsr 	-216(a6)		;AvailMem()
 	move.l 	d0,d5
 
+	if FASTRAM=1
+	cmp.l	#0,d0			; no fast ram ?
+	bne.s	.allocFast
+	move.l	#$80000,a5		; 1mb chip ram or crash!
+	bra.w	.osOff
+	endif
+	
+.allocFast:
 	sub.l	#2048,d5		;leave room for stacks to grow
 	moveq 	#4,d1
 	jsr 	-198(a6)		;AllocMem()
 	and.l 	#-8,d0
 	move.l 	d0,a5			;Start Address
-	
+
+.osOff:
     *--- OS off ---*			;you're nice'n all, but now you die.
 
 	lea 	$dff002,a6		;Loader uses this custom base addr
@@ -102,19 +112,34 @@ LoadScript:				;At $120, sysinfo in 4 regs, a6=$dff002
 
     *--- load first part ---*
 
-	lea	BASE_ADDRESS,a0 	; main entry point
+	if FASTRAM=1
+	move.l  a5,a0                   ; fast ram base	
+	lea	BASE_ADDRESS,a1 	; chip ram base
 
+	bsr.w 	_relocate
+
+	lea 	$dff000,a6		;restore plain custombase addr for demo
+
+	move.l  a5,a4
+	add.l	#4,a5
+	move.l	a4,(a5)
+	add.l	#4,a5
+	jmp     (a5)			; -> main entry point	
+	endif
+	
+	if FASTRAM=0
+	lea	BASE_ADDRESS,a0 	; main entry point
 	if 1
 	moveq 	#2,d0			;from sector 2
 	move.w 	#-1,d1			;num sectors, - ==Step0
-	jsr 	LoadMFMB
+	bsr.w	LoadMFMB
 
 	move.l	4(a0),d1
 	add.l	#512,d1
 	lsr.l	#6,d1
 	lsr.l	#3,d1
 	moveq 	#2,d0			;from sector 2
-	jsr 	LoadMFMB
+	bsr.w 	LoadMFMB
 	
 	lea 	$dff000,a6		;restore plain custombase addr for demo
 
@@ -125,10 +150,11 @@ LoadScript:				;At $120, sysinfo in 4 regs, a6=$dff002
 
 	-moveq 	#2,d0			;from sector 2
 	move.w 	#-((mainEnd-mainStart)/512),d1;num sectors, - ==Step0
-	jsr 	LoadMFMB
+	bsr.w 	LoadMFMB
 	
 	jmp     (a0)		; -> main entry point
 
+	endif
 	endif
 
     *** MFMLoader.S by Photon ***	;requires a6=$dff002
@@ -142,6 +168,7 @@ WaitEOF:
 	beq.s	.w2
 	rts
 
+_LoadMFMB:
 LoadMFMB:		;loadsectors.a0=dst,d0=startsec.W,d1=nrsecs.W(-=Step0)
 	MOVEM.L	D0-D7/A0-A6,-(SP)
 	lea	$bfd100,a4
@@ -327,6 +354,10 @@ LoadTrak:		;loadtrack+decode.a0=dst,d0=secoffs,d1=secsleft
 	sub.w	d2,d1			;sub #secs loaded
 	RTS
 
+	if FASTRAM=1
+	include "bootblock_relocate.s"
+	endif
+	
 NullCop:
 	dc.w	$1fc,0
 	dc.w	$100,$0200
@@ -336,18 +367,37 @@ NullCop:
 BootE:
 
 	*** Boot Block ends here ***
-
-	dc.b	"BootLoader by Photon/Scoopex"
+	;dc.b	"BootLoader by Photon/Scoopex"
 	;pad bootblock to correct size
 	cnop	0,1024
 
 ;MFMbuf is placed here after bootblock end, $3c0.w or so when copied.
 MFMbuf	equ	LoaderVars+(BootE-CopyStart)
 MFMbufE	equ 	MFMbuf+MFMlen	;lowest free address. $372e for a full bootblock.
+
 	
 mainStart:
-	incbin  "out/main.bin"
-	;; cnop    0,512
+	if FASTRAM=1
+_startFastRam:
+	incbin	"out/fast/reloc.fast"
+_relocateFast:
+	incbin	"out/fast/reloc.fast.relfast"
+_relocateChip:
+	incbin	"out/fast/reloc.fast.relchip"
+_endFastRam:
+	cnop	0,512
+_startChipRam:
+	incbin	"out/fast/reloc.chip"	
+_endChipRam:
+	cnop	0,512	
+_startDisk:
+	incbin	"out/fast/reloc.disk"
+	section .lastTrack	
+	incbin  "out/fast/reloc.lastTrack"
+	else
+	incbin  "out/adf/main.bin"
+	endif
+	;| cnop    0,512
 mainEnd:	
 	end
 

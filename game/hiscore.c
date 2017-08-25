@@ -1,4 +1,4 @@
-#include "game.h" 
+#include "game.h"
 
 typedef struct {
   hiscore_t scores[HISCORE_NUM_SCORES];
@@ -23,7 +23,7 @@ typedef struct {
 } hiscore_small_buffer_t;
 #endif
 
-__EXTERNAL __section(section lastTrack) 
+__EXTERNAL __SECTION_LASTTRACK
 hiscore_storage_t hiscore_disk = {
   .scores = {
     {1000, "E.G", 0, ""},
@@ -36,21 +36,17 @@ hiscore_storage_t hiscore_disk = {
   .checksum = 1925
 };
 
-
 static hiscore_buffer_t hiscore;
 #if TRACKLOADER==1
 static hiscore_small_buffer_t hiscore2;
 #endif
 static char hiscore_promptBuffer[4];
 
-#ifdef GAME_HISCORE_SAVE_ENABLE
-static
-#endif
-uint32_t
+static uint32_t
 hiscore_checksum(void)
 {
   uint32_t checksum = 0;
-  
+
   for (int16_t i = 0; i < HISCORE_NUM_SCORES; i++) {
     checksum += hiscore.scores[i].score;
   }
@@ -60,7 +56,7 @@ hiscore_checksum(void)
 
 #if TRACKLOADER==1
 uint16_t
-hiscore_load(uint16_t ignoreErrors)
+hiscore_load(__UNUSED uint16_t ignoreErrors)
 {
   uint16_t error = 0;
 #ifdef DEBUG
@@ -70,7 +66,11 @@ hiscore_load(uint16_t ignoreErrors)
 #endif
 
  retry:
-   error = disk_loadData(&hiscore, &hiscore_disk, sizeof(hiscore_disk));
+#if FASTRAM==0
+    error = disk_loadData(&hiscore, &hiscore_disk, sizeof(hiscore_disk));
+#else
+    error = disk_loadData(&hiscore, (void*)(((uint8_t*)(895488))-disk_dataStart), sizeof(hiscore_disk));
+#endif
 
    if (error) {
      if (ignoreErrors) {
@@ -83,7 +83,7 @@ hiscore_load(uint16_t ignoreErrors)
      }
   } else {
     uint32_t checksum = hiscore_checksum();
-    
+
     if (checksum != hiscore.checksum) {
       if (ignoreErrors) {
 	message_screenOn(I18N_HISCORE_CHSM_BAD);
@@ -100,10 +100,9 @@ hiscore_load(uint16_t ignoreErrors)
 }
 #else
 __EXTERNAL uint16_t
-hiscore_load(uint16_t ignoreErrors)
+hiscore_load(__UNUSED uint16_t ignoreErrors)
 {
-  USE(ignoreErrors);
-  int16_t loaded = 0;  
+  int16_t loaded = 0;
 #ifdef GAME_HISCORE_SAVE_ENABLE
   dos_init();
 
@@ -122,7 +121,7 @@ hiscore_load(uint16_t ignoreErrors)
   if (!loaded) {
     disk_loadData(&hiscore, &hiscore_disk, sizeof(hiscore_disk));
   }
-  
+
   return 0;
 }
 
@@ -147,7 +146,7 @@ hiscore_render(void)
     int16_t nameLen = strlen(hiscore.scores[i].name);
     strcpy(&hiscore.scores[i].text[9+(HISCORE_NAME_LENGTH-nameLen)], hiscore.scores[i].name);
   }
-  
+
   return hiscore.scores;
 }
 
@@ -162,7 +161,11 @@ hiscore_saveData(uint16_t ignoreErrors)
 
  retry:
   message_loading(I18N_SAVING_HISCORE);
+#if FASTRAM==0
   if (disk_write(&hiscore_disk, &hiscore, 1) != 0) {
+#else
+  if (disk_write((void*)895488, &hiscore, 1) != 0) {
+#endif
     if (ignoreErrors) {
       message_screenOn(I18N_HISCORE_SAVE_FAIL);
       hw_waitScanLines(200);
@@ -191,19 +194,21 @@ hiscore_prompt(char* message)
   uint16_t bufferIndex = 0;
   char* congrats = I18N_CONGRATULATIONS;
 
-  USE(congrats);
-  USE(message);
   hiscore_promptBuffer[0] = 0;
 
+  message_textColor = 0;
   message_screenOn(I18N_PLEASE_ENTER_NAME);
-  
-  text_drawMaskedText8Blitter(game_offScreenBuffer, congrats, (SCREEN_WIDTH/2)-(strlen(congrats)*4), (SCREEN_HEIGHT/2)-22-16);
-  text_drawMaskedText8Blitter(game_offScreenBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)-22);
 
-  int x = (SCREEN_WIDTH/2)-8;
-  int y = (SCREEN_HEIGHT/2)+22;
+  text_drawMaskedText8Blitter(game_messageBuffer, congrats, (SCREEN_WIDTH/2)-(strlen(congrats)*4), (SCREEN_HEIGHT/2)-22-16);
+  text_drawMaskedText8Blitter(game_messageBuffer, message, (SCREEN_WIDTH/2)-(strlen(message)*4), (SCREEN_HEIGHT/2)-22);
 
-  text_drawMaskedText8Blitter(game_offScreenBuffer, "___", x, y);
+  int32_t x = (SCREEN_WIDTH/2)-8;
+  int32_t y = (SCREEN_HEIGHT/2)+22;
+
+  text_drawMaskedText8Blitter(game_messageBuffer, "___", x, y);
+
+  message_textColor = 0xfff;
+  message_fadeIn();
 
   for (;;) {
     char str[2] = {0,0};
@@ -214,27 +219,24 @@ hiscore_prompt(char* message)
     script_process();
 #endif
 #endif
-    
-    if (keyboard_key) {            
-      //gfx_fillRectSmallScreen(game_offScreenBuffer, 0, 0, 16*8, 8, 0);
-      //text_drawMaskedText8Blitter(game_offScreenBuffer, itoa(keyboard_code), 0, 0);
-      
+
+    if (keyboard_key) {
       if (keyboard_code == KEYBOARD_CODE_BACKSPACE) {
 	if (bufferIndex > 0) {
 	  x-=8;
 	  hiscore_promptBuffer[bufferIndex] = 0;
 	  bufferIndex--;
-	  gfx_fillRectSmallScreen(game_offScreenBuffer, x, y, 8, 8, 0);
-	  text_drawMaskedText8Blitter(game_offScreenBuffer, "_", x, y);	
+	  gfx_fillRectSmallScreen(game_messageBuffer, x, y, 8, 8, 0);
+	  text_drawMaskedText8Blitter(game_messageBuffer, "_", x, y);
 	}
       } else if (keyboard_code != KEYBOARD_CODE_RETURN) {
 	if (bufferIndex < 3) {
 	  hiscore_promptBuffer[bufferIndex] = keyboard_key;
 	  bufferIndex++;
-	  hiscore_promptBuffer[bufferIndex] = 0;	
+	  hiscore_promptBuffer[bufferIndex] = 0;
 	  str[0] = keyboard_key;
-	  gfx_fillRectSmallScreen(game_offScreenBuffer, x, y, 8, 8, 0);
-	  text_drawMaskedText8Blitter(game_offScreenBuffer, str, x, y);
+	  gfx_fillRectSmallScreen(game_messageBuffer, x, y, 8, 8, 0);
+	  text_drawMaskedText8Blitter(game_messageBuffer, str, x, y);
 	  x+=8;
 	}
       }
@@ -247,7 +249,7 @@ hiscore_prompt(char* message)
 
     hw_waitVerticalBlank();
   }
-  
+
   hw_waitBlitter();
   custom->bltafwm = 0xffff;
 
@@ -283,7 +285,7 @@ hiscore_addScore(uint16_t playerNumber, uint32_t score)
     } else {
       if (i < HISCORE_NUM_SCORES-1) {
 	hiscore.scores[i+1].score = score;
-	if (playerNumber == 1) {	
+	if (playerNumber == 1) {
 	  name = hiscore_prompt(I18N_PLAYER1_ONBOARD);
 	} else {
 	  name = hiscore_prompt(I18N_PLAYER2_ONBOARD);
@@ -301,7 +303,7 @@ hiscore_addScore(uint16_t playerNumber, uint32_t score)
     hiscore_saveData(0);
   }
 #else
-  USE(dirty);
+  dirty = dirty;
 #endif
 }
 
@@ -310,10 +312,8 @@ hiscore_addScore(uint16_t playerNumber, uint32_t score)
 
 __EXTERNAL void
 hiscore_save(void)
-{ 
-  //extern BPTR startupDirLock;
-
-#ifdef GAME_HISCORE_SAVE_ENABLE  
+{
+#ifdef GAME_HISCORE_SAVE_ENABLE
   dos_init();
 
   hiscore.checksum = hiscore_checksum();

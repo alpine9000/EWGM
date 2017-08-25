@@ -138,7 +138,8 @@ palette_output(imagecon_image_t* ic, char* outFilename)
       if (!config.fullColorPaletteFile) {
 	fprintf(paletteFP, "%03x\n",  RGB24TORGB12(ic->palette[i].r) << 8 | RGB24TORGB12(ic->palette[i].g) << 4 | RGB24TORGB12(ic->palette[i].b));
       } else {
-	fprintf(paletteFP, "%03d %03d %03d %03d\n",  CLAMP8(((ic->palette[i].r+8)>>4)<<4) , CLAMP8(((ic->palette[i].g+8)>>4)<<4) , CLAMP8(((ic->palette[i].b+8)>>4)<<4), ic->palette[i].a);
+	//fprintf(paletteFP, "%03d %03d %03d %03d\n",  CLAMP8(((ic->palette[i].r+8)>>4)<<4) , CLAMP8(((ic->palette[i].g+8)>>4)<<4) , CLAMP8(((ic->palette[i].b+8)>>4)<<4), ic->palette[i].a);
+	fprintf(paletteFP, "%03d %03d %03d %03d\n",  ic->palette[i].r, ic->palette[i].g, ic->palette[i].b, ic->palette[i].a);	
       }
     }
     if (paletteAsmFP) {

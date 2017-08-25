@@ -3,7 +3,6 @@
 #define LOGO_BIT_DEPTH 4
 
 extern void palette_menuInstall(void);
-extern frame_buffer_t logo_frameBuffer;
 
 typedef struct {
   uint16_t bpl1[SCREEN_BIT_DEPTH*2*2];
@@ -16,7 +15,7 @@ static uint16_t logoPalette[1<<LOGO_BIT_DEPTH] = {
 
 static uint32_t logo_startFrame;
 
-static  __section(data_c) logo_copper_t logo_copper  = {
+static  __SECTION_DATA_C logo_copper_t logo_copper  = {
   .bpl1 = {
     BPL1PTL,0x0000,
     BPL1PTH,0x0000,
@@ -50,9 +49,14 @@ logo_pokeCopperList(frame_buffer_t frameBuffer)
 void
 logo_load(void)
 {
-  volatile uint16_t scratch;
-
-  disk_loadData((void*)game_onScreenBuffer, (void*)logo_frameBuffer, SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*LOGO_BIT_DEPTH);
+  //  volatile uint16_t scratch;
+  extern uint8_t logo_logoBitplanes;
+#ifdef GAME_COMPRESS_DATA
+  extern uint8_t logo_logoBitplanesEnd;  
+  disk_loadCompressedData((void*)game_onScreenBuffer, (void*)&logo_logoBitplanes, &logo_logoBitplanesEnd-&logo_logoBitplanes, 0);
+#else
+  disk_loadData((void*)game_onScreenBuffer, (void*)&logo_logoBitplanes, SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*LOGO_BIT_DEPTH);
+#endif
 
   hw_waitVerticalBlank();
   custom->dmacon = DMAF_RASTER|DMAF_COPPER;;
@@ -72,11 +76,10 @@ logo_load(void)
   custom->bpl1mod = (MENU_SCREEN_WIDTH_BYTES*LOGO_BIT_DEPTH)-MENU_SCREEN_WIDTH_BYTES;
   custom->bpl2mod = (MENU_SCREEN_WIDTH_BYTES*LOGO_BIT_DEPTH)-MENU_SCREEN_WIDTH_BYTES;
 
-  logo_pokeCopperList(game_onScreenBuffer);    
+  logo_pokeCopperList(game_menuBuffer);    
   /* install copper list, then enable dma and selected interrupts */
   custom->cop1lc = (uint32_t)copperPtr;
   //  scratch = custom->copjmp1;
-  USE(scratch);
 
   custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
 

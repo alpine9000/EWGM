@@ -1108,7 +1108,7 @@ td_delay:
 
 
 	if MUSIC_PARALLEL_LOAD==0
-	;; 	section	data_c
+	;; 	data_c
 Directory:
 	dc.l	DirBuffer
 	
@@ -1122,7 +1122,7 @@ TrackBuffer:
 	endif
 
 
-	section	bss_c
+	bss_c
 
 
 	; buffer for raw MFM track data

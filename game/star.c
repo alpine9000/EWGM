@@ -3,7 +3,6 @@
 #ifdef GAME_STARS
 
 #define STAR_WIDTH 16
-//#define STAR_HEIGHT 3
 #define STAR_MAX_STARS 6
 #define SPRITE_SPRITESHEET_Y 547
 #define SPRITE_SPRITESHEET_X 112
@@ -38,36 +37,35 @@ typedef struct star {
 } star_t;
 
 
-//static
 int16_t star_count;
 star_t* star_activeList;
 static star_t* star_freeList;
-static __section(random_c) star_t star_buffer[STAR_MAX_STARS];
+static __SECTION_RANDOM star_t star_buffer[STAR_MAX_STARS];
 static uint16_t star_yOffset;
 
-__section(data_c) uint16_t sprite_nullhsprite[] = {
+__SECTION_DATA_C uint16_t sprite_nullhsprite[] = {
   0x0000, 0x0000,
   0x0000, 0x0000
 };
 uint16_t sprite_nullhspriteHi;
 uint16_t sprite_nullhspriteLo;
 
-__section(data_c) uint16_t star_sprite0[] = {
+__SECTION_DATA_C uint16_t star_sprite0[] = {
   #include "out/star-sprite.h"
 };
-__section(data_c) uint16_t star_sprite1[] = {
+__SECTION_DATA_C uint16_t star_sprite1[] = {
   #include "out/star-sprite.h"
 };
-__section(data_c) uint16_t star_sprite2[] = {
+__SECTION_DATA_C uint16_t star_sprite2[] = {
   #include "out/star-sprite.h"
 };
-__section(data_c) uint16_t star_sprite3[] = {
+__SECTION_DATA_C uint16_t star_sprite3[] = {
   #include "out/star-sprite.h"
 };
-__section(data_c) uint16_t star_sprite4[] = {
+__SECTION_DATA_C uint16_t star_sprite4[] = {
   #include "out/star-sprite.h"
 };
-__section(data_c) uint16_t star_sprite5[] = {
+__SECTION_DATA_C uint16_t star_sprite5[] = {
   #include "out/star-sprite.h"
 };
 
@@ -88,8 +86,8 @@ star_getFree(void)
     PANIC("star_getFree: empty list");
   }
 #endif
-  
-  
+
+
   star_t* entry = star_freeList;
   star_freeList = star_freeList->next;
   if (star_freeList) {
@@ -150,7 +148,7 @@ static void
 star_renderSprite(star_t* ptr)
 {
   int16_t x = star_screenx(ptr);
-  int16_t y = star_screeny(ptr);  
+  int16_t y = star_screeny(ptr);
   uint16_t vStartLo = y + RASTER_Y_START;
   uint16_t vStopLo = vStartLo + 10;
   uint16_t vStopHi = ((vStopLo) & 0x100) >> 8;
@@ -195,9 +193,9 @@ star_init(void)
 
   sprite_nullhspriteHi = (uint32_t) sprite_nullhsprite >> 16;
   sprite_nullhspriteLo = ((uint32_t)sprite_nullhsprite & 0xffff);
-  
+
   star_resetSprpt();
-    
+
   custom->dmacon = (DMAF_SPRITE|DMAF_SETCLR);
 }
 
@@ -211,7 +209,7 @@ star_addToActive(star_t* ptr)
     ptr->next = 0;
     ptr->prev = 0;
   } else {
-    ptr->next = star_activeList;    
+    ptr->next = star_activeList;
     ptr->next->prev = ptr;
     ptr->prev = 0;
     star_activeList = ptr;
@@ -247,23 +245,23 @@ static void
 star_doUpdate(uint16_t deltaT, star_t* ptr)
 {
   ptr->velocity.y += deltaT;
-  
+
   int16_t vx = ptr->velocity.x;
   int16_t vy = ptr->velocity.y;
-  
+
   /*  if (deltaT == 2) {
       vx *= 2;
       vy *= 2;
-      } */ 
-  
+      } */
+
   int16_t lastX = ptr->x;
   int16_t lastY = ptr->y;
-  
+
   ptr->x = lastX + vx;
   ptr->y = lastY + vy;
-  
+
   if (star_screenx(ptr) < -STAR_WIDTH || (ptr->y >= ptr->startY && ptr->velocity.y > 0)) {
-    ptr->_state = OBJECT_STATE_REMOVED;    
+    ptr->_state = OBJECT_STATE_REMOVED;
   } else {
     star_renderSprite(ptr);
   }
@@ -292,10 +290,10 @@ star_addStar(object_t* actor, int16_t dx, int16_t dy, int16_t yOffset)
   if (star_count >= STAR_MAX_STARS) {
     return;
   }
-  
+
   int16_t x = object_x(actor) + OBJECT_WIDTH/2;
   int16_t y = object_y(actor)-40-yOffset;
-  
+
   star_t* ptr = star_getFree();
   ptr->_state = OBJECT_STATE_ALIVE;
   ptr->velocity.x = dx;
@@ -309,12 +307,12 @@ star_addStar(object_t* actor, int16_t dx, int16_t dy, int16_t yOffset)
 void
 star_add(object_t* ptr, int16_t dx)
 {
-  static int star_cycle = 0;
+  static int32_t star_cycle = 0;
   switch (star_cycle) {
-  case 0:    
+  case 0:
     star_addStar(ptr, dx*4, -10, 0);
     star_addStar(ptr, -dx*4, -8, 2);
-    star_addStar(ptr, dx*2, -10, 10);    
+    star_addStar(ptr, dx*2, -10, 10);
     break;
   case 1:
     star_addStar(ptr, dx*4, -10, 0);

@@ -2,13 +2,12 @@
 
 #define GAME_SCORE_RASTERLINE_CUTOFF 330
 
-#define GAME_LEVEL_BONUS_TRANSFER_RATE 32
 #ifdef DEBUG
 #define GAME_RASTERAVERAGE_LENGTH 16
 #endif
 
 static void
-game_newGame(menu_command_t command);
+game_startLevel(menu_command_t command);
 static void
 game_loadLevel(menu_command_t command);
 static void
@@ -18,6 +17,9 @@ game_scrollBackground(void);
 
 frame_buffer_t game_offScreenBuffer;
 frame_buffer_t game_onScreenBuffer;
+frame_buffer_t game_menuBuffer;
+frame_buffer_t game_messageBuffer;
+frame_buffer_t game_scoreBoardFrameBuffer;
 #ifdef GAME_TRIPLE_BUFFER
 frame_buffer_t game_backScreenBuffer;
 #endif
@@ -35,20 +37,33 @@ uint32_t game_player1Score;
 uint32_t game_player2Score;
 uint16_t game_difficulty;
 uint16_t game_killScore;
+uint16_t game_scoreboardLoaded;
+uint16_t player1_character;
+uint16_t game_demo;
+#ifdef DEBUG
+uint16_t game_startReplay;
+uint16_t game_collisions;
+#endif
+#ifndef RELEASE
+uint16_t game_startLevelIndex;
+#endif
 
-static volatile __section(random_c) struct framebuffeData {
+static menu_command_t menuCommand;
+
+static volatile __SECTION_RANDOM_C struct framebuffeData {
 #ifdef DEBUG
   uint32_t canary1;
 #endif
-  uint32_t overdraw1;
-  uint8_t frameBuffer1[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES+1+32)];
-  uint32_t overdraw2;
-  uint8_t frameBuffer2[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES+1+32)];
+  // uint32_t overdraw1;
+  uint8_t frameBuffer1[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES)];
+  //  uint32_t overdraw2;
+  uint8_t frameBuffer2[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES)];
+#ifdef GAME_TRIPLE_BUFFER
+  uint8_t frameBuffer3[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES)];
+#endif
+  uint8_t scoreBoardBuffer[SCOREBOARD_BUFFER_SIZE_BYTES];
 #ifdef DEBUG
   uint32_t canary2;
-#endif
-#ifdef GAME_TRIPLE_BUFFER
-  uint8_t frameBuffer3[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES+1+32)];
 #endif
 } game_frameBufferData;
 
@@ -61,6 +76,8 @@ typedef union {
   uint32_t value;
 } time_t;
 
+static int16_t game_lastPlayer1Health;
+static int16_t game_lastPlayer2Health;
 static uint32_t game_lastPlayer1Score;
 static uint32_t game_lastPlayer2Score;
 static int16_t game_scroll;
@@ -75,7 +92,9 @@ static time_t game_levelTime;
 static time_t game_lastLevelTime;
 static uint16_t game_levelTicCounter;
 static uint32_t game_lastVerticalBlankCount;
+static uint16_t game_calculated25fps;
 static uint16_t game_25fps;
+static uint16_t game_newGame;
 
 #ifdef GAME_TURTLE
 static int16_t game_turtle;
@@ -83,11 +102,8 @@ __EXTERNAL int16_t game_missedFrameCount;
 #endif
 
 #ifdef DEBUG
-uint16_t game_collisions;
-static uint16_t game_rasterLines[GAME_RASTERAVERAGE_LENGTH];
-static uint16_t game_rasterLinesIndex;
 static uint16_t game_maxRasterLine;
-static uint16_t game_collectTotal;				 
+static uint16_t game_collectTotal;
 static uint32_t game_total;
 static uint32_t game_frame;
 static uint16_t game_average;
@@ -100,7 +116,7 @@ static int16_t game_debugRenderFrame;
 #endif
 
 
-__section(data_c)  copper_t copper  = {
+__SECTION_DATA_C  copper_t copper  = {
    .bplcon1 = {
      BPLCON1,0xff
    },
@@ -125,13 +141,13 @@ __section(data_c)  copper_t copper  = {
     BPL5PTL,0x0000,
     BPL5PTH,0x0000,
   },
-   .wait = {     
+   .wait = {
 #if 1
      0x00e1|1, 0xfffe,
      ((GAME_RASTER_Y_STOP-SCOREBOARD_HEIGHT-1)<<8)|0xe1, 0xfffe,
 #else
      0xffdf, 0xfffe,
-     ((GAME_RASTER_Y_STOP-SCOREBOARD_HEIGHT-256)<<8)|0xe1, 0xfffe,     
+     ((GAME_RASTER_Y_STOP-SCOREBOARD_HEIGHT-256)<<8)|0xe1, 0xfffe,
 #endif
     },
    .sb_ddfstrt = {
@@ -192,8 +208,8 @@ __section(data_c)  copper_t copper  = {
   },
    .fontResetColor = {
     COLOR28,GAME_COUNTDOWN_COLOR_TOP_OK
-  },   
-   
+  },
+
    .end = {0xFFFF, 0xFFFE}
 };
 
@@ -221,54 +237,48 @@ game_setBigFontColor(uint16_t topColor, uint16_t bottomColor)
 }
 
 
-static uint16_t NOINLINE
+static uint16_t __NOINLINE
 game_check25fps(void)
 {
-  uint32_t count = hw_verticalBlankCount;
-  for (volatile int i = 0; i < 100000; i++);
-  return hw_verticalBlankCount - count > 25;  
+  volatile uint32_t count = hw_verticalBlankCount;
+
+  for (volatile int32_t i = 0; i < 100000; i++);
+
+  volatile uint32_t difference = hw_verticalBlankCount - count;
+
+  volatile uint16_t slow = difference > 15;
+
+  return slow;
 }
 
 
 static void
 game_ctor(void)
 {
-#ifdef HIT_HUNTER  
-  game_difficulty = GAME_DIFFICULTY_EASY;
-#else
   game_difficulty = GAME_DIFFICULTY_HARD;
-#endif
-  
+
+  game_demo = 0;
   game_numPlayers = 1;
+#ifdef DEBUG
+#ifdef GAME_AUTOSTART_REPLAY
+  game_startReplay = 1;
+#endif
+#endif
+
+  game_scoreboardLoaded = 0;
   game_onScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer2;
   game_offScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer1;
+  game_messageBuffer  = (frame_buffer_t)&game_frameBufferData.frameBuffer1;
+  game_menuBuffer  = (frame_buffer_t)&game_frameBufferData.frameBuffer2;
 #ifdef GAME_TRIPLE_BUFFER
   game_backScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer3;
 #endif
-  game_25fps = game_check25fps();
-}
-
-
-static void
-game_init(menu_command_t command)
-{
-  hw_waitVerticalBlank();
-  palette_black();
-
-  screen_pokeCopperList(game_scoreBoardFrameBuffer, copper.sb_bpl, SCREEN_WIDTH_BYTES);  
-  screen_setup((uint16_t*)&copper);
-
-#ifdef DEBUG
-  game_frameBufferData.canary1 = 0x55555555;
-  game_frameBufferData.canary2 = 0xaaaaaaaa;
-#endif
-
-  game_newGame(command);
+  game_scoreBoardFrameBuffer = (frame_buffer_t)&game_frameBufferData.scoreBoardBuffer;
 }
 
 
 #ifdef DEBUG
-static void __attribute__ ((noinline))
+void __NOINLINE
 game_checkCanary(void)
 {
   if (game_frameBufferData.canary1 != 0x55555555) {
@@ -280,14 +290,52 @@ game_checkCanary(void)
 }
 #endif
 
+#ifdef GAME_RECORDING
+static void
+game_startRecord(void)
+{
+  game_numPlayers = 1;
+  random_seed(1);
+  palette_black();
+  game_loadLevel(MENU_COMMAND_RECORD);
+  //  record_setState(RECORD_RECORD);
+  music_restart();
+  hw_waitVerticalBlank();
+  hw_verticalBlankCount = 0;
+  game_lastVerticalBlankCount = 0;
+}
+
+#endif
+
+static void
+game_init(menu_command_t command)
+{
+  hw_waitVerticalBlank();
+  palette_black();
+
+  screen_pokeCopperList(game_scoreBoardFrameBuffer, copper.sb_bpl, SCREEN_WIDTH_BYTES);
+  screen_setup((uint16_t*)&copper);
+
+#ifdef DEBUG
+  game_frameBufferData.canary1 = 0x55555555;
+  game_frameBufferData.canary2 = 0xaaaaaaaa;
+#endif
+
+  if (command == MENU_COMMAND_RECORD) {
+    game_startRecord();
+  } else {
+    game_startLevel(command);
+  }
+}
+
 
 static void
 game_complete(void)
 {
   game_loopControl = GAME_LOOP_CONTROL_GOTO_MENU;
 
-  game_disableCopperEffects();  
-  palette_fadeFrom(level.palette, 32, 0, 32);  
+  game_disableCopperEffects();
+  palette_fadeFrom(levelFast.palette, 32, 0, 32);
 
 #ifdef GAME_KEYBOARD_ENABLED
   if (game_player1Score > 0) {
@@ -297,12 +345,12 @@ game_complete(void)
     hiscore_addScore(2, game_player2Score);
   }
 #endif
-  
+
   hw_waitVerticalBlank();
   palette_black();
   hw_waitVerticalBlank();
-  
-  custom->dmacon = (DMAF_COPPER|DMAF_RASTER);  
+
+  custom->dmacon = (DMAF_COPPER|DMAF_RASTER);
   //  message_screenOn(" "); // disables game copper list, prevents any artifacts during last exit loop
 
 #ifdef DEBUG
@@ -349,7 +397,7 @@ game_refreshDebugScoreboard(void)
   text_drawScoreBoard("ci:", 5*8, 18);
 #ifdef GAME_STARS
   text_drawScoreBoard("sc:", 12*8, 18);
-#endif  
+#endif
 }
 #endif
 
@@ -358,9 +406,9 @@ static void
 game_renderCounter(void)
 {
   uint16_t x = (SCREEN_WIDTH/2)-(((GAME_BIG_FONT_GAP*3)+GAME_BIG_FONT_COLON_GAP)/2);
-  uint16_t y = 19;      
+  uint16_t y = 19;
   frame_buffer_t fb = game_scoreBoardFrameBuffer+(SCREEN_WIDTH_BYTES*3);
-  text_clrBlit(fb, x, y, (GAME_BIG_FONT_GAP*3), GAME_BIG_FONT_HEIGHT);      
+  text_clrBlit(fb, x, y, (GAME_BIG_FONT_GAP*3), GAME_BIG_FONT_HEIGHT);
   text_drawBigNumeral(fb, game_levelTime.sec, x+GAME_BIG_FONT_COLON_GAP+GAME_BIG_FONT_GAP+GAME_BIG_FONT_GAP, y, GAME_BIG_FONT_WIDTH, GAME_BIG_FONT_HEIGHT);
   text_drawBigNumeral(fb, game_levelTime.sec10, x+GAME_BIG_FONT_COLON_GAP+GAME_BIG_FONT_GAP, y, GAME_BIG_FONT_WIDTH, GAME_BIG_FONT_HEIGHT);
   text_drawBigNumeral(fb, game_levelTime.min, x, y, GAME_BIG_FONT_WIDTH, GAME_BIG_FONT_HEIGHT);
@@ -374,23 +422,44 @@ game_refreshScoreboard(void)
 #ifdef DEBUG
   if (game_scoreBoardMode == 0) {
 #endif
-    game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_BLANK_GAME_OVER);    
-    game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_BLANK_GAME_OVER);
+    game_scoreBoardPlayer1Text(I18N_BLANK_GAME_OVER);
+    game_scoreBoardPlayer2Text(I18N_BLANK_GAME_OVER);
     game_scoreBoardPlayer1Score(I18N_BLANK_GAME_OVER);
-    text_drawText8(game_scoreBoardFrameBuffer, itoan(game_player1Score, 6), 224, 8);
     game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
-    
-    if (game_numPlayers == 1) {
-      game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);      
-      game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, 0);
-      game_scoreBoardPlayer2Score(I18N_PRESS_2);      
-      game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_TO_PLAY);            
-      game_lastPlayer2Score = game_player2Score;
-    } else {
-      text_drawText8(game_scoreBoardFrameBuffer, itoan(game_player2Score, 6), 48, 8);
+
+    if (game_player1) {
+      text_drawText8(game_scoreBoardFrameBuffer, itoan(game_player1Score, 6), 224, 8);
       game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);
-      game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);              
     }
+
+    if (game_player2) {
+      text_drawText8(game_scoreBoardFrameBuffer, itoan(game_player2Score, 6), 48, 8);
+      game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);
+    }
+
+    if (!game_player2) {
+      game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, 0);
+      if (game_numPlayers == 1) {
+	game_scoreBoardPlayer2Score(I18N_PRESS_2);
+	game_scoreBoardPlayer2Text(I18N_TO_PLAY);
+      }
+    }
+
+    if (!game_player1) {
+      game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, 0);
+      if (game_numPlayers == 1) {
+	game_scoreBoardPlayer1Score(I18N_PRESS_2);
+	game_scoreBoardPlayer1Text(I18N_TO_PLAY);
+      }
+    }
+
+#ifndef RELEASE
+    if (!game_25fps) {
+      text_drawText8(game_scoreBoardFrameBuffer, "50", (SCREEN_WIDTH/2)-8, 8);
+    } else {
+      text_drawText8(game_scoreBoardFrameBuffer, "25", (SCREEN_WIDTH/2)-8, 8);
+    }
+#endif
 
     game_renderCounter();
 
@@ -399,43 +468,19 @@ game_refreshScoreboard(void)
 #endif
 }
 
-#ifdef GAME_RECORDING
-static void
-game_startRecord(void)
+
+//__NOINLINE
+void
+game_scoreBoardPlayer1Text(char* text)
 {
-  random_seed(1);
-  palette_black();
-  game_loadLevel(MENU_COMMAND_REPLAY);
-  record_setState(RECORD_RECORD);
-  music_restart();
-  hw_waitVerticalBlank();
-  hw_verticalBlankCount = 0;
-  game_lastVerticalBlankCount = 0;
-}
-
-
-
-static void
-game_startPlayback(void)
-{
-  random_seed(1);
-  palette_black();
-  game_loadLevel(MENU_COMMAND_REPLAY);
-  music_restart();
-  hw_waitVerticalBlank();
-  hw_verticalBlankCount = 0;
-  game_lastVerticalBlankCount = 0;
-}
-#endif
-
-NOINLINE void
-game_scoreBoardPlayerText(uint16_t playerId, char* text)
-{
-  if (playerId == OBJECT_ID_PLAYER1) {
     text_drawText8(game_scoreBoardFrameBuffer, text, 224-3*8, 17);
-  } else {
-    text_drawText8(game_scoreBoardFrameBuffer, text, 48, 17);
-  }
+}
+
+//__NOINLINE
+void
+game_scoreBoardPlayer2Text(char* text)
+{
+  text_drawText8(game_scoreBoardFrameBuffer, text, 48, 17);
 }
 
 
@@ -443,37 +488,79 @@ void
 game_updatePlayerHealth(uint16_t x, int16_t health)
 {
   uint16_t score;
-  
+
   for (score = 0; score < health; score+=10, x+= 5) {
     gfx_screenWidthBitBlit(game_scoreBoardFrameBuffer, 0, 288, x, 30, 16, 8);
   }
 
   for (; score < 100; score+= 10, x+= 5) {
     gfx_screenWidthBitBlit(game_scoreBoardFrameBuffer, 0, 296, x, 30, 16, 8);
-  } 
+  }
 }
 
-#ifdef HIT_HUNTER
-__EXTERNAL uint16_t xxx_seed = 10;
-#endif
+
+void
+game_updatePlayer1Health(uint16_t x, int16_t health)
+{
+  uint16_t score;
+  if (health > game_lastPlayer1Health) {
+    game_updatePlayerHealth(x, health);
+    game_lastPlayer1Health = health;
+    return;
+  }
+
+  for (score = 0; score < health; score+=10, x+= 5) {
+    // gfx_screenWidthBitBlit(game_scoreBoardFrameBuffer, 0, 288, x, 30, 16, 8);
+  }
+
+  for (; score < game_lastPlayer1Health; score+= 10, x+= 5) {
+    gfx_screenWidthBitBlit(game_scoreBoardFrameBuffer, 0, 296, x, 30, 16, 8);
+  }
+
+  game_lastPlayer1Health = health;
+}
+
+void
+game_updatePlayer2Health(uint16_t x, int16_t health)
+{
+  uint16_t score;
+
+  if (health > game_lastPlayer2Health) {
+    game_updatePlayerHealth(x, health);
+    game_lastPlayer2Health = health;
+    return;
+  }
+
+  for (score = 0; score < health; score+=10, x+= 5) {
+    //gfx_screenWidthBitBlit(game_scoreBoardFrameBuffer, 0, 288, x, 30, 16, 8);
+  }
+
+  for (; score < game_lastPlayer2Health; score+= 10, x+= 5) {
+    gfx_screenWidthBitBlit(game_scoreBoardFrameBuffer, 0, 296, x, 30, 16, 8);
+  }
+
+  game_lastPlayer2Health = health;
+}
+
+
 
 static void
-game_newGame(menu_command_t command)
+game_startLevel(menu_command_t command)
 {
-  game_level = 0;
+  hw_waitVerticalBlank();
   game_deltaT = 0;
-  game_player1Score = 0;
-  game_player2Score = 0;
-  game_lastPlayer1Score = 0xffffffff;
-  game_lastPlayer2Score = 0xffffffff;
-  game_levelTime.min = 5;
+  game_lastPlayer1Score = 0;
+  game_lastPlayer2Score = 0;
+  //  game_lastPlayer1Health = 0;
+  //  game_lastPlayer2Health = 0;
+  game_levelTime.min = 8;
   game_levelTime.sec10 = 0;
   game_levelTime.sec= 0;
   game_lastLevelTime.value = 0;
-  game_levelTicCounter = 0;  
+  game_levelTicCounter = 0;
 
   game_killScore = game_difficulty == GAME_DIFFICULTY_HARD ? 1000 : 500;
-  
+
   if (command >= MENU_COMMAND_LEVEL) {
     game_level = command - MENU_COMMAND_LEVEL;
     command = MENU_COMMAND_PLAY;
@@ -481,13 +568,9 @@ game_newGame(menu_command_t command)
 
   if (command == MENU_COMMAND_REPLAY || command == MENU_COMMAND_RECORD) {
     random_seed(1);
+    //    music_restart();
   } else {
-#ifdef HIT_HUNTER
-    random_seed(xxx_seed++);
-#else
-    random_seed(hw_getRasterLine());
-#endif
-
+    random_seed(hw_getRasterLine() | *((uint16_t*)0xbfd800));
   }
   game_loadLevel(command);
 }
@@ -497,17 +580,10 @@ static void
 game_loadLevel(menu_command_t command)
 {
   custom->bltafwm = 0xffff;
-  USE(command);
-  
-#ifdef DEBUG
-  if (game_scoreBoardMode != 0) {
-    disk_loadData((void*)game_scoreBoardFrameBuffer, (void*)game_scoreBoardFrameBuffer, FRAME_BUFFER_WIDTH_BYTES*SCOREBOARD_HEIGHT*SCREEN_BIT_DEPTH);
-  }
-#endif 
 
   game_bplcon1 = 0xff;
   game_cameraX = 0;
-  game_lastTileX = 0;  
+  game_lastTileX = 0;
   game_targetCameraX = 0;
   game_scroll = 0;
 #ifdef DEBUG
@@ -532,7 +608,6 @@ game_loadLevel(menu_command_t command)
   game_frame  = 0;
   game_average = 0;
   game_maxRasterLine = 0;
-  game_rasterLinesIndex = 0;
   game_lastAverage = -1;
   game_lastMaxRasterLine = -1;
   game_lastEnemyCount = -1;
@@ -540,26 +615,38 @@ game_loadLevel(menu_command_t command)
   game_scoreBoardMode = 0;
   game_debugRenderFrame = 0;
 #endif
-  
+
   game_switchFrameBuffers();
 
   sound_init();
 
+  if (game_numPlayers == 1) {
+#ifdef DEBUG
+    if (command != MENU_COMMAND_REPLAY && command != MENU_COMMAND_RECORD) {
+#endif
+      if (game_newGame && !game_demo) {
+	player1_character = player_select();
+      }
+#ifdef DEBUG
+    } else {
+      game_startReplay = 0;
+      player1_character = 1;
+    }
+#endif
+  } else {
+    player1_character = 1;
+  }
+
+
   level_load(game_level);
 
-  if (level.initFunctor) {
-    level.initFunctor();
-  }
-  
   tile_init();
 #ifdef GAME_TRIPLE_BUFFER
   tile_renderScreen(game_offScreenBuffer, game_onScreenBuffer, game_backScreenBuffer);
 #else
-  tile_renderScreen(game_offScreenBuffer, game_onScreenBuffer);  
+  tile_renderScreen(game_offScreenBuffer, game_onScreenBuffer);
 #endif
 
-  game_refreshScoreboard();  
-  
 #ifdef GAME_RECORDING
   switch (command) {
   case MENU_COMMAND_REPLAY:
@@ -567,15 +654,17 @@ game_loadLevel(menu_command_t command)
     record_setState(RECORD_PLAYBACK);
     break;
   case MENU_COMMAND_RECORD:
-    game_25fps = 1;    
+    game_25fps = 1;
     record_setState(RECORD_RECORD);
     break;
   case MENU_COMMAND_PLAY:
   default:
-    game_25fps = game_check25fps();
+    game_25fps = game_calculated25fps;
     record_setState(RECORD_IDLE);
     break;
   }
+#else
+  __USE(command);
 #endif
 
   alarm_init();
@@ -586,23 +675,61 @@ game_loadLevel(menu_command_t command)
 #ifdef GAME_STARS
   star_init();
 #endif
-    
-  game_player1 = player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER2_STAND_RIGHT, 80);
-  game_player2 = 0;
-  if (game_numPlayers == 2) {
-    game_player2 = player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER3_STAND_RIGHT, SCREEN_WIDTH-80);
-  } else {
 
+
+  if (game_numPlayers == 2 || player1_character == 1) {
+    game_player1 = (game_newGame || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER1_STAND_RIGHT, 80, game_lastPlayer1Health) : 0;
+    if (game_player1) {
+      game_player1->joystickPos = &hw_joystickPos;
+      game_player1->joystickButton = &hw_joystickButton;
+    }
+  } else {
+    game_player1 = 0;
   }
+
+  if (game_numPlayers == 2 || player1_character == 0) {
+    game_player2 = (game_newGame || game_player2) ? player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER2_STAND_RIGHT, SCREEN_WIDTH-80, game_lastPlayer2Health) : 0;
+    if (game_player2) {
+      game_player2->joystickPos = &hw_joystickPos;
+      game_player2->joystickButton = &hw_joystickButton;
+    }
+  } else {
+    game_player2 = 0;
+  }
+
+  if (game_numPlayers == 2 && player1_character == 0) {
+    if (game_player2) {
+      game_player2->joystickPos = &hw_joystick2Pos;
+      game_player2->joystickButton = &hw_joystick2Button;
+    }
+    if (game_player1) {
+       game_player1->joystickPos = &hw_joystickPos;
+       game_player1->joystickButton = &hw_joystickButton;
+    }
+  } else if (game_numPlayers == 2 && player1_character == 1) {
+    if (game_player1) {
+      game_player1->joystickPos = &hw_joystick2Pos;
+      game_player1->joystickButton = &hw_joystick2Button;
+    }
+    if (game_player2) {
+       game_player2->joystickPos = &hw_joystickPos;
+       game_player2->joystickButton = &hw_joystickButton;
+    }
+  }
+
+  if (game_newGame) {
+    game_refreshScoreboard();
+  }
+
 
   enemy_init();
 
-  conductor_init(level.instructions);  
+  conductor_init(levelFast.instructions);
 
 #ifdef OBJECT_Z_BUFFER_COLLISION
   object_initZbuffer();
 #endif
-  
+
   hw_waitBlitter();
 
   game_render(0);
@@ -613,12 +740,13 @@ game_loadLevel(menu_command_t command)
 
   hw_waitVerticalBlank();
 
-  palette_fadeTo(level.palette, 32, 0);
+  palette_fadeTo(levelFast.palette, 32, 0);
 
-  hw_waitVerticalBlank();  
-  game_setBigFontColor(GAME_COUNTDOWN_COLOR_TOP_OK, GAME_COUNTDOWN_COLOR_BOTTOM_OK);  
+  hw_waitVerticalBlank();
+  game_setBigFontColor(GAME_COUNTDOWN_COLOR_TOP_OK, GAME_COUNTDOWN_COLOR_BOTTOM_OK);
   game_enableCopperEffects();
-  
+
+  game_newGame = 0;
   hw_waitVerticalBlank();
   hw_verticalBlankCount = 0;
   game_lastVerticalBlankCount = 0;
@@ -635,7 +763,7 @@ game_switchFrameBuffers(void)
   frame_buffer_t save = game_onScreenBuffer;
   game_onScreenBuffer = game_offScreenBuffer;
   game_offScreenBuffer = save;
-  custom->dmacon = (DMAF_COPPER|DMAF_SETCLR);    
+  custom->dmacon = (DMAF_COPPER|DMAF_SETCLR);
 }
 
 
@@ -643,7 +771,7 @@ static void
 game_scrollBackground(void)
 {
   gfx_setupRenderTile();
-    
+
   int16_t lastCameraX = game_cameraX;
 
   if (game_targetCameraX-game_cameraX < 2) {
@@ -651,7 +779,8 @@ game_scrollBackground(void)
   } else {
     game_cameraX += 2;
   }
-  
+
+
   uint16_t tile = game_cameraX >> 4;
   uint16_t scroll = (game_cameraX % 16);
   game_screenScrollX = 0xf - scroll;
@@ -665,19 +794,19 @@ game_scrollBackground(void)
     game_backScreenBuffer += 2;
 #endif
   }
-    
-  uint16_t screenX = FRAME_BUFFER_WIDTH-TILE_WIDTH*2;    
+
+  uint16_t screenX = FRAME_BUFFER_WIDTH-TILE_WIDTH*2;
   uint16_t count = game_cameraX-lastCameraX;
 
   for (int16_t i = 0; i < count; i++) {
     uint16_t x = (uint32_t)game_cameraX+(uint32_t)screenX;
     uint16_t c = i+scroll;
     if (c < MAP_TILE_HEIGHT) {
-      uint16_t offset = level.tileAddresses[x>>4][c];
-      gfx_quickRenderTile(game_offScreenBuffer, screenX, c << 4, level.tileBitplanes+offset);
-      gfx_quickRenderTile(game_onScreenBuffer, screenX, c << 4, level.tileBitplanes+offset);
+      uint16_t offset = levelFast.tileAddresses[x>>4][c];
+      gfx_quickRenderTile(game_offScreenBuffer, screenX, c << 4, levelChip.tileBitplanes+offset);
+      gfx_quickRenderTile(game_onScreenBuffer, screenX, c << 4, levelChip.tileBitplanes+offset);
 #ifdef GAME_TRIPLE_BUFFER
-      gfx_quickRenderTile(game_backScreenBuffer, screenX, c << 4, level.tileBitplanes+offset);
+      gfx_quickRenderTile(game_backScreenBuffer, screenX, c << 4, levelChip.tileBitplanes+offset);
 #endif
     }
   }
@@ -687,7 +816,7 @@ game_scrollBackground(void)
 #ifdef DEBUG
 void
 debug_mode(void)
-{ 
+{
   switch (game_debugRenderFrame) {
   case 0:
     text_drawScoreBoard(itoan(game_total, 8), 5*8, 0);
@@ -705,7 +834,7 @@ debug_mode(void)
   case 3:
     text_drawScoreBoard(itoan(game_missedFrameCount, 3),5*8, 9);
     break;
-#endif    
+#endif
   case 4:
     if (game_average != game_lastAverage) {
       text_drawScoreBoard(itoan(game_average, 4), 13*8, 9);
@@ -736,7 +865,7 @@ debug_mode(void)
 #endif
   default:
     break;
-  } 
+  }
   game_debugRenderFrame++;
   if (game_debugRenderFrame > 10) {
     game_debugRenderFrame = 0;
@@ -751,34 +880,26 @@ debug_showRasterLine(void)
     debug_mode();
   }
 
-  int16_t line = hw_getRasterLine();  
+  int16_t line = hw_getRasterLine();
 
   if (hw_verticalBlankCount-game_lastVerticalBlankCount > 1) {
-    line += 312;
+    line = hw_getRasterLine() + 312;
+  } else if (hw_verticalBlankCount == game_lastVerticalBlankCount) {
+    line = line - 285;
   }
-  
-  game_rasterLines[game_rasterLinesIndex++] = line;
+
   if (line > game_maxRasterLine) {
     game_maxRasterLine = line;
   }
-  if (game_rasterLinesIndex >= GAME_RASTERAVERAGE_LENGTH) {
-    game_rasterLinesIndex = 0;
-  }
 
   game_average = line;
-  
+
   if (game_collectTotal) {
     game_total += line;
     game_frame++;
-#ifdef SCRIPTING
-    if (game_frame == script_breakpoint) {
-      game_paused = 1;
-      script_breakpoint = 0xffffffff;
-    }
-#endif
   }
 
-  return;  
+  return;
 }
 #endif
 
@@ -802,16 +923,12 @@ game_updateWave(void)
 static void
 game_render(uint16_t deltaT)
 {
+  alarm_process(game_deltaT);
   object_render(game_offScreenBuffer, deltaT);
 #ifdef GAME_STARS
   star_update(deltaT);
 #endif
   game_updateWave();
-#if 0  
-  if (level.effectFunctor) {
-    level.effectFunctor(game_offScreenBuffer);
-  }
-#endif
 }
 
 
@@ -854,134 +971,24 @@ game_updateScoreboard(void)
       game_lastPlayer2Score = game_player2Score;
       custom->bltafwm = 0xffff;
     }
-    
+
 #ifdef DEBUG
     }
-#endif    
-}
-
-
-static NOINLINE void
-game_pauseToggle(void)
-{
-  static uint16_t music;
-  if (!game_paused) {
-    music = music_enabled();
-    if (music) {
-      music_toggle();
-    }
-    game_disableCopperEffects();  
-    palette_fade(level.palette, level.greyPalette, 32, 16);
-    game_paused = 1;
-  } else {
-    if (music) {
-      music_toggle();
-    }
-    palette_fade(level.greyPalette, level.palette, 32, 16);
-    game_enableCopperEffects();
-    game_paused = 0;
-    game_levelTicCounter = 0;
-    game_lastScrollFrame = game_lastVerticalBlankCount = hw_verticalBlankCount;
-  }
-}
-
-static int16_t
-game_processKeyboard()
-{
-  switch (keyboard_key) {
-#ifdef DEBUG
-  case 'Y':
-    game_difficulty = game_difficulty == GAME_DIFFICULTY_HARD ? GAME_DIFFICULTY_EASY : GAME_DIFFICULTY_HARD;
-    break;
-  case 'C':
-    game_collisions = !game_collisions;
-    break;
-  case 'E':
-    enemy_pause = !enemy_pause;
-    break;
-  case 'O':
-    game_setGameOver();
-    break;
-  case 'D':
-    game_scoreBoardMode = !game_scoreBoardMode;
-    if (game_scoreBoardMode) {
-      game_refreshDebugScoreboard();
-    } else {
-      game_refreshScoreboard();
-    }
-    break;    
-  case 'X':
-    game_collectTotal = !game_collectTotal;
-    break;
-  case 'T':
-    game_singleStep = 1;
-    break;
-  case 'Z':
-    music_next();
-    break;
-  case '1':
-    game_numPlayers = 1;
-    game_init(MENU_COMMAND_PLAY);
-    break;
-  case '5':
-    game_25fps = !game_25fps;
-    break;
-#endif    
-
-#ifdef GAME_RECORDING
-  case 'R':
-    game_startRecord();
-    break;
-  case 'S':
-    record_setState(RECORD_IDLE);
-    break;
-  case 'L':
-    game_startPlayback();
-    break;
 #endif
-  case 'P':
-    game_pauseToggle();
-    break;
-  case 'M':
-    music_toggle();
-    break;
-  case KEYBOARD_CODE_ESC:
-  case 'Q':
-    if (game_paused) {
-      game_pauseToggle();
-    }
-    game_disableCopperEffects();    
-    palette_fadeFrom(level.palette, 32, 0, 32);
-    return 1;
-    break;
-  case '2':
-    if (!game_over && game_player2 == 0 && game_numPlayers == 1) {
-      game_numPlayers = 2;
-      game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
-      game_lastPlayer2Score = 0xffffffff;
-      game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_BLANK_GAME_OVER);
-      game_player2 = player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER3_STAND_RIGHT, game_cameraX+SCREEN_WIDTH-80);
-      game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);      
-    }
-    break;
-  }
-
-  return 0;
 }
-
 
 static void
 game_waitForNextFrame(void)
 {
   hw_waitVerticalBlank();
 
-  sound_vbl();  
-  
+  sound_vbl();
+
   switch (hw_verticalBlankCount-game_lastVerticalBlankCount) {
     case 0:
       if (game_25fps) {
 	hw_waitVerticalBlank();
-	hw_waitVerticalBlank();	
+	hw_waitVerticalBlank();
       } else {
 	hw_waitVerticalBlank();
       }
@@ -1000,134 +1007,38 @@ game_waitForNextFrame(void)
 #ifdef DEBUG
       if (game_collectTotal) {
 #endif
-      game_turtle = 5;
-      game_missedFrameCount++;      
+	if (!game_paused) {
+	  game_turtle = 5;
+	}
+      game_missedFrameCount++;
 #ifdef DEBUG
       }
 #endif
 #endif
     }
-      
+
     game_lastVerticalBlankCount = hw_verticalBlankCount;
 }
-		    
-
-static void
-game_waitForMenuExit(int16_t messageAnimId, int16_t offset)
-{
-  if (game_player1) {
-    ((fighter_data_t*)(game_player1->data))->intelligence = fighter_nullIntelligence;
-  }
-  
-  if (game_player2) {
-    ((fighter_data_t*)(game_player2->data))->intelligence = fighter_nullIntelligence;
-  }  
-
-  object_t* gameOver = object_add(OBJECT_ID_GAMEOVER, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-offset), -4, 0, messageAnimId, 0, 0, 0);
-  object_set_z(gameOver, 4096);
-  
-  uint32_t frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;
-  for (int16_t y = -16; y <= (PLAYAREA_HEIGHT/2)-30; y+=2) {
-    object_set_py_no_checks(gameOver, y*OBJECT_PHYSICS_FACTOR);
-    frame = hw_verticalBlankCount;
-    game_deltaT = frame-lastFrame;
-    lastFrame = frame;
-    game_render(game_deltaT);
-    game_waitForNextFrame();
-    game_switchFrameBuffers();
-  }
-
-  object_t* joystick = object_add(OBJECT_ID_JOYSTICK, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-16),PLAYAREA_HEIGHT, 0, OBJECT_ANIM_JOYSTICK, 0, 0, 0);
-  object_set_z(joystick, 4096);     
-
-  for (int16_t y = PLAYAREA_HEIGHT; y >  (PLAYAREA_HEIGHT/2)+32; y-=8) {
-    object_set_py_no_checks(joystick, y*OBJECT_PHYSICS_FACTOR);
-    frame = hw_verticalBlankCount;
-    game_deltaT = frame-lastFrame;
-    lastFrame = frame;
-    game_render(game_deltaT);
-    game_waitForNextFrame();
-    game_switchFrameBuffers();
-  }  
-  
-  
-  do {
-    frame = hw_verticalBlankCount;
-    game_deltaT = frame-lastFrame;
-    lastFrame = frame;
-    game_render(game_deltaT);
-    game_waitForNextFrame();    
-    game_switchFrameBuffers();
-    keyboard_read();
-    hw_readJoystick();
-    hw_readJoystick2();
-  } while(!game_fire());
-  
-  game_complete();
-}
-
-
-void
-game_setGameOver(void)
-{
-  if (!game_over) {
-    game_over = 1;
-    game_loopControl = GAME_LOOP_CONTROL_GAME_OVER;
-  }
-}
-
-void
-game_setGameComplete(void)
-{
-  if (!game_over) {
-    game_over = 1;
-    game_loopControl = GAME_LOOP_CONTROL_GAME_COMPLETE;    
-  }
-}
-
-
-static void
-game_gameOverSequence(void)
-{
-  game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
-  game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);
-  
-  if (game_numPlayers == 1) {
-    game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
-  }
-  
-  game_waitForMenuExit(OBJECT_ANIM_GAMEOVER, 35);
-}
-
-
-static void
-game_gameCompleteSequence(void)
-{
-  music_play(4);  
-  game_scoreBoardPlayerText(OBJECT_ID_PLAYER1, I18N_GAME_OVER);
-  game_scoreBoardPlayerText(OBJECT_ID_PLAYER2, I18N_GAME_OVER);
-  
-  game_waitForMenuExit(OBJECT_ANIM_GAMECOMPLETE, 55);
-}  
 
 
 void
 game_showDeathMatch(void)
 {
-
   if (!game_player1 || !game_player2) {
     return;
   }
+  fighter_intelligence_functor player1_intelligence = fighter_data(game_player1)->intelligence;
+  fighter_intelligence_functor player2_intelligence = fighter_data(game_player2)->intelligence;
   game_player1->velocity.x = 0;
   game_player1->velocity.y = 0;
   game_player2->velocity.x = 0;
-  game_player2->velocity.y = 0;  
-  ((fighter_data_t*)(game_player1->data))->intelligence = fighter_nullIntelligence;
-  ((fighter_data_t*)(game_player2->data))->intelligence = fighter_nullIntelligence;  
-  
-  object_t* dm = object_add(OBJECT_ID_DEATHMATCH, OBJECT_CLASS_DECORATION, game_cameraX+(SCREEN_WIDTH/2-48), -4, 0,OBJECT_ANIM_DEATHMATCH, 0, 0, 0);
+  game_player2->velocity.y = 0;
+  fighter_data(game_player1)->intelligence = fighter_nullIntelligence;
+  fighter_data(game_player2)->intelligence = fighter_nullIntelligence;
+
+  object_t* dm = object_add(OBJECT_ID_DEATHMATCH, 0, game_cameraX+(SCREEN_WIDTH/2-48), -4, 0,OBJECT_ANIM_DEATHMATCH, 0, 0, 0, 0);
   object_set_z(dm, 4096);
-  uint32_t frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;
+  uint32_t frame, lastFrame = hw_verticalBlankCount;
   int16_t y;
   for (y = -16; y <= (PLAYAREA_HEIGHT/2)-4; y+=4) {
     object_set_py_no_checks(dm, y*OBJECT_PHYSICS_FACTOR);
@@ -1138,22 +1049,22 @@ game_showDeathMatch(void)
     game_waitForNextFrame();
     game_switchFrameBuffers();
   }
-  
+
   for (uint16_t i = 0; i < 7; i++) {
     game_render(1);
     game_waitForNextFrame();
-    game_switchFrameBuffers();      
+    game_switchFrameBuffers();
     game_waitForNextFrame();
     game_waitForNextFrame();
     game_waitForNextFrame();
     game_waitForNextFrame();
     game_waitForNextFrame();
     game_waitForNextFrame();
-    dm->visible = !dm->visible;      
+    dm->visible = !dm->visible;
   }
-  
+
   dm->visible = 1;
-  frame = hw_verticalBlankCount, lastFrame = hw_verticalBlankCount;    
+  lastFrame = hw_verticalBlankCount;
   for (y = y - 2; y >= -8; y-=4) {
     object_set_py_no_checks(dm, y*OBJECT_PHYSICS_FACTOR);
     frame = hw_verticalBlankCount;
@@ -1165,9 +1076,309 @@ game_showDeathMatch(void)
   }
   game_lastVerticalBlankCount = hw_verticalBlankCount;
 
-  ((fighter_data_t*)(game_player1->data))->intelligence = player_intelligence;
-  ((fighter_data_t*)(game_player2->data))->intelligence = player_intelligence;    
-} 
+  fighter_data(game_player1)->intelligence = player1_intelligence;
+  fighter_data(game_player2)->intelligence = player2_intelligence;
+}
+
+static void __NOINLINE
+game_pauseToggle(void)
+{
+  static uint16_t music;
+  if (!game_paused) {
+    music = music_enabled();
+    if (music) {
+      music_toggle();
+    }
+    game_disableCopperEffects();
+    palette_fade(levelFast.palette, levelFast.greyPalette, 32, 16);
+    game_paused = 1;
+  } else {
+    if (music) {
+      music_toggle();
+    }
+    palette_fade(levelFast.greyPalette, levelFast.palette, 32, 16);
+    game_enableCopperEffects();
+    game_paused = 0;
+    game_levelTicCounter = 0;
+    game_lastScrollFrame = game_lastVerticalBlankCount = hw_verticalBlankCount;
+  }
+}
+
+#ifdef DEBUG
+static void
+game_maxHealth(void)
+{
+  if (game_player1) {
+    fighter_data(game_player1)->health = PLAYER_INITIAL_HEALTH;
+  }
+
+  if (game_player2) {
+    fighter_data(game_player2)->health = PLAYER_INITIAL_HEALTH;
+  }
+}
+#endif
+
+static int16_t
+game_processKeyboard()
+{
+  switch (keyboard_key) {
+#ifdef DEBUG
+  case 'H':
+    game_maxHealth();
+    break;
+  case 'C':
+    game_setGameComplete();
+    break;
+  case 'U':
+    game_level = LEVEL_NUM_LEVELS;
+    game_setGameComplete();
+    break;
+  case 'K':
+    game_showDeathMatch();
+    break;
+  case 'Y':
+    game_difficulty = game_difficulty == GAME_DIFFICULTY_HARD ? GAME_DIFFICULTY_EASY : GAME_DIFFICULTY_HARD;
+    break;
+  case 'E':
+    enemy_pause = !enemy_pause;
+    break;
+  case 'O':
+    game_setGameOver();
+    break;
+  case 'D':
+    game_scoreboardLoaded = 0;
+    game_scoreBoardMode = !game_scoreBoardMode;
+    if (game_scoreBoardMode) {
+      game_refreshDebugScoreboard();
+    } else {
+      game_refreshScoreboard();
+    }
+    break;
+  case 'F':
+    {
+      static uint16_t sfxId = 0;
+      sound_endLoop();
+      sound_queueSound(sfxId);
+      sfxId++;
+      if (sfxId == SOUND_LAST) {
+	sfxId = 0;
+      }
+    }
+    break;
+  case 'X':
+    game_collectTotal = !game_collectTotal;
+    break;
+  case 'T':
+    if (!game_paused) {
+      game_paused = 1;
+    } else {
+      game_singleStep = 1;
+    }
+    break;
+  case 'Z':
+    music_next();
+    break;
+  case '1':
+    game_numPlayers = 1;
+    game_init(MENU_COMMAND_PLAY);
+    break;
+  case '5':
+    game_25fps = !game_25fps;
+    break;
+  case ' ':
+    game_paused = 0;
+    // game_lastVerticalBlankCount = hw_verticalBlankCount;
+    game_lastScrollFrame = game_lastVerticalBlankCount = hw_verticalBlankCount;
+    break;
+#endif
+
+#ifdef GAME_RECORDING
+  case 'R':
+    game_startRecord();
+    break;
+  case 'S':
+    record_setState(RECORD_IDLE);
+#ifdef DEBUG
+    game_collectTotal = !game_collectTotal;
+#endif
+    break;
+#ifdef DEBUG
+  case 'L':
+    game_startReplay = 1;
+    return 1;
+    break;
+#endif
+#endif
+  case 'P':
+    game_pauseToggle();
+    break;
+  case 'M':
+    music_toggle();
+    break;
+  case KEYBOARD_CODE_ESC:
+  case 'Q':
+    if (game_paused) {
+      game_pauseToggle();
+    }
+    if (game_demo) {
+      game_numPlayers = 1;
+    }
+    game_disableCopperEffects();
+    palette_fadeFrom(levelFast.palette, 32, 0, 32);
+    return 1;
+    break;
+  case '2':
+    if (!game_over && game_player2 == 0 && game_numPlayers == 1 && player1_character == 1) {
+      game_numPlayers = 2;
+      game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
+      game_lastPlayer2Score = 0xffffffff;
+      game_scoreBoardPlayer2Text(I18N_BLANK_GAME_OVER);
+      game_player2 = player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER2_STAND_RIGHT, game_cameraX+SCREEN_WIDTH-80, game_lastPlayer2Health);
+      game_player2->joystickPos = &hw_joystick2Pos;
+      game_player2->joystickButton = &hw_joystick2Button;
+      game_updatePlayerHealth(GAME_PLAYER2_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);
+    } else if (!game_over && game_player1 == 0 && game_numPlayers == 1 && player1_character == 0) {
+      game_numPlayers = 2;
+      game_scoreBoardPlayer1Score(I18N_BLANK_GAME_OVER);
+      game_lastPlayer1Score = 0xffffffff;
+      game_scoreBoardPlayer1Text(I18N_BLANK_GAME_OVER);
+      game_player1 = player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER1_STAND_RIGHT, game_cameraX+80, game_lastPlayer1Health);
+      game_player1->joystickPos = &hw_joystick2Pos;
+      game_player1->joystickButton = &hw_joystick2Button;
+      game_updatePlayerHealth(GAME_PLAYER1_HEALTH_SCOREBOARD_X, PLAYER_INITIAL_HEALTH);
+    }
+    break;
+  }
+
+  return 0;
+}
+
+
+
+static void
+game_waitForMenuExit(int16_t messageAnimId, int16_t offset)
+{
+  if (game_player1) {
+    fighter_data(game_player1)->intelligence = fighter_nullIntelligence;
+  }
+
+  if (game_player2) {
+    fighter_data(game_player2)->intelligence = fighter_nullIntelligence;
+  }
+
+  object_t* ptr = object_activeList;
+
+  while (ptr) {
+    if (ptr->dataType == OBJECT_DATA_TYPE_FIGHTER) {
+      ptr->velocity.x = 0;
+      ptr->velocity.y = 0;
+      fighter_data(ptr)->intelligence = fighter_nullIntelligence;
+    }
+    ptr = ptr->next;
+  }
+
+
+  object_t* gameOver = object_add(OBJECT_ID_GAMEOVER, 0, game_cameraX+(SCREEN_WIDTH/2-offset), -4, 0, messageAnimId, 0, 0, 0, 0);
+  object_set_z(gameOver, 4096);
+
+  uint32_t frame, lastFrame = hw_verticalBlankCount;
+  for (int16_t y = -16; y <= (PLAYAREA_HEIGHT/2)-30; y+=2) {
+    object_set_py_no_checks(gameOver, y*OBJECT_PHYSICS_FACTOR);
+    frame = hw_verticalBlankCount;
+    game_deltaT = frame-lastFrame;
+    lastFrame = frame;
+    game_render(game_deltaT);
+    game_waitForNextFrame();
+    game_switchFrameBuffers();
+  }
+
+  object_t* joystick = object_add(OBJECT_ID_JOYSTICK, 0, game_cameraX+(SCREEN_WIDTH/2-16),PLAYAREA_HEIGHT-32, 0, OBJECT_ANIM_JOYSTICK, 0, 0, 0, 0);
+  object_set_z(joystick, 4096);
+
+  for (int16_t y = PLAYAREA_HEIGHT-32; y >  (PLAYAREA_HEIGHT/2)+32; y-=8) {
+    object_set_py_no_checks(joystick, y*OBJECT_PHYSICS_FACTOR);
+    frame = hw_verticalBlankCount;
+    game_deltaT = frame-lastFrame;
+    lastFrame = frame;
+    game_render(game_deltaT);
+    game_waitForNextFrame();
+    game_switchFrameBuffers();
+  }
+
+
+  do {
+    frame = hw_verticalBlankCount;
+    game_deltaT = frame-lastFrame;
+    lastFrame = frame;
+    game_render(game_deltaT);
+    game_waitForNextFrame();
+    game_switchFrameBuffers();
+    keyboard_read();
+    hw_readJoystick();
+    hw_readJoystick2();
+#ifdef DEBUG
+#ifdef SCRIPTING
+    script_process();
+#endif
+#endif
+  } while(!game_fire());
+}
+
+
+void
+game_setGameOver(void)
+{
+  if (!game_over) {
+    game_over = 1;
+    game_loopControl = GAME_LOOP_CONTROL_GAME_OVER;
+    music_play(MUSIC_GAME_OVER);
+  }
+}
+
+void
+game_setGameComplete(void)
+{
+  if (!game_over) {
+    game_over = 1;
+    game_loopControl = GAME_LOOP_CONTROL_GAME_COMPLETE;
+  }
+}
+
+
+static void
+game_gameOverSequence(void)
+{
+  game_scoreBoardPlayer1Text(I18N_GAME_OVER);
+  game_scoreBoardPlayer2Text(I18N_GAME_OVER);
+
+  if (game_numPlayers == 1) {
+    game_scoreBoardPlayer2Score(I18N_BLANK_GAME_OVER);
+  }
+
+  game_waitForMenuExit(OBJECT_ANIM_GAMEOVER, 35);
+  game_complete();
+}
+
+
+static void
+game_gameCompleteSequence(void)
+{
+  music_play(MUSIC_BOSS_COMPLETE);
+  game_scoreBoardPlayer1Text(I18N_GAME_OVER);
+  game_scoreBoardPlayer2Text(I18N_GAME_OVER);
+
+  game_waitForMenuExit(OBJECT_ANIM_GAMECOMPLETE, 55);
+  game_complete();
+}
+
+
+static void
+game_levelCompleteSequence(void)
+{
+  music_play(MUSIC_BOSS_COMPLETE);
+
+  game_waitForMenuExit(OBJECT_ANIM_LEVELCOMPLETE, 55);
+}
 
 
 static void
@@ -1187,7 +1398,7 @@ game_decrementTime(void)
     }
     if (game_levelTime.value == 0) {
       game_renderCounter();
-      game_setGameOver();      
+      game_setGameOver();
     } else if (game_levelTime.min == 0 &&
 	       game_levelTime.sec10 == 3 &&
 	       game_levelTime.sec == 0) {
@@ -1212,34 +1423,49 @@ game_checkStack(void)
 #endif
 
 
+
 __EXTERNAL void
 game_loop()
 {
+  hw_verticalBlankCount = 0;
   P61_Target = 0;
   P61_Master = 0;
-  
+
+#ifdef DEBUG
+  game_frameBufferData.canary1 = 0x55555555;
+  game_frameBufferData.canary2 = 0xaaaaaaaa;
+#endif
+
   custom->color[0] = 0;
-  hw_interruptsInit(); // Don't enable interrupts until music is set up
-  custom->intena = INTF_SETCLR|INTF_VERTB|INTF_INTEN;
+
   game_ctor();
+
+#if FASTRAM==1
+
+#endif
 
   logo_load();
 
-  music_play(0);
+  music_play(MUSIC_INTRO);
+
+  hw_interruptsInit(); // Don't enable interrupts until music is set up
+  custom->intena = INTF_SETCLR|INTF_VERTB|INTF_INTEN;
+
+  game_calculated25fps = game_25fps = game_check25fps();
 
   logo_display();
 
   music_toggle();
-  
+
   hiscore_ctor();
 
-  menu_command_t menuCommand;
+
  menu:
 #ifdef DEBUG
   game_checkStack();
 #endif
   game_level = 0;
-  game_disableCopperEffects();  
+  game_disableCopperEffects();
   if ((menuCommand = menu_loop(game_over == 1 ? MENU_MODE_HISCORES : MENU_MODE_MENU)) == MENU_COMMAND_EXIT) {
 #if TRACKLOADER==0
     goto done;
@@ -1250,6 +1476,19 @@ game_loop()
     goto menu;
   }
 
+  game_newGame = 1;
+#ifndef RELEASE
+  game_level = game_startLevelIndex;
+#else
+  game_level = 0;
+#endif
+  game_player1Score = 0;
+  game_player2Score = 0;
+  game_lastPlayer1Health = 0;
+  game_lastPlayer2Health = 0;
+
+ restart:
+  game_disableCopperEffects();
   game_init(menuCommand);
 
   for (;;) {
@@ -1258,9 +1497,7 @@ game_loop()
 #endif
     keyboard_read();
     hw_readJoystick();
-    if (game_numPlayers == 2) {
-      hw_readJoystick2();
-    }
+    hw_readJoystick2();
 
     if (!game_paused) {
       record_process();
@@ -1278,7 +1515,7 @@ game_loop()
 #endif
       goto menu;
     }
-      
+
     if (game_paused
 #ifdef DEBUG
 	&& game_singleStep != 1
@@ -1286,26 +1523,26 @@ game_loop()
 	) {
       goto skip;
     }
-    
 
-#ifdef GAME_TURTLE    
+
+#ifdef GAME_TURTLE
     if (game_turtle > 1) {
 #ifndef RELEASE
       custom->color[21] = 0xf00;
 #endif
       game_turtle--;
     } else if (game_turtle == 1) {
-      custom->color[21] = level.palette[21];
+      custom->color[21] = levelFast.palette[21];
       game_turtle--;
     }
 #endif
 
     game_updateScoreboard();
-      
+
 #ifdef DEBUG
     debug_showRasterLine();
 #endif
-    
+
     sound_schedule();
 
     if (game_loopControl != 0) {
@@ -1323,18 +1560,24 @@ game_loop()
       } else if (game_loopControl == GAME_LOOP_CONTROL_GAME_COMPLETE) {
 	game_waitForNextFrame();
 	game_switchFrameBuffers();
-	game_gameCompleteSequence();
+	if (game_level + 1 >= LEVEL_NUM_LEVELS) {
+	  game_gameCompleteSequence();
+	} else {
+	  game_levelCompleteSequence();
+	  game_level++;
+	  goto restart;
+	}
       }
-    }    
+    }
 
     game_waitForNextFrame();
 
     game_switchFrameBuffers();
 
-    
+
     uint32_t frame = hw_verticalBlankCount;
     game_deltaT = hw_verticalBlankCount-game_lastScrollFrame;
-    
+
     game_levelTicCounter += game_deltaT;
     while (game_levelTicCounter >= 50) {
       game_levelTicCounter-=50;
@@ -1344,10 +1587,10 @@ game_loop()
 #ifdef DEBUG
     if (game_singleStep) {
       game_deltaT = 1;
-      game_singleStep = 0;      
+      game_singleStep = 0;
     }
 #endif
-    
+
     game_lastScrollFrame = frame;
     for (uint32_t i = 0; i < game_deltaT; i++) {
       if (game_targetCameraX != game_cameraX) {
@@ -1357,9 +1600,8 @@ game_loop()
     }
 
     conductor_process();
-     
-    alarm_process(game_deltaT);
-    game_render(game_deltaT);    
+
+    game_render(game_deltaT);
 
   skip:;
   }
@@ -1373,11 +1615,11 @@ game_loop()
 }
 
 
-void* memcpy(void* destination, void* source, size_t num)
+void* memcpy(void* destination, const void* source, size_t num)
 {
   size_t i;
   char* d = destination;
-  char* s = source;
+  const char* s = source;
   for (i = 0; i < num; i++) {
     d[i] = s[i];
   }
@@ -1386,11 +1628,11 @@ void* memcpy(void* destination, void* source, size_t num)
 
 
 int
-memcmp(void *s1, void *s2, size_t n)
+memcmp(const void *s1, const void *s2, size_t n)
 {
-  char* p1 = s1;
-  char* p2 = s2;
-  
+  const char* p1 = s1;
+  const char* p2 = s2;
+
   for ( ; n-- ;) {
     if (*p1 != *p2) {
       return (*p1-*p2);
@@ -1400,4 +1642,3 @@ memcmp(void *s1, void *s2, size_t n)
   }
   return 0;
 }
-

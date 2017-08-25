@@ -1,8 +1,7 @@
 #include "game.h"
-// http://www.picturetopeople.org/text_generator/others/3d/3d-perspective-text-effect-creator.html
 
 extern void palette_menuInstall(void);
-extern frame_buffer_t menu_frameBuffer;
+static frame_buffer_t menu_frameBuffer;
 
 #define MENU_START_Y               102
 #define MENU_TOP_COLOR             0xfb5
@@ -10,8 +9,13 @@ extern frame_buffer_t menu_frameBuffer;
 #define MENU_TOP_COLOR_SELECTED    0xffb
 #define MENU_BOTTOM_COLOR_SELECTED 0xfb5
 
-static __section(random_c) uint8_t menu_offscreenBuffer[(SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH*9)+2];
-static frame_buffer_t menu_offscreen = &menu_offscreenBuffer[0];
+#if MUSIC_PARALLEL_LOAD==0
+static __SECTION_RANDOM_C uint8_t menu_offscreenBuffer[(SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH*9)+2];
+#else
+__EXTERNAL void* music_spare_ptr;
+#define menu_offscreenBuffer ((uint8_t*)music_spare_ptr)
+#endif
+static frame_buffer_t menu_offscreen;// = &menu_offscreenBuffer[0];
 static frame_buffer_t menu_scrollerFB;
 static uint16_t menu_scrollerCounter;
 static char* menu_scrollerPtr;
@@ -65,7 +69,7 @@ static uint16_t menuPalette[32] = {
   #include "out/palette_menu.h"
 };
 
-static  __section(data_c)  menu_copper_t menu_copper  = {
+static  __SECTION_DATA_C  menu_copper_t menu_copper  = {
   .bpl1 = {
     BPL1PTL,0x0000,
     BPL1PTH,0x0000,
@@ -128,7 +132,7 @@ menu_credits(void);
 static void
 menu_scrollerRender(void);
 
-static 
+static
 menu_mode_t menu_mode = MENU_MODE_INACTIVE;
 static
 menu_item_t menu_items[MENU_MAX_ITEMS] = {
@@ -186,9 +190,9 @@ menu_item_t menu_items[MENU_MAX_ITEMS] = {
 };
 
 
-hiscore_t* menu_hiscores;  
+hiscore_t* menu_hiscores;
 
-static void 
+static void
 menu_pokeCopperList(frame_buffer_t frameBuffer)
 {
   uint16_t volatile* copperPtr = (uint16_t*)&menu_copper;
@@ -215,33 +219,52 @@ menu_processKeyboard(void)
 
   if (menu_demoCount == 50*28) {
     if (menu_scrollerText != menu_creditsText) {
+      game_demo = 1;
       return MENU_COMMAND_REPLAY;
     } else {
       menu_demoCount = 0;
     }
   }
-  
+
   switch (keyboard_key) {
 #ifdef DEBUG
+  case ' ':
+    menu_scrollerMode = 0xff;
+    return -1;
+    break;
   case 'Z':
     music_next();
     return -1;
     break;
 #endif
   case 'D':
+    game_demo = '1';
+    return MENU_COMMAND_REPLAY;
+    break;
+  case 'L':
+    game_numPlayers = 1;
     return MENU_COMMAND_REPLAY;
     break;
   case 'R':
     return MENU_COMMAND_RECORD;
     break;
+#ifndef RELEASE
   case '1':
-    game_numPlayers = 1;    
-    return MENU_COMMAND_LEVEL;
+    game_numPlayers = 1;
+    game_startLevelIndex = 0;
+    return -1;
     break;
   case '2':
-    game_numPlayers = 2;
-    return MENU_COMMAND_LEVEL;
+    game_numPlayers = 1;
+    game_startLevelIndex = 1;
+    return -1;
     break;
+  case '3':
+    game_numPlayers = 1;
+    game_startLevelIndex = 2;
+    return -1;
+    break;
+#endif
 #if TRACKLOADER==0
   case KEYBOARD_CODE_ESC:
   case 'Q':
@@ -259,19 +282,19 @@ menu_renderText(frame_buffer_t _fb, char* text, uint16_t y)
 {
   uint16_t len = strlen(text);
 
-  frame_buffer_t fb = _fb; 
-  
-  
+  frame_buffer_t fb = _fb;
+
+
   if (len == 0) {
-    gfx_screenWidthBitBlitNoMask(fb, game_offScreenBuffer, 0, y, 0, y, SCREEN_WIDTH, 9);    
+    gfx_screenWidthBitBlitNoMask(fb, game_messageBuffer, 0, y-(SCREEN_HEIGHT-PLAYAREA_HEIGHT), 0, y, SCREEN_WIDTH, 9);
     return;
   }
 
-  gfx_screenWidthBitBlitNoMask(menu_offscreen, game_offScreenBuffer, 0, y, 0, 0, SCREEN_WIDTH, 9);    
+  gfx_screenWidthBitBlitNoMask(menu_offscreen, game_messageBuffer, 0, y-(SCREEN_HEIGHT-PLAYAREA_HEIGHT), 0, 0, SCREEN_WIDTH, 9);
 
   fb = menu_offscreen;
   int16_t _y = 0;
-  
+
   text_drawMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2)+1, _y+1);
   fb += MENU_SCREEN_WIDTH_BYTES;
   text_drawMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2)+1, _y+1);
@@ -284,19 +307,19 @@ menu_renderText(frame_buffer_t _fb, char* text, uint16_t y)
 
 
   fb = menu_offscreen;
-  
+
   text_drawMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), _y);
   fb += MENU_SCREEN_WIDTH_BYTES;
-  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), _y);  
+  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), _y);
   fb += MENU_SCREEN_WIDTH_BYTES;
-  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), _y);  
+  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), _y);
   fb += MENU_SCREEN_WIDTH_BYTES;
-  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), _y);  
+  text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), _y);
   fb += MENU_SCREEN_WIDTH_BYTES;
   text_clearMaskedText8Blitter(fb, text, (MENU_SCREEN_WIDTH/2)-(len<<2), _y);
 
 
-  gfx_screenWidthBitBlitNoMask(_fb, menu_offscreen, 0, 0, 0, y, SCREEN_WIDTH, 9);    
+  gfx_screenWidthBitBlitNoMask(_fb, menu_offscreen, 0, 0, 0, y, SCREEN_WIDTH, 9);
 }
 
 
@@ -305,32 +328,32 @@ menu_fillRect(frame_buffer_t fb, uint16_t x, uint16_t y, uint16_t w, uint16_t h,
 {
   static custom_t _custom = CUSTOM;
   static uint16_t startBitPatterns[] = { 0xffff,
-			       0x7fff, 0x3fff, 0x1fff, 0x0fff, 
+			       0x7fff, 0x3fff, 0x1fff, 0x0fff,
 			       0x07ff, 0x03ff, 0x01ff, 0x00ff,
 			       0x007f, 0x003f, 0x001f, 0x000f,
 			       0x0007, 0x0003, 0x0001, 0x0000 };
 
-  static uint16_t endBitPatterns[] = { 0xffff, 
+  static uint16_t endBitPatterns[] = { 0xffff,
 				    0x8000, 0xc000, 0xe000, 0xf000,
 				    0xf800, 0xfc00, 0xfe00, 0xff00,
 				    0xff80, 0xffc0, 0xffe0, 0xfff0,
 				    0xfff8, 0xfffc, 0xfffe, 0xffff};
 
-  uint16_t startMask = startBitPatterns[x & 0xf]; 
-  uint16_t endMask = endBitPatterns[(x+w) & 0xf]; 
+  uint16_t startMask = startBitPatterns[x & 0xf];
+  uint16_t endMask = endBitPatterns[(x+w) & 0xf];
   uint32_t widthWords = (((x&0x0f)+w)+15)>>4;
-  
+
   if (widthWords == 1) {
     startMask &= endMask;
   }
-  
+
   fb += y*(MENU_SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)/*gfx_dyOffsetsLUT[y]*/ + (x>>3);
 
   int32_t colorInPlane;
   for (int32_t plane = 0; plane < SCREEN_BIT_DEPTH; plane++) {
     colorInPlane = (1<<plane) & color;
     hw_waitBlitter();
-    
+
     _custom->bltcon0 = (SRCC|DEST|0xca);
     _custom->bltcon1 = 0;
     _custom->bltafwm = 0xffff;
@@ -344,23 +367,23 @@ menu_fillRect(frame_buffer_t fb, uint16_t x, uint16_t y, uint16_t w, uint16_t h,
     _custom->bltcpt = (uint8_t*)fb;
     _custom->bltdpt = (uint8_t*)fb;
     _custom->bltsize = h<<6 | 1;
-    
+
     if (widthWords > 1) {
-      hw_waitBlitter();    
+      hw_waitBlitter();
       _custom->bltcon0 = (SRCC|DEST|0xca);
       _custom->bltadat = endMask;
       _custom->bltcpt = (uint8_t*)fb+((widthWords-1)<<1);
       _custom->bltdpt = (uint8_t*)fb+((widthWords-1)<<1);
       _custom->bltsize = h<<6 | 1;
     }
-    
+
     if (widthWords > 2) {
-      hw_waitBlitter();    
+      hw_waitBlitter();
       _custom->bltcon0 = (DEST|(colorInPlane ? 0xff : 0x00));
       _custom->bltdmod = (MENU_SCREEN_WIDTH_BYTES*(SCREEN_BIT_DEPTH-1))+(MENU_SCREEN_WIDTH_BYTES-((widthWords-2)<<1));
       _custom->bltdpt = (uint8_t*)fb+2;
       _custom->bltsize = h<<6 | (widthWords-2);
-    }    
+    }
 
     fb += MENU_SCREEN_WIDTH_BYTES;
   }
@@ -369,11 +392,8 @@ menu_fillRect(frame_buffer_t fb, uint16_t x, uint16_t y, uint16_t w, uint16_t h,
 static void
 menu_redraw(uint16_t i)
 {
-  frame_buffer_t fb = game_onScreenBuffer;
+  frame_buffer_t fb = game_menuBuffer;
   int16_t y = MENU_START_Y + (i*16);
-
-
-  //  hw_waitVerticalBlank();
 
   if (menu_mode == MENU_MODE_MENU) {
     menu_renderText(fb, menu_items[i].text, y);
@@ -394,12 +414,13 @@ static void menu_refresh(void)
 {
   for (uint16_t i = 0; i < MENU_MAX_ITEMS; i++) {
     menu_redraw(i);
-  }    
+  }
 }
 
 static void
 menu_showHiScores(void)
 {
+  sound_playSound(SOUND_MENU);
   menu_mode = MENU_MODE_HISCORES;
   menu_select(0);
   menu_refresh();
@@ -460,7 +481,7 @@ menu_render(void)
   menu_updateNumPlayersMenu();
   menu_updateModeMenu();
 
-  frame_buffer_t fb = game_onScreenBuffer;
+  frame_buffer_t fb = game_menuBuffer;
   uint16_t y = MENU_START_Y;
 
   switch (menu_mode) {
@@ -489,7 +510,7 @@ menu_toggleMusic(void)
 {
   music_toggle();
   menu_update_music_menu();
-  sound_playSound(SOUND_MENU);  
+  sound_playSound(SOUND_MENU);
   menu_redraw(menu_selected);
 }
 
@@ -498,7 +519,7 @@ menu_toggleNumPlayers(void)
 {
   game_numPlayers = game_numPlayers == 1 ? 2 : 1;
   menu_updateNumPlayersMenu();
-  sound_playSound(SOUND_MENU);  
+  sound_playSound(SOUND_MENU);
   menu_redraw(menu_selected);
 }
 
@@ -508,7 +529,7 @@ menu_toggleMode(void)
 {
   game_difficulty = game_difficulty == GAME_DIFFICULTY_HARD ? GAME_DIFFICULTY_EASY : GAME_DIFFICULTY_HARD;
   menu_updateModeMenu();
-  sound_playSound(SOUND_MENU);  
+  sound_playSound(SOUND_MENU);
   menu_redraw(menu_selected);
 }
 
@@ -516,12 +537,11 @@ menu_toggleMode(void)
 static void
 menu_select(uint16_t i)
 {
-  //  hw_waitVerticalBlank();
   menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR;
   menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR;
   menu_selected = i;
   menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR_SELECTED;
-  menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR_SELECTED;    
+  menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR_SELECTED;
 }
 
 static void
@@ -529,7 +549,6 @@ menu_up(void)
 {
   if (menu_mode == MENU_MODE_MENU && menu_selected > 0) {
     sound_playSound(SOUND_MENU);
-    //    hw_waitVerticalBlank();
     menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR;
     menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR;
     menu_selected--;
@@ -543,14 +562,13 @@ static void
 menu_down(void)
 {
   if (menu_mode == MENU_MODE_MENU && menu_selected < MENU_NUM_ITEMS-1) {
-    sound_playSound(SOUND_MENU);    
-    //    hw_waitVerticalBlank();
+    sound_playSound(SOUND_MENU);
     menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR;
     menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR;
     menu_selected++;
     menu_copper.lines[menu_selected].color1[1] = MENU_TOP_COLOR_SELECTED;
     menu_copper.lines[menu_selected].color2[1] = MENU_BOTTOM_COLOR_SELECTED;
-    menu_demoCount = 0;    
+    menu_demoCount = 0;
   }
 }
 
@@ -562,7 +580,7 @@ menu_scroller(char* text)
   case 0:
   case 2:
     menu_scrollerMode = 1;
-    menu_scrollerFB = game_onScreenBuffer;  
+    menu_scrollerFB = game_menuBuffer;
     menu_scrollerFB += (((SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)*256));
     menu_scrollerCounter = 0;
     menu_scrollerPtr = text;
@@ -574,25 +592,29 @@ menu_scroller(char* text)
     menu_scrollerText = text;
     menu_scrollerCounter = 0;
     break;
-  } 
+  }
 }
 
 
 __EXTERNAL menu_command_t
 menu_loop(menu_mode_t mode)
 {
+  music_play(MUSIC_INTRO);
+  menu_offscreen = &menu_offscreenBuffer[0];
+  extern uint8_t menu_menuBitplanes;
+  menu_frameBuffer = &menu_menuBitplanes;
   menu_command_t command;
   uint16_t done;
-  volatile uint16_t scratch;
 
+  game_demo = 0;
   menu_demoCount = 0;
-  menu_lastJoystick = 0;  
+  menu_lastJoystick = 0;
   menu_scrollerMode = 0;
   menu_scroller(menu_helpText);
 #ifdef GAME_STARS
   custom->dmacon = DMAF_SPRITE;
 #endif
-  
+
   menu_mode = mode;
 
   menu_hiscores = hiscore_render();
@@ -610,10 +632,19 @@ menu_loop(menu_mode_t mode)
   }
 
   game_switchFrameBuffers();
-  
-  disk_loadData((void*)game_offScreenBuffer, (void*)menu_frameBuffer, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
 
-  //memset((void*)game_offScreenBuffer, 0, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
+
+#ifdef GAME_COMPRESS_DATA
+  extern uint8_t menu_menuBitplanes;
+  extern uint8_t menu_menuBitplanesEnd;
+  disk_loadCompressedData((void*)game_menuBuffer, (void*)menu_frameBuffer, &menu_menuBitplanesEnd-&menu_menuBitplanes, 0);
+#else
+  disk_loadData((void*)game_menuBuffer, (void*)menu_frameBuffer, MENU_SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*SCREEN_BIT_DEPTH);
+#endif
+
+#ifndef GAME_TRIPLE_BUFFER
+  game_scoreboardLoaded = 0;
+#endif
 
   if (!menu_first) {
     while (hw_verticalBlankCount < startFrame+200) {
@@ -621,26 +652,26 @@ menu_loop(menu_mode_t mode)
     }
     menu_first = 1;
   }
-  
+
   message_screenOff();
 
   custom->dmacon = DMAF_RASTER;
 
-  game_switchFrameBuffers();  
+  game_switchFrameBuffers();
 
-  for (uint16_t y = 0; y < SCREEN_HEIGHT; y += SCREEN_HEIGHT/8) {
-    gfx_screenWidthBitBlitNoMask(game_offScreenBuffer, game_onScreenBuffer, 0, y, 0, y, SCREEN_WIDTH, SCREEN_HEIGHT/8);
+  for (uint16_t y = 0; y < PLAYAREA_HEIGHT; y += PLAYAREA_HEIGHT/8) {
+    gfx_screenWidthBitBlitNoMask(game_messageBuffer, game_menuBuffer, 0, y+(SCREEN_HEIGHT-PLAYAREA_HEIGHT), 0, y, SCREEN_WIDTH, PLAYAREA_HEIGHT/8);
   }
 
   palette_black();
 
   uint16_t volatile* copperPtr = (uint16_t*)&menu_copper;
 
-  hw_waitBlitter();  
-  custom->dmacon = (DMAF_COPPER|DMAF_RASTER);    
-  
+  hw_waitBlitter();
+  custom->dmacon = (DMAF_COPPER|DMAF_RASTER);
+
   /* set up playfield */
-  
+
   custom->diwstrt = (RASTER_Y_START<<8)|RASTER_X_START;
   custom->diwstop = ((SCREEN_RASTER_Y_STOP-256)<<8)|((RASTER_X_START+SCREEN_WIDTH-16)-256);
 
@@ -651,11 +682,10 @@ menu_loop(menu_mode_t mode)
   custom->bpl1mod = (MENU_SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-(MENU_SCREEN_WIDTH_BYTES);
   custom->bpl2mod = (MENU_SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)-(MENU_SCREEN_WIDTH_BYTES);
 
-  menu_pokeCopperList(game_onScreenBuffer);  
+  menu_pokeCopperList(game_menuBuffer);
   /* install copper list, then enable dma and selected interrupts */
   custom->cop1lc = (uint32_t)copperPtr;
   //  scratch = custom->copjmp1;
-  USE(scratch);
 
   custom->dmacon = (DMAF_SETCLR|DMAF_COPPER|DMAF_RASTER);
 
@@ -666,7 +696,7 @@ menu_loop(menu_mode_t mode)
   hw_waitVerticalBlank();
 
   command = MENU_COMMAND_PLAY;
-  done = 0;  
+  done = 0;
 
   while (!done) {
     hw_readJoystick();
@@ -678,17 +708,19 @@ menu_loop(menu_mode_t mode)
 #endif
 
 #ifdef DEBUG
-    static uint16_t first = 1;
-    if (first) {
-      first = 0;
+    if (game_startReplay) {
+      game_difficulty = GAME_DIFFICULTY_HARD;
+      game_scoreboardLoaded = 0;
+      game_numPlayers = 1;
       command = MENU_COMMAND_REPLAY;
       done = 1;
     }
 #endif
-    
-      
+
+
     if (game_fire()) {
       if (menu_mode == MENU_MODE_HISCORES) {
+	sound_playSound(SOUND_MENU);
 	menu_mode = MENU_MODE_MENU;
 	menu_refresh();
       } else {
@@ -699,21 +731,21 @@ menu_loop(menu_mode_t mode)
 	  menu_items[menu_selected].callback();
 	}
       }
-    }    
+    }
 
-    
+
     if (JOYSTICK_DOWN()) {
       if (menu_lastJoystick != JOYSTICK_POS_DOWN) {
 	menu_down();
       }
     } else if (JOYSTICK_UP()) {
-      if (menu_lastJoystick != JOYSTICK_POS_UP) {      
+      if (menu_lastJoystick != JOYSTICK_POS_UP) {
 	menu_up();
       }
     }
 
     menu_lastJoystick = hw_joystickPos;
-    
+
     int16_t kbCommand;
     if ((kbCommand = menu_processKeyboard()) != -1) {
       command = kbCommand;
@@ -741,16 +773,18 @@ menu_loop(menu_mode_t mode)
 static void
 menu_scrollerRender(void)
 {
-  volatile struct Custom* _custom = CUSTOM;    
+  volatile struct Custom* _custom = CUSTOM;
   int32_t shift = 1;
 
-  if (menu_scrollerMode == 2) {
+  if (menu_scrollerMode == 0xff) {
+    shift = 15;
+  } else if (menu_scrollerMode == 2) {
     shift = 15;
     if (menu_scrollerCounter++ > 25) {
       menu_scrollerMode = 1;
       menu_scrollerCounter = 0;
     }
-  } else {  
+  } else {
     if (menu_scrollerCounter == 7) {
       char buffer[2] = {0, 0};
       if (*menu_scrollerPtr == 0) {
@@ -759,26 +793,26 @@ menu_scrollerRender(void)
       buffer[0] = *menu_scrollerPtr;
       menu_scrollerPtr++;
       if (menu_scrollerMode == 1) {
-	text_drawMaskedText8Blitter(game_onScreenBuffer, buffer, SCREEN_WIDTH-8, SCREEN_HEIGHT-11);
+	text_drawMaskedText8Blitter(game_menuBuffer, buffer, SCREEN_WIDTH-8, SCREEN_HEIGHT-11);
       }
       menu_scrollerCounter = 0;
     } else {
       menu_scrollerCounter++;
     }
   }
-  
-  hw_waitBlitter();   
+
+  hw_waitBlitter();
   _custom->bltafwm = 0x0;
   _custom->bltalwm = 0xffff;
   _custom->bltcon0 = (SRCA|DEST|0xf0|shift<<ASHIFTSHIFT);
   _custom->bltcon1 = shift<<BSHIFTSHIFT|BC1F_DESC;
   _custom->bltamod = 0;
   _custom->bltdmod = 0;
-  
+
   _custom->bltapt = (uint8_t*)menu_scrollerFB;
   _custom->bltdpt = (uint8_t*)menu_scrollerFB;
-  
-  hw_waitVerticalBlank();    
+
+  hw_waitVerticalBlank();
   _custom->bltsize = ((10*SCREEN_BIT_DEPTH)<<6) | (SCREEN_WIDTH_WORDS);
 }
 
@@ -786,11 +820,12 @@ menu_scrollerRender(void)
 void
 menu_credits(void)
 {
+  sound_playSound(SOUND_MENU);
   if (menu_scrollerMode != 2) {
     if (menu_scrollerText == menu_creditsText) {
       menu_scroller(menu_helpText);
     } else {
-      menu_scroller(menu_creditsText);    
+      menu_scroller(menu_creditsText);
     }
   }
 }

@@ -1,5 +1,5 @@
 	include "includes.i"
-	xref font
+	xdef font
 	xdef _fontPtr
 
 FONT_HEIGHT		equ 8
@@ -8,7 +8,8 @@ FONTMAP_WIDTH_BYTES	equ 32
 _SCREEN_BIT_DEPTH	equ 5
 FONT_BIT_DEPTH          equ 1
 _BITPLANE_WIDTH_BYTES	equ 320/8	
-	
+
+	section	.text
 CharAddress:	macro
 	dc.l	font+(((\1)/FONTMAP_WIDTH_BYTES)*(FONT_HEIGHT*FONTMAP_WIDTH_BYTES*FONT_BIT_DEPTH))+((\1)-(((\1)/FONTMAP_WIDTH_BYTES)*FONTMAP_WIDTH_BYTES))
 	endm
@@ -179,9 +180,9 @@ staticBuffer:
         dc.b    "000000000"
         dc.b    0
 
-	if TRACKLOADER=0
-	section data_c
-	endif
+	data_c
+	xdef _text_fontData
+_text_fontData:	
 font:
 	incbin	"out/font8x8.bin"
 _fontPtr:

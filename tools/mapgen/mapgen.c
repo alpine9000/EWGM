@@ -20,10 +20,10 @@ get_tile_address(tmx_map *m, unsigned int gid)
   }
 
   int ts_count = 0;
-  tmx_tileset** ta;
+  tmx_tileset_list** ta;
 
   {
-    tmx_tileset* t = m->ts_head;
+    tmx_tileset_list* t = m->ts_head;
     while (t != 0) {
       t = t->next;
       ts_count++;
@@ -43,19 +43,19 @@ get_tile_address(tmx_map *m, unsigned int gid)
 
   unsigned baseAddress = 0;
   for (int y = 0; y < ts_count; y++) {
-    tmx_tileset* ts = ta[y];    
-    for (unsigned int i = 0; i < ts->tilecount; i++) {
-      tmx_tile* t = ts->tiles;
+    tmx_tileset_list* ts = ta[y];
+    for (unsigned int i = 0; i < ts->tileset->tilecount; i++) {
+      tmx_tile* t = ts->tileset->tiles;
       if (t[i].id+ts->firstgid == gid) {
-	unsigned address = baseAddress + (t[i].ul_y * ((ts->image->width/8) * config.bitDepth)) + (t[i].ul_x/8);
+	unsigned address = baseAddress + (t[i].ul_y * ((ts->tileset->image->width/8) * config.bitDepth)) + (t[i].ul_x/8);
 	if (config.verbose) {
-	  printf("%s - baseAddress = %d address = %d\n", ts->name, baseAddress, address);
+	  printf("%s - baseAddress = %d address = %d\n", ts->tileset->name, baseAddress, address);
 	  dump_prop(t[i].properties, 1);
 	}
 	return address;
       }
     }
-    baseAddress += ((ts->image->width/8) * config.bitDepth * ts->image->height);
+    baseAddress += ((ts->tileset->image->width/8) * config.bitDepth * ts->tileset->image->height);
   }
 
   return 0;
@@ -70,10 +70,10 @@ get_tile_index(tmx_map *m, unsigned int gid)
   }
 
   int ts_count = 0;
-  tmx_tileset** ta;
+  tmx_tileset_list** ta;
 
   {
-    tmx_tileset* t = m->ts_head;
+    tmx_tileset_list* t = m->ts_head;
     while (t != 0) {
       t = t->next;
       ts_count++;
@@ -90,12 +90,12 @@ get_tile_index(tmx_map *m, unsigned int gid)
 
 
   for (int y = 0; y < ts_count; y++) {
-    tmx_tileset* ts = ta[y];    
-    for (unsigned int i = 0; i < ts->tilecount; i++) {
-      tmx_tile* t = ts->tiles;
+    tmx_tileset_list* ts = ta[y];
+    for (unsigned int i = 0; i < ts->tileset->tilecount; i++) {
+      tmx_tile* t = ts->tileset->tiles;
       if (t[i].id+ts->firstgid == gid) {
 	if (config.verbose) {
-	  printf("%s - index = %d\n", ts->name, t[i].id);
+	  printf("%s - index = %d\n", ts->tileset->name, t[i].id);
 	}
 	return t[i].id;
       }
@@ -114,10 +114,10 @@ get_tile_spriteId(tmx_map *m, unsigned int gid)
   }
 
   int ts_count = 0;
-  tmx_tileset** ta;
+  tmx_tileset_list** ta;
 
   {
-    tmx_tileset* t = m->ts_head;
+    tmx_tileset_list* t = m->ts_head;
     while (t != 0) {
       t = t->next;
       ts_count++;
@@ -134,24 +134,25 @@ get_tile_spriteId(tmx_map *m, unsigned int gid)
 
 
   for (int y = 0; y < ts_count; y++) {
-    tmx_tileset* ts = ta[y];    
-    for (unsigned int i = 0; i < ts->tilecount; i++) {
-      tmx_tile* t = ts->tiles;
+    tmx_tileset_list* ts = ta[y];
+    for (unsigned int i = 0; i < ts->tileset->tilecount; i++) {
+      tmx_tile* t = ts->tileset->tiles;
       if (t[i].id+ts->firstgid == gid) {
-	tmx_property *p = t[i].properties;
+	/*	tmx_property *p = t[i].properties;
 	while (p) {
 	  if (strcmp(p->name, "SpriteId") == 0) {
 	    break;
 	  }
 	  p = p->next;
-	}
+	  }*/
+	tmx_property *p = tmx_get_property(t[i].properties, "SpriteId");
 	char* name = zero;
 	if (p) {
 	  name = p->value.string;
 	  if (config.verbose) {
-	    printf("%s - prop = %s\n", ts->name, name);
-	  } 
-	} 
+	    printf("%s - prop = %s\n", ts->tileset->name, name);
+	  }
+	}
 	return name;
       }
     }
@@ -160,7 +161,7 @@ get_tile_spriteId(tmx_map *m, unsigned int gid)
   return zero;
 }
 
-static void 
+static void
 output_map_asm(tmx_map *m, tmx_layer *l)
 {
   if (!l) {
@@ -176,24 +177,24 @@ output_map_asm(tmx_map *m, tmx_layer *l)
 
   if (l->type == L_LAYER && l->content.gids) {
     for (unsigned int x = 0; x < m->width; x++) {
-      if (config.c_output) {      
+      if (config.c_output) {
 	fprintf(fp, "{");
       }
       for (unsigned int y = 0; y < m->height; y++) {
-	
+
 	if (config.c_output) {
 	  fprintf(fp, "0x%x,", get_tile_address(m, l->content.gids[(y*m->width)+x] & TMX_FLIP_BITS_REMOVAL));
 	} else {
 	  fprintf(fp, "\tdc.w $%x\n", get_tile_address(m, l->content.gids[(y*m->width)+x] & TMX_FLIP_BITS_REMOVAL));
-	}	  
+	}
       }
-      if (config.c_output) {      
+      if (config.c_output) {
 	fprintf(fp, "},\n");
       }
     }
   }
 
-  if (config.c_output) {      
+  if (config.c_output) {
     fprintf(fp, "},\n");
   }
   fclose(fp);
@@ -206,7 +207,7 @@ output_map_asm(tmx_map *m, tmx_layer *l)
 }
 
 
-static void 
+static void
 output_map_indexes(tmx_map *m, tmx_layer *l)
 {
   if (!l) {
@@ -253,25 +254,25 @@ output_map_sprites(tmx_map *m, tmx_layer *l)
 
   if (l->type == L_LAYER && l->content.gids) {
     for (unsigned int x = 0; x < m->width; x++) {
-	
-      if (config.c_output) {      
+
+      if (config.c_output) {
 	fprintf(fp, "{");
       }
       for (unsigned int y = 0; y < m->height; y++) {
-	
+
 	if (config.c_output) {
 	  fprintf(fp, "%s,", get_tile_spriteId(m, l->content.gids[(y*m->width)+x] & TMX_FLIP_BITS_REMOVAL));
 	} else {
 	   fprintf(fp, "\tdc.w %s\n", get_tile_spriteId(m, l->content.gids[(y*m->width)+x] & TMX_FLIP_BITS_REMOVAL));
-	}	  
+	}
       }
-      if (config.c_output) {      
+      if (config.c_output) {
 	fprintf(fp, "},\n");
       }
     }
   }
 
-  if (config.c_output) {      
+  if (config.c_output) {
     //    fprintf(fp, "},\n");
   }
   fclose(fp);
@@ -285,8 +286,8 @@ output_map_sprites(tmx_map *m, tmx_layer *l)
 
 
 
-static void 
-process_map(tmx_map *m) 
+static void
+process_map(tmx_map *m)
 {
     output_map_asm(m, m->ly_head);
     output_map_sprites(m, m->ly_head);
@@ -297,7 +298,7 @@ process_map(tmx_map *m)
 void
 usage()
 {
-  fprintf(stderr, 
+  fprintf(stderr,
 	  "%s:  --input <input.tmx> --depth <num bitplanes>\n"\
 	  "options:\n"\
 	  "  --c\n"\
@@ -307,8 +308,8 @@ usage()
 }
 
 
-int 
-main(int argc, char *argv[]) 
+int
+main(int argc, char *argv[])
 {
   int c;
   tmx_map *m;
@@ -324,46 +325,46 @@ main(int argc, char *argv[])
       {"depth",   required_argument, 0, 'd'},
       {0, 0, 0, 0}
     };
-    
+
     int option_index = 0;
-   
+
     c = getopt_long (argc, argv, "i:?", long_options, &option_index);
-    
+
     if (c == -1)
       break;
-    
+
     switch (c) {
     case 0:
       break;
     case 'i':
       config.inputFile = optarg;
-      break;	
+      break;
     case 'd':
       sscanf(optarg, "%d", &config.bitDepth);
-      break;	
+      break;
     case '?':
       usage();
-      break;	
+      break;
     default:
       usage();
       break;
     }
   }
-  
+
 
   if (config.inputFile == 0 || config.bitDepth == 0) {
     usage();
     abort();
-  }  
+  }
 
   m = tmx_load(config.inputFile);
 
   if (!m) {
     tmx_perror("error");
   }
-  
+
   process_map(m);
   tmx_map_free(m);
-  
+
   return EXIT_SUCCESS;
 }

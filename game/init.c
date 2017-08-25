@@ -1,22 +1,31 @@
 #include "game.h"
 
 __EXTERNAL void
-memory_ctor(void) 
+memory_ctor(void)
 {
 #if TRACKLOADER==1
   extern char startBSS;
   extern char endBSS;
   //  extern char startRandom;
-  //  extern char endRandom;  
-
+  //  extern char endRandom;
+  
   memset(&startBSS, 0x0, &endBSS-&startBSS);
-  //  memset(&startRandom, 0x0, &endRandom-&startRandom);  
+  //  memset(&startRandom, 0x0, &endRandom-&startRandom);
+
+#if FASTRAM==1
+  extern char startBSSChip;
+  extern char endBSSChip;
+  //  extern char startRandom;
+  //  extern char endRandom;
+  
+  memset(&startBSSChip, 0x0, &endBSSChip-&startBSSChip);
+#endif
 #endif
 }
 
 __EXTERNAL void
 init_amiga(void) 
-{
+{  
   custom->dmacon = 0x7ff;  /* disable all dma */
   custom->intena = 0x7fff; /* disable all interrupts */
 
@@ -43,5 +52,5 @@ init_amiga(void)
   
 #ifdef GAME_KEYBOARD_ENABLED
   keyboard_ctor();
-#endif
+#endif  
 }

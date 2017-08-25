@@ -1,63 +1,5 @@
 #include "game.h"
 
-#ifdef HIT_HUNTER
-
-static object_t*
-player_target(void)
-{
-  object_t* ptr = object_activeList;
-
-  while (ptr) {
-    if (ptr->id == OBJECT_ID_ENEMY) {
-      return ptr;
-    }
-    ptr = ptr->next;
-  }
-
-  return 0;
-}
-
-
-static uint16_t
-player_artificialIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
-{
-  USE(deltaT);
-  uint16_t attack = 0;
-  
-  if (object_get_state(ptr) != OBJECT_STATE_ALIVE) {
-    return 0;
-  }
-  
-  //  uint32_t rand = random();
-  object_t* enemy = player_target();
-  
-  if (!enemy) {
-    ptr->velocity.x = PLAYER_SPEED_X*OBJECT_PHYSICS_FACTOR;
-    ptr->velocity.y = 0;
-    return 0;
-  }
-  
-  //  object_collision_t collision;
-
-  extern int16_t enemy_strikingDistanceX(object_t* a, object_t* b)  ;
-  ptr->velocity.x = enemy_strikingDistanceX(enemy, ptr);
-  ptr->velocity.x *= 4;
-  if (abs(object_y(ptr)-object_y(enemy)) <= data->attackRangeY) {
-    if (ptr->velocity.x == 0) {
-      attack = 1;
-    } 
-    ptr->velocity.y = 0;
-  } else if (object_y(ptr) < object_y(enemy)) {
-    ptr->velocity.y = PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
-  } else if (object_y(ptr) > object_y(enemy)) {
-    ptr->velocity.y = -data->speed;
-  }
-  
-  return attack;
-}
-
-#endif
-
 static void
 player_processJoystick(object_t * ptr, uint8_t joystickPos)
 {
@@ -67,7 +9,7 @@ player_processJoystick(object_t * ptr, uint8_t joystickPos)
     ptr->velocity.y = 0;
     break;
   case JOYSTICK_POS_LEFT:
-    ptr->velocity.y = 0;    
+    ptr->velocity.y = 0;
     ptr->velocity.x = -PLAYER_SPEED_X*OBJECT_PHYSICS_FACTOR;
     break;
   case JOYSTICK_POS_RIGHT:
@@ -76,15 +18,15 @@ player_processJoystick(object_t * ptr, uint8_t joystickPos)
     break;
   case JOYSTICK_POS_UP:
     ptr->velocity.y = -PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
-    ptr->velocity.x = 0;    
+    ptr->velocity.x = 0;
     break;
   case JOYSTICK_POS_DOWN:
     ptr->velocity.y = PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
-    ptr->velocity.x = 0;    
-    break;    
+    ptr->velocity.x = 0;
+    break;
   case JOYSTICK_POS_UPRIGHT:
     ptr->velocity.y = -PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
-    ptr->velocity.x = PLAYER_SPEED_X*OBJECT_PHYSICS_FACTOR;    
+    ptr->velocity.x = PLAYER_SPEED_X*OBJECT_PHYSICS_FACTOR;
     break;
   case JOYSTICK_POS_UPLEFT:
     ptr->velocity.y = -PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
@@ -92,7 +34,7 @@ player_processJoystick(object_t * ptr, uint8_t joystickPos)
     break;
   case JOYSTICK_POS_DOWNRIGHT:
     ptr->velocity.y = PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
-    ptr->velocity.x = PLAYER_SPEED_X*OBJECT_PHYSICS_FACTOR;    
+    ptr->velocity.x = PLAYER_SPEED_X*OBJECT_PHYSICS_FACTOR;
     break;
   case JOYSTICK_POS_DOWNLEFT:
     ptr->velocity.y = PLAYER_SPEED_Y*OBJECT_PHYSICS_FACTOR;
@@ -103,16 +45,12 @@ player_processJoystick(object_t * ptr, uint8_t joystickPos)
 
 
 uint16_t
-player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
+player_intelligence(__UNUSED uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
-#ifdef HIT_HUNTER
-  return player_artificialIntelligence(deltaT, ptr, data);
-#endif
-  
   if (data->attackCount > 0 && data->attackJump) {
     return 0;
   }
-      
+
   if (object_get_state(ptr) != OBJECT_STATE_ALIVE) {
     if (object_get_state(ptr) == OBJECT_STATE_FLASHING && data->health > 0) {
       goto ok;
@@ -121,28 +59,20 @@ player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   }
 
  ok:
-  USE(data);
-  USE(deltaT);
+  {}
   uint16_t attack = 0;
   uint16_t buttonDown = 0;
   uint16_t joyUp = 0;
 
-  
-  if (ptr->id == OBJECT_ID_PLAYER1) {
-    player_processJoystick(ptr, hw_joystickPos);
-    buttonDown = hw_joystickButton & 0x1;
-    joyUp = hw_joystickPos  == JOYSTICK_POS_UP || hw_joystickPos == JOYSTICK_POS_UPRIGHT || hw_joystickPos == JOYSTICK_POS_UPLEFT;
-  } else if (ptr->id == OBJECT_ID_PLAYER2) {
-    player_processJoystick(ptr, hw_joystick2Pos);
-    buttonDown = hw_joystick2Button & 0x1;
-    joyUp = hw_joystick2Pos  == JOYSTICK_POS_UP || hw_joystick2Pos == JOYSTICK_POS_UPRIGHT || hw_joystick2Pos == JOYSTICK_POS_UPLEFT;    
-  }
+  player_processJoystick(ptr, *ptr->joystickPos);
+  buttonDown = *ptr->joystickButton & 0x1;
+  joyUp = *ptr->joystickPos  == JOYSTICK_POS_UP || *ptr->joystickPos == JOYSTICK_POS_UPRIGHT || *ptr->joystickPos == JOYSTICK_POS_UPLEFT;
 
   if (buttonDown && data->buttonReleased) {
     if (joyUp) {
       data->attackType = 2;
     }
-      
+
     attack = 1;
   }
 
@@ -150,9 +80,10 @@ player_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
     data->buttonReleased = 1;
   }
 
+
   return attack;
 }
-    
+
 
 fighter_attack_config_t player_attackConfig[] = {
   [OBJECT_PUNCH_LEFT1] = {
@@ -171,7 +102,7 @@ fighter_attack_config_t player_attackConfig[] = {
     .hitAnimTic = 0,
     .vx = 0,
     .vy = 0,
-    .jump = 0    
+    .jump = 0
   },
   [OBJECT_PUNCH_RIGHT1] =  {
     .rangeX = FIGHTER_LONG_PUNCH_RANGE,
@@ -180,7 +111,7 @@ fighter_attack_config_t player_attackConfig[] = {
     .hitAnimTic = 0,
     .vx = 0,
     .vy = 0,
-    .jump = 0    
+    .jump = 0
   },
   [OBJECT_PUNCH_RIGHT2] =  {
     .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
@@ -189,45 +120,104 @@ fighter_attack_config_t player_attackConfig[] = {
     .hitAnimTic = 0,
     .vx = 0,
     .vy = 0,
-    .jump = 0    
+    .jump = 0
   } ,
   [OBJECT_KICK_LEFT] =  {
     .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
     .dammage = PLAYER_ATTACK_DAMMAGE*2,
-    .durationTics = ENEMY_ATTACK_DURATION_TICS,
-    .hitAnimTic = ENEMY_BOSS_ATTACK_TICS_PER_FRAME,
+    .durationTics = ENEMY_DEFAULT_ATTACK_DURATION_TICS,
+    .hitAnimTic = LEVEL1_BOSS_ATTACK_TICS_PER_FRAME,
     .vx = -(PLAYER_SPEED_X/2)*OBJECT_PHYSICS_FACTOR,
     .vy = -4*OBJECT_PHYSICS_FACTOR,
-    .jump = 1    
+    .jump = 1
   } ,
   [OBJECT_KICK_RIGHT] =  {
     .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
     .dammage = PLAYER_ATTACK_DAMMAGE*2,
-    .durationTics = ENEMY_ATTACK_DURATION_TICS,
-    .hitAnimTic = ENEMY_BOSS_ATTACK_TICS_PER_FRAME,
+    .durationTics = ENEMY_DEFAULT_ATTACK_DURATION_TICS,
+    .hitAnimTic = LEVEL1_BOSS_ATTACK_TICS_PER_FRAME,
     .vx = (PLAYER_SPEED_X/2)*OBJECT_PHYSICS_FACTOR,
     .vy = -4*OBJECT_PHYSICS_FACTOR,
-    .jump = 1    
-  } 
+    .jump = 1
+  }
 };
-    
-object_t*
-player_init(uint16_t id, uint16_t animId, int16_t x)
+
+static void
+player_player1KillCallback(__UNUSED object_t* me, __UNUSED object_t* victim)
 {
-  object_t* ptr = fighter_add(id, animId, x, 100, PLAYER_INITIAL_HEALTH, player_attackConfig, player_intelligence);
-  fighter_data_t* data = (fighter_data_t*)ptr->data;
+  game_player1Score += game_killScore;
+  sound_queueSound(SOUND_DIE01);
+}
+
+static void
+player_player1HitCallback(__UNUSED object_t* me, __UNUSED object_t* victim)
+{
+  sound_queueSound(SOUND_TERENCE_PUNCH01);
+}
+
+static void
+player_player2KillCallback(__UNUSED object_t* me, __UNUSED object_t* victim)
+{
+  game_player2Score += game_killScore;
+  sound_queueSound(SOUND_DIE02);
+}
+
+static void
+player_player2HitCallback(__UNUSED object_t* me, __UNUSED object_t* victim)
+{
+  sound_queueSound(SOUND_BUD_PUNCH01);
+}
+
+static void
+player_player1DieCallback(__UNUSED object_t* me)
+{
+  game_player1 = 0;
+  game_scoreBoardPlayer1Text(I18N_GAME_OVER);
+  if (!game_player2) {
+    game_setGameOver();
+  } else if (game_loopControl == GAME_LOOP_CONTROL_DEATHMATCH) {
+    game_setGameComplete();
+  }
+}
+
+
+static void
+player_player2DieCallback(__UNUSED object_t* me)
+{
+  game_player2 = 0;
+  if (!game_player1) {
+    game_setGameOver();
+  } else if (game_loopControl == GAME_LOOP_CONTROL_DEATHMATCH) {
+    game_setGameComplete();
+  }
+  game_scoreBoardPlayer2Text(I18N_GAME_OVER);
+}
+
+object_t*
+player_init(uint16_t id, uint16_t animId, int16_t x, int16_t health)
+{
+  if (health == 0) {
+    health = PLAYER_INITIAL_HEALTH;
+  }
+  object_t* ptr = fighter_add(id, OBJECT_ATTRIBUTE_PLAYER, animId, x, 100, health, player_attackConfig, level_playerIntelligence());
+  fighter_data_t* data = fighter_data(ptr);
   data->numAttacks = 2;
   data->flashCount = FIGHTER_SPAWN_FLASH_COUNT_TICS;
   data->flashDurationTics = FIGHTER_SPAWN_FLASH_DURATION_TICS;
   uint16_t width;
   if (id == OBJECT_ID_PLAYER1) {
     width = PLAYER_PLAYER1_WIDTH;
+    data->hitEnemyCallback = player_player1HitCallback;
+    data->killEnemyCallback = player_player1KillCallback;
+    data->dieCallback = player_player1DieCallback;
   } else {
     width = PLAYER_PLAYER2_WIDTH;
+    data->hitEnemyCallback = player_player2HitCallback;
+    data->killEnemyCallback = player_player2KillCallback;
+    data->dieCallback = player_player2DieCallback;
   }
-  //  data->widthOffset = (OBJECT_WIDTH-width)/2;
   ptr->widthOffset = (OBJECT_WIDTH-width)/2;
   ptr->width = OBJECT_WIDTH;
-  object_set_state(ptr, OBJECT_STATE_FLASHING);  
+  object_set_state(ptr, OBJECT_STATE_FLASHING);
   return ptr;
 }

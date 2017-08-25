@@ -1,6 +1,13 @@
 #include "game.h"
 
-extern uint32_t startCode;
+#ifdef GAME_COMPRESS_DATA
+#ifdef MAX_LEVEL_SIZE
+#define GAME_MAX_COMPRESS_DATA_SIZE MAX_LEVEL_SIZE+8
+#else
+#define GAME_MAX_COMPRESS_DATA_SIZE 2
+#endif
+__SECTION_RANDOM static  uint16_t disk_buffer[GAME_MAX_COMPRESS_DATA_SIZE/2];
+#endif
 
 #if TRACKLOADER==1
 
@@ -14,7 +21,7 @@ LoadMFMB(__REG("a0", void* dest), __REG("d0", uint32_t startSector), __REG("d1",
 void
 td_init(void);
 
-uint32_t 
+uint32_t
 td_selectdisk(__REG("d0", uint32_t diskId));
 
 void
@@ -43,13 +50,39 @@ td_doInit(void)
 #endif
 #endif
 
+#ifdef GAME_COMPRESS_DATA
+__EXTERNAL
+__NOINLINE uint16_t
+disk_loadCompressedData(void* dest, void* src, int32_t size, void(*predecompressCallback)(void))
+{
+#ifdef DEBUG
+  if (size >= GAME_MAX_COMPRESS_DATA_SIZE) {
+    PANIC("disk_loadCompressedData: too big");
+  }
+#endif
+  uint16_t result = disk_loadData(disk_buffer, src, size);
+  if (predecompressCallback) {
+    predecompressCallback();
+  }
+  disk_depack(disk_buffer, dest);
+  return result;
+}
+#endif
 
-NOINLINE uint16_t
+__EXTERNAL
+__NOINLINE uint16_t
 disk_loadData(void* dest, void* src, int32_t size)
 {
 #if TRACKLOADER==1
   uint16_t error = 0;
+#if FASTRAM==0
   int32_t startSector = ((((uint32_t)src)-((uint32_t)&startCode))>>9)+2; // +2 for bootblock
+#else
+  uint8_t* start;
+  start = disk_dataStart;
+  int32_t startSector = ((((uint32_t)src)+((uint32_t)start))>>9);
+#endif
+
   int16_t numSectors = (size+512)>>9;
 #if PHOTON_TRACKLOADER==1
   LoadMFMB(dest, startSector, -numSectors, ((char*)dest)+size);
@@ -66,7 +99,7 @@ disk_loadData(void* dest, void* src, int32_t size)
   error = td_read(startSector+(numSectors-1), 1, dest);
 
   if (!error) {
-    
+
     volatile char* d = (char*)dest+((numSectors-1)*512);
     char* s = dest;
     for (int16_t i = 0; i < 512 && d < ((char*)dest)+size; i++, d++, s++) {
@@ -101,7 +134,7 @@ disk_read(void* dest, void* src, int32_t size)
 
  retry:
   error = disk_loadData(dest, src, size);
-  
+
   if (error) {
     if (message_ask(I18N_DISK_READ_RTRY)) {
       goto retry;
@@ -113,12 +146,21 @@ disk_read(void* dest, void* src, int32_t size)
 
 
 uint16_t
+#if TRACKLOADER==1
 disk_write(void* dest, void* src, int16_t numBlocks)
+#else
+disk_write(__UNUSED void* dest, __UNUSED void* src, __UNUSED int16_t numBlocks)
+#endif
 {
   uint32_t err = 0;
 #if TRACKLOADER==1
-#if PHOTON_TRACKLOADER==0
+#if FASTRAM==0
   int32_t startBlock = ((((uint32_t)dest)-((uint32_t)&startCode))>>9)+2; // +2 for bootblock
+#else
+  int32_t startBlock = ((uint32_t)dest)>>9;
+#endif
+
+#if PHOTON_TRACKLOADER==0
 
 #ifdef DEBUG
   if (((startBlock/11)*11) != startBlock) {
@@ -134,8 +176,5 @@ disk_write(void* dest, void* src, int16_t numBlocks)
 
 #endif
 #endif
-  USE(src);
-  USE(dest);
-  USE(numBlocks);
   return err;
 }

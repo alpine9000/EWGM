@@ -1,9 +1,9 @@
 #include "game.h"
 
-int
-strlen(char* s) 
+unsigned long
+strlen(const char* s)
 {
-  int count = 0;
+  int32_t count = 0;
   while (*s++ != 0) {
     count++;
   }
@@ -65,7 +65,7 @@ itoan(int32_t i, int16_t nChars)
     *--p = '-';
   }
 
-  USE(nChars);
+  //  USE(nChars);
   return (char *)buf + (12-nChars);
 }
 
@@ -97,10 +97,10 @@ strncpy(char *s1, const char *s2, size_t n)
 static char _text_hex[] = {'A', 'B', 'C', 'D', 'E', 'F'};
 static char _text_buf[9];
 
-static inline 
-int _hexChar(int s)
+static inline
+int32_t _hexChar(int16_t s)
 {
-  int c;
+  int32_t c;
 
   c = (s >= 0 && s <= 9) ? s + '0' : _text_hex[s - 10];
   return c;

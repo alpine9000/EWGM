@@ -161,7 +161,7 @@ main(int argc, char **argv)
 
   unsigned count = 0;
   for (unsigned int x = 0; x < image.image->columns-config.tileWidth; x+= config.tileWidth) {
-    for (unsigned int y = 0; y < image.image->rows-config.tileHeight; y+= config.tileHeight) {
+    for (unsigned int y = 0; y <= image.image->rows-config.tileHeight; y+= config.tileHeight) {
       rect.x = x;
       rect.y = y;
       Image* tile = CropImage(image.image, &rect, &exception);

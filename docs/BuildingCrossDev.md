@@ -210,22 +210,22 @@ Notes:
 16. vasm amiga gcc
     ```
     cd repos   
-    git clone https://github.com/alpine9000/gcc.git
+    git clone https://github.com/bebbo/gcc
     cd gcc
      ./contrib/download_prerequisites
     cd ../../build
     mkdir gcc
     cd gcc
-    ../../repos/gcc/configure --prefix=/usr/local/amiga/vgcc --target=m68k-amigaosvasm --enable-languages=c --with-as=/usr/local/amiga/vgcc/bin/vasmm68k_mot
+    ../../repos/gcc/configure --prefix=/usr/local/amiga/vgcc --target=m68k-amigaosvasm --enable-languages=c --with-as=/usr/local/amiga/vgcc/bin/vasmm68k_mot --with-ld=/usr/local/amiga/vgcc/bin/vlink
     make -j4 all-gcc
     make -j4 install-gcc
     cd ../../
 ```
 
-17. climby skies
+17. vegeta
     ```
     cd repos
-    git clone https://github.com/alpine9000/climbyskies.git
-    cd climbyskies
+    git clone https://github.com/alpine9000/vegeta.git
+    cd vegeta
     make
 ``` 

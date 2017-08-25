@@ -29,7 +29,7 @@ _LVOWaitPort	EQU	-384
 
 	;; we were called from the CLI
 	movem.l	(sp)+,d0/a0	;restore regs
-	bra	end_startup	;and run the user prog
+	jmp	end_startup	;and run the user prog
 
 	;; we were called from the Workbench
 fromWorkbench:	
@@ -49,7 +49,7 @@ fromWorkbench:
 
 	movem.l	(sp)+,d0/a0	;restore
 end_startup:	
-	bsr.s	Entry		;call our program
+	jsr	Entry		;call our program
 
 	;; returns to here with exit code in d0
 	move.l	d0,-(sp)	;save it

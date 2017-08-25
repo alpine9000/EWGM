@@ -11,7 +11,7 @@ SECTIONS
     	. = 0x4000;
         startCode = .;
         _startCode = .;
-        *(CODE)
+	*(CODE)
         *(.text) 
         *(.data)
 	*(data_c)
@@ -22,13 +22,15 @@ SECTIONS
         endCode = .;
     } > disk
 
-    noload ALIGN(512) : {
+    noload  : {
+	. = ALIGN(512);    
         startData = .;
-        *(.noload)
-        *(noload)
-	.=ALIGN(512);
-	*(music)
-        endData = .;
+        level_data_1.o(disk);
+	. = ALIGN(512);	
+        level_data_2.o(disk);
+	. = ALIGN(512);
+	*(disk)
+	endData = .;
     } > disk
 
     lastTrack (LOAD) : {
@@ -52,7 +54,8 @@ SECTIONS
     random (NOLOAD) : {
     	. = _endBSS;
 	_startRandom = .;
-    	*(random_c)
+    	*(random)
+        *(random_c)
 	_endRandom = .;	
 	endRam = .;
     } > ram;

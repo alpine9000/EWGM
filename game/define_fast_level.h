@@ -25,25 +25,15 @@
 #define __LEVEL_RECORDING2(x)        __LEVEL_STRINGIFY(out/demo.h)
 #endif
 #define __LEVEL_RECORDING(x)         __LEVEL_RECORDING2(x)
-#define __LEVEL_DEFINITION2(x)       level_level##x
-#define __LEVEL_DEFINITION(x)        __LEVEL_DEFINITION2(x)
+#define __LEVEL_C_DEFINITION2(x)       level_c_level##x
+#define __LEVEL_C_DEFINITION(x)        __LEVEL_C_DEFINITION2(x)
+#define __LEVEL_F_DEFINITION2(x)       level_f_level##x
+#define __LEVEL_F_DEFINITION(x)        __LEVEL_F_DEFINITION2(x)  
 
-__NOLOAD level_t 
-__LEVEL_DEFINITION(__LEVEL_NUMBER) =
+level_fast_t 
+__LEVEL_F_DEFINITION(__LEVEL_NUMBER) =
   {
 #include __LEVEL_BACKGROUND_MAP(__LEVEL_NUMBER)
-    //    .item_spriteIds = {
-    //#include __LEVEL_SPRITE_IDS(__LEVEL_NUMBER)
-    //    },
-    .spriteBitplanes = {
-#include __LEVEL_SPRITE_BITPLANES(__LEVEL_NUMBER)
-    },
-    .spriteMask = {
-#include __LEVEL_SPRITE_MASK(__LEVEL_NUMBER)
-    },
-    .tileBitplanes = {
-#include __LEVEL_TILE(__LEVEL_NUMBER)
-    },
     .palette = {
 #include __LEVEL_FADE_IN(__LEVEL_NUMBER)
     }, 
@@ -53,8 +43,9 @@ __LEVEL_DEFINITION(__LEVEL_NUMBER) =
 #ifdef GAME_RECORDING
     .recordData = {
 #include __LEVEL_RECORDING(__LEVEL_NUMBER)
-    }
+    },
 #endif
+    .end = 0xB00BF00D
   };
 
 #undef __LEVEL_NUMBER

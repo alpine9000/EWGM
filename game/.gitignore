@@ -1,7 +1,9 @@
-debugger.syms
+TAGS
+*debugger.syms
 out.*
 adf_big.c
 workbench_big.c
+fast_big.c
 default.lua
 lua.log
 temp
@@ -10,7 +12,6 @@ TODO.txt
 art
 .DS_Store
 *.dep
-assets/P61.*
 assets/*.gif
 assets/*.save
 bin
@@ -21,3 +22,4 @@ tile.c.new
 version/version.h
 version/version.txt
 gfx/
+test/screenshots

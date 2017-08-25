@@ -33,12 +33,12 @@ gfx_ctor()
 
 
 #ifndef GAME_ONE_BITPLANE_SPRITE_MASK
-INLINE void
+__INLINE void
 gfx_screenWidthBitBlit(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   volatile struct Custom* _custom = CUSTOM;
-  frame_buffer_t source = level.spriteBitplanes;
-  frame_buffer_t mask = level.spriteMask;
+  frame_buffer_t source = levelChip.spriteBitplanes;
+  frame_buffer_t mask = levelChip.spriteMask;
   uint32_t widthWords =  ((w+15)>>4)+1;
   int32_t shift = (dx&0xf);
   
@@ -64,12 +64,12 @@ gfx_screenWidthBitBlit(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, 
   _custom->bltsize = gfx_heightLUT[h] | widthWords;
 }
 #else
-INLINE void
+__INLINE void
 gfx_screenWidthBitBlit(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   volatile struct Custom* _custom = CUSTOM;
-  frame_buffer_t source = level.spriteBitplanes;
-  frame_buffer_t mask = level.spriteMask;
+  frame_buffer_t source = levelChip.spriteBitplanes;
+  frame_buffer_t mask = levelChip.spriteMask;
   uint32_t widthWords =  ((w+15)>>4)+1;
   int32_t shift = (dx&0xf);
   
@@ -140,12 +140,11 @@ gfx_screenWidthBitBlitNoMask(frame_buffer_t dest, frame_buffer_t src, int16_t sx
   _custom->bltsize = ((h*SCREEN_BIT_DEPTH)<<6) | widthWords;
 }
 
-
 void 
-gfx_bitBlitNoMask(frame_buffer_t dest, frame_buffer_t src, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
+gfx_bitBlitWordAlignedNoMask(frame_buffer_t dest, frame_buffer_t src, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   volatile struct Custom* _custom = CUSTOM;
-  uint32_t widthWords = ((w+15)>>4)+1;
+  uint32_t widthWords = ((w+15)>>4);//1;
   int32_t shift = 0;//(dx&0xf);
   
   dest += gfx_dyOffsetsLUT[dy] + (dx>>3);
@@ -232,7 +231,7 @@ gfx_fillRect(frame_buffer_t fb, uint16_t x, uint16_t y, uint16_t w, uint16_t h, 
   }
 }
 
-INLINE void
+__INLINE void
 gfx_fillRectSmallScreen(frame_buffer_t fb, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
 {
   static custom_t _custom = CUSTOM;
@@ -299,12 +298,12 @@ gfx_fillRectSmallScreen(frame_buffer_t fb, uint16_t x, uint16_t y, uint16_t w, u
 }
 
 #ifndef GAME_ONE_BITPLANE_SPRITE_MASK
-INLINE void
+__INLINE void
 gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   volatile struct Custom* _custom = CUSTOM;
-  frame_buffer_t source = level.spriteBitplanes;
-  frame_buffer_t mask = level.spriteMask;
+  frame_buffer_t source = levelChip.spriteBitplanes;
+  frame_buffer_t mask = levelChip.spriteMask;
   uint32_t widthWords =  ((w+15)>>4)+1;
   int32_t shift = (dx&0xf);
   
@@ -332,12 +331,12 @@ gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_
 }
 
 #else
-INLINE void
+__INLINE void
 gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   volatile struct Custom* _custom = CUSTOM;
-  frame_buffer_t source = level.spriteBitplanes;
-  frame_buffer_t mask = level.spriteMask;
+  frame_buffer_t source = levelChip.spriteBitplanes;
+  frame_buffer_t mask = levelChip.spriteMask;
   uint32_t widthWords =  ((w+15)>>4)+1;
   int32_t shift = (dx&0xf);
   
@@ -379,10 +378,59 @@ gfx_renderSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_
     _custom->bltsize = bltsize;    
   }
 }
+
+
+__INLINE void
+gfx_renderBlackSprite(frame_buffer_t dest, int16_t sx, int16_t sy, int16_t dx, int16_t dy, int16_t w, int16_t h)
+{
+  volatile struct Custom* _custom = CUSTOM;
+  frame_buffer_t source = levelChip.spriteBitplanes;
+  frame_buffer_t mask = levelChip.spriteMask;
+  uint32_t widthWords =  ((w+15)>>4)+1;
+  int32_t shift = (dx&0xf);
+  
+  dest += gfx_dyOffsetsLUT[dy] + (dx>>3);
+  source += gfx_dySpriteOffsetsLUT[sy] + (sx>>3);
+  mask += gfx_dySpriteMaskOffsetsLUT[sy] + (sx>>3);
+
+  uint16_t bltsize = (h)<<6 | widthWords;
+
+  uint16_t bltamod = (SPRITE_SHEET_WIDTH_BYTES-(widthWords<<1));
+  uint16_t bltbmod = (SPRITE_SHEET_WIDTH_BYTES*(SCREEN_BIT_DEPTH-1))+(SPRITE_SHEET_WIDTH_BYTES-(widthWords<<1));
+  uint16_t bltdmod = (FRAME_BUFFER_WIDTH_BYTES*(SCREEN_BIT_DEPTH-1))+(FRAME_BUFFER_WIDTH_BYTES-(widthWords<<1));
+  hw_waitBlitter();   
+  //  _custom->bltafwm = 0xffff;
+  _custom->bltalwm = 0x0000;
+  _custom->bltcon0 = (SRCA|SRCB|SRCC|DEST|0x0a|shift<<ASHIFTSHIFT);
+  _custom->bltcon1 = shift<<BSHIFTSHIFT;
+  _custom->bltamod = bltamod;
+  _custom->bltbmod = bltbmod;
+  _custom->bltcmod = bltdmod;
+  _custom->bltdmod = bltdmod;
+  _custom->bltapt = (uint8_t*)mask;
+  _custom->bltbpt = (uint8_t*)mask;
+  _custom->bltcpt = (uint8_t*)dest;
+  _custom->bltdpt = (uint8_t*)dest;
+  _custom->bltsize = bltsize;
+  
+  frame_buffer_t s = source;
+  frame_buffer_t d = dest;
+  
+  for (uint16_t i = 0; i < SCREEN_BIT_DEPTH-1; i++) {
+    s += SPRITE_SHEET_WIDTH_BYTES;
+    d += FRAME_BUFFER_WIDTH_BYTES;
+    hw_waitBlitter();    
+    _custom->bltapt = (uint8_t*)mask;
+    _custom->bltbpt = (uint8_t*)mask;
+    _custom->bltcpt = (uint8_t*)d;
+    _custom->bltdpt = (uint8_t*)d;
+    _custom->bltsize = bltsize;    
+  }
+}
 #endif
 
 
-INLINE void
+__INLINE void
 gfx_setupRenderTile(void)
 {
   volatile struct Custom* _custom = CUSTOM;
@@ -398,7 +446,7 @@ gfx_setupRenderTile(void)
   _custom->bltdmod = FRAME_BUFFER_WIDTH_BYTES-2;
 }
 
-INLINE void
+__INLINE void
 gfx_renderTile(frame_buffer_t dest, int16_t x, int16_t y, frame_buffer_t tile)
 {
   volatile struct Custom* _custom = CUSTOM;
@@ -412,7 +460,7 @@ gfx_renderTile(frame_buffer_t dest, int16_t x, int16_t y, frame_buffer_t tile)
   _custom->bltsize = (16*SCREEN_BIT_DEPTH)<<6 | 1;
 }
 
-INLINE void
+__INLINE void
 gfx_quickRenderTile(frame_buffer_t dest, int16_t x, int16_t y, frame_buffer_t tile)
 {
   volatile struct Custom* _custom = CUSTOM;

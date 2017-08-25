@@ -4,7 +4,7 @@
 
 alarm_t* alarm_activeList;
 static alarm_t* alarm_freeList;
-static __section(random_c) alarm_t alarm_buffer[ALARM_MAX_ALARMS];
+static __SECTION_RANDOM alarm_t alarm_buffer[ALARM_MAX_ALARMS];
 uint16_t alarm_count;
 uint32_t alarm_tic;
 
@@ -81,9 +81,10 @@ alarm_removeFromActive(alarm_t* ptr)
 
 
 void
-alarm_add(uint32_t tic, void (*handler)(void))
+alarm_add(uint32_t tic, void (*handler)(void* data), void* data)
 {
   alarm_t* ptr = alarm_getFree();
+  ptr->data = data;
   ptr->tic = alarm_tic + tic;
   ptr->handler = handler;
   alarm_addToActive(ptr);
@@ -116,7 +117,7 @@ void alarm_process(uint16_t deltaT)
   while (ptr) {
     alarm_t* next = ptr->next;
     if (ptr->tic <= alarm_tic) {
-      ptr->handler();
+      ptr->handler(ptr->data);
       alarm_removeFromActive(ptr);
       alarm_addFree(ptr);
     }

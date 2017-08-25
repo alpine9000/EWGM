@@ -4,4 +4,3 @@ LIBS=-ltmx -lz -lxml2
 EXTRA_CFLAGS=
 
 include ../../shared/tools.mk
-

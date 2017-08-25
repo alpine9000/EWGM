@@ -18,7 +18,7 @@ text_ctor(void)
 }
 
 
-NOINLINE void
+__NOINLINE void
 text_drawCharScoreBoard(char c, int16_t x, int16_t y)
 {
   char* src = fontAtlas[(int)c];
@@ -35,10 +35,9 @@ text_drawCharScoreBoard(char c, int16_t x, int16_t y)
 }
 
 
-NOINLINE void
+__NOINLINE void
 _text_drawChar8(frame_buffer_t frameBuffer, char c, int16_t x, int16_t y)
 {
-  USE(y);
   char* src = fontAtlas[(int)c];
   char* dest = (char*)frameBuffer+(x>>3);
   dest += (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)*y;
@@ -51,10 +50,9 @@ _text_drawChar8(frame_buffer_t frameBuffer, char c, int16_t x, int16_t y)
 }
 
 
-NOINLINE void
+__NOINLINE void
 __text_drawChar8(frame_buffer_t frameBuffer, char c, int16_t x, int16_t y, int16_t sy, int16_t ny)
 {
-  USE(y);
   char* src = fontAtlas[(int)c];
   char* dest = (char*)frameBuffer+(x>>3);
 
@@ -89,7 +87,7 @@ uint32_t bigNumAtlas[11] = {
 };
 
 
-NOINLINE void
+__NOINLINE void
 text_clrBlit(frame_buffer_t dest, int16_t dx, int16_t dy, int16_t w, int16_t h)
 {
   volatile struct Custom* _custom = CUSTOM;
@@ -148,13 +146,13 @@ text_bitBlit(frame_buffer_t source, frame_buffer_t dest, int16_t dx, int16_t dy,
 void
 text_drawBigNumeral(frame_buffer_t frameBuffer, uint16_t n, int16_t x, int16_t y, int16_t nx, int16_t ny)
 {
-  USE(y);
-  frame_buffer_t src = fontPtr + bigNumAtlas[(int)n];
+  extern uint8_t text_fontData;
+  frame_buffer_t src = &text_fontData + bigNumAtlas[(int)n];
   text_bitBlit(src, frameBuffer, x, y, nx, ny);
 }
 
 
-NOINLINE void
+__NOINLINE void
 text_drawText8(frame_buffer_t frameBuffer, char* string, int32_t x, int32_t y)
 {
   char* ptr = &string[0]; 
@@ -166,7 +164,7 @@ text_drawText8(frame_buffer_t frameBuffer, char* string, int32_t x, int32_t y)
 }
 
 
-NOINLINE void
+__NOINLINE void
 text_drawScoreBoard(char* string, int32_t x, int32_t y)
 {
   char* ptr = &string[0]; 
@@ -177,10 +175,9 @@ text_drawScoreBoard(char* string, int32_t x, int32_t y)
   } while (*ptr != 0);
 }
 
-NOINLINE void
-__text_drawMaskedChar8(frame_buffer_t frameBuffer, char c, int16_t x, int16_t y, int16_t sx, int16_t ny, int16_t clear)
+__NOINLINE void
+__text_drawMaskedChar8(frame_buffer_t frameBuffer, char c, int16_t x, int16_t y, /*int16_t sx,*/ int16_t ny, int16_t clear)
 {
-  USE(sx);
   char* src = fontAtlas[(int)c];
   char* dest = (char*)frameBuffer+(x>>3);
   dest += (SCREEN_WIDTH_BYTES*SCREEN_BIT_DEPTH)*y;
@@ -233,7 +230,7 @@ text_drawMaskedText8Blitter(frame_buffer_t frameBuffer, char* string, int32_t x,
 {
   char* ptr = &string[0]; 
   do {
-    __text_drawMaskedChar8(frameBuffer, *ptr, x, y, 0, 8, 0);
+    __text_drawMaskedChar8(frameBuffer, *ptr, x, y, 8, 0);
     ptr++;
     x += 8;
   } while (*ptr != 0); 
@@ -244,7 +241,7 @@ text_clearMaskedText8Blitter(frame_buffer_t frameBuffer, char* string, int32_t x
 {
   char* ptr = &string[0]; 
   do {
-    __text_drawMaskedChar8(frameBuffer, *ptr, x, y, 0, 8, 1);
+    __text_drawMaskedChar8(frameBuffer, *ptr, x, y, 8, 1);
     ptr++;
     x += 8;
   } while (*ptr != 0); 
