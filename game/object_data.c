@@ -1075,6 +1075,53 @@ object_animation_t object_animations[] = {
     .speed = 0,
     .facing = FACING_RIGHT
   },
+
+  // =================================
+  [OBJECT_ANIM_PUNCHING_BAG_STAND_RIGHT] = {
+    .start = SPRITE_PUNCHING_BAG_MIDDLE,
+    .stop = SPRITE_PUNCHING_BAG_MIDDLE,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PUNCHING_BAG_STAND_LEFT] = {
+    .start = SPRITE_PUNCHING_BAG_MIDDLE,
+    .stop = SPRITE_PUNCHING_BAG_MIDDLE,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PUNCHING_BAG_HIT_LEFT] = {
+    .start = SPRITE_PUNCHING_BAG_LEFT,
+    .stop = SPRITE_PUNCHING_BAG_LEFT,
+    .speed = 0,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PUNCHING_BAG_HIT_RIGHT] = {
+    .start = SPRITE_PUNCHING_BAG_RIGHT,
+    .stop = SPRITE_PUNCHING_BAG_RIGHT,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+  [OBJECT_ANIM_PUNCHING_BAG_PUNCH_LEFT] = {
+    .start = SPRITE_PUNCHING_BAG_RIGHT,
+    .stop = SPRITE_PUNCHING_BAG_RIGHT2,
+    .speed = 10,
+    .facing = FACING_LEFT
+  },
+  [OBJECT_ANIM_PUNCHING_BAG_PUNCH_RIGHT] = {
+    .start = SPRITE_PUNCHING_BAG_LEFT,
+    .stop = SPRITE_PUNCHING_BAG_LEFT2,
+    .speed = 10,
+    .facing = FACING_RIGHT
+  },
+
+  // =================================
+  [OBJECT_ANIM_POMMEL_HORSE] = {
+    .start = SPRITE_POMMEL_HORSE,
+    .stop = SPRITE_POMMEL_HORSE,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
+
 };
 
 
@@ -3266,5 +3313,55 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,
     },
 
+  //==============================
+  [SPRITE_PUNCHING_BAG_MIDDLE] = {
+    .x = 144,
+    .y = 849,
+    .w = 16,
+    .h = 32,
+    .dx = 0,
+    .dy = 0,
+    },
+  [SPRITE_PUNCHING_BAG_LEFT] = {
+    .x = 160,
+    .y = 849,
+    .w = 32,
+    .h = 32,
+    .dx = 3,
+    .dy = 0,
+    },
+  [SPRITE_PUNCHING_BAG_RIGHT] = {
+    .x = 192,
+    .y = 849,
+    .w = 32,
+    .h = 32,
+    .dx = -4,
+    .dy = 0,
+    },
+  [SPRITE_PUNCHING_BAG_LEFT2] = {
+    .x = 160,
+    .y = 849,
+    .w = 32,
+    .h = 32,
+    .dx = 3,
+    .dy = 0,
+    },
+  [SPRITE_PUNCHING_BAG_RIGHT2] = {
+    .x = 192,
+    .y = 849,
+    .w = 32,
+    .h = 32,
+    .dx = -4,
+    .dy = 0,
+    },
 
+  //==============================
+  [SPRITE_POMMEL_HORSE] = {
+    .x = 96,
+    .y = 848,
+    .w = 32,
+    .h = 26,
+    .dx = 0,
+    .dy = 0,
+    },
 };

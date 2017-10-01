@@ -251,7 +251,9 @@ enemy_add(uint16_t animId, uint16_t attributes, uint16_t x, uint16_t y, enemy_co
   data->attackRangeY = config->attackRangeY;
   data->postAttackInvincibleTics = config->postAttackInvincibleTics;
 
-  enemy_count++;
+  if (!(ptr->attributes & OBJECT_ATTRIBUTE_IMMOVABLE)) {
+    enemy_count++;
+  }
   return ptr;
 }
 

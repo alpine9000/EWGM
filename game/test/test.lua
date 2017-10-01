@@ -4,7 +4,7 @@ quit = false
 screenShotFilename = "out/test-screenshot.png"
 screenShotWait = 100
 menuWait = 100
-createTestImages = 0
+createTestImages = 1
 screenShotDelay = 0.25
 
 function Setup()
@@ -259,7 +259,7 @@ level = {
    },
    ["verify level parameters"] = {
       less = {{"_game_total", 580283, 32}}, -- 565616, 32}},
-      equal = {{"_game_player1Score", 9000, 32}, {"_game_player2Score", 7000, 32}}
+      equal = {{"_game_player1Score", 10000, 32}, {"_game_player2Score", 8000, 32}}
    },
 }
 
@@ -292,7 +292,7 @@ level2 = {
    },
    ["verify level parameters"] = {
       less = {{"_game_total", 2081752, 32}},
-      equal = {{"_game_player1Score", 27000, 32}, {"_game_player2Score",0, 32}}
+      equal = {{"_game_player1Score", 28000, 32}, {"_game_player2Score",0, 32}}
    },
 }
 

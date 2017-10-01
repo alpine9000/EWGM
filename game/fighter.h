@@ -1,7 +1,7 @@
 #ifndef __FIGHTER_H
 #define __FIGHTER_H
 
-#define FIGHTER_MAX_FIGHTERS              8
+#define FIGHTER_MAX_FIGHTERS              10
 #define FIGHTER_LONG_PUNCH_RANGE          13
 #define FIGHTER_SHORT_PUNCH_RANGE         8
 //#define FIGHTER_Y_ATTACK_THRESHOLD      6

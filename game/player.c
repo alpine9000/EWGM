@@ -85,10 +85,10 @@ player_intelligence(__UNUSED uint16_t deltaT, object_t* ptr, fighter_data_t* dat
 }
 
 
-fighter_attack_config_t player_attackConfig[] = {
+fighter_attack_config_t player_attackConfigEasy[] = {
   [OBJECT_PUNCH_LEFT1] = {
     .rangeX = FIGHTER_LONG_PUNCH_RANGE,
-    .dammage = PLAYER_ATTACK_DAMMAGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE_EASY,
     .durationTics = PLAYER_ATTACK_DURATION_TICS,
     .hitAnimTic = 0,
     .vx = 0,
@@ -97,7 +97,7 @@ fighter_attack_config_t player_attackConfig[] = {
   },
   [OBJECT_PUNCH_LEFT2] =  {
     .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
-    .dammage = PLAYER_ATTACK_DAMMAGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE_EASY,
     .durationTics = PLAYER_ATTACK_DURATION_TICS,
     .hitAnimTic = 0,
     .vx = 0,
@@ -106,7 +106,7 @@ fighter_attack_config_t player_attackConfig[] = {
   },
   [OBJECT_PUNCH_RIGHT1] =  {
     .rangeX = FIGHTER_LONG_PUNCH_RANGE,
-    .dammage = PLAYER_ATTACK_DAMMAGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE_EASY,
     .durationTics = PLAYER_ATTACK_DURATION_TICS,
     .hitAnimTic = 0,
     .vx = 0,
@@ -115,7 +115,7 @@ fighter_attack_config_t player_attackConfig[] = {
   },
   [OBJECT_PUNCH_RIGHT2] =  {
     .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
-    .dammage = PLAYER_ATTACK_DAMMAGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE_EASY,
     .durationTics = PLAYER_ATTACK_DURATION_TICS,
     .hitAnimTic = 0,
     .vx = 0,
@@ -124,7 +124,7 @@ fighter_attack_config_t player_attackConfig[] = {
   } ,
   [OBJECT_KICK_LEFT] =  {
     .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
-    .dammage = PLAYER_ATTACK_DAMMAGE*2,
+    .dammage = PLAYER_ATTACK_DAMMAGE_EASY*2,
     .durationTics = ENEMY_DEFAULT_ATTACK_DURATION_TICS,
     .hitAnimTic = LEVEL1_BOSS_ATTACK_TICS_PER_FRAME,
     .vx = -(PLAYER_SPEED_X/2)*OBJECT_PHYSICS_FACTOR,
@@ -133,7 +133,64 @@ fighter_attack_config_t player_attackConfig[] = {
   } ,
   [OBJECT_KICK_RIGHT] =  {
     .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
-    .dammage = PLAYER_ATTACK_DAMMAGE*2,
+    .dammage = PLAYER_ATTACK_DAMMAGE_EASY*2,
+    .durationTics = ENEMY_DEFAULT_ATTACK_DURATION_TICS,
+    .hitAnimTic = LEVEL1_BOSS_ATTACK_TICS_PER_FRAME,
+    .vx = (PLAYER_SPEED_X/2)*OBJECT_PHYSICS_FACTOR,
+    .vy = -4*OBJECT_PHYSICS_FACTOR,
+    .jump = 1
+  }
+};
+
+fighter_attack_config_t player_attackConfigHard[] = {
+  [OBJECT_PUNCH_LEFT1] = {
+    .rangeX = FIGHTER_LONG_PUNCH_RANGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE_HARD,
+    .durationTics = PLAYER_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  },
+  [OBJECT_PUNCH_LEFT2] =  {
+    .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE_HARD,
+    .durationTics = PLAYER_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  },
+  [OBJECT_PUNCH_RIGHT1] =  {
+    .rangeX = FIGHTER_LONG_PUNCH_RANGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE_HARD,
+    .durationTics = PLAYER_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  },
+  [OBJECT_PUNCH_RIGHT2] =  {
+    .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE_HARD,
+    .durationTics = PLAYER_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  } ,
+  [OBJECT_KICK_LEFT] =  {
+    .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE_HARD*2,
+    .durationTics = ENEMY_DEFAULT_ATTACK_DURATION_TICS,
+    .hitAnimTic = LEVEL1_BOSS_ATTACK_TICS_PER_FRAME,
+    .vx = -(PLAYER_SPEED_X/2)*OBJECT_PHYSICS_FACTOR,
+    .vy = -4*OBJECT_PHYSICS_FACTOR,
+    .jump = 1
+  } ,
+  [OBJECT_KICK_RIGHT] =  {
+    .rangeX = FIGHTER_SHORT_PUNCH_RANGE,
+    .dammage = PLAYER_ATTACK_DAMMAGE_HARD*2,
     .durationTics = ENEMY_DEFAULT_ATTACK_DURATION_TICS,
     .hitAnimTic = LEVEL1_BOSS_ATTACK_TICS_PER_FRAME,
     .vx = (PLAYER_SPEED_X/2)*OBJECT_PHYSICS_FACTOR,
@@ -199,7 +256,10 @@ player_init(uint16_t id, uint16_t animId, int16_t x, int16_t health)
   if (health == 0) {
     health = PLAYER_INITIAL_HEALTH;
   }
-  object_t* ptr = fighter_add(id, OBJECT_ATTRIBUTE_PLAYER, animId, x, 100, health, player_attackConfig, level_playerIntelligence());
+
+  fighter_attack_config_t* attackConfig;
+  attackConfig = game_difficulty == GAME_DIFFICULTY_HARD ? player_attackConfigHard : player_attackConfigEasy;
+  object_t* ptr = fighter_add(id, OBJECT_ATTRIBUTE_PLAYER, animId, x, 100, health, attackConfig, level_playerIntelligence());
   fighter_data_t* data = fighter_data(ptr);
   data->numAttacks = 2;
   data->flashCount = FIGHTER_SPAWN_FLASH_COUNT_TICS;

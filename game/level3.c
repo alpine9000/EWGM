@@ -547,10 +547,72 @@ level3_playerIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   return attack;
 }
 */
+
+static uint16_t
+level3_punchingBagIntelligence(__UNUSED uint16_t deltaT, __UNUSED object_t* ptr, __UNUSED fighter_data_t* data)
+{
+  uint16_t attack = 0;
+  if (object_get_state(ptr) == OBJECT_STATE_HIT) {
+    switch (ptr->actionId) {
+    case OBJECT_HIT_LEFT:
+      object_setAction(ptr, OBJECT_PUNCH_RIGHT1);
+      attack = 1;
+      break;
+    case OBJECT_HIT_RIGHT:
+      object_setAction(ptr, OBJECT_PUNCH_LEFT1);
+      attack = 1;
+      break;
+    }
+
+    object_set_state(ptr, OBJECT_STATE_ALIVE);
+  }
+  return attack;
+}
+
+static fighter_attack_config_t level3_punchingBag_attackConfig[] = {
+  [OBJECT_PUNCH_LEFT1] = {
+    .rangeX = 10,
+    .dammage = 10,
+    .durationTics = 10,
+    .hitAnimTic = 2,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  },
+  [OBJECT_PUNCH_RIGHT1] =  {
+    .rangeX = 10,
+    .dammage = 10,
+    .durationTics = 10,
+    .hitAnimTic = 2,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  }
+};
+
+static enemy_config_t level3_punchingBag_config = {
+  .attackRangeY = 5,
+  .attackConfig = level3_punchingBag_attackConfig,
+  .attackWait = 0,
+  .postAttackInvincibleTics = 0,
+  .numAttacks = 1,
+  .randomDistanceMask = 0,
+  .randomFrequencyMask = 0,
+  .speedX = 0,
+  .speedY = 0,
+  .intelligence = level3_punchingBagIntelligence
+};
+
 static int16_t
 level3_start(__UNUSED uint16_t argument)
 {
   //level3_bossSequenceMaxX = SCREEN_WIDTH*4;
+
+  object_t* ptr = enemy_add(OBJECT_ANIM_PUNCHING_BAG_STAND_RIGHT, OBJECT_ATTRIBUTE_IMMOVABLE, 100, 100, &level3_punchingBag_config);
+  ptr->widthOffset = 0,
+  ptr->width = 16;
+
+  thing_add(OBJECT_ID_POMMEL_HORSE, OBJECT_ANIM_POMMEL_HORSE, OBJECT_ANIM_POMMEL_HORSE, 0, 180, 150, 2, 0);
 
   return 1;
 }
@@ -562,22 +624,38 @@ level3_addLockers_1(uint16_t argument)
   level3_addLockers(argument, GAME_PAVEMENT_START+8);
   return 1;
 }
-/*
+
 static int16_t
 level3_addLockers_2(uint16_t argument)
 {
-  level3_addLockers(argument, 120, 20, THING_BONUS_TYPE_HEALTH);
+  level3_addLockers(argument+(SCREEN_WIDTH/4), GAME_PAVEMENT_START+8);
+
+  object_t* ptr = enemy_add(OBJECT_ANIM_PUNCHING_BAG_STAND_RIGHT, OBJECT_ATTRIBUTE_IMMOVABLE, argument, 150, &level3_punchingBag_config);
+  ptr->widthOffset = 0,
+  ptr->width = 16;
+  ptr = enemy_add(OBJECT_ANIM_PUNCHING_BAG_STAND_RIGHT, OBJECT_ATTRIBUTE_IMMOVABLE, argument+18, 150, &level3_punchingBag_config);
+  ptr->widthOffset = 0,
+  ptr->width = 16;
+  ptr = enemy_add(OBJECT_ANIM_PUNCHING_BAG_STAND_RIGHT, OBJECT_ATTRIBUTE_IMMOVABLE, argument+(18*2), 150, &level3_punchingBag_config);
+  ptr->widthOffset = 0,
+  ptr->width = 16;
   return 1;
 }
+
 
 static int16_t
 level3_addLockers_3(uint16_t argument)
 {
-  level3_addLockers(argument, 180, 40, THING_BONUS_TYPE_HEALTH);
+  level3_addLockers(argument+(SCREEN_WIDTH/4), GAME_PAVEMENT_START+8);
+
+  object_t* ptr = enemy_add(OBJECT_ANIM_PUNCHING_BAG_STAND_RIGHT, OBJECT_ATTRIBUTE_IMMOVABLE, argument, 150, &level3_punchingBag_config);
+  ptr->widthOffset = 0,
+  ptr->width = 16;
+
   return 1;
 }
 
-
+/*
 static int16_t
 level3_bossSequence(__UNUSED uint16_t argument)
 {
@@ -587,7 +665,7 @@ level3_bossSequence(__UNUSED uint16_t argument)
   fighter_data(gf)->health *= 4;
 
   return 1;
-}
+  }
 
 static int16_t
 level_addBossChairs(uint16_t argument)
@@ -620,7 +698,7 @@ conductor_instruction_t level3_instructions[] = {
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL3_WAVE1_4, level3_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH/2, level_scroll},
-  //  {CONDUCTOR_INSTRUCTION_CAMERAX, 32, SCREEN_WIDTH+32, level3_addLockers_2},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 32, SCREEN_WIDTH+32, level3_addLockers_2},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL3_WAVE2_1, level3_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL3_WAVE2_2, level3_processEnemyConfig},
@@ -628,13 +706,13 @@ conductor_instruction_t level3_instructions[] = {
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL3_WAVE2_4, level3_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH, level_scroll},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL3_WAVE3_1, level3_processEnemyConfig},
+   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL3_WAVE3_1, level3_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL3_WAVE3_2, level3_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL3_WAVE3_3, level3_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL3_WAVE3_4, level3_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH+(SCREEN_WIDTH/2), level_scroll},
-  //  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+32, (SCREEN_WIDTH*2)+32, level3_addLockers_3},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+32, (SCREEN_WIDTH*2)+32, level3_addLockers_3},
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+(SCREEN_WIDTH/2), LEVEL3_WAVE4_1, level3_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+(SCREEN_WIDTH/2), LEVEL3_WAVE4_2, level3_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+(SCREEN_WIDTH/2), LEVEL3_WAVE4_3, level3_processEnemyConfig},

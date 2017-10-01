@@ -136,6 +136,7 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
   fighter_data_t* data = fighter_data(ptr);
   fighter_data_t* attackerData = fighter_data(attacker);
 
+  if (!(ptr->attributes & OBJECT_ATTRIBUTE_IMMOVABLE)) {
 #ifdef GAME_STARS
   star_add(ptr, dx);
 #endif
@@ -170,6 +171,10 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
     break;
   }
 
+  } else {
+    attackerData->hitEnemyCallback(attacker, ptr);
+  }
+
   object_set_state(ptr, OBJECT_STATE_HIT);
   if (dx >= 0) {
     object_setAction(ptr, OBJECT_HIT_LEFT);
@@ -182,20 +187,24 @@ fighter_attack(object_t* attacker, object_t* ptr, uint16_t dammage, int16_t dx)
 static void
 fighter_updatePositionUnderAttack(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
-  if (object_y(ptr) >= object_z(ptr) && ptr->velocity.y > 0) {
-    object_set_py_no_checks(ptr, object_z(ptr)*OBJECT_PHYSICS_FACTOR);
-    ptr->velocity.y = 0;
-    ptr->velocity.x = 0;
-    if (data->health <= 0) {
-      object_set_state(ptr, OBJECT_STATE_FLASHING);
-      data->flashCount = FIGHTER_HIT_FLASH_COUNT_TICS;
-      data->flashDurationTics = FIGHTER_HIT_FLASH_DURATION_TICS;
-    } else {
-      object_set_state(ptr, OBJECT_STATE_ALIVE);
-      data->postAttackCount = data->postAttackInvincibleTics;
-    }
+  if (ptr->attributes & OBJECT_ATTRIBUTE_IMMOVABLE) {
+
   } else {
-    ptr->velocity.y += deltaT;
+    if (object_y(ptr) >= object_z(ptr) && ptr->velocity.y > 0) {
+      object_set_py_no_checks(ptr, object_z(ptr)*OBJECT_PHYSICS_FACTOR);
+      ptr->velocity.y = 0;
+      ptr->velocity.x = 0;
+      if (data->health <= 0) {
+	object_set_state(ptr, OBJECT_STATE_FLASHING);
+	data->flashCount = FIGHTER_HIT_FLASH_COUNT_TICS;
+	data->flashDurationTics = FIGHTER_HIT_FLASH_DURATION_TICS;
+      } else {
+	object_set_state(ptr, OBJECT_STATE_ALIVE);
+	data->postAttackCount = data->postAttackInvincibleTics;
+      }
+    } else {
+      ptr->velocity.y += deltaT;
+    }
   }
 }
 
@@ -303,7 +312,9 @@ fighter_updateSprite(object_t* ptr)
 void
 fighter_dieCallback(__UNUSED object_t* me)
 {
-  enemy_count--;
+  if (!(me->attributes & OBJECT_ATTRIBUTE_IMMOVABLE)) {
+    enemy_count--;
+  }
   if (enemy_count == 0) {
     if (conductor_complete()) {
       if (game_numPlayers == 2 && game_player1 && game_player2) {
@@ -433,6 +444,10 @@ fighter_update(uint16_t deltaT, object_t* ptr)
       object_updatePosition(deltaT, ptr);
       fighter_updateSprite(ptr);
     }
+  }
+
+  if (ptr->attributes & OBJECT_ATTRIBUTE_IMMOVABLE && object_screenx(ptr) < -ptr->image->w) {
+    object_set_state(ptr, OBJECT_STATE_REMOVED);
   }
 }
 
