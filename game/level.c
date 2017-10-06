@@ -21,6 +21,12 @@ __SECTION_DISK uint8_t level_level3_c_data[] DISK_SECTOR_ALIGN = {
 __SECTION_DISK uint8_t level_level3_f_data[] DISK_SECTOR_ALIGN = {
   #include "leveldata_f_3.c"
 };
+__SECTION_DISK uint8_t level_level4_c_data[] DISK_SECTOR_ALIGN = {
+  #include "leveldata_c_4.c"
+};
+__SECTION_DISK uint8_t level_level4_f_data[] DISK_SECTOR_ALIGN = {
+  #include "leveldata_f_4.c"
+};
 
 typedef struct {
   void* levelChipData;
@@ -31,6 +37,7 @@ typedef struct {
   conductor_instruction_t* instructions;
   char* readyMessage;
   fighter_intelligence_functor playerIntelligence;
+  int16_t mapTileWidth;
 } level_config_t;
 
 level_config_t level_levels[LEVEL_NUM_LEVELS] = {
@@ -42,7 +49,8 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
     .instructions = level1_instructions,
     .moduleIndex = MUSIC_LEVEL_1,
     .readyMessage = I18N_LEVEL1_READY,
-    .playerIntelligence = player_intelligence
+    .playerIntelligence = player_intelligence,
+    .mapTileWidth = MAP_LEVEL1_TILE_WIDTH
   },
   {
     .levelChipData = level_level2_c_data,
@@ -52,7 +60,8 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
     .instructions = level2_instructions,
     .moduleIndex = MUSIC_LEVEL_2,
     .readyMessage = I18N_LEVEL2_READY,
-    .playerIntelligence = level2_playerIntelligence
+    .playerIntelligence = level2_playerIntelligence,
+    .mapTileWidth = MAP_LEVEL2_TILE_WIDTH
   },
   {
     .levelChipData = level_level3_c_data,
@@ -62,7 +71,19 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
     .instructions = level3_instructions,
     .moduleIndex = 0,
     .readyMessage = I18N_LEVEL3_READY,
-    .playerIntelligence = player_intelligence
+    .playerIntelligence = player_intelligence,
+    .mapTileWidth = MAP_LEVEL3_TILE_WIDTH
+  },
+  {
+    .levelChipData = level_level4_c_data,
+    .levelFastData = level_level4_f_data,
+    .chipDataSize = sizeof(level_level4_c_data),
+    .fastDataSize = sizeof(level_level4_f_data),
+    .instructions = level4_instructions,
+    .moduleIndex = 0,
+    .readyMessage = I18N_LEVEL4_READY,
+    .playerIntelligence = player_intelligence,
+    .mapTileWidth = MAP_LEVEL4_TILE_WIDTH
   }
 };
 
@@ -142,6 +163,7 @@ level_load(uint16_t index)
   levelFast.record = (record_t*)&levelFast.recordData;
 #endif
 
+  game_maxScrollX = (level_levels[index].mapTileWidth*TILE_WIDTH)-SCREEN_WIDTH;
   if (!game_demo) {
     music_play(level_levels[index].moduleIndex);
   }

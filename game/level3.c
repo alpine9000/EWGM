@@ -48,28 +48,51 @@ enum {
 #define LEVEL3_HARD_RANDOM_DISTANCE_MASK  0xf
 #define LEVEL3_HARD_RANDOM_FREQUENCY_MASK 0x1f
 
-#define LEVEL3_EASY_ATTACK_WAIT_TICS     15
-#define LEVEL3_MEDIUM_ATTACK_WAIT_TICS   10
-#define LEVEL3_HARD_ATTACK_WAIT_TICS     5
+#define LEVEL3_EASY_MIN_ATTACK_WAIT_TICS     10
+#define LEVEL3_EASY_MAX_ATTACK_WAIT_TICS     20
 
-//#define LEVEL3_BOSS_ATTACK_RANGE         (SCREEN_WIDTH+32)
-//#define LEVEL3_BOSS_ATTACK_DURATION_TICS (LEVEL3_BOSS_ATTACK_TICS_PER_FRAME*4)
+#define LEVEL3_MEDIUM_MIN_ATTACK_WAIT_TICS   5
+#define LEVEL3_MEDIUM_MAX_ATTACK_WAIT_TICS   15
 
-/*static fighter_attack_config_t level3_boss_attackConfig[] = {
+#define LEVEL3_HARD_MIN_ATTACK_WAIT_TICS     0
+#define LEVEL3_HARD_MAX_ATTACK_WAIT_TICS     10
+
+#define LEVEL3_BOSS_ATTACK_RANGE         11
+#define LEVEL3_BOSS_ATTACK_DURATION_TICS 10
+
+static fighter_attack_config_t level3_boss_attackConfig[] = {
   [OBJECT_PUNCH_LEFT1] = {
     .rangeX = LEVEL3_BOSS_ATTACK_RANGE,
-    .dammage = 0,
+    .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE,
     .durationTics = LEVEL3_BOSS_ATTACK_DURATION_TICS,
-    .hitAnimTic = LEVEL3_BOSS_ATTACK_TICS_PER_FRAME*2,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  },
+  [OBJECT_PUNCH_LEFT2] =  {
+    .rangeX = LEVEL3_BOSS_ATTACK_RANGE,
+    .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE,
+    .durationTics = LEVEL3_BOSS_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
     .vx = 0,
     .vy = 0,
     .jump = 0
   },
   [OBJECT_PUNCH_RIGHT1] =  {
     .rangeX = LEVEL3_BOSS_ATTACK_RANGE,
-    .dammage = 0,
+    .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE,
     .durationTics = LEVEL3_BOSS_ATTACK_DURATION_TICS,
-    .hitAnimTic = LEVEL3_BOSS_ATTACK_TICS_PER_FRAME*2,
+    .hitAnimTic = 0,
+    .vx = 0,
+    .vy = 0,
+    .jump = 0
+  },
+  [OBJECT_PUNCH_RIGHT2] =  {
+    .rangeX = LEVEL3_BOSS_ATTACK_RANGE,
+    .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE,
+    .durationTics = LEVEL3_BOSS_ATTACK_DURATION_TICS,
+    .hitAnimTic = 0,
     .vx = 0,
     .vy = 0,
     .jump = 0
@@ -79,16 +102,16 @@ enum {
 static enemy_config_t level3_boss_config = {
   .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
   .attackConfig = level3_boss_attackConfig,
-  .attackWait = 0,
-  .postAttackInvincibleTics = 10,
-  .numAttacks = 1,
+  .minAttackWait = 5,
+  .postAttackInvincibleTics = 25,
+  .numAttacks = 2,
   .randomDistanceMask = 0x0,
   .randomFrequencyMask = 0xffff,
-  .speedX = 1,
+  .speedX = 2,
   .speedY = 2,
-  .intelligence = gunfighter_intelligence
+  .intelligence = 0
 };
-*/
+
 
 static fighter_attack_config_t level3_attackConfig1[] = {
   [OBJECT_PUNCH_LEFT1] = {
@@ -172,7 +195,8 @@ static enemy_config_t level3_enemy_configs[] = {
   [LEVEL3_EASY_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level3_attackConfig1,
-    .attackWait = LEVEL3_EASY_ATTACK_WAIT_TICS,
+    .minAttackWait = LEVEL3_EASY_MIN_ATTACK_WAIT_TICS,
+    .maxAttackWait = LEVEL3_EASY_MAX_ATTACK_WAIT_TICS,
     .randomDistanceMask = LEVEL3_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = LEVEL3_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 0,
@@ -184,7 +208,8 @@ static enemy_config_t level3_enemy_configs[] = {
   [LEVEL3_MEDIUM_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level3_attackConfig2,
-    .attackWait = LEVEL3_MEDIUM_ATTACK_WAIT_TICS,
+    .minAttackWait = LEVEL3_MEDIUM_MIN_ATTACK_WAIT_TICS,
+    .maxAttackWait = LEVEL3_MEDIUM_MAX_ATTACK_WAIT_TICS,
     .randomDistanceMask = LEVEL3_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = LEVEL3_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 0,
@@ -196,7 +221,8 @@ static enemy_config_t level3_enemy_configs[] = {
   [LEVEL3_HARD_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level3_attackConfig2,
-    .attackWait = LEVEL3_HARD_ATTACK_WAIT_TICS,
+    .minAttackWait = LEVEL3_HARD_MIN_ATTACK_WAIT_TICS,
+    .maxAttackWait = LEVEL3_HARD_MAX_ATTACK_WAIT_TICS,
     .randomDistanceMask = LEVEL3_HARD_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = LEVEL3_HARD_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 2,
@@ -450,39 +476,6 @@ level3_processEnemyConfig(uint16_t argument)
 
 
 static int16_t
-level3_addSixPack(uint16_t argument)
-{
-  int16_t y = GAME_PAVEMENT_START-28;
-  object_t* bottom = thing_add(OBJECT_ID_SIXPACK, OBJECT_ANIM_SIXPACK3, OBJECT_ANIM_SIXPACK3, 0, argument, y+32, 2, 0);
-
-  object_t* middle = thing_add(OBJECT_ID_SIXPACK, OBJECT_ANIM_SIXPACK2, OBJECT_ANIM_SIXPACK2, 0, argument, y+16, 0, 0);
-  object_set_z(middle, object_z(bottom)+1);
-  thing_data(middle)->platform = bottom;
-
-  object_t* top = thing_add(OBJECT_ID_SIXPACK, OBJECT_ANIM_SIXPACK1, OBJECT_ANIM_SIXPACK1, 0, argument, y, 0, 0);
-  object_set_z(top, object_y(bottom)+2);
-  thing_data(top)->platform = bottom;
-
-
-  return 1;
-}
-
-
-static int16_t
-level3_addSixPack2(uint16_t argument)
-{
-  int16_t y = GAME_PAVEMENT_START-28;
-  object_t* bottom = thing_add(OBJECT_ID_SIXPACK, OBJECT_ANIM_SIXPACK3, OBJECT_ANIM_SIXPACK3, 0, argument, y+32, 0, 0);
-
-  object_t* middle = thing_add(OBJECT_ID_SIXPACK, OBJECT_ANIM_SIXPACK2, OBJECT_ANIM_SIXPACK2, 0, argument, y+16, 0, 0);
-  object_set_z(middle, object_z(bottom)+1);
-  thing_data(middle)->platform = bottom;
-
-  return 1;
-}
-
-
-static int16_t
 level3_addLockers(uint16_t x, int16_t y)
 {
   thing_add(OBJECT_ID_LOCKER, OBJECT_ANIM_LOCKER1, OBJECT_ANIM_LOCKER1_BROKEN, OBJECT_ANIM_POSTBOX_JUNK1, x, y, 0, 0)->attributes |= OBJECT_ATTRIBUTE_IMMOVABLE;
@@ -591,9 +584,10 @@ static fighter_attack_config_t level3_punchingBag_attackConfig[] = {
 };
 
 static enemy_config_t level3_punchingBag_config = {
-  .attackRangeY = 5,
+  .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
   .attackConfig = level3_punchingBag_attackConfig,
-  .attackWait = 0,
+  .maxAttackWait = 0,
+  .minAttackWait = 0,
   .postAttackInvincibleTics = 0,
   .numAttacks = 1,
   .randomDistanceMask = 0,
@@ -655,42 +649,48 @@ level3_addLockers_3(uint16_t argument)
   return 1;
 }
 
-/*
+static int16_t
+level3_addLockers_5(uint16_t argument)
+{
+  level3_addLockers(argument+(SCREEN_WIDTH/4), GAME_PAVEMENT_START+8);
+
+  object_t* ptr = enemy_add(OBJECT_ANIM_PUNCHING_BAG_STAND_RIGHT, OBJECT_ATTRIBUTE_IMMOVABLE, argument, 150, &level3_punchingBag_config);
+  ptr->widthOffset = 0,
+  ptr->width = 16;
+
+  ptr = enemy_add(OBJECT_ANIM_PUNCHING_BAG_STAND_RIGHT, OBJECT_ATTRIBUTE_IMMOVABLE, argument+200, 170, &level3_punchingBag_config);
+  ptr->widthOffset = 0,
+  ptr->width = 16;
+
+
+  thing_add(OBJECT_ID_POMMEL_HORSE, OBJECT_ANIM_POMMEL_HORSE, OBJECT_ANIM_POMMEL_HORSE, 0, argument+100, 200, 2, 0);
+
+  return 1;
+}
+
+static int16_t
+level3_addBoss(uint16_t argument)
+{
+  enemy_add(OBJECT_ANIM_LEVEL3_BOSS_STAND_RIGHT, 0, argument, 100, &level3_boss_config);
+  return 1;
+}
+
 static int16_t
 level3_bossSequence(__UNUSED uint16_t argument)
 {
+  game_maxHealth();
+
   music_play(MUSIC_BOSS_1);
-  alarm_add(75, level3_restoreIntelligence, 0);
-  object_t* gf = gunfighter_add(&level3_gunfighterConfig, &level3_boss_config, SCREEN_WIDTH*5, 150);
-  fighter_data(gf)->health *= 4;
 
-  return 1;
-  }
-
-static int16_t
-level_addBossChairs(uint16_t argument)
-{
-  //    return 1;
-
-  thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR1, OBJECT_ANIM_CHAIR1, 0, argument+45, 100, 0, 0);
-  thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR2, OBJECT_ANIM_CHAIR2, 0, argument+85, 200, 0, 0);
-  thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR1, OBJECT_ANIM_CHAIR1, 0, argument+145, 120, 0, 0);
-  thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR2, OBJECT_ANIM_CHAIR2, 0, argument+185, 160, 0, 0);
-  thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR1, OBJECT_ANIM_CHAIR1, 0, argument+225, 90, 0, 0);
-  thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR2, OBJECT_ANIM_CHAIR2, 0, argument+245, 120, 0, 0);
-  thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR2, OBJECT_ANIM_CHAIR2, 0, argument+100, 180, 0, 0);
   return 1;
 }
-*/
-/*
-  00 11 22 33 44
-  *
-*/
 
 conductor_instruction_t level3_instructions[] = {
   /* type, cameraX, argument, callback */
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level3_start},
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 32, level3_addLockers_1},
+
+  //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level3_pause},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL3_WAVE1_1, level3_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL3_WAVE1_2, level3_processEnemyConfig},
@@ -725,8 +725,7 @@ conductor_instruction_t level3_instructions[] = {
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH*2, LEVEL3_WAVE5_4, level3_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), level_scroll},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+64, (SCREEN_WIDTH*3)+64, level3_addSixPack},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+128, (SCREEN_WIDTH*3)+128, level3_addSixPack2},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+32, (SCREEN_WIDTH*3)+32, level3_addLockers_3},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), LEVEL3_WAVE6_1, level3_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), LEVEL3_WAVE6_2, level3_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), LEVEL3_WAVE6_3, level3_processEnemyConfig},
@@ -739,6 +738,9 @@ conductor_instruction_t level3_instructions[] = {
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3), LEVEL3_WAVE7_4, level3_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH*4, level_scroll},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*4)+32, level3_addLockers_5},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*4)-1, (SCREEN_WIDTH*5)+100, level3_addBoss},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*4)-1, 0, level3_bossSequence},
   //  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3)+1, SCREEN_WIDTH*4, level_addBossChairs},
   //  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*4)-1, 0, level3_bossSequence},
 

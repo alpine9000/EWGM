@@ -1,99 +1,93 @@
 #include "game.h"
 
 enum {
-  LEVEL2_WAVE1_1,
-  LEVEL2_WAVE1_2,
-  LEVEL2_WAVE1_3,
-  LEVEL2_WAVE1_4,
+  LEVEL4_WAVE1_1,
+  LEVEL4_WAVE1_2,
+  LEVEL4_WAVE1_3,
+  LEVEL4_WAVE1_4,
 
-  LEVEL2_WAVE2_1,
-  LEVEL2_WAVE2_2,
-  LEVEL2_WAVE2_3,
-  LEVEL2_WAVE2_4,
+  LEVEL4_WAVE2_1,
+  LEVEL4_WAVE2_2,
+  LEVEL4_WAVE2_3,
+  LEVEL4_WAVE2_4,
 
-  LEVEL2_WAVE3_1,
-  LEVEL2_WAVE3_2,
-  LEVEL2_WAVE3_3,
-  LEVEL2_WAVE3_4,
+  LEVEL4_WAVE3_1,
+  LEVEL4_WAVE3_2,
+  LEVEL4_WAVE3_3,
+  LEVEL4_WAVE3_4,
 
-  LEVEL2_WAVE4_1,
-  LEVEL2_WAVE4_2,
-  LEVEL2_WAVE4_3,
-  LEVEL2_WAVE4_4,
+  LEVEL4_WAVE4_1,
+  LEVEL4_WAVE4_2,
+  LEVEL4_WAVE4_3,
+  LEVEL4_WAVE4_4,
 
-  LEVEL2_WAVE5_1,
-  LEVEL2_WAVE5_2,
-  LEVEL2_WAVE5_3,
-  LEVEL2_WAVE5_4,
+  LEVEL4_WAVE5_1,
+  LEVEL4_WAVE5_2,
+  LEVEL4_WAVE5_3,
+  LEVEL4_WAVE5_4,
 
-  LEVEL2_WAVE6_1,
-  LEVEL2_WAVE6_2,
-  LEVEL2_WAVE6_3,
-  LEVEL2_WAVE6_4,
+  LEVEL4_WAVE6_1,
+  LEVEL4_WAVE6_2,
+  LEVEL4_WAVE6_3,
+  LEVEL4_WAVE6_4,
 
-  LEVEL2_WAVE7_1,
-  LEVEL2_WAVE7_2,
-  LEVEL2_WAVE7_3,
-  LEVEL2_WAVE7_4,
+  LEVEL4_WAVE7_1,
+  LEVEL4_WAVE7_2,
+  LEVEL4_WAVE7_3,
+  LEVEL4_WAVE7_4,
 };
 
 enum {
-  LEVEL2_EASY_ENEMY = 0,
-  LEVEL2_MEDIUM_ENEMY = 1,
-  LEVEL2_HARD_ENEMY = 2,
-  LEVEL2_BASEBALL_ENEMY = 3,
+  LEVEL4_EASY_ENEMY = 0,
+  LEVEL4_MEDIUM_ENEMY = 1,
+  LEVEL4_HARD_ENEMY = 2,
+  LEVEL4_BASEBALL_ENEMY = 3,
 };
 
-#define LEVEL2_RANDOM_DISTANCE_MASK    0x7f //0x3f
-#define LEVEL2_RANDOM_FREQUENCY_MASK   0x7 //0x1f
-#define LEVEL2_HARD_RANDOM_DISTANCE_MASK  0xf
-#define LEVEL2_HARD_RANDOM_FREQUENCY_MASK 0x1f
+#define LEVEL4_RANDOM_DISTANCE_MASK    0x7f //0x3f
+#define LEVEL4_RANDOM_FREQUENCY_MASK   0x7 //0x1f
+#define LEVEL4_HARD_RANDOM_DISTANCE_MASK  0xf
+#define LEVEL4_HARD_RANDOM_FREQUENCY_MASK 0x1f
 
-#define LEVEL2_EASY_MIN_ATTACK_WAIT_TICS      15
-#define LEVEL2_EASY_MAX_ATTACK_WAIT_TICS      30
+#define LEVEL4_EASY_MIN_ATTACK_WAIT_TICS     5
+#define LEVEL4_EASY_MAX_ATTACK_WAIT_TICS     15
 
-#define LEVEL2_MEDIUM_MIN_ATTACK_WAIT_TICS    10
-#define LEVEL2_MEDIUM_MAX_ATTACK_WAIT_TICS    20
+#define LEVEL4_MEDIUM_MIN_ATTACK_WAIT_TICS   5
+#define LEVEL4_MEDIUM_MAX_ATTACK_WAIT_TICS   10
 
-#define LEVEL2_HARD_MIN_ATTACK_WAIT_TICS      15
-#define LEVEL2_HARD_MAX_ATTACK_WAIT_TICS      15
+#define LEVEL4_HARD_MIN_ATTACK_WAIT_TICS     5
+#define LEVEL4_HARD_MAX_ATTACK_WAIT_TICS     5
 
-#define LEVEL2_BOSS_MIN_ATTACK_WAIT_TICS      10
-#define LEVEL2_BOSS_MAX_ATTACK_WAIT_TICS      10
+#define LEVEL4_BASEBALL_ATTACK_DURATION_TICS (LEVEL4_3_ENEMY_ATTACK_TICS_PER_FRAME*3)
+#define LEVEL4_BOSS_ATTACK_RANGE         (SCREEN_WIDTH+32)
+#define LEVEL4_BOSS_ATTACK_DURATION_TICS (LEVEL4_BOSS_ATTACK_TICS_PER_FRAME*4)
 
-#define LEVEL2_BASEBALL_ENEMY_MIN_ATTACK_WAIT 15
-#define LEVEL2_BASEBALL_ENEMY_MAX_ATTACK_WAIT 15
-
-#define LEVEL2_BASEBALL_ATTACK_DURATION_TICS (LEVEL2_3_ENEMY_ATTACK_TICS_PER_FRAME*3)
-#define LEVEL2_BOSS_ATTACK_RANGE         (SCREEN_WIDTH+32)
-#define LEVEL2_BOSS_ATTACK_DURATION_TICS (LEVEL2_BOSS_ATTACK_TICS_PER_FRAME*4)
-
-static fighter_attack_config_t level2_boss_attackConfig[] = {
+static fighter_attack_config_t level4_boss_attackConfig[] = {
   [OBJECT_PUNCH_LEFT1] = {
-    .rangeX = LEVEL2_BOSS_ATTACK_RANGE,
+    .rangeX = LEVEL4_BOSS_ATTACK_RANGE,
     .dammage = 0,
-    .durationTics = LEVEL2_BOSS_ATTACK_DURATION_TICS,
-    .hitAnimTic = LEVEL2_BOSS_ATTACK_TICS_PER_FRAME*2,
+    .durationTics = LEVEL4_BOSS_ATTACK_DURATION_TICS,
+    .hitAnimTic = LEVEL4_BOSS_ATTACK_TICS_PER_FRAME*2,
     .vx = 0,
     .vy = 0,
     .jump = 0
   },
   [OBJECT_PUNCH_RIGHT1] =  {
-    .rangeX = LEVEL2_BOSS_ATTACK_RANGE,
+    .rangeX = LEVEL4_BOSS_ATTACK_RANGE,
     .dammage = 0,
-    .durationTics = LEVEL2_BOSS_ATTACK_DURATION_TICS,
-    .hitAnimTic = LEVEL2_BOSS_ATTACK_TICS_PER_FRAME*2,
+    .durationTics = LEVEL4_BOSS_ATTACK_DURATION_TICS,
+    .hitAnimTic = LEVEL4_BOSS_ATTACK_TICS_PER_FRAME*2,
     .vx = 0,
     .vy = 0,
     .jump = 0
   }
 };
 
-static enemy_config_t level2_boss_config = {
+static enemy_config_t level4_boss_config = {
   .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
-  .attackConfig = level2_boss_attackConfig,
-  .minAttackWait = LEVEL2_BOSS_MIN_ATTACK_WAIT_TICS,
-  .maxAttackWait = LEVEL2_BOSS_MAX_ATTACK_WAIT_TICS,
+  .attackConfig = level4_boss_attackConfig,
+  .minAttackWait = 0,
+  .maxAttackWait = 0,
   .postAttackInvincibleTics = 10,
   .numAttacks = 1,
   .randomDistanceMask = 0x0,
@@ -104,7 +98,7 @@ static enemy_config_t level2_boss_config = {
 };
 
 
-static fighter_attack_config_t level2_attackConfig1[] = {
+static fighter_attack_config_t level4_attackConfig1[] = {
   [OBJECT_PUNCH_LEFT1] = {
     .rangeX = FIGHTER_LONG_PUNCH_RANGE,
     .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE,
@@ -143,7 +137,7 @@ static fighter_attack_config_t level2_attackConfig1[] = {
   }
 };
 
-static fighter_attack_config_t level2_attackConfig2[] = {
+static fighter_attack_config_t level4_attackConfig2[] = {
   [OBJECT_PUNCH_LEFT1] = {
     .rangeX = FIGHTER_LONG_PUNCH_RANGE,
     .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE*2,
@@ -182,12 +176,12 @@ static fighter_attack_config_t level2_attackConfig2[] = {
   }
 };
 
-static fighter_attack_config_t level2_baseballAttackConfig[] = {
+static fighter_attack_config_t level4_baseballAttackConfig[] = {
 [OBJECT_PUNCH_LEFT1] = {
     .rangeX = 16,
     .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE,
-    .durationTics = LEVEL2_BASEBALL_ATTACK_DURATION_TICS,
-    .hitAnimTic = LEVEL2_3_ENEMY_ATTACK_TICS_PER_FRAME,
+    .durationTics = LEVEL4_BASEBALL_ATTACK_DURATION_TICS,
+    .hitAnimTic = LEVEL4_3_ENEMY_ATTACK_TICS_PER_FRAME,
     .vx = 0,
     .vy = 0,
     .jump = 0
@@ -196,8 +190,8 @@ static fighter_attack_config_t level2_baseballAttackConfig[] = {
   [OBJECT_PUNCH_RIGHT1] =  {
     .rangeX = 16,
     .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE,
-    .durationTics = LEVEL2_BASEBALL_ATTACK_DURATION_TICS,
-    .hitAnimTic = LEVEL2_3_ENEMY_ATTACK_TICS_PER_FRAME,
+    .durationTics = LEVEL4_BASEBALL_ATTACK_DURATION_TICS,
+    .hitAnimTic = LEVEL4_3_ENEMY_ATTACK_TICS_PER_FRAME,
     .vx = 0,
     .vy = 0,
     .jump = 0
@@ -205,52 +199,52 @@ static fighter_attack_config_t level2_baseballAttackConfig[] = {
 
 };
 
-static enemy_config_t level2_enemy_configs[] = {
-  [LEVEL2_EASY_ENEMY] = {
+static enemy_config_t level4_enemy_configs[] = {
+  [LEVEL4_EASY_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
-    .attackConfig = level2_attackConfig1,
-    .minAttackWait = LEVEL2_EASY_MIN_ATTACK_WAIT_TICS,
-    .maxAttackWait = LEVEL2_EASY_MAX_ATTACK_WAIT_TICS,
-    .randomDistanceMask = LEVEL2_RANDOM_DISTANCE_MASK,
-    .randomFrequencyMask = LEVEL2_RANDOM_FREQUENCY_MASK,
+    .attackConfig = level4_attackConfig1,
+    .minAttackWait = LEVEL4_EASY_MIN_ATTACK_WAIT_TICS,
+    .maxAttackWait = LEVEL4_EASY_MAX_ATTACK_WAIT_TICS,
+    .randomDistanceMask = LEVEL4_RANDOM_DISTANCE_MASK,
+    .randomFrequencyMask = LEVEL4_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 0,
     .numAttacks = ENEMY_DEFAULT_NUM_ATTACKS,
     .speedX = ENEMY_DEFAULT_SPEED,
     .speedY = ENEMY_DEFAULT_SPEED,
     .intelligence = 0
   },
-  [LEVEL2_MEDIUM_ENEMY] = {
+  [LEVEL4_MEDIUM_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
-    .attackConfig = level2_attackConfig2,
-    .minAttackWait = LEVEL2_MEDIUM_MIN_ATTACK_WAIT_TICS,
-    .maxAttackWait = LEVEL2_MEDIUM_MAX_ATTACK_WAIT_TICS,
-    .randomDistanceMask = LEVEL2_RANDOM_DISTANCE_MASK,
-    .randomFrequencyMask = LEVEL2_RANDOM_FREQUENCY_MASK,
+    .attackConfig = level4_attackConfig2,
+    .minAttackWait = LEVEL4_MEDIUM_MIN_ATTACK_WAIT_TICS,
+    .maxAttackWait = LEVEL4_MEDIUM_MAX_ATTACK_WAIT_TICS,
+    .randomDistanceMask = LEVEL4_RANDOM_DISTANCE_MASK,
+    .randomFrequencyMask = LEVEL4_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 0,
     .numAttacks = ENEMY_DEFAULT_NUM_ATTACKS,
     .speedX = ENEMY_DEFAULT_SPEED,
     .speedY = ENEMY_DEFAULT_SPEED,
     .intelligence = 0
   },
-  [LEVEL2_HARD_ENEMY] = {
+  [LEVEL4_HARD_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
-    .attackConfig = level2_attackConfig2,
-    .minAttackWait = LEVEL2_HARD_MIN_ATTACK_WAIT_TICS,
-    .maxAttackWait = LEVEL2_HARD_MAX_ATTACK_WAIT_TICS,
-    .randomDistanceMask = LEVEL2_HARD_RANDOM_DISTANCE_MASK,
-    .randomFrequencyMask = LEVEL2_HARD_RANDOM_FREQUENCY_MASK,
+    .attackConfig = level4_attackConfig2,
+    .minAttackWait = LEVEL4_HARD_MIN_ATTACK_WAIT_TICS,
+    .maxAttackWait = LEVEL4_HARD_MAX_ATTACK_WAIT_TICS,
+    .randomDistanceMask = LEVEL4_HARD_RANDOM_DISTANCE_MASK,
+    .randomFrequencyMask = LEVEL4_HARD_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 2,
     .numAttacks = ENEMY_DEFAULT_NUM_ATTACKS,
     .speedX = ENEMY_DEFAULT_SPEED*2,
     .speedY = ENEMY_DEFAULT_SPEED,
     .intelligence = 0
   },
-  [LEVEL2_BASEBALL_ENEMY] = {
+  [LEVEL4_BASEBALL_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE+2,
-    .attackConfig = level2_baseballAttackConfig,
-    .minAttackWait = LEVEL2_BASEBALL_ENEMY_MIN_ATTACK_WAIT,
-    .maxAttackWait = LEVEL2_BASEBALL_ENEMY_MAX_ATTACK_WAIT,
-    .randomDistanceMask = LEVEL2_RANDOM_DISTANCE_MASK,
+    .attackConfig = level4_baseballAttackConfig,
+    .minAttackWait = 15,
+    .maxAttackWait = 15,
+    .randomDistanceMask = LEVEL4_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = 0xffff,
     .postAttackInvincibleTics = 10,
     .numAttacks = 1,
@@ -260,222 +254,222 @@ static enemy_config_t level2_enemy_configs[] = {
   }
 };
 
-static level_enemy_config_t level2_configs[] = {
-  [LEVEL2_WAVE1_1] = {
+static level_enemy_config_t level4_configs[] = {
+  [LEVEL4_WAVE1_1] = {
     .x = -48,
     .y = GAME_PAVEMENT_START+100,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_1_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_EASY_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_EASY_ENEMY],
     .enemyCount = 0,
   },
-  [LEVEL2_WAVE1_2] = {
+  [LEVEL4_WAVE1_2] = {
     .x = SCREEN_WIDTH+48,
     .y = GAME_PAVEMENT_START+80,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_2_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_EASY_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_EASY_ENEMY],
     .enemyCount = 1,
   },
-  [LEVEL2_WAVE1_3] = {
+  [LEVEL4_WAVE1_3] = {
     .x = SCREEN_WIDTH+48,
     .y = GAME_PAVEMENT_START+60,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_1_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_EASY_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_EASY_ENEMY],
     .enemyCount = 0,
   },
-  [LEVEL2_WAVE1_4] = {
+  [LEVEL4_WAVE1_4] = {
     .x = -48,
     .y = GAME_PAVEMENT_START+180,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_2_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_EASY_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_EASY_ENEMY],
     .enemyCount = 1,
   },
   /*======================*/
-  [LEVEL2_WAVE2_1] = {
+  [LEVEL4_WAVE2_1] = {
     .x = -34,
     .y = GAME_PAVEMENT_START+80,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_1_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_MEDIUM_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_MEDIUM_ENEMY],
     .enemyCount = 0,
   },
-  [LEVEL2_WAVE2_2] = {
+  [LEVEL4_WAVE2_2] = {
     .x = -34,
     .y = GAME_PAVEMENT_START+180,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_2_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_MEDIUM_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_MEDIUM_ENEMY],
     .enemyCount = 1,
   },
-  [LEVEL2_WAVE2_3] = {
+  [LEVEL4_WAVE2_3] = {
     .x = SCREEN_WIDTH+34,
     .y = GAME_PAVEMENT_START+32,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_2_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_MEDIUM_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_MEDIUM_ENEMY],
     .enemyCount = 2,
   },
-  [LEVEL2_WAVE2_4] = {
+  [LEVEL4_WAVE2_4] = {
     .x = SCREEN_WIDTH+34,
     .y = GAME_PAVEMENT_START+132,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_3_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_BASEBALL_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_BASEBALL_ENEMY],
     .enemyCount = 0,
   },
   /*======================*/
 
-  [LEVEL2_WAVE3_1] = {
+  [LEVEL4_WAVE3_1] = {
     .x = -34,
     .y = GAME_PAVEMENT_START+80,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_1_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_MEDIUM_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_MEDIUM_ENEMY],
     .enemyCount = 0,
   },
-  [LEVEL2_WAVE3_2] = {
+  [LEVEL4_WAVE3_2] = {
     .x = -34,
     .y = GAME_PAVEMENT_START+180,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_3_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_BASEBALL_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_BASEBALL_ENEMY],
     .enemyCount = 1,
   },
-  [LEVEL2_WAVE3_3] = {
+  [LEVEL4_WAVE3_3] = {
     .x = SCREEN_WIDTH+34,
     .y = GAME_PAVEMENT_START+32,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_2_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_MEDIUM_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_MEDIUM_ENEMY],
     .enemyCount = 0,
   },
-  [LEVEL2_WAVE3_4] = {
+  [LEVEL4_WAVE3_4] = {
     .x = SCREEN_WIDTH+34,
     .y = GAME_PAVEMENT_START+132,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_3_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_BASEBALL_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_BASEBALL_ENEMY],
     .enemyCount = 1,
   },
 
   /*======================*/
 
-  [LEVEL2_WAVE4_1] = {
+  [LEVEL4_WAVE4_1] = {
     .x = -34,
     .y = GAME_PAVEMENT_START+80,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_1_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_MEDIUM_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_MEDIUM_ENEMY],
     .enemyCount = 0,
   },
-  [LEVEL2_WAVE4_2] = {
+  [LEVEL4_WAVE4_2] = {
     .x = -34,
     .y = GAME_PAVEMENT_START+180,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_3_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_BASEBALL_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_BASEBALL_ENEMY],
     .enemyCount = 1,
   },
-  [LEVEL2_WAVE4_3] = {
+  [LEVEL4_WAVE4_3] = {
     .x = SCREEN_WIDTH+34,
     .y = GAME_PAVEMENT_START+32,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_2_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_MEDIUM_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_MEDIUM_ENEMY],
     .enemyCount = 2,
   },
-  [LEVEL2_WAVE4_4] = {
+  [LEVEL4_WAVE4_4] = {
     .x = SCREEN_WIDTH+34,
     .y = GAME_PAVEMENT_START+132,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_3_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_BASEBALL_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_BASEBALL_ENEMY],
     .enemyCount = 3,
   },
 
 /*======================*/
 
-  [LEVEL2_WAVE5_1] = {
+  [LEVEL4_WAVE5_1] = {
     .x = -34,
     .y = GAME_PAVEMENT_START+80,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_1_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_MEDIUM_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_MEDIUM_ENEMY],
     .enemyCount = 0,
   },
-  [LEVEL2_WAVE5_2] = {
+  [LEVEL4_WAVE5_2] = {
     .x = -34,
     .y = GAME_PAVEMENT_START+180,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_3_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_BASEBALL_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_BASEBALL_ENEMY],
     .enemyCount = 1,
   },
-  [LEVEL2_WAVE5_3] = {
+  [LEVEL4_WAVE5_3] = {
     .x = SCREEN_WIDTH+34,
     .y = GAME_PAVEMENT_START+32,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_2_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_MEDIUM_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_MEDIUM_ENEMY],
     .enemyCount = 2,
   },
-  [LEVEL2_WAVE5_4] = {
+  [LEVEL4_WAVE5_4] = {
     .x = SCREEN_WIDTH+34,
     .y = GAME_PAVEMENT_START+132,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_3_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_BASEBALL_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_BASEBALL_ENEMY],
     .enemyCount = 3,
   },
 
   /*======================*/
 
-  [LEVEL2_WAVE6_1] = {
+  [LEVEL4_WAVE6_1] = {
     .x = -34,
     .y = GAME_PAVEMENT_START+80,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_1_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_HARD_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_HARD_ENEMY],
     .enemyCount = 0,
   },
-  [LEVEL2_WAVE6_2] = {
+  [LEVEL4_WAVE6_2] = {
     .x = -34,
     .y = GAME_PAVEMENT_START+180,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_2_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_HARD_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_HARD_ENEMY],
     .enemyCount = 1,
   },
-  [LEVEL2_WAVE6_3] = {
+  [LEVEL4_WAVE6_3] = {
     .x = SCREEN_WIDTH+34,
     .y = GAME_PAVEMENT_START+32,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_1_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_HARD_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_HARD_ENEMY],
     .enemyCount = 2,
   },
-  [LEVEL2_WAVE6_4] = {
+  [LEVEL4_WAVE6_4] = {
     .x = SCREEN_WIDTH+34,
     .y = GAME_PAVEMENT_START+132,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_2_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_HARD_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_HARD_ENEMY],
     .enemyCount = 3,
   } ,
 
   /*======================*/
 
-  [LEVEL2_WAVE7_1] = {
+  [LEVEL4_WAVE7_1] = {
     .x = -34,
     .y = GAME_PAVEMENT_START+80,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_3_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_BASEBALL_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_BASEBALL_ENEMY],
     .enemyCount = 0,
   },
-  [LEVEL2_WAVE7_2] = {
+  [LEVEL4_WAVE7_2] = {
     .x = -34,
     .y = GAME_PAVEMENT_START+180,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_3_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_BASEBALL_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_BASEBALL_ENEMY],
     .enemyCount = 1,
   },
-  [LEVEL2_WAVE7_3] = {
+  [LEVEL4_WAVE7_3] = {
     .x = SCREEN_WIDTH+34,
     .y = GAME_PAVEMENT_START+32,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_3_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_BASEBALL_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_BASEBALL_ENEMY],
     .enemyCount = 2,
   },
-  [LEVEL2_WAVE7_4] = {
+  [LEVEL4_WAVE7_4] = {
     .x = SCREEN_WIDTH+34,
     .y = GAME_PAVEMENT_START+132,
     .animId = OBJECT_ANIM_ENEMY_LEVEL2_3_STAND_RIGHT,
-    .config = &level2_enemy_configs[LEVEL2_BASEBALL_ENEMY],
+    .config = &level4_enemy_configs[LEVEL4_BASEBALL_ENEMY],
     .enemyCount = 3,
   } ,
 };
 
 static
-gunfighter_config_t level2_gunfighterConfig = {
+gunfighter_config_t level4_gunfighterConfig = {
   .animId = OBJECT_ANIM_LEVEL2_BOSS_STAND_RIGHT,
   .bulletAnimId = OBJECT_ANIM_BULLET_RIGHT,
   .bulletSpeed = 16,
@@ -487,9 +481,9 @@ gunfighter_config_t level2_gunfighterConfig = {
 
 
 static int16_t
-level2_processEnemyConfig(uint16_t argument)
+level4_processEnemyConfig(uint16_t argument)
 {
-  level_enemy_config_t* ptr = &level2_configs[argument];
+  level_enemy_config_t* ptr = &level4_configs[argument];
   if (ptr->enemyCount >= 0) {
     if (enemy_count <= ptr->enemyCount) {
       enemy_add(ptr->animId, 0, game_cameraX + ptr->x, ptr->y, ptr->config);
@@ -502,7 +496,7 @@ level2_processEnemyConfig(uint16_t argument)
 
 
 static int16_t
-level2_addSixPack(uint16_t argument)
+level4_addSixPack(uint16_t argument)
 {
   int16_t y = GAME_PAVEMENT_START-28;
   object_t* bottom = thing_add(OBJECT_ID_SIXPACK, OBJECT_ANIM_SIXPACK3, OBJECT_ANIM_SIXPACK3, 0, argument, y+32, 2, 0);
@@ -521,7 +515,7 @@ level2_addSixPack(uint16_t argument)
 
 
 static int16_t
-level2_addSixPack2(uint16_t argument)
+level4_addSixPack2(uint16_t argument)
 {
   int16_t y = GAME_PAVEMENT_START-28;
   object_t* bottom = thing_add(OBJECT_ID_SIXPACK, OBJECT_ANIM_SIXPACK3, OBJECT_ANIM_SIXPACK3, 0, argument, y+32, 0, 0);
@@ -535,7 +529,7 @@ level2_addSixPack2(uint16_t argument)
 
 
 static int16_t
-level2_addTableAndChairs(uint16_t x, int16_t y, int16_t beerX, int16_t bonusType)
+level4_addTableAndChairs(uint16_t x, int16_t y, int16_t beerX, int16_t bonusType)
 {
   object_t* table = thing_add(OBJECT_ID_TABLE, OBJECT_ANIM_TABLE, OBJECT_ANIM_TABLE, 0, x+15, y, 0, 0);
   thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR1, OBJECT_ANIM_CHAIR1, 0, x+45+15, y, 1, THING_BONUS_TYPE_HEALTH);
@@ -548,18 +542,18 @@ level2_addTableAndChairs(uint16_t x, int16_t y, int16_t beerX, int16_t bonusType
   return 1;
 }
 
-uint16_t level2_bossSequenceMaxX;
+uint16_t level4_bossSequenceMaxX;
 
 //#ifdef DEBUG
 int16_t
-level2_pause(__UNUSED uint16_t argument)
+level4_pause(__UNUSED uint16_t argument)
 {
   return 0;
 }
 //#endif
 
 static void
-level2_restoreIntelligence(__UNUSED void* data)
+level4_restoreIntelligence(__UNUSED void* data)
 {
   if (game_player1) {
     game_player1->collisionsEnabled = 1;
@@ -581,21 +575,21 @@ level2_restoreIntelligence(__UNUSED void* data)
 
 
 uint16_t
-level2_playerIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
+level4_playerIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
   uint16_t attack = player_intelligence(deltaT, ptr, data);
 
-  if (object_x(ptr) >= level2_bossSequenceMaxX) {
+  if (object_x(ptr) >= level4_bossSequenceMaxX) {
     ptr->velocity.x = 0;
   }
 
   if (game_player1 && game_player2) {
-    if (object_x(game_player1) >= level2_bossSequenceMaxX &&
-	object_x(game_player2) >= level2_bossSequenceMaxX ) {
+    if (object_x(game_player1) >= level4_bossSequenceMaxX &&
+	object_x(game_player2) >= level4_bossSequenceMaxX ) {
       game_requestCameraX(SCREEN_WIDTH*4);
     }
   } else {
-    if (object_x(ptr) >= level2_bossSequenceMaxX) {
+    if (object_x(ptr) >= level4_bossSequenceMaxX) {
       game_requestCameraX(SCREEN_WIDTH*4);
     }
   }
@@ -604,16 +598,16 @@ level2_playerIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 }
 
 static int16_t
-level2_start(__UNUSED uint16_t argument)
+level4_start(__UNUSED uint16_t argument)
 {
-  level2_bossSequenceMaxX = SCREEN_WIDTH*4;
+  level4_bossSequenceMaxX = SCREEN_WIDTH*4;
 
   if (game_player1) {
-    fighter_data(game_player1)->intelligence = level2_playerIntelligence;
+    fighter_data(game_player1)->intelligence = level4_playerIntelligence;
   }
 
   if (game_player2) {
-    fighter_data(game_player2)->intelligence = level2_playerIntelligence;
+    fighter_data(game_player2)->intelligence = level4_playerIntelligence;
   }
 
   return 1;
@@ -621,42 +615,40 @@ level2_start(__UNUSED uint16_t argument)
 
 
 static int16_t
-level2_addTableAndChairs_1(uint16_t argument)
+level4_addTableAndChairs_1(uint16_t argument)
 {
-  level2_addTableAndChairs(argument, 180, 0, THING_BONUS_TYPE_HEALTH);
+  level4_addTableAndChairs(argument, 180, 0, THING_BONUS_TYPE_HEALTH);
   return 1;
 }
 
 static int16_t
-level2_addTableAndChairs_2(uint16_t argument)
+level4_addTableAndChairs_2(uint16_t argument)
 {
-  level2_addTableAndChairs(argument, 120, 20, THING_BONUS_TYPE_HEALTH);
+  level4_addTableAndChairs(argument, 120, 20, THING_BONUS_TYPE_HEALTH);
   return 1;
 }
 
 static int16_t
-level2_addTableAndChairs_3(uint16_t argument)
+level4_addTableAndChairs_3(uint16_t argument)
 {
-  level2_addTableAndChairs(argument, 180, 40, THING_BONUS_TYPE_HEALTH);
+  level4_addTableAndChairs(argument, 180, 40, THING_BONUS_TYPE_HEALTH);
   return 1;
 }
 
 
 static int16_t
-level2_bossSequence(__UNUSED uint16_t argument)
+level4_bossSequence(__UNUSED uint16_t argument)
 {
-  game_maxHealth();
-
   music_play(MUSIC_BOSS_1);
-  alarm_add(75, level2_restoreIntelligence, 0);
-  object_t* gf = gunfighter_add(&level2_gunfighterConfig, &level2_boss_config, SCREEN_WIDTH*5, 150);
+  alarm_add(75, level4_restoreIntelligence, 0);
+  object_t* gf = gunfighter_add(&level4_gunfighterConfig, &level4_boss_config, SCREEN_WIDTH*5, 150);
   fighter_data(gf)->health *= 4;
 
   return 1;
 }
 
 static int16_t
-level_addBossChairs(uint16_t argument)
+level4_addBossChairs(uint16_t argument)
 {
   //    return 1;
 
@@ -675,60 +667,60 @@ level_addBossChairs(uint16_t argument)
   *
 */
 
-conductor_instruction_t level2_instructions[] = {
+conductor_instruction_t level4_instructions[] = {
   /* type, cameraX, argument, callback */
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level2_start},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 32, level2_addTableAndChairs_1},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level4_start},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 32, level4_addTableAndChairs_1},
 
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_1, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_2, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_3, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL2_WAVE1_4, level2_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL4_WAVE1_1, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL4_WAVE1_2, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL4_WAVE1_3, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL4_WAVE1_4, level4_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH/2, level_scroll},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 32, SCREEN_WIDTH+32, level2_addTableAndChairs_2},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 32, SCREEN_WIDTH+32, level4_addTableAndChairs_2},
 
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL2_WAVE2_1, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL2_WAVE2_2, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL2_WAVE2_3, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL2_WAVE2_4, level2_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL4_WAVE2_1, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL4_WAVE2_2, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL4_WAVE2_3, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH/2, LEVEL4_WAVE2_4, level4_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH, level_scroll},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL2_WAVE3_1, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL2_WAVE3_2, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL2_WAVE3_3, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL2_WAVE3_4, level2_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL4_WAVE3_1, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL4_WAVE3_2, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL4_WAVE3_3, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH, LEVEL4_WAVE3_4, level4_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH+(SCREEN_WIDTH/2), level_scroll},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+32, (SCREEN_WIDTH*2)+32, level2_addTableAndChairs_3},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+(SCREEN_WIDTH/2), LEVEL2_WAVE4_1, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+(SCREEN_WIDTH/2), LEVEL2_WAVE4_2, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+(SCREEN_WIDTH/2), LEVEL2_WAVE4_3, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+(SCREEN_WIDTH/2), LEVEL2_WAVE4_4, level2_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+32, (SCREEN_WIDTH*2)+32, level4_addTableAndChairs_3},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+(SCREEN_WIDTH/2), LEVEL4_WAVE4_1, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+(SCREEN_WIDTH/2), LEVEL4_WAVE4_2, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+(SCREEN_WIDTH/2), LEVEL4_WAVE4_3, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH+(SCREEN_WIDTH/2), LEVEL4_WAVE4_4, level4_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH*2, level_scroll},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH*2, LEVEL2_WAVE5_1, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH*2, LEVEL2_WAVE5_2, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH*2, LEVEL2_WAVE5_3, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH*2, LEVEL2_WAVE5_4, level2_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH*2, LEVEL4_WAVE5_1, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH*2, LEVEL4_WAVE5_2, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH*2, LEVEL4_WAVE5_3, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH*2, LEVEL4_WAVE5_4, level4_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), level_scroll},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+64, (SCREEN_WIDTH*3)+64, level2_addSixPack},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+128, (SCREEN_WIDTH*3)+128, level2_addSixPack2},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), LEVEL2_WAVE6_1, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), LEVEL2_WAVE6_2, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), LEVEL2_WAVE6_3, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), LEVEL2_WAVE6_4, level2_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+64, (SCREEN_WIDTH*3)+64, level4_addSixPack},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+128, (SCREEN_WIDTH*3)+128, level4_addSixPack2},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), LEVEL4_WAVE6_1, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), LEVEL4_WAVE6_2, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), LEVEL4_WAVE6_3, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), LEVEL4_WAVE6_4, level4_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*3), level_scroll},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3), LEVEL2_WAVE7_1, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3), LEVEL2_WAVE7_2, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3), LEVEL2_WAVE7_3, level2_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3), LEVEL2_WAVE7_4, level2_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3), LEVEL4_WAVE7_1, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3), LEVEL4_WAVE7_2, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3), LEVEL4_WAVE7_3, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3), LEVEL4_WAVE7_4, level4_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, SCREEN_WIDTH*4, level_scroll},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3)+1, SCREEN_WIDTH*4, level_addBossChairs},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*4)-1, 0, level2_bossSequence},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3)+1, SCREEN_WIDTH*4, level4_addBossChairs},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*4)-1, 0, level4_bossSequence},
 
   {CONDUCTOR_INSTRUCTION_END, 0, 0, 0},
 };

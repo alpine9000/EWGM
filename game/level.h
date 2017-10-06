@@ -1,10 +1,10 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
-#define LEVEL_NUM_LEVELS 3
+#define LEVEL_NUM_LEVELS 4
 
 typedef struct {
-  uint16_t tileAddresses[MAP_TILE_WIDTH][16];
+  uint16_t tileAddresses[MAP_MAX_TILE_WIDTH][16];
   uint16_t palette[32];
   uint16_t greyPalette[32];
   uint16_t moduleIndex;

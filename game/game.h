@@ -39,7 +39,12 @@
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
 
-#define MAP_TILE_WIDTH           100
+#define MAP_LEVEL1_TILE_WIDTH    100
+#define MAP_LEVEL2_TILE_WIDTH    100
+#define MAP_LEVEL3_TILE_WIDTH    100
+#define MAP_LEVEL4_TILE_WIDTH    140
+
+#define MAP_MAX_TILE_WIDTH       140
 #define MAP_TILE_HEIGHT          13
 #define TILE_WIDTH               16
 #define TILE_HEIGHT              16
@@ -59,7 +64,7 @@
 #define FRAME_BUFFER_WIDTH       (SCREEN_WIDTH+48)
 #define FRAME_BUFFER_WIDTH_BYTES (FRAME_BUFFER_WIDTH/8)
 #define FRAME_BUFFER_OFFSCREEN_HEIGHT 0
-#define FRAME_BUFFER_HORIZONTAL_SCROLL_LINES (((FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH)/((MAP_TILE_WIDTH*2)))+1)
+#define FRAME_BUFFER_HORIZONTAL_SCROLL_LINES (((FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH)/((MAP_MAX_TILE_WIDTH*2)))+1)
 #define FRAME_BUFFER_NUM_LINES   ((PLAYAREA_HEIGHT+FRAME_BUFFER_OFFSCREEN_HEIGHT+FRAME_BUFFER_HORIZONTAL_SCROLL_LINES))
 #define FRAME_BUFFER_MAX_HEIGHT  (FRAME_BUFFER_NUM_LINES-1)
 
@@ -84,7 +89,11 @@
 #define GAME_PAVEMENT_START      66
 
 #define GAME_WORLD_HEIGHT        (MAP_TILE_HEIGHT*TILE_HEIGHT)
-#define GAME_WORLD_WIDTH         (MAP_TILE_WIDTH*TILE_WIDTH)
+#define GAME_LEVEL1_WORLD_WIDTH  (MAP_LEVEL1_TILE_WIDTH*TILE_WIDTH)
+#define GAME_LEVEL2_WORLD_WIDTH  (MAP_LEVEL2_TILE_WIDTH*TILE_WIDTH)
+#define GAME_LEVEL3_WORLD_WIDTH  (MAP_LEVEL3_TILE_WIDTH*TILE_WIDTH)
+#define GAME_LEVEL4_WORLD_WIDTH  (MAP_LEVEL4_TILE_WIDTH*TILE_WIDTH)
+
 
 #define GAME_PLAYER1_HEALTH_SCOREBOARD_X 225
 #define GAME_PLAYER2_HEALTH_SCOREBOARD_X 50
@@ -190,6 +199,7 @@ extern uint16_t game_startReplay;
 extern uint16_t game_startLevelIndex;
 #endif
 extern uint16_t player1_character;
+extern uint16_t game_maxScrollX;
 
 enum {
   GAME_DIFFICULTY_EASY,
@@ -227,6 +237,7 @@ enum {
 #include "level1.h"
 #include "level2.h"
 #include "level3.h"
+#include "level4.h"
 #include "level.h"
 #include "mouse.h"
 #include "tile.h"
@@ -272,6 +283,8 @@ void
 game_updatePlayer1Health(uint16_t x, int16_t health);
 void
 game_updatePlayer2Health(uint16_t x, int16_t health);
+void
+game_maxHealth(void);
 #ifdef DEBUG
 void
 game_checkCanary(void);

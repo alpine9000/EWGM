@@ -260,7 +260,16 @@ fighter_doAttack(object_t* ptr, fighter_data_t* data)
   ptr->velocity.x = attackConfig->vx;
   ptr->velocity.y = attackConfig->vy;
   data->attackCount = attackConfig->durationTics;
-  data->enemyAttackWait = data->enemyAttackWaitTics + data->attackCount;
+
+  uint16_t rn = random();
+  if (data->maxAttackWaitTics) {
+    data->attackWait = rn % data->maxAttackWaitTics;// + data->attackCount;
+    if (data->attackWait < data->minAttackWaitTics) {
+      data->attackWait = data->minAttackWaitTics;
+    }
+  } else {
+    data->attackWait = 0;
+  }
   data->attackJump = attackConfig->jump;
   data->attackJumpY = object_py(ptr);
 
@@ -347,7 +356,9 @@ fighter_update(uint16_t deltaT, object_t* ptr)
 {
   fighter_data_t* data = fighter_data(ptr);
 
-  uint16_t attack = data->intelligence(deltaT, ptr, data);
+  uint16_t attack = 0;
+
+  attack = data->intelligence(deltaT, ptr, data);
 
   if (!data->attackQueued && attack) {
     data->attackQueued = 1;

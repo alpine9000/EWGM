@@ -6,7 +6,7 @@
 #define ENEMY_INTERCEPT_Y_THRESHOLD         2
 #define ENEMY_INITIAL_HEALTH                100
 
-#define ENEMY_DEFAULT_ATTACK_WAIT_TICS      25
+#define ENEMY_DEFAULT_ATTACK_WAIT_TICS      45
 #define ENEMY_DEFAULT_ATTACK_DURATION_TICS  20
 #define ENEMY_DEFAULT_NUM_ATTACKS           2
 #define ENEMY_DEFAULT_SPEED                 1
@@ -20,7 +20,8 @@ extern uint16_t enemy_pause;
 
 typedef struct {
   fighter_attack_config_t* attackConfig;
-  uint16_t attackWait;
+  uint16_t minAttackWait;
+  uint16_t maxAttackWait;
   uint16_t attackRangeY;
   uint16_t postAttackInvincibleTics;
   uint16_t randomFrequencyMask;

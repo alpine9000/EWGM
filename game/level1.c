@@ -1,7 +1,7 @@
 #include "game.h"
 
 #define LEVEL1_ENEMY_BOSS_START_Y (6+56)
-#define LEVEL1_ENEMY_BOSS_START_X (GAME_WORLD_WIDTH-96)
+#define LEVEL1_ENEMY_BOSS_START_X (GAME_LEVEL1_WORLD_WIDTH-96)
 
 #define LEVEL1_RANDOM_DISTANCE_MASK  0x7f //0x3f
 #define LEVEL1_RANDOM_FREQUENCY_MASK 0x7 //0x1f
@@ -9,10 +9,17 @@
 #define LEVEL1_BOSS_ATTACK_DAMMAGE   20
 #define LEVEL1_BOSS_ATTACK_RANGE     20
 
-#define LEVEL1_EASY_ATTACK_WAIT_TICS   25
-#define LEVEL1_MEDIUM_ATTACK_WAIT_TICS 15
-#define LEVEL1_HARD_ATTACK_WAIT_TICS   0
-#define LEVEL1_BOSS_ATTACK_WAIT_TICS   15
+#define LEVEL1_EASY_MIN_ATTACK_WAIT_TICS   25
+#define LEVEL1_EASY_MAX_ATTACK_WAIT_TICS   50
+
+#define LEVEL1_MEDIUM_MIN_ATTACK_WAIT_TICS 10
+#define LEVEL1_MEDIUM_MAX_ATTACK_WAIT_TICS 30
+
+#define LEVEL1_HARD_MIN_ATTACK_WAIT_TICS   5
+#define LEVEL1_HARD_MAX_ATTACK_WAIT_TICS   20
+
+#define LEVEL1_BOSS_MIN_ATTACK_WAIT_TICS   25
+#define LEVEL1_BOSS_MAX_ATTACK_WAIT_TICS   25
 
 static uint16_t
 level1_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data);
@@ -163,7 +170,8 @@ static enemy_config_t level1_enemy_configs[] = {
   [LEVEL1_EASY_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level1_attackConfig1,
-    .attackWait = LEVEL1_EASY_ATTACK_WAIT_TICS,
+    .minAttackWait = LEVEL1_EASY_MIN_ATTACK_WAIT_TICS,
+    .maxAttackWait = LEVEL1_EASY_MAX_ATTACK_WAIT_TICS,
     .randomDistanceMask = LEVEL1_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = LEVEL1_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 0,
@@ -175,7 +183,8 @@ static enemy_config_t level1_enemy_configs[] = {
   [LEVEL1_MEDIUM_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level1_attackConfig1,
-    .attackWait = LEVEL1_MEDIUM_ATTACK_WAIT_TICS,
+    .minAttackWait = LEVEL1_MEDIUM_MIN_ATTACK_WAIT_TICS,
+    .maxAttackWait = LEVEL1_MEDIUM_MAX_ATTACK_WAIT_TICS,
     .randomDistanceMask = LEVEL1_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = LEVEL1_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 0,
@@ -187,7 +196,8 @@ static enemy_config_t level1_enemy_configs[] = {
   [LEVEL1_MEDIUM_STRONG_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level1_attackConfig2,
-    .attackWait = LEVEL1_MEDIUM_ATTACK_WAIT_TICS,
+    .minAttackWait = LEVEL1_MEDIUM_MIN_ATTACK_WAIT_TICS,
+    .maxAttackWait = LEVEL1_MEDIUM_MAX_ATTACK_WAIT_TICS,
     .randomDistanceMask = LEVEL1_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = LEVEL1_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 0,
@@ -199,7 +209,8 @@ static enemy_config_t level1_enemy_configs[] = {
   [LEVEL1_MEDIUM_FAST_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level1_attackConfig1,
-    .attackWait = LEVEL1_MEDIUM_ATTACK_WAIT_TICS,
+    .minAttackWait = LEVEL1_MEDIUM_MIN_ATTACK_WAIT_TICS,
+    .maxAttackWait = LEVEL1_MEDIUM_MAX_ATTACK_WAIT_TICS,
     .postAttackInvincibleTics = 0,
     .randomDistanceMask = LEVEL1_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = LEVEL1_RANDOM_FREQUENCY_MASK,
@@ -211,7 +222,8 @@ static enemy_config_t level1_enemy_configs[] = {
   [LEVEL1_HARD_ENEMY] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level1_attackConfig2,
-    .attackWait = LEVEL1_HARD_ATTACK_WAIT_TICS,
+    .minAttackWait = LEVEL1_HARD_MIN_ATTACK_WAIT_TICS,
+    .maxAttackWait = LEVEL1_HARD_MAX_ATTACK_WAIT_TICS,
     .randomDistanceMask = LEVEL1_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = LEVEL1_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 0,
@@ -222,7 +234,8 @@ static enemy_config_t level1_enemy_configs[] = {
   [LEVEL1_BOSS] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE*2,
     .attackConfig = level1_bossAttackConfig,
-    .attackWait = LEVEL1_BOSS_ATTACK_WAIT_TICS,
+    .minAttackWait = LEVEL1_BOSS_MIN_ATTACK_WAIT_TICS,
+    .maxAttackWait = LEVEL1_BOSS_MAX_ATTACK_WAIT_TICS,
     .postAttackInvincibleTics = 50,
     .randomDistanceMask = LEVEL1_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = 0xffff,//LEVEL1_RANDOM_FREQUENCY_MASK,
@@ -234,7 +247,8 @@ static enemy_config_t level1_enemy_configs[] = {
   [LEVEL1_DOORMAN] = {
     .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
     .attackConfig = level1_attackConfig1,
-    .attackWait = LEVEL1_MEDIUM_ATTACK_WAIT_TICS,
+    .minAttackWait = LEVEL1_HARD_MIN_ATTACK_WAIT_TICS,
+    .maxAttackWait = LEVEL1_HARD_MAX_ATTACK_WAIT_TICS,
     .randomDistanceMask = LEVEL1_RANDOM_DISTANCE_MASK,
     .randomFrequencyMask = LEVEL1_RANDOM_FREQUENCY_MASK,
     .postAttackInvincibleTics = 0,
@@ -462,7 +476,7 @@ level1_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
     return 0;
   }
 
-  if (object_y(ptr) == LEVEL1_ENEMY_BOSS_START_Y && object_x(ptr) > GAME_WORLD_WIDTH-144) {
+  if (object_y(ptr) == LEVEL1_ENEMY_BOSS_START_Y && object_x(ptr) > GAME_LEVEL1_WORLD_WIDTH-144) {
     ptr->velocity.x = -1;
   } else if (object_y(ptr) < GAME_PAVEMENT_START) {
     ptr->velocity.x = 0;
@@ -476,11 +490,11 @@ level1_doorIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
   if (player) {
     if (abs(object_y(ptr)-object_y(player)) <= data->attackRangeY) {
       if (ptr->velocity.x == 0) {
-	if (data->enemyAttackWait <= 0) {
-	  data->enemyAttackWait = data->enemyAttackWaitTics;
+	if (data->attackWait <= 0) {
+	  data->attackWait = data->minAttackWaitTics;
 	  attack = 1;
 	} else {
-	  data->enemyAttackWait-=deltaT;
+	  data->attackWait-=deltaT;
 	}
       }
     }

@@ -45,11 +45,17 @@ enemy_attackSolution(object_t* player, object_t* enemy, __UNUSED uint16_t deltaT
 {
   fighter_data_t* enemyData = fighter_data(enemy);
   uint16_t thresholdx;
+
+#if 1
   if (enemyData->numAttacks == 1) {
     thresholdx = enemyData->attackConfig[OBJECT_PUNCH_LEFT1].rangeX;
   } else {
-    thresholdx = enemyData->attackConfig[OBJECT_PUNCH_LEFT2].rangeX;
+    thresholdx = max(enemyData->attackConfig[OBJECT_PUNCH_LEFT1].rangeX, enemyData->attackConfig[OBJECT_PUNCH_LEFT2].rangeX);
   }
+#else
+  thresholdx = enemyData->attackConfig[enemy->actionId].rangeX;
+#endif
+
 
   int16_t a_x1 = (((object_x(player))) + player->widthOffset);
   int16_t a_x2 = (((object_x(player))) + (player->width - player->widthOffset));
@@ -122,6 +128,10 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
 {
   uint16_t attack = 0;
 
+  if (data->attackCount != 0) {
+    return 0;
+  }
+
   if (object_get_state(ptr) != OBJECT_STATE_ALIVE) {
     return 0;
   }
@@ -155,8 +165,8 @@ enemy_intelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
     attack = enemy_attackSolution(player, ptr, deltaT);
 
     if (attack) {
-      if (data->enemyAttackWait > 0) {
-	data->enemyAttackWait-=deltaT;
+      if (data->attackWait > 0) {
+	data->attackWait-=deltaT;
 	attack = 0;
       }
     } else {
@@ -241,8 +251,17 @@ enemy_add(uint16_t animId, uint16_t attributes, uint16_t x, uint16_t y, enemy_co
   ptr->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->width = OBJECT_WIDTH;
 
-  data->enemyAttackWaitTics = config->attackWait;
-  data->enemyAttackWait = config->attackWait;
+  data->minAttackWaitTics = config->minAttackWait;
+  data->maxAttackWaitTics = config->maxAttackWait;
+  uint16_t rn = random();
+  if (data->maxAttackWaitTics) {
+    data->attackWait = rn % data->maxAttackWaitTics;// + data->attackCount;
+    if (data->attackWait < data->minAttackWaitTics) {
+      data->attackWait = data->minAttackWaitTics;
+    }
+  } else {
+    data->attackWait = 0;
+  }
   data->randomDistanceMask = config->randomDistanceMask;
   data->randomFrequencyMask = config->randomFrequencyMask;
   data->speedX = config->speedX;

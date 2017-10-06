@@ -36,11 +36,11 @@ FAST_PROGRAM_BIN=out/fast/reloc.fast
 
 
 # all the components that form the game
-C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text.c sound.c music.c keyboard.c menu.c message.c record.c  string.c hw.c hiscore.c dos.c panic.c script.c object.c object_data.c sort.c player.c enemy.c logo.c fighter.c hand.c conductor.c alarm.c thing.c level1.c level2.c level3.c star.c random.c player_select.c motorbike.c gunfighter.c
+C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text.c sound.c music.c keyboard.c menu.c message.c record.c  string.c hw.c hiscore.c dos.c panic.c script.c object.c object_data.c sort.c player.c enemy.c logo.c fighter.c hand.c conductor.c alarm.c thing.c level1.c level2.c level3.c level4.c star.c random.c player_select.c motorbike.c gunfighter.c
 SRCS=blitmtext.s hw_asm.s trackloader.s palette_asm.s  P6112-Play.s music_asm.s keyboard_asm.s sg_trackdisk.s depacker_doynax.s
 MODULES=P61.jojo_ingame.bin P61.intro.bin P61.jojo_boss.bin P61.level2.bin
 SOUND_FILES=Terence_punch01.wav Terence_punch02.wav Bud_Punch01.wav enemy01.wav enemy02.wav enemy03.wav pop.wav coin1.wav rev.wav motorbike.wav shoot.wav
-LEVELS=1 2 3
+LEVELS=1 2 3 4
 IMAGES=font8x8.png menu.png scoreboard.png logo.png player_select.png #popup.png
 
 
@@ -69,7 +69,7 @@ VASM_OPTS=
 BASE_CFLAGS=-Wno-overlength-strings $(REGPARAM) $(VASM_OPTS) -fomit-frame-pointer  -pedantic-errors -Wfatal-errors -Wall -Werror -Wextra -Wshadow -Wuninitialized  -Wundef -Wbad-function-cast -Wparentheses $(INCLUDE) $(EXTRA_DEFINES) -DSCAN_CHECKER
 else
 VASM_OPTS=-Wa,-opt-speed #-Wa,-opt-speed -Wa,-showcrit -Wa,-opt-allbra -Wa,-opt-brajmp -Wa,-opt-lsl  -Wa,-opt-movem -Wa,-opt-mul -Wa,-opt-div -Wa,-opt-pea #-Wa,-opt-speed
-BASE_CFLAGS=-Wmissing-field-initializers -funsafe-loop-optimizations -Wno-overlength-strings $(REGPARAM) $(VASM_OPTS) -fomit-frame-pointer -noixemul -mcpu=68000 -m68000 -pedantic-errors -Wfatal-errors -Wall -Wunused-but-set-variable -Werror -Wextra -Wshadow -Wuninitialized -Wduplicated-cond -Wframe-larger-than=1563 -Wstack-usage=1563 -Wundef -Wbad-function-cast -Wparentheses $(INCLUDE) $(EXTRA_DEFINES)
+BASE_CFLAGS=-Wmissing-field-initializers -funsafe-loop-optimizations -Wno-overlength-strings $(REGPARAM) $(VASM_OPTS) -fomit-frame-pointer -noixemul -mcpu=68000 -m68000 -pedantic-errors -Wfatal-errors -Wall -Wunused-but-set-variable -Werror -Wextra -Wshadow -Wuninitialized -Wduplicated-cond -Wframe-larger-than=1563 -Wstack-usage=1563 -Wundef -Wbad-function-cast -Wparentheses -Wlogical-op -Wnull-dereference $(INCLUDE) $(EXTRA_DEFINES)
 endif
 
 C_LIBS=libgcc/out/gcc.lib
@@ -164,6 +164,7 @@ test-fast: emulate-fast
 	 $(RUN_SCRIPT)
 	-@grep FAIL lua.log || true
 	@grep PASSED lua.log
+	-@rm -f default.lua
 
 go: emulate-adf
 	cp adf_debugger.syms ~/Projects/amiga/debugger.syms
@@ -252,7 +253,7 @@ out/adf/sprite.o: $(HSPRITE_HEADERS)
 out/fast/sprite.o: $(HSPRITE_HEADERS)
 out/workbench/sprite.o: $(HSPRITE_HEADERS)
 
-out/background_%-map.c: assets/background_%.tmx out
+out/background_%-map.c: assets/background_%.tmx #out
 	$(MAPGEN) --c --depth=5 --input=$<
 	@mv background_$*-map.c out
 	@rm background_$*-indexes.c
@@ -327,6 +328,8 @@ out/fast/level_c_data_2.o: $(LEVEL_FILES)
 out/fast/level_f_data_2.o: $(LEVEL_FILES)
 out/fast/level_c_data_3.o: $(LEVEL_FILES)
 out/fast/level_f_data_3.o: $(LEVEL_FILES)
+out/fast/level_c_data_4.o: $(LEVEL_FILES)
+out/fast/level_f_data_4.o: $(LEVEL_FILES)
 .SECONDARY : $(LEVEL_FAST_BIN_FILES)
 out/fast/level_c_data_%.bin: out/fast/level_c_data_%.o
 ifeq ($(SCAN_CHECKER), 1)
@@ -350,9 +353,11 @@ out/fast/leveldata_f_%.c: out/fast/level_f_data_%.bin
 out/workbench/level_data_f_1.o: $(LEVEL_FILES)
 out/workbench/level_data_f_2.o: $(LEVEL_FILES)
 out/workbench/level_data_f_3.o: $(LEVEL_FILES)
+out/workbench/level_data_f_4.o: $(LEVEL_FILES)
 out/workbench/level_data_c_1.o: $(LEVEL_FILES)
 out/workbench/level_data_c_2.o: $(LEVEL_FILES)
 out/workbench/level_data_c_3.o: $(LEVEL_FILES)
+out/workbench/level_data_c_4.o: $(LEVEL_FILES)
 .SECONDARY: $(LEVEL_WB_BIN_FILES)
 out/workbench/level_c_data_%.bin: out/workbench/level_c_data_%.o
 	$(LD) -brawbin1 out/workbench/level_c_data_$*.o -o out/workbench/level_c_data_$*.bin
@@ -368,6 +373,7 @@ out/workbench/leveldata_f_%.c: out/workbench/level_f_data_%.bin
 out/adf/level_data_1.o: $(LEVEL_FILES)
 out/adf/level_data_2.o: $(LEVEL_FILES)
 out/adf/level_data_3.o: $(LEVEL_FILES)
+out/adf/level_data_4.o: $(LEVEL_FILES)
 out/adf/level_data_%.bin: out/adf/level_data_%.o
 	$(LD) -brawbin1 out/adf/level_data_$*.o -o out/adf/level_data_$*.bin
 out/adf/leveldata_%.c: out/adf/level_data_%.bin

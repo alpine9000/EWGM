@@ -40,6 +40,7 @@ uint16_t game_killScore;
 uint16_t game_scoreboardLoaded;
 uint16_t player1_character;
 uint16_t game_demo;
+uint16_t game_maxScrollX;
 #ifdef DEBUG
 uint16_t game_startReplay;
 uint16_t game_collisions;
@@ -593,7 +594,7 @@ game_loadLevel(menu_command_t command)
   game_over = 0;
   game_loopControl = GAME_LOOP_CONTROL_RUN;
   game_screenScrollX = 0xf;
-  game_requestCameraX(0);
+  //  game_requestCameraX(0);
   game_lastScrollFrame = 0;
 
 #ifdef GAME_TURTLE
@@ -639,6 +640,8 @@ game_loadLevel(menu_command_t command)
 
 
   level_load(game_level);
+
+  game_requestCameraX(0);
 
   tile_init();
 #ifdef GAME_TRIPLE_BUFFER
@@ -939,8 +942,8 @@ game_requestCameraX(int16_t targetCameraX)
 
   if (game_targetCameraX < 0) {
     game_targetCameraX = 0;
-  } else if (game_targetCameraX >= GAME_WORLD_WIDTH-SCREEN_WIDTH) {
-    game_targetCameraX = GAME_WORLD_WIDTH-SCREEN_WIDTH-1;
+  } else if (game_targetCameraX >= game_maxScrollX /*GAME_WORLD_WIDTH-SCREEN_WIDTH*/) {
+    game_targetCameraX = game_maxScrollX-1;//GAME_WORLD_WIDTH-SCREEN_WIDTH-1;
   }
 
   return targetCameraX;
@@ -1104,19 +1107,19 @@ game_pauseToggle(void)
   }
 }
 
-#ifdef DEBUG
-static void
+void
 game_maxHealth(void)
 {
   if (game_player1) {
     fighter_data(game_player1)->health = PLAYER_INITIAL_HEALTH;
+    game_updatePlayer1Health(GAME_PLAYER1_HEALTH_SCOREBOARD_X, fighter_data(game_player1)->health);
   }
 
   if (game_player2) {
     fighter_data(game_player2)->health = PLAYER_INITIAL_HEALTH;
+    game_updatePlayer2Health(GAME_PLAYER2_HEALTH_SCOREBOARD_X, fighter_data(game_player2)->health);
   }
 }
-#endif
 
 static int16_t
 game_processKeyboard()

@@ -2,8 +2,9 @@
 #define __FIGHTER_H
 
 #define FIGHTER_MAX_FIGHTERS              10
-#define FIGHTER_LONG_PUNCH_RANGE          13
-#define FIGHTER_SHORT_PUNCH_RANGE         8
+#define FIGHTER_LONG_PUNCH_RANGE          10
+#define FIGHTER_SHORT_PUNCH_RANGE         10
+//#define FIGHTER_SHORT_PUNCH_RANGE         8
 //#define FIGHTER_Y_ATTACK_THRESHOLD      6
 #define FIGHTER_ENEMY_Y_ATTACK_RANGE      6
 #define FIGHTER_SPAWN_FLASH_COUNT_TICS    5
@@ -50,8 +51,9 @@ typedef struct fighter_data {
   int16_t attackJumpY;
   int16_t flashCount;
   int16_t flashDurationTics;
-  int16_t enemyAttackWait;
-  int16_t enemyAttackWaitTics;
+  int16_t attackWait;
+  int16_t minAttackWaitTics;
+  int16_t maxAttackWaitTics;
   int16_t postAttackInvincibleTics;
   int16_t postAttackCount;
   int16_t speedX;

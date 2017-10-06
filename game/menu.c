@@ -264,6 +264,11 @@ menu_processKeyboard(void)
     game_startLevelIndex = 2;
     return -1;
     break;
+  case '4':
+    game_numPlayers = 1;
+    game_startLevelIndex = 3;
+    return -1;
+    break;
 #endif
 #if TRACKLOADER==0
   case KEYBOARD_CODE_ESC:
