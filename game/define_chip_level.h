@@ -1,8 +1,6 @@
 /* Welcome to the jungle */
 
 #define __LEVEL_STRINGIFY(x) #x
-#define __LEVEL_BACKGROUND_MAP2(x)   __LEVEL_STRINGIFY(out/background_ ##x-map.c)
-#define __LEVEL_BACKGROUND_MAP(x)    __LEVEL_BACKGROUND_MAP2(x)
 #define __LEVEL_SPRITE_IDS2(x)       __LEVEL_STRINGIFY(out/item_ ##x-sprites.c)
 #define __LEVEL_SPRITE_IDS(x)        __LEVEL_SPRITE_IDS2(x)
 #define __LEVEL_SPRITE_BITPLANES2(x) __LEVEL_STRINGIFY(out/sprite_ ##x.h)
@@ -15,23 +13,11 @@
 #define __LEVEL_SPRITE_MASK(x)       __LEVEL_SPRITE_MASK2(x)
 #define __LEVEL_TILE2(x)             __LEVEL_STRINGIFY(out/tile_ ##x.h)
 #define __LEVEL_TILE(x)              __LEVEL_TILE2(x)
-#define __LEVEL_FADE_IN2(x)          __LEVEL_STRINGIFY(out/palette_sprite_ ##x.h)
-#define __LEVEL_FADE_IN(x)           __LEVEL_FADE_IN2(x)
-#define __LEVEL_PALETTE_GREY2(x)     __LEVEL_STRINGIFY(out/palette_grey_sprite_ ##x.h)
-#define __LEVEL_PALETTE_GREY(x)      __LEVEL_PALETTE_GREY2(x)
-#ifdef DEBUG
-#define __LEVEL_RECORDING2(x)        __LEVEL_STRINGIFY(out/level_recording_ ##x.h)
-#else
-#define __LEVEL_RECORDING2(x)        __LEVEL_STRINGIFY(out/demo.h)
-#endif
-#define __LEVEL_RECORDING(x)         __LEVEL_RECORDING2(x)
 #define __LEVEL_C_DEFINITION2(x)       level_c_level##x
 #define __LEVEL_C_DEFINITION(x)        __LEVEL_C_DEFINITION2(x)
-#define __LEVEL_F_DEFINITION2(x)       level_f_level##x
-#define __LEVEL_F_DEFINITION(x)        __LEVEL_F_DEFINITION2(x)  
 
 //__SECTION_DISK
-level_chip_t 
+level_chip_t
 __LEVEL_C_DEFINITION(__LEVEL_NUMBER) =
   {
     .spriteBitplanes = {

@@ -33,7 +33,7 @@ typedef struct {
 } music_song_t;
 
 static music_song_t music_songs[] = {
-  [MUSIC_LEVEL_1] = { music_level_a, sizeof(music_level_a), 0},  // in game 
+  [MUSIC_LEVEL_1] = { music_level_a, sizeof(music_level_a), 0},  // in game
   [MUSIC_UNKNOWN_1] = { music_level_a, sizeof(music_level_a), 32}, // ?
   [MUSIC_GAME_OVER] = { music_level_a, sizeof(music_level_a), 33}, // ?
   [MUSIC_BOSS_1] = { music_level_a, sizeof(music_level_a), 35}, // boss
@@ -56,7 +56,7 @@ music_mute(void)
   hw_waitVerticalBlank();
   hw_waitVerticalBlank();
 }
-void 
+void
 music_play(uint16_t moduleIndex)
 {
   if (moduleIndex == music_currentModule) {
@@ -92,7 +92,7 @@ music_restart(void)
   hw_waitVerticalBlank();
   hw_waitVerticalBlank();
   P61_Init(music_current_ptr);
-  P61_Target = p61_Target;  
+  P61_Target = p61_Target;
 }
 
 

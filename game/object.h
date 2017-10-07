@@ -1,7 +1,8 @@
 #ifndef __OBJECT_H
 #define __OBJECT_H
 
-#define OBJECT_MAX_OBJECTS    24
+//#define OBJECT_MAX_OBJECTS    24
+#define OBJECT_MAX_OBJECTS    22
 #define OBJECT_PHYSICS_FACTOR 2
 #define OBJECT_WIDTH 32
 

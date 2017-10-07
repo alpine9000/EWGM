@@ -274,6 +274,7 @@ game_ctor(void)
 #ifdef GAME_TRIPLE_BUFFER
   game_backScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer3;
 #endif
+
   game_scoreBoardFrameBuffer = (frame_buffer_t)&game_frameBufferData.scoreBoardBuffer;
 }
 
@@ -311,6 +312,12 @@ game_startRecord(void)
 static void
 game_init(menu_command_t command)
 {
+  game_onScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer2;
+  game_offScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer1;
+#ifdef GAME_TRIPLE_BUFFER
+  game_backScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer3;
+#endif
+
   hw_waitVerticalBlank();
   palette_black();
 
@@ -353,6 +360,7 @@ game_complete(void)
 
   custom->dmacon = (DMAF_COPPER|DMAF_RASTER);
   //  message_screenOn(" "); // disables game copper list, prevents any artifacts during last exit loop
+
 
 #ifdef DEBUG
   game_checkCanary();
