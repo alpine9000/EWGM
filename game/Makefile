@@ -260,7 +260,7 @@ out/background_%-map.c: assets/background_%.tmx #out
 	@rm background_$*-sprites.c
 
 out/sprite_%.h: assets/sprite_%.png palettes/palette_%.pal
-	$(CROPPA) --width=320 --height=973 --input=assets/sprite_$*.png --output=out/sprite_$*-resized.png
+	$(CROPPA) --width=320 --height=1038 --input=assets/sprite_$*.png --output=out/sprite_$*-resized.png
 	$(IMAGECON)  --quantize --colors=32 --full-color-palette --input=out/sprite_$*-resized.png --output=out/sprite_$* --output-bitplanes --output-png --output-palette --output-grey-palette-asm --output-palette-asm --use-palette=palettes/palette_$*.pal --output-mask
 	$(IMAGECON) --onebitplane-mask --quantize --colors=32 --full-color-palette --input=out/sprite_$*-resized.png --output=out/sprite_1bp_$* --output-bitplanes --output-png --output-palette --output-grey-palette-asm --output-palette-asm --use-palette=palettes/palette_$*.pal --output-mask
 	cat out/sprite_$*.bin | $(BIN2C) > out/sprite_$*.h
@@ -424,7 +424,7 @@ out/fast/%.o: out/%.c
 ifeq ($(KEEP_ASM),1)
 	-@$(CC) -S $(CFLAGS_ASM_OUTPUT) $(FAST_DEFINES) $< -o out/fast/$*.s
 endif
-	$(CC) -c $(CFLAGS) $(FAST_DEFINES) $< -o out/fast/$*.o
+	$(CC) -E -c $(CFLAGS) $(FAST_DEFINES) $< -o out/fast/$*.o
 
 
 out/workbench/%.o: out/%.c
