@@ -258,9 +258,7 @@ player_init(uint16_t id, uint16_t animId, int16_t x, int16_t health)
   }
 
   fighter_attack_config_t* attackConfig;
-  //  attackConfig = game_difficulty == GAME_DIFFICULTY_HARD ? player_attackConfigHard : player_attackConfigEasy;
-  extern  fighter_attack_config_t level4_boss_attackConfig[];
-  attackConfig = level4_boss_attackConfig;
+  attackConfig = game_difficulty == GAME_DIFFICULTY_HARD ? player_attackConfigHard : player_attackConfigEasy;
   object_t* ptr = fighter_add(id, OBJECT_ATTRIBUTE_PLAYER, animId, x, 100, health, attackConfig, level_playerIntelligence());
   fighter_data_t* data = fighter_data(ptr);
   data->numAttacks = 2;

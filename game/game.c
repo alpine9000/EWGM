@@ -689,8 +689,7 @@ game_loadLevel(menu_command_t command)
 
 
   if (game_numPlayers == 2 || player1_character == 1) {
-    //    game_player1 = (game_newGame || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER1_STAND_RIGHT, 80, game_lastPlayer1Health) : 0;
-    game_player1 = (game_newGame || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_LEVEL4_1_BOSS_STAND_RIGHT, 80, game_lastPlayer1Health) : 0;
+    game_player1 = (game_newGame || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER1_STAND_RIGHT, 80, game_lastPlayer1Health) : 0;
     if (game_player1) {
       game_player1->joystickPos = &hw_joystickPos;
       game_player1->joystickButton = &hw_joystickButton;
