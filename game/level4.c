@@ -62,7 +62,8 @@ enum {
 #define LEVEL4_BOSS_ATTACK_RANGE         (SCREEN_WIDTH+32)
 #define LEVEL4_BOSS_ATTACK_DURATION_TICS (LEVEL4_BOSS_ATTACK_TICS_PER_FRAME*4)
 
-static fighter_attack_config_t level4_boss_attackConfig[] = {
+//static
+fighter_attack_config_t level4_boss_attackConfig[] = {
   [OBJECT_PUNCH_LEFT1] = {
     .rangeX = LEVEL4_BOSS_ATTACK_RANGE,
     .dammage = 0,
