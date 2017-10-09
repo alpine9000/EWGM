@@ -35,6 +35,10 @@ enum {
   LEVEL4_WAVE7_2,
   LEVEL4_WAVE7_3,
   LEVEL4_WAVE7_4,
+
+  LEVEL4_BOSS_1,
+  LEVEL4_BOSS_2,
+
 };
 
 enum {
@@ -42,6 +46,7 @@ enum {
   LEVEL4_MEDIUM_ENEMY = 1,
   LEVEL4_HARD_ENEMY = 2,
   LEVEL4_BASEBALL_ENEMY = 3,
+  LEVEL4_BOSS,
 };
 
 #define LEVEL4_RANDOM_DISTANCE_MASK    0x7f //0x3f
@@ -58,44 +63,33 @@ enum {
 #define LEVEL4_HARD_MIN_ATTACK_WAIT_TICS     5
 #define LEVEL4_HARD_MAX_ATTACK_WAIT_TICS     5
 
-#define LEVEL4_BASEBALL_ATTACK_DURATION_TICS (LEVEL4_3_ENEMY_ATTACK_TICS_PER_FRAME*3)
-#define LEVEL4_BOSS_ATTACK_RANGE         (SCREEN_WIDTH+32)
-#define LEVEL4_BOSS_ATTACK_DURATION_TICS (LEVEL4_BOSS_ATTACK_TICS_PER_FRAME*4)
+#define LEVEL4_BOSS_MIN_ATTACK_WAIT_TICS     25
+#define LEVEL4_BOSS_MAX_ATTACK_WAIT_TICS     25
 
-//static
-fighter_attack_config_t level4_boss_attackConfig[] = {
+#define LEVEL4_BOSS_ATTACK_DAMMAGE       20
+#define LEVEL4_BOSS_ATTACK_DURATION_TICS (LEVEL4_BOSS_ATTACK_TICS_PER_FRAME*3)
+#define LEVEL4_BOSS_ATTACK_RANGE         15
+
+static fighter_attack_config_t level4_bossAttackConfig[] = {
   [OBJECT_PUNCH_LEFT1] = {
     .rangeX = LEVEL4_BOSS_ATTACK_RANGE,
-    .dammage = 0,
+    .dammage = LEVEL4_BOSS_ATTACK_DAMMAGE,
     .durationTics = LEVEL4_BOSS_ATTACK_DURATION_TICS,
-    .hitAnimTic = LEVEL4_BOSS_ATTACK_TICS_PER_FRAME*2,
+    .hitAnimTic = LEVEL4_BOSS_ATTACK_TICS_PER_FRAME,
     .vx = 0,
     .vy = 0,
     .jump = 0
   },
+
   [OBJECT_PUNCH_RIGHT1] =  {
     .rangeX = LEVEL4_BOSS_ATTACK_RANGE,
-    .dammage = 0,
+    .dammage = LEVEL4_BOSS_ATTACK_DAMMAGE,
     .durationTics = LEVEL4_BOSS_ATTACK_DURATION_TICS,
-    .hitAnimTic = LEVEL4_BOSS_ATTACK_TICS_PER_FRAME*2,
+    .hitAnimTic = LEVEL4_BOSS_ATTACK_TICS_PER_FRAME,
     .vx = 0,
     .vy = 0,
     .jump = 0
-  }
-};
-
-static enemy_config_t level4_boss_config = {
-  .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE,
-  .attackConfig = level4_boss_attackConfig,
-  .minAttackWait = 0,
-  .maxAttackWait = 0,
-  .postAttackInvincibleTics = 10,
-  .numAttacks = 1,
-  .randomDistanceMask = 0x0,
-  .randomFrequencyMask = 0xffff,
-  .speedX = 1,
-  .speedY = 2,
-  .intelligence = gunfighter_intelligence
+  },
 };
 
 
@@ -177,28 +171,6 @@ static fighter_attack_config_t level4_attackConfig2[] = {
   }
 };
 
-static fighter_attack_config_t level4_baseballAttackConfig[] = {
-[OBJECT_PUNCH_LEFT1] = {
-    .rangeX = 16,
-    .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE,
-    .durationTics = LEVEL4_BASEBALL_ATTACK_DURATION_TICS,
-    .hitAnimTic = LEVEL4_3_ENEMY_ATTACK_TICS_PER_FRAME,
-    .vx = 0,
-    .vy = 0,
-    .jump = 0
-  },
-
-  [OBJECT_PUNCH_RIGHT1] =  {
-    .rangeX = 16,
-    .dammage = ENEMY_DEFAULT_ATTACK_DAMMAGE,
-    .durationTics = LEVEL4_BASEBALL_ATTACK_DURATION_TICS,
-    .hitAnimTic = LEVEL4_3_ENEMY_ATTACK_TICS_PER_FRAME,
-    .vx = 0,
-    .vy = 0,
-    .jump = 0
-  },
-
-};
 
 static enemy_config_t level4_enemy_configs[] = {
   [LEVEL4_EASY_ENEMY] = {
@@ -240,22 +212,36 @@ static enemy_config_t level4_enemy_configs[] = {
     .speedY = ENEMY_DEFAULT_SPEED,
     .intelligence = 0
   },
-  [LEVEL4_BASEBALL_ENEMY] = {
-    .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE+2,
-    .attackConfig = level4_baseballAttackConfig,
-    .minAttackWait = 15,
-    .maxAttackWait = 15,
+  [LEVEL4_BOSS] = {
+    .attackRangeY = FIGHTER_ENEMY_Y_ATTACK_RANGE*2,
+    .attackConfig = level4_bossAttackConfig,
+    .minAttackWait = LEVEL4_BOSS_MIN_ATTACK_WAIT_TICS,
+    .maxAttackWait = LEVEL4_BOSS_MAX_ATTACK_WAIT_TICS,
+    .postAttackInvincibleTics = 50,
     .randomDistanceMask = LEVEL4_RANDOM_DISTANCE_MASK,
-    .randomFrequencyMask = 0xffff,
-    .postAttackInvincibleTics = 10,
+    .randomFrequencyMask = 0xffff,//LEVEL4_RANDOM_FREQUENCY_MASK,
     .numAttacks = 1,
-    .speedX = ENEMY_DEFAULT_SPEED,
-    .speedY = ENEMY_DEFAULT_SPEED,
+    .speedX = 2,
+    .speedY = 2,
     .intelligence = 0
-  }
+  },
 };
 
 static level_enemy_config_t level4_configs[] = {
+  [LEVEL4_BOSS_1] =  {
+    .x = -48,
+    .y = GAME_PAVEMENT_START+100,
+    .animId = OBJECT_ANIM_LEVEL4_1_BOSS_STAND_RIGHT,
+    .config = &level4_enemy_configs[LEVEL4_BOSS],
+    .enemyCount = 0,
+  },
+  [LEVEL4_BOSS_2] =  {
+    .x = SCREEN_WIDTH+48,
+    .y = GAME_PAVEMENT_START+100,
+    .animId = OBJECT_ANIM_LEVEL4_2_BOSS_STAND_RIGHT,
+    .config = &level4_enemy_configs[LEVEL4_BOSS],
+    .enemyCount = 1,
+  },
   [LEVEL4_WAVE1_1] = {
     .x = -48,
     .y = GAME_PAVEMENT_START+100,
@@ -469,17 +455,6 @@ static level_enemy_config_t level4_configs[] = {
   } ,
 };
 
-static
-gunfighter_config_t level4_gunfighterConfig = {
-  .animId = OBJECT_ANIM_LEVEL4_1_BOSS_STAND_RIGHT,
-  .bulletAnimId = OBJECT_ANIM_BULLET_RIGHT,
-  .bulletSpeed = 16,
-  .bulletHeight = 24,
-  .bulletDammage = 20,
-  .bulletXOffsetLeft = 0,
-  .bulletXOffsetRight = OBJECT_WIDTH,
-};
-
 
 static int16_t
 level4_processEnemyConfig(uint16_t argument)
@@ -509,7 +484,6 @@ level4_addSixPack(uint16_t argument)
   object_t* top = thing_add(OBJECT_ID_SIXPACK, OBJECT_ANIM_SIXPACK1, OBJECT_ANIM_SIXPACK1, 0, argument, y, 0, 0);
   object_set_z(top, object_y(bottom)+2);
   thing_data(top)->platform = bottom;
-
 
   return 1;
 }
@@ -543,76 +517,14 @@ level4_addTableAndChairs(uint16_t x, int16_t y, int16_t beerX, int16_t bonusType
   return 1;
 }
 
-uint16_t level4_bossSequenceMaxX;
 
-//#ifdef DEBUG
+#ifdef DEBUG
 int16_t
 level4_pause(__UNUSED uint16_t argument)
 {
   return 0;
 }
-//#endif
-
-static void
-level4_restoreIntelligence(__UNUSED void* data)
-{
-  if (game_player1) {
-    game_player1->collisionsEnabled = 1;
-    fighter_data(game_player1)->intelligence = player_intelligence;
-    object_set_state(game_player1, OBJECT_STATE_ALIVE);
-    game_player1->visible = 1;
-    game_player1->velocity.x = 0;
-    game_player1->velocity.y = 0;
-  }
-  if (game_player2) {
-    game_player2->collisionsEnabled = 1;
-    fighter_data(game_player2)->intelligence = player_intelligence;
-    object_set_state(game_player2, OBJECT_STATE_ALIVE);
-    game_player2->visible = 1;
-    game_player2->velocity.x = 0;
-    game_player2->velocity.y = 0;
-  }
-}
-
-
-uint16_t
-level4_playerIntelligence(uint16_t deltaT, object_t* ptr, fighter_data_t* data)
-{
-  uint16_t attack = player_intelligence(deltaT, ptr, data);
-
-  if (object_x(ptr) >= level4_bossSequenceMaxX) {
-    ptr->velocity.x = 0;
-  }
-
-  if (game_player1 && game_player2) {
-    if (object_x(game_player1) >= level4_bossSequenceMaxX &&
-	object_x(game_player2) >= level4_bossSequenceMaxX ) {
-      game_requestCameraX(SCREEN_WIDTH*4);
-    }
-  } else {
-    if (object_x(ptr) >= level4_bossSequenceMaxX) {
-      game_requestCameraX(SCREEN_WIDTH*4);
-    }
-  }
-
-  return attack;
-}
-
-static int16_t
-level4_start(__UNUSED uint16_t argument)
-{
-  level4_bossSequenceMaxX = SCREEN_WIDTH*4;
-
-  if (game_player1) {
-    fighter_data(game_player1)->intelligence = level4_playerIntelligence;
-  }
-
-  if (game_player2) {
-    fighter_data(game_player2)->intelligence = level4_playerIntelligence;
-  }
-
-  return 1;
-}
+#endif
 
 
 static int16_t
@@ -622,12 +534,14 @@ level4_addTableAndChairs_1(uint16_t argument)
   return 1;
 }
 
+
 static int16_t
 level4_addTableAndChairs_2(uint16_t argument)
 {
   level4_addTableAndChairs(argument, 120, 20, THING_BONUS_TYPE_HEALTH);
   return 1;
 }
+
 
 static int16_t
 level4_addTableAndChairs_3(uint16_t argument)
@@ -641,12 +555,12 @@ static int16_t
 level4_bossSequence(__UNUSED uint16_t argument)
 {
   music_play(MUSIC_BOSS_1);
-  alarm_add(75, level4_restoreIntelligence, 0);
-  object_t* gf = gunfighter_add(&level4_gunfighterConfig, &level4_boss_config, SCREEN_WIDTH*5, 150);
-  fighter_data(gf)->health *= 4;
+  //  object_t* gf = gunfighter_add(&level4_gunfighterConfig, &level4_boss_config, SCREEN_WIDTH*5, 150);
+  //  fighter_data(gf)->health *= 4;
 
   return 1;
 }
+
 
 static int16_t
 level4_addBossChairs(uint16_t argument)
@@ -663,15 +577,14 @@ level4_addBossChairs(uint16_t argument)
   return 1;
 }
 
-/*
-  00 11 22 33 44
-  *
-*/
-
 conductor_instruction_t level4_instructions[] = {
   /* type, cameraX, argument, callback */
-  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level4_start},
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 32, level4_addTableAndChairs_1},
+
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL4_BOSS_1, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL4_BOSS_2, level4_processEnemyConfig},
+
+  //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level3_pause},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL4_WAVE1_1, level4_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, LEVEL4_WAVE1_2, level4_processEnemyConfig},
