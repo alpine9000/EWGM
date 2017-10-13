@@ -64,7 +64,7 @@
 #define FRAME_BUFFER_WIDTH       (SCREEN_WIDTH+48)
 #define FRAME_BUFFER_WIDTH_BYTES (FRAME_BUFFER_WIDTH/8)
 #define FRAME_BUFFER_OFFSCREEN_HEIGHT 0
-#define FRAME_BUFFER_HORIZONTAL_SCROLL_LINES (((FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH)/((MAP_MAX_TILE_WIDTH*2)))+1)
+#define FRAME_BUFFER_HORIZONTAL_SCROLL_LINES (((FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH)/((MAP_MAX_TILE_WIDTH*2)))+2)
 #define FRAME_BUFFER_NUM_LINES   ((PLAYAREA_HEIGHT+FRAME_BUFFER_OFFSCREEN_HEIGHT+FRAME_BUFFER_HORIZONTAL_SCROLL_LINES))
 #define FRAME_BUFFER_MAX_HEIGHT  (FRAME_BUFFER_NUM_LINES-1)
 
@@ -193,9 +193,9 @@ extern uint16_t game_killScore;
 extern uint16_t game_scoreboardLoaded;
 #ifdef DEBUG
 extern uint16_t game_collisions;
-extern uint16_t game_startReplay;
 #endif
 #ifndef RELEASE
+extern uint16_t game_startReplay;
 extern uint16_t game_startLevelIndex;
 #endif
 extern uint16_t player1_character;
@@ -254,6 +254,7 @@ enum {
 #include "hand.h"
 #include "alarm.h"
 #include "thing.h"
+#include "baloon.h"
 #include "star.h"
 #include "motorbike.h"
 #include "gunfighter.h"

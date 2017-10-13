@@ -29,6 +29,7 @@ typedef struct {
   uint16_t speedX;
   uint16_t speedY;
   uint16_t numAttacks;
+  uint16_t initialHealth;
   uint16_t (*intelligence)(uint16_t deltaT, object_t* ptr, fighter_data_t* data);
 } enemy_config_t;
 

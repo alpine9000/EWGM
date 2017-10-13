@@ -246,7 +246,10 @@ enemy_add(uint16_t animId, uint16_t attributes, uint16_t x, uint16_t y, enemy_co
   if (intelligence == 0) {
     intelligence = enemy_intelligence;
   }
-  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, attributes, animId, x, y, ENEMY_INITIAL_HEALTH, config->attackConfig, intelligence);
+  if (config->initialHealth == 0) {
+    config->initialHealth = ENEMY_INITIAL_HEALTH;
+  }
+  object_t* ptr =  fighter_add(OBJECT_ID_ENEMY, attributes, animId, x, y, config->initialHealth, config->attackConfig, intelligence);
   fighter_data_t* data = fighter_data(ptr);
   ptr->widthOffset = (OBJECT_WIDTH-ENEMY_WIDTH)/2;
   ptr->width = OBJECT_WIDTH;

@@ -42,10 +42,10 @@ uint16_t player1_character;
 uint16_t game_demo;
 uint16_t game_maxScrollX;
 #ifdef DEBUG
-uint16_t game_startReplay;
 uint16_t game_collisions;
 #endif
 #ifndef RELEASE
+uint16_t game_startReplay;
 uint16_t game_startLevelIndex;
 #endif
 
@@ -62,9 +62,12 @@ static volatile __SECTION_RANDOM_C struct framebuffeData {
 #ifdef GAME_TRIPLE_BUFFER
   uint8_t frameBuffer3[FRAME_BUFFER_WIDTH_BYTES*SCREEN_BIT_DEPTH*(FRAME_BUFFER_NUM_LINES)];
 #endif
-  uint8_t scoreBoardBuffer[SCOREBOARD_BUFFER_SIZE_BYTES];
 #ifdef DEBUG
   uint32_t canary2;
+#endif
+  uint8_t scoreBoardBuffer[SCOREBOARD_BUFFER_SIZE_BYTES];
+#ifdef DEBUG
+  uint32_t canary3;
 #endif
 } game_frameBufferData;
 
@@ -289,6 +292,9 @@ game_checkCanary(void)
   if (game_frameBufferData.canary2 != 0xaaaaaaaa) {
     PANIC("game_finish: dead canary 2");
   }
+  if (game_frameBufferData.canary3 != 0xa5a5a5a5) {
+    PANIC("game_finish: dead canary 3");
+  }
 }
 #endif
 
@@ -327,6 +333,7 @@ game_init(menu_command_t command)
 #ifdef DEBUG
   game_frameBufferData.canary1 = 0x55555555;
   game_frameBufferData.canary2 = 0xaaaaaaaa;
+  game_frameBufferData.canary3 = 0xa5a5a5a5;
 #endif
 
   if (command == MENU_COMMAND_RECORD) {
@@ -630,13 +637,13 @@ game_loadLevel(menu_command_t command)
   sound_init();
 
   if (game_numPlayers == 1) {
-#ifdef DEBUG
+#ifndef RELEASE
     if (command != MENU_COMMAND_REPLAY && command != MENU_COMMAND_RECORD) {
 #endif
       if (game_newGame && !game_demo) {
 	player1_character = player_select();
       }
-#ifdef DEBUG
+#ifndef RELEASE
     } else {
       game_startReplay = 0;
       player1_character = 1;
@@ -683,6 +690,7 @@ game_loadLevel(menu_command_t command)
   fighter_init();
   hand_init();
   thing_init();
+  baloon_init();
 #ifdef GAME_STARS
   star_init();
 #endif
@@ -1327,10 +1335,8 @@ game_waitForMenuExit(int16_t messageAnimId, int16_t offset)
     keyboard_read();
     hw_readJoystick();
     hw_readJoystick2();
-#ifdef DEBUG
 #ifdef SCRIPTING
     script_process();
-#endif
 #endif
   } while(!game_fire());
 }
@@ -1445,6 +1451,7 @@ game_loop()
 #ifdef DEBUG
   game_frameBufferData.canary1 = 0x55555555;
   game_frameBufferData.canary2 = 0xaaaaaaaa;
+  game_frameBufferData.canary3 = 0xa5a5a5a5;
 #endif
 
   custom->color[0] = 0;
@@ -1514,10 +1521,8 @@ game_loop()
       record_process();
     }
 
-#ifdef DEBUG
 #ifdef SCRIPTING
     script_process();
-#endif
 #endif
 
     if (game_processKeyboard()) {

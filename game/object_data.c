@@ -1388,6 +1388,19 @@ object_animation_t object_animations[] = {
     .speed = 0,
     .facing = FACING_RIGHT
   },
+  [OBJECT_ANIM_BALOON] = {
+    .start = SPRITE_BALOON_1,
+    .stop = SPRITE_BALOON_3,
+    .speed = 6,
+    .facing = FACING_RIGHT
+  },
+
+  [OBJECT_ANIM_BALOON_WAIT] = {
+    .start = SPRITE_BALOON_1,
+    .stop = SPRITE_BALOON_1,
+    .speed = 0,
+    .facing = FACING_RIGHT
+  },
   // =================================
   [OBJECT_ANIM_BONUS_COLA] = {
     .start = SPRITE_BONUS_COLA,
@@ -3181,6 +3194,30 @@ object_image_t object_imageAtlas[] = {
     },
 
   //==========================
+  [SPRITE_BALOON_1] = {
+    .x = 240,
+    .y = 450,
+    .w = 32,
+    .h = 29,
+    .dx = 0,
+    .dy = 0,
+    },
+  [SPRITE_BALOON_2] = {
+    .x = 240,
+    .y = 689,
+    .w = 32,
+    .h = 29,
+    .dx = 0,
+    .dy = 0,
+    },
+  [SPRITE_BALOON_3] = {
+    .x = 112,
+    .y = 898,
+    .w = 32,
+    .h = 29,
+    .dx = 0,
+    .dy = 0,
+    },
   [SPRITE_BONUS_BURGER] = {
     .x = 96,
     .y = 512,
@@ -4065,16 +4102,16 @@ object_image_t object_imageAtlas[] = {
     .dy = 0,
     },
   [SPRITE_ENEMY_LEVEL4_2_STAND_LEFT] = {
-    .x = 208,
-    .y = 619,
+    .x = 240,
+    .y = 834,
     .w = 32,
     .h = 50,
     .dx = 0,
     .dy = 0,
   },
   [SPRITE_ENEMY_LEVEL4_2_RUN_LEFT_1] = {
-    .x = 176,
-    .y = 619,
+    .x = 240,
+    .y = 784,
     .w = 32,
     .h = 50,
     .dx = -4,
@@ -4476,7 +4513,7 @@ object_image_t object_imageAtlas[] = {
   [SPRITE_BOSS_LEVEL4_2_STAND_LEFT] = {
     .x = 208,
     .y = 841,
-    .w = 48,
+    .w = 32,
     .h = 54,
     .dx = 0,
     .dy = 0,
