@@ -123,6 +123,23 @@ _menu_menuBitplanesEnd:
 	section data
 	endif
 
+	xdef _gameComplete_gameCompleteBitplanes
+	xdef _gameComplete_gameCompleteBitplanesEnd
+_gameComplete_gameCompleteBitplanes:
+	ifd GAME_COMPRESS_DATA
+	incbin	"out/game_complete.bin.lz"
+	else
+	incbin	"out/game_complete.bin"
+	endif
+_gameComplete_gameCompleteBitplanesEnd:
+
+	if TRACKLOADER=1
+	section disk
+	cnop 0,512
+	else
+	section data
+	endif
+
 	xdef _player_selectBitplanes
 	xdef _player_selectBitplanesEnd
 _player_selectBitplanes:
@@ -161,6 +178,10 @@ _sound_motorbike:
 	xdef _sound_rev
 _sound_rev:
 	incbin "out/rev.raw"
+
+	xdef _sound_baloon
+_sound_baloon:
+	incbin "out/baloon.raw"
 
 	xdef _sound_Bud_Punch01
 _sound_Bud_Punch01:

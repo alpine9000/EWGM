@@ -1384,8 +1384,28 @@ game_gameCompleteSequence(void)
   game_scoreBoardPlayer1Text(I18N_GAME_OVER);
   game_scoreBoardPlayer2Text(I18N_GAME_OVER);
 
-  game_waitForMenuExit(OBJECT_ANIM_GAMECOMPLETE, 55);
-  game_complete();
+  game_disableCopperEffects();
+  palette_fadeFrom(levelFast.palette, 32, 0, 32);
+
+#ifdef GAME_COMPRESS_DATA
+  extern uint8_t gameComplete_gameCompleteBitplanes;
+  extern uint8_t gameComplete_gameCompleteBitplanesEnd;
+  disk_loadCompressedData((void*)game_onScreenBuffer, (void*)&gameComplete_gameCompleteBitplanes, &gameComplete_gameCompleteBitplanesEnd-&gameComplete_gameCompleteBitplanes, 0);
+#else
+  disk_loadData((void*)game_onScreenBuffer, (void*)&logo_logoBitplanes, SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*LOGO_BIT_DEPTH);
+#endif
+
+  palette_fadeTo(levelFast.palette, 32, 0);
+
+  do {
+    keyboard_read();
+    hw_readJoystick();
+    hw_readJoystick2();
+  } while(!game_fire());
+
+  //for(;;);
+  //  game_waitForMenuExit(OBJECT_ANIM_GAMECOMPLETE, 55);
+   game_complete();
 }
 
 

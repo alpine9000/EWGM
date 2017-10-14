@@ -170,7 +170,7 @@ baloon_attack(object_t* attacker, object_t* ptr, int16_t dx)
   }
   baloon_data_t* data = baloon_data(ptr);
   if (!data->underAttack) {
-    //    sound_queueSound(SOUND_BUD_PUNCH01);
+    sound_queueSound(SOUND_BALOON);
 
     object_setAnim(ptr, OBJECT_ANIM_BALOON);
     data->underAttack = 1;

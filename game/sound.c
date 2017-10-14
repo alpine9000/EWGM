@@ -3,13 +3,13 @@
 #define SOUND_LATCH_SCANLINES 5
 
 #if SFX==1
-extern UWORD sound_Terence_punch01, sound_Terence_punch02, sound_Bud_Punch01, sound_enemy01, sound_enemy02, sound_enemy03, sound_pop, sound_coin, sound_rev, sound_motorbike, sound_shoot;
+extern UWORD sound_Terence_punch01, sound_Terence_punch02, sound_Bud_Punch01, sound_enemy01, sound_enemy02, sound_enemy03, sound_pop, sound_coin, sound_rev, sound_motorbike, sound_shoot, sound_baloon;
 
-static void 
+static void
 sound_playBud_Punch01(void);
-static void 
+static void
 sound_playTerence_punch01(void);
-static void 
+static void
 sound_playTerence_punch02(void);
 static void
 sound_playEnemy01(void);
@@ -27,6 +27,8 @@ static void
 sound_playMotorbike(void);
 static void
 sound_playShoot(void);
+static void
+sound_playBaloon(void);
 
 
 typedef struct {
@@ -58,7 +60,7 @@ static sound_config_t sound_queue[] = {
     .interrupt = 1,
     .loop = 0,
     .play = &sound_playEnemy03
-  },  
+  },
   [SOUND_BUD_PUNCH01] = {
     .count = 0,
     .delay = 1,
@@ -79,7 +81,7 @@ static sound_config_t sound_queue[] = {
     .interrupt = 1,
     .loop = 0,
     .play = &sound_playTerence_punch02
-  },    
+  },
   [SOUND_PICKUP] = {
     .count = 0,
     .delay = 1,
@@ -115,7 +117,14 @@ static sound_config_t sound_queue[] = {
     .interrupt = 1,
     .loop = 0,
     .play = &sound_playShoot
-  }  
+  },
+  [SOUND_BALOON] = {
+    .count = 0,
+    .delay = 1,
+    .interrupt = 0,
+    .loop = 0,
+    .play = &sound_playBaloon
+  }
 };
 
 static int16_t sound_next = -1;
@@ -140,15 +149,15 @@ static __SECTION_DATA_C UWORD sound_empty[2] = {0,0};
   uint32_t length_in_100ths_per_sec = (100*(length))/samplesPerSec;	\
   sound_loopLength = (length_in_100ths_per_sec/2);
 
-static void 
+static void
 sound_playBud_Punch01(void)
 {
   uint16_t periodIndex =  hw_verticalBlankCount & 0x3;
-  
+
   switch (periodIndex) {
   case 0:
   case 3:
-    {  
+    {
       _sound_hwPlay(sound_Bud_Punch01, 321, 64, 4711);
     }
     break;
@@ -162,10 +171,10 @@ sound_playBud_Punch01(void)
       _sound_hwPlay(sound_Bud_Punch01, 354, 64, 4711);
     }
     break;
-  }    
+  }
 }
 
-static void 
+static void
 sound_playTerence_punch01(void)
 {
   uint16_t periodIndex =  hw_verticalBlankCount & 0x3;
@@ -173,7 +182,7 @@ sound_playTerence_punch01(void)
   switch (periodIndex) {
   case 0:
   case 3:
-    {  
+    {
       _sound_hwPlay(sound_Terence_punch01, 321, 64, 2614);
     }
     break;
@@ -187,10 +196,10 @@ sound_playTerence_punch01(void)
       _sound_hwPlay(sound_Terence_punch01, 354, 64, 2614);
     }
     break;
-  }  
+  }
 }
 
-static void 
+static void
 sound_playTerence_punch02(void)
 {
   uint16_t periodIndex =  hw_verticalBlankCount & 0x3;
@@ -215,32 +224,38 @@ sound_playTerence_punch02(void)
   }
 }
 
-static void 
+static void
 sound_playEnemy01(void)
 {
-  _sound_hwPlay(sound_Bud_Punch01, 321, 64, (4711/2)+(4410/2)*2);  
+  _sound_hwPlay(sound_Bud_Punch01, 321, 64, (4711/2)+(4410/2)*2);
 }
 
 
-static void 
+static void
 sound_playShoot(void)
 {
-  _sound_hwPlay(sound_shoot, 321, 64, 11244/2);  
+  _sound_hwPlay(sound_shoot, 321, 64, 11244/2);
 }
 
-static void 
+static void
+sound_playBaloon(void)
+{
+  _sound_hwPlay(sound_baloon, 321, 64, 718/2);
+}
+
+static void
 sound_playEnemy02(void)
 {
   _sound_hwPlay(sound_Terence_punch01, 321, 64, (3503/2)+(2614/2)*2);
 }
 
 
-static void 
+static void
 sound_playEnemy03(void)
 {
-  _sound_hwPlay(sound_Terence_punch02, 321, 64, (4063/2)+(2851/2)*2);      
+  _sound_hwPlay(sound_Terence_punch02, 321, 64, (4063/2)+(2851/2)*2);
   /*
-  volatile struct AudChannel *aud = &custom->aud[3];  
+  volatile struct AudChannel *aud = &custom->aud[3];
   aud->ac_ptr = &sound_Terence_punch02;
   aud->ac_per = 321;
   aud->ac_vol = 64;
@@ -250,25 +265,25 @@ sound_playEnemy03(void)
 }
 
 
-static void 
+static void
 sound_playPop(void)
 {
-  _sound_hwPlay(sound_pop, 321, 64, 224);    
+  _sound_hwPlay(sound_pop, 321, 64, 224);
 }
 
-static void 
+static void
 sound_playRev(void)
 {
-  _sound_hwPlay(sound_rev, 321, 64, 7670);    
+  _sound_hwPlay(sound_rev, 321, 64, 7670);
 }
 
-static void 
+static void
 sound_playMotorbike(void)
 {
-  _sound_hwPlay(sound_motorbike, 420, 64, 11942);  
+  _sound_hwPlay(sound_motorbike, 420, 64, 11942);
 }
 
-static void 
+static void
 sound_playPickup(void)
 {
   _sound_hwPlay(sound_coin, 321, 64, 3919);
@@ -277,7 +292,7 @@ sound_playPickup(void)
 static void
 sound_resetSound(void)
 {
-  volatile struct AudChannel *aud = &custom->aud[3];    
+  volatile struct AudChannel *aud = &custom->aud[3];
   aud->ac_len = 2;
   //    aud->ac_per = 1;
   aud->ac_ptr = &sound_empty[0];
@@ -286,11 +301,11 @@ sound_resetSound(void)
 
 void
 sound_vbl(void)
-{ 
+{
   if (/*sound_loop == -1 &&*/ sound_triggered) {
     sound_triggered = 0;
     sound_resetSound();
-    hw_waitScanLines(SOUND_LATCH_SCANLINES);    
+    hw_waitScanLines(SOUND_LATCH_SCANLINES);
   }
 }
 
@@ -315,26 +330,26 @@ sound_schedule(void)
 	sound_interrupt();
       }
       (*sptr->play)();
-      sound_triggered = 1;      
+      sound_triggered = 1;
       if (sptr->loop) {
 	sound_loop = sound_next;
-	sound_triggered = 0;      	
+	sound_triggered = 0;
       }
-      sound_next = -1;      
+      sound_next = -1;
     }
-  } else if (sound_loop != -1 && hw_verticalBlankCount > (sound_loopStart + sound_loopLength)) {  
-    sound_interrupt();    
+  } else if (sound_loop != -1 && hw_verticalBlankCount > (sound_loopStart + sound_loopLength)) {
+    sound_interrupt();
     //    hw_waitScanLines(SOUND_LATCH_SCANLINES);
     (*sound_queue[sound_loop].play)();
     sound_loopStart = hw_verticalBlankCount;
-    sound_next = -1;    
+    sound_next = -1;
     sound_triggered = 0;
   }
 }
 
 
 static void
-sound_doQueue(sound_t sound) 
+sound_doQueue(sound_t sound)
 {
   if ((int16_t)sound >= sound_next) {
     sound_config_t* sptr = &sound_queue[sound];
@@ -342,8 +357,8 @@ sound_doQueue(sound_t sound)
       if (sptr->interrupt) {
 	sound_interrupt();
       }
-      (*sptr->play)();      
-      sound_next = -1;      
+      (*sptr->play)();
+      sound_next = -1;
     } else {
       sound_queue[sound].count = sound_queue[sound].delay;
       sound_next = sound;
@@ -356,8 +371,8 @@ __NOINLINE void
 sound_playSound(sound_t sound)
 {
   sound_config_t* sptr = &sound_queue[sound];
-  sound_interrupt(); 
-  (*sptr->play)();      
+  sound_interrupt();
+  (*sptr->play)();
   hw_waitScanLines(SOUND_LATCH_SCANLINES);
   sound_resetSound();
   sound_next = -1;
@@ -378,7 +393,7 @@ sound_endLoop(void)
   if (sound_loop != -1) {
     sound_loop = -1;
     hw_waitScanLines(SOUND_LATCH_SCANLINES);
-    sound_triggered = 1;    
+    sound_triggered = 1;
     sound_vbl();
   }
 }

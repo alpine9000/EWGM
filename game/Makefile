@@ -39,9 +39,9 @@ FAST_PROGRAM_BIN=out/fast/reloc.fast
 C_SRCS=init.c game.c gfx.c screen.c mouse.c tile.c palette.c level.c disk.c text.c sound.c music.c keyboard.c menu.c message.c record.c  string.c hw.c hiscore.c dos.c panic.c script.c object.c object_data.c sort.c player.c enemy.c logo.c fighter.c hand.c conductor.c alarm.c thing.c baloon.c level1.c level2.c level3.c level4.c star.c random.c player_select.c motorbike.c gunfighter.c
 SRCS=blitmtext.s hw_asm.s trackloader.s palette_asm.s  P6112-Play.s music_asm.s keyboard_asm.s sg_trackdisk.s depacker_doynax.s
 MODULES=P61.jojo_ingame.bin P61.intro.bin P61.jojo_boss.bin P61.level2.bin
-SOUND_FILES=Terence_punch01.wav Terence_punch02.wav Bud_Punch01.wav enemy01.wav enemy02.wav enemy03.wav pop.wav coin1.wav rev.wav motorbike.wav shoot.wav
+SOUND_FILES=Terence_punch01.wav Terence_punch02.wav Bud_Punch01.wav enemy01.wav enemy02.wav enemy03.wav pop.wav coin1.wav rev.wav motorbike.wav shoot.wav baloon.wav
 LEVELS=1 2 3 4
-IMAGES=font8x8.png menu.png scoreboard.png logo.png player_select.png #popup.png
+IMAGES=font8x8.png menu.png scoreboard.png logo.png player_select.png game_complete.png #popup.png
 
 
 # program arguments
@@ -211,6 +211,9 @@ out/fast/level.o: out/demo.h $(FAST_LEVEL_COMPRESSED) level.c
 out/workbench/star.o: star.c out/star-sprite.h
 out/workbench/level.o: out/demo.h $(WORKBENCH_LEVEL_COMPRESSED) level.c
 
+out/baloon.raw: assets/baloon.wav
+	sox  -R -v 1.0 $< -b 8 -c 1 -r 11025 -e signed $@
+
 out/shoot.raw: assets/shoot.wav
 	sox  -R -v 1.2 $< -b 8 -c 1 -r 11025 -e signed $@
 
@@ -293,6 +296,10 @@ out/fast/music.o: music.c $(MODULE_HEADERS)
 out/workbench/music.o: music.c $(MODULE_HEADERS)
 
 out/bootblock.bin: out/bootblock.o
+
+out/game_complete.bin: assets/game_complete.png palettes/palette_4.pal
+	$(IMAGECON) --colors=32 --full-color-palette --input=assets/game_complete.png --output=out/game_complete --output-bitplanes --output-png  --output-palette --use-palette=palettes/palette_4.pal
+	../tools/doynamite68k/out/lz -o out/game_complete.bin.lz out/game_complete.bin
 
 out/menu.bin: assets/menu.png palettes/menu.pal
 	$(IMAGECON) --colors=32 --full-color-palette --input=assets/menu.png --output=out/menu --output-bitplanes --output-png --output-palette-asm --output-palette --use-palette=palettes/menu.pal
@@ -560,12 +567,12 @@ ifeq ($(USE_BIG), 1)
 endif
 	-cp $@ ~/A1200/BlockySkies
 	-cp $@ ~/A4000/BlockySkies
-	rm -f bin/vegeta.adf
-	-../tools/amitools/xdftool.py bin/vegeta.adf format "vegeta" + write bin/newgame
-	-../tools/amitools/xdftool.py bin/vegeta.adf boot install
-	-../tools/amitools/xdftool.py bin/vegeta.adf makedir s
-	-../tools/amitools/xdftool.py bin/vegeta.adf write support/EndRun
-	-../tools/amitools/xdftool.py bin/vegeta.adf write support/startup-sequence s
+	#rm -f bin/vegeta.adf
+	#-../tools/amitools/xdftool.py bin/vegeta.adf format "vegeta" + write bin/newgame
+	#-../tools/amitools/xdftool.py bin/vegeta.adf boot install
+	#-../tools/amitools/xdftool.py bin/vegeta.adf makedir s
+	#-../tools/amitools/xdftool.py bin/vegeta.adf write support/EndRun
+	#-../tools/amitools/xdftool.py bin/vegeta.adf write support/startup-sequence s
 	@ls -l bin/$(GAME_NAME)
 
         #cp assets/BlockySkies.info bin

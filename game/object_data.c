@@ -3943,7 +3943,7 @@ object_image_t object_imageAtlas[] = {
     .y = 1,
     .w = 32,
     .h = 51,
-    .dx = 0,
+    .dx = 2,
     .dy = 0,
   },
   [SPRITE_ENEMY_LEVEL4_1_RUN_RIGHT_2] = {
@@ -3951,7 +3951,7 @@ object_image_t object_imageAtlas[] = {
     .y = 1,
     .w = 32,
     .h = 51,
-    .dx = 0,
+    .dx = 2,
     .dy = 0,
   },
   [SPRITE_ENEMY_LEVEL4_1_RUN_RIGHT_3] = {
@@ -3959,7 +3959,7 @@ object_image_t object_imageAtlas[] = {
     .y = 1,
     .w = 32,
     .h = 51,
-    .dx = -4,
+    .dx = -2,
     .dy = 0,
   },
   [SPRITE_ENEMY_LEVEL4_1_RUN_RIGHT_4] = {
@@ -3967,7 +3967,7 @@ object_image_t object_imageAtlas[] = {
     .y = 1,
     .w = 32,
     .h = 51,
-    .dx = 0,
+    .dx = 2,
     .dy = 0,
     },
   [SPRITE_ENEMY_LEVEL4_1_STAND_LEFT] = {
@@ -4031,7 +4031,7 @@ object_image_t object_imageAtlas[] = {
     .y = 0,
     .w = 32,
     .h = 52,
-    .dx = 4,
+    .dx = 6,
     .dy = 0,
     },
   [SPRITE_ENEMY_LEVEL4_1_PUNCH_RIGHT_2] = {
@@ -4039,7 +4039,7 @@ object_image_t object_imageAtlas[] = {
     .y = 1,
     .w = 32,
     .h = 51,
-    .dx = 0,
+    .dx = 2,
     .dy = 0,
     },
 
@@ -4048,7 +4048,7 @@ object_image_t object_imageAtlas[] = {
     .y = 53,
     .w = 48,
     .h = 51,
-    .dx = -7,
+    .dx = -5,
     .dy = 0,
     },
   [SPRITE_ENEMY_LEVEL4_1_HIT_LEFT] = {
@@ -4074,7 +4074,7 @@ object_image_t object_imageAtlas[] = {
     .y = 569,
     .w = 32,
     .h = 50,
-    .dx = 0,
+    .dx = 2,
     .dy = 0,
   },
   [SPRITE_ENEMY_LEVEL4_2_RUN_RIGHT_2] = {
@@ -4082,7 +4082,7 @@ object_image_t object_imageAtlas[] = {
     .y = 569,
     .w = 32,
     .h = 50,
-    .dx = 0,
+    .dx = 2,
     .dy = 0,
   },
   [SPRITE_ENEMY_LEVEL4_2_RUN_RIGHT_3] = {
@@ -4090,7 +4090,7 @@ object_image_t object_imageAtlas[] = {
     .y = 569,
     .w = 32,
     .h = 50,
-    .dx = -5,
+    .dx = -3,
     .dy = 0,
   },
     [SPRITE_ENEMY_LEVEL4_2_RUN_RIGHT_4] = {
@@ -4098,7 +4098,7 @@ object_image_t object_imageAtlas[] = {
     .y = 569,
     .w = 32,
     .h = 50,
-    .dx = 0,
+    .dx = 2,
     .dy = 0,
     },
   [SPRITE_ENEMY_LEVEL4_2_STAND_LEFT] = {
@@ -4114,7 +4114,7 @@ object_image_t object_imageAtlas[] = {
     .y = 784,
     .w = 32,
     .h = 50,
-    .dx = -4,
+    .dx = 1,
     .dy = 0,
   },
   [SPRITE_ENEMY_LEVEL4_2_RUN_LEFT_2] = {
@@ -4122,7 +4122,7 @@ object_image_t object_imageAtlas[] = {
     .y = 619,
     .w = 32,
     .h = 50,
-    .dx = 0,
+    .dx = 5,
     .dy = 0,
   },
   [SPRITE_ENEMY_LEVEL4_2_RUN_LEFT_3] = {
@@ -4130,7 +4130,7 @@ object_image_t object_imageAtlas[] = {
     .y = 619,
     .w = 32,
     .h = 50,
-    .dx = -2,
+    .dx = 3,
     .dy = 0,
   },
     [SPRITE_ENEMY_LEVEL4_2_RUN_LEFT_4] = {
@@ -4138,7 +4138,7 @@ object_image_t object_imageAtlas[] = {
     .y = 619,
     .w = 32,
     .h = 50,
-    .dx = 0,
+    .dx = 5,
     .dy = 0,
     },
 
@@ -4147,7 +4147,7 @@ object_image_t object_imageAtlas[] = {
     .y = 619,
     .w = 32,
     .h = 51,
-    .dx = -7,
+    .dx = -2,
     .dy = 0,
     },
   [SPRITE_ENEMY_LEVEL4_2_PUNCH_LEFT_2] = {
@@ -4155,7 +4155,7 @@ object_image_t object_imageAtlas[] = {
     .y = 619,
     .w = 32,
     .h = 50,
-    .dx = -7,
+    .dx = -2,
     .dy = 0,
     },
   [SPRITE_ENEMY_LEVEL4_2_PUNCH_RIGHT_1] = {
@@ -4163,7 +4163,7 @@ object_image_t object_imageAtlas[] = {
     .y = 568,
     .w = 32,
     .h = 51,
-    .dx = 4,
+    .dx = 6,
     .dy = 0,
     },
   [SPRITE_ENEMY_LEVEL4_2_PUNCH_RIGHT_2] = {
@@ -4171,7 +4171,7 @@ object_image_t object_imageAtlas[] = {
     .y = 569,
     .w = 32,
     .h = 50,
-    .dx = 0,
+    .dx = 2,
     .dy = 0,
     },
   [SPRITE_ENEMY_LEVEL4_2_HIT_RIGHT] = {
@@ -4179,7 +4179,7 @@ object_image_t object_imageAtlas[] = {
     .y = 569,
     .w = 48,
     .h = 50,
-    .dx = -7,
+    .dx = -5,
     .dy = 0,
     },
   [SPRITE_ENEMY_LEVEL4_2_HIT_LEFT] = {
@@ -4187,7 +4187,7 @@ object_image_t object_imageAtlas[] = {
     .y = 619,
     .w = 48,
     .h = 50,
-    .dx = -6,
+    .dx = -1,
     .dy = 0,
     },
 
