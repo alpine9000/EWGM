@@ -600,7 +600,7 @@ level4_processEnemyConfig(uint16_t argument)
   return 0;
 }
 
-
+#if 0
 static int16_t
 level4_addSixPack(uint16_t argument)
 {
@@ -631,14 +631,14 @@ level4_addSixPack2(uint16_t argument)
 
   return 1;
 }
-
+#endif
 
 static int16_t
 level4_addTableAndChairs(uint16_t x, int16_t y, int16_t beerX, int16_t bonusType)
 {
-  object_t* table = thing_add(OBJECT_ID_TABLE, OBJECT_ANIM_TABLE, OBJECT_ANIM_TABLE, 0, x+15, y, 0, 0);
+  object_t* table = thing_add(OBJECT_ID_TABLE, OBJECT_ANIM_TABLE, OBJECT_ANIM_TABLE, 0, x+15, y, 1, THING_BONUS_TYPE_HEALTH);
   thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR1, OBJECT_ANIM_CHAIR1, 0, x+45+15, y, 1, THING_BONUS_TYPE_HEALTH);
-  thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR2, OBJECT_ANIM_CHAIR2, 0, x, y, 0, 0);
+  thing_add(OBJECT_ID_CHAIR, OBJECT_ANIM_CHAIR2, OBJECT_ANIM_CHAIR2, 0, x, y, 1, THING_BONUS_TYPE_HEALTH);
 
   object_t* beer = thing_addJunk(table, OBJECT_ANIM_BONUS_BEER, 0, beerX, -20, 1, bonusType);
   //  object_set_py(beer, object_py(table)+(0*OBJECT_PHYSICS_FACTOR));
@@ -670,6 +670,16 @@ level4_addTableAndChairs_1(__UNUSED uint16_t argument)
   return 1;
 }
 
+
+static int16_t
+level4_bossBaloons(__UNUSED uint16_t argument)
+{
+  baloon_add(argument+60, 100);
+  baloon_add(argument+90, 120);
+  baloon_add(argument+83, 80);
+  baloon_add(argument+100, 130);
+  return 1;
+}
 
 static int16_t
 level4_addTableAndChairs_2(uint16_t argument)
@@ -740,8 +750,7 @@ conductor_instruction_t level4_instructions[] = {
   {CONDUCTOR_INSTRUCTION_CAMERAX, SCREEN_WIDTH*2, LEVEL4_WAVE5_4, level4_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), level_scroll},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+64, (SCREEN_WIDTH*3)+64, level4_addSixPack},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+128, (SCREEN_WIDTH*3)+128, level4_addSixPack2},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+32, (SCREEN_WIDTH*3)+32, level4_addTableAndChairs_3},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), LEVEL4_WAVE6_1, level4_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), LEVEL4_WAVE6_2, level4_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*2)+(SCREEN_WIDTH/2), LEVEL4_WAVE6_3, level4_processEnemyConfig},
@@ -754,7 +763,6 @@ conductor_instruction_t level4_instructions[] = {
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3), LEVEL4_WAVE7_4, level4_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*3)+(SCREEN_WIDTH/2), level_scroll},
-  //  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3)+32, (SCREEN_WIDTH*4)+32, level4_addTableAndChairs_3},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3)+(SCREEN_WIDTH/2), LEVEL4_WAVE8_1, level4_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3)+(SCREEN_WIDTH/2), LEVEL4_WAVE8_2, level4_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3)+(SCREEN_WIDTH/2), LEVEL4_WAVE8_3, level4_processEnemyConfig},
@@ -776,6 +784,7 @@ conductor_instruction_t level4_instructions[] = {
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*4)+(SCREEN_WIDTH/2), level_scroll},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*4)+32, (SCREEN_WIDTH*5)+32, level4_addTableAndChairs_3},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*5)+132, level4_bossBaloons},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*4)+(SCREEN_WIDTH/2), LEVEL4_WAVE4_1, level4_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*4)+(SCREEN_WIDTH/2), LEVEL4_WAVE4_2, level4_processEnemyConfig},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*4)+(SCREEN_WIDTH/2), LEVEL4_WAVE4_3, level4_processEnemyConfig},
@@ -783,21 +792,24 @@ conductor_instruction_t level4_instructions[] = {
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*5), level_scroll},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*5), LEVEL4_WAVE7_1, level4_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*5), LEVEL4_WAVE7_2, level4_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*5), LEVEL4_WAVE7_3, level4_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*5), LEVEL4_WAVE7_4, level4_processEnemyConfig},
+  //  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*5), LEVEL4_WAVE7_2, level4_processEnemyConfig},
+  // {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*5), LEVEL4_WAVE7_3, level4_processEnemyConfig},
+  //{CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*5), LEVEL4_WAVE7_4, level4_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*5)+(SCREEN_WIDTH/2), level_scroll},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*5)+32, (SCREEN_WIDTH*6)+32, level4_addTableAndChairs_3},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*6)+132, level4_bossBaloons},
   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*5)+(SCREEN_WIDTH/2), LEVEL4_WAVE4_1, level4_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*5)+(SCREEN_WIDTH/2), LEVEL4_WAVE4_2, level4_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*5)+(SCREEN_WIDTH/2), LEVEL4_WAVE4_3, level4_processEnemyConfig},
-  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*5)+(SCREEN_WIDTH/2), LEVEL4_WAVE4_4, level4_processEnemyConfig},
+  //  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*5)+(SCREEN_WIDTH/2), LEVEL4_WAVE4_2, level4_processEnemyConfig},
+  //  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*5)+(SCREEN_WIDTH/2), LEVEL4_WAVE4_3, level4_processEnemyConfig},
+  //  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*5)+(SCREEN_WIDTH/2), LEVEL4_WAVE4_4, level4_processEnemyConfig},
 
   {CONDUCTOR_INSTRUCTION_CAMERAX, 0, (SCREEN_WIDTH*6)-1, level_scroll},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*6)-1, LEVEL4_BOSS_1, level4_processEnemyConfig},
+  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*6)-1, LEVEL4_BOSS_2, level4_processEnemyConfig},
   //  {CONDUCTOR_INSTRUCTION_CAMERAX, 0, 0, level4_pause},
   //  {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*3)+1, SCREEN_WIDTH*4, level4_addBossChairs},
-   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*4)-1, 0, level4_bossSequence},
+   {CONDUCTOR_INSTRUCTION_CAMERAX, (SCREEN_WIDTH*6)-1, 0, level4_bossSequence},
 
 
   {CONDUCTOR_INSTRUCTION_END, 0, 0, 0},

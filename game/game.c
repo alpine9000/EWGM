@@ -1388,6 +1388,9 @@ game_gameCompleteSequence(void)
   palette_fadeFrom(levelFast.palette, 32, 0, 32);
 
 #ifdef GAME_COMPRESS_DATA
+  game_onScreenBuffer = (frame_buffer_t)&game_frameBufferData.frameBuffer2;
+  screen_pokeCopperList(game_onScreenBuffer, copper.bpl, FRAME_BUFFER_WIDTH_BYTES);
+
   extern uint8_t gameComplete_gameCompleteBitplanes;
   extern uint8_t gameComplete_gameCompleteBitplanesEnd;
   disk_loadCompressedData((void*)game_onScreenBuffer, (void*)&gameComplete_gameCompleteBitplanes, &gameComplete_gameCompleteBitplanesEnd-&gameComplete_gameCompleteBitplanes, 0);
@@ -1395,7 +1398,11 @@ game_gameCompleteSequence(void)
   disk_loadData((void*)game_onScreenBuffer, (void*)&logo_logoBitplanes, SCREEN_WIDTH_BYTES*SCREEN_HEIGHT*LOGO_BIT_DEPTH);
 #endif
 
+  copper.bplcon1[1] = 0xff;
+
   palette_fadeTo(levelFast.palette, 32, 0);
+
+  game_enableCopperEffects();
 
   do {
     keyboard_read();

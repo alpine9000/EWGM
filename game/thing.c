@@ -116,7 +116,7 @@ thing_awardBonus(object_t* ptr, object_t* collision)
   fighter_data_t* data = fighter_data(collision);
   switch (thing_data(ptr)->bonusType) {
   case THING_BONUS_TYPE_HEALTH:
-    data->health += 40;
+    data->health += 80;
     break;
   case THING_BONUS_TYPE_POINTS:
     switch (collision->id) {
