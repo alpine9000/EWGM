@@ -3347,7 +3347,7 @@ object_image_t object_imageAtlas[] = {
     .y = 336,
     .w = 32,
     .h = 53,
-    .dx = 0,
+    .dx = 2,
     .dy = 0,
   },
   [SPRITE_LEVEL3_BOSS_RUN_RIGHT_2] = {
@@ -3355,7 +3355,7 @@ object_image_t object_imageAtlas[] = {
     .y = 336,
     .w = 32,
     .h = 53,
-    .dx = 0,
+    .dx = 2,
     .dy = 0,
   },
   [SPRITE_LEVEL3_BOSS_RUN_RIGHT_3] = {
@@ -3363,7 +3363,7 @@ object_image_t object_imageAtlas[] = {
     .y = 336,
     .w = 32,
     .h = 53,
-    .dx = -5,
+    .dx = -3,
     .dy = 0,
   },
     [SPRITE_LEVEL3_BOSS_RUN_RIGHT_4] = {
@@ -3371,7 +3371,7 @@ object_image_t object_imageAtlas[] = {
     .y = 336,
     .w = 32,
     .h = 53,
-    .dx = 0,
+    .dx = 2,
     .dy = 0,
     },
   [SPRITE_LEVEL3_BOSS_STAND_LEFT] = {
@@ -3387,7 +3387,7 @@ object_image_t object_imageAtlas[] = {
     .y = 448,
     .w = 32,
     .h = 53,
-    .dx = -5,
+    .dx = 0,
     .dy = 0,
   },
   [SPRITE_LEVEL3_BOSS_RUN_LEFT_2] = {
@@ -3395,7 +3395,7 @@ object_image_t object_imageAtlas[] = {
     .y = 395,
     .w = 32,
     .h = 53,
-    .dx = 0,
+    .dx = 5,
     .dy = 0,
   },
   [SPRITE_LEVEL3_BOSS_RUN_LEFT_3] = {
@@ -3403,7 +3403,7 @@ object_image_t object_imageAtlas[] = {
     .y = 448,
     .w = 32,
     .h = 53,
-    .dx = -2,
+    .dx = 3,
     .dy = 0,
   },
     [SPRITE_LEVEL3_BOSS_RUN_LEFT_4] = {
@@ -3411,7 +3411,7 @@ object_image_t object_imageAtlas[] = {
     .y = 395,
     .w = 32,
     .h = 53,
-    .dx = 0,
+    .dx = 5,
     .dy = 0,
     },
 
@@ -3420,7 +3420,7 @@ object_image_t object_imageAtlas[] = {
     .y = 448,
     .w = 32,
     .h = 53,
-    .dx = -8,
+    .dx = -3,
     .dy = 0,
     },
   [SPRITE_LEVEL3_BOSS_ATTACK_LEFT_2] = {
@@ -3428,7 +3428,7 @@ object_image_t object_imageAtlas[] = {
     .y = 448,
     .w = 32,
     .h = 53,
-    .dx = -7,
+    .dx = -2,
     .dy = 0,
     },
   [SPRITE_LEVEL3_BOSS_MISSILE_LEFT_1] = {
@@ -3436,7 +3436,7 @@ object_image_t object_imageAtlas[] = {
     .y = 448,
     .w = 48,
     .h = 53,
-    .dx = -10,
+    .dx = -5,
     .dy = 0,
     },
 
@@ -3445,7 +3445,7 @@ object_image_t object_imageAtlas[] = {
     .y = 395,
     .w = 32,
     .h = 53,
-    .dx = 1,
+    .dx = 3,
     .dy = 0,
     },
   [SPRITE_LEVEL3_BOSS_ATTACK_RIGHT_2] = {
@@ -3453,7 +3453,7 @@ object_image_t object_imageAtlas[] = {
     .y = 395,
     .w = 32,
     .h = 53,
-    .dx = 1,
+    .dx = 3,
     .dy = 0,
     },
   [SPRITE_LEVEL3_BOSS_MISSILE_RIGHT_1] = {
@@ -3461,7 +3461,7 @@ object_image_t object_imageAtlas[] = {
     .y = 395,
     .w = 48,
     .h = 56,
-    .dx = 1,
+    .dx = 3,
     .dy = 0,
     },
 
@@ -3470,7 +3470,7 @@ object_image_t object_imageAtlas[] = {
     .y = 395,
     .w = 48,
     .h = 53,
-    .dx = -7,
+    .dx = -5,
     .dy = 0,
     },
   [SPRITE_LEVEL3_BOSS_HIT_LEFT] = {
@@ -3478,7 +3478,7 @@ object_image_t object_imageAtlas[] = {
     .y = 448,
     .w = 48,
     .h = 53,
-    .dx = -6,
+    .dx = -1,
     .dy = 0,
     },
 

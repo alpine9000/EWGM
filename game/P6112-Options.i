@@ -6,13 +6,13 @@ P61mode	=2	;Try other modes ONLY IF there are no Fxx commands >= 20.
 
 ;climbyskies_ingame_usecode equ $9D59|$8559|$400000
 jojo_ingame_usecode equ $C409F5F|$B95E|$400901B
-;usecode=-1;
-usecode=jojo_ingame_usecode
+usecode=-1;
+;usecode=jojo_ingame_usecode
 
 
-		;CHANGE! to the USE hexcode from P61con for a big 
+		;CHANGE! to the USE hexcode from P61con for a big
 		;CPU-time gain! (See module usecodes at end of source)
-		;Multiple songs, single playroutine? Just "OR" the 
+		;Multiple songs, single playroutine? Just "OR" the
 		;usecodes together!
 
 		;...STOP! Have you changed it yet!? ;)
@@ -32,7 +32,7 @@ splitchans=1	;#channels to be split off to be decrunched at "playtime frame"
 		;Experiment to find minimum rastertime, but it should be 1 or 2
 		;for 3-4 channels songs and 0 or 1 with less channels.
 
-visuctrs=0	;enables visualizers in this example: P61_visuctr0..3.w 
+visuctrs=0	;enables visualizers in this example: P61_visuctr0..3.w
 		;containing #frames (#lev6ints if cia=1) elapsed since last
 		;instrument triggered. (0=triggered this frame.)
 		;Easy alternative to E8x or 1Fx sync commands.
@@ -66,15 +66,15 @@ opt020	=0	;1=enable optimizations for 020+. Please be 68000 compatible!
 p61jump	=0	;0 to leave out P61_SetPosition (size gain)
 		;1 if you need to force-start at a given position fex in a game
 
-C	=0	;If you happen to have some $dffxxx value in a6, you can 
+C	=0	;If you happen to have some $dffxxx value in a6, you can
 		;change this to $xxx to not have to load it before P61_Music.
 
 clraudxdat=0	;enable smoother start of quiet sounds. probably not needed.
 
-optjmp	=1	;0=safety check for jump beyond end of song. Clear it if you 
+optjmp	=1	;0=safety check for jump beyond end of song. Clear it if you
 		;play unknown P61 songs with erroneous Bxx/Dxx commands in them
 
-oscillo	=0	;1 to get a sample window (ptr, size) to read and display for 
+oscillo	=0	;1 to get a sample window (ptr, size) to read and display for
 		;oscilloscope type effects (beta, noshorts=1, pad instruments)
 		;IMPORTANT: see ;@@ note about chipmem dc.w buffer.
 
@@ -82,19 +82,16 @@ quietstart=0	;attempt to avoid the very first click in some modules
 		;IMPORTANT: see ;@@ note about chipmem dc.w buffer.
 
 use1Fx=0	;Optional extra effect-sync trigger (*). If your module is free
-		;from E commands, and you add E8x to sync stuff, this will 
-		;change the usecode to include a whole code block for all E 
-		;commands. You can avoid this by only using 1Fx. (You can 
-		;also use this as an extra sync command if E8x is not enough, 
+		;from E commands, and you add E8x to sync stuff, this will
+		;change the usecode to include a whole code block for all E
+		;commands. You can avoid this by only using 1Fx. (You can
+		;also use this as an extra sync command if E8x is not enough,
 		;of course.)
 
-;(*) Slideup values>116 causes bugs in Protracker, and E8 causes extra-code 
+;(*) Slideup values>116 causes bugs in Protracker, and E8 causes extra-code
 ;for all E-commands, so I used this. It's only faster if your song contains 0
 ;E-commands, so it's only useful to a few, I guess. Bit of cyclemania. :)
 
-;Just like E8x, you will get the trigger after the P61_Music call, 1 frame 
-;BEFORE it's heard. This is good, because it allows double-buffered graphics 
+;Just like E8x, you will get the trigger after the P61_Music call, 1 frame
+;BEFORE it's heard. This is good, because it allows double-buffered graphics
 ;or effects running at < 50 fps to show the trigger synced properly.
-
-
-

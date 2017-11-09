@@ -11,14 +11,15 @@ enum {
   MUSIC_BOSS_COMPLETE,
   MUSIC_INTRO,
   MUSIC_LEVEL_2,
+  MUSIC_LEVEL_3,
 };
 
 extern uint16_t P61_Target;
 extern uint16_t P61_Master;
 
-void 
+void
 music_setVolume(__REG("d0", int32_t volume));
-void 
+void
 music_play(uint16_t moduleIndex);
 void
 music_restart(void);
