@@ -8,7 +8,7 @@
 #define PLAYER_SPEED_Y              1
 #define PLAYER_INITIAL_HEALTH       100
 
-#define PLAYER_ATTACK_DAMMAGE_EASY  100
+#define PLAYER_ATTACK_DAMMAGE_EASY  40
 #define PLAYER_ATTACK_DAMMAGE_HARD  20
 
 object_t*

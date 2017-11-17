@@ -49,4 +49,10 @@ level_scroll(uint16_t argument);
 
 fighter_intelligence_functor
 level_playerIntelligence(void);
+
+void
+level_gameOver(void);
+
+void
+level_complete(void);
 #endif

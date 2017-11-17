@@ -38,6 +38,8 @@ typedef struct {
   char* readyMessage;
   fighter_intelligence_functor playerIntelligence;
   int16_t mapTileWidth;
+  int16_t gameOverMusic;
+  int16_t levelCompleteMusic;
 } level_config_t;
 
 level_config_t level_levels[LEVEL_NUM_LEVELS] = {
@@ -50,7 +52,9 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
     .moduleIndex = MUSIC_LEVEL_1,
     .readyMessage = I18N_LEVEL1_READY,
     .playerIntelligence = player_intelligence,
-    .mapTileWidth = MAP_LEVEL1_TILE_WIDTH
+    .mapTileWidth = MAP_LEVEL1_TILE_WIDTH,
+    .gameOverMusic = MUSIC_GAME_OVER,
+    .levelCompleteMusic = MUSIC_BOSS_COMPLETE,
   },
   {
     .levelChipData = level_level2_c_data,
@@ -61,7 +65,9 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
     .moduleIndex = MUSIC_LEVEL_2,
     .readyMessage = I18N_LEVEL2_READY,
     .playerIntelligence = level2_playerIntelligence,
-    .mapTileWidth = MAP_LEVEL2_TILE_WIDTH
+    .mapTileWidth = MAP_LEVEL2_TILE_WIDTH,
+    .gameOverMusic = MUSIC_GAME_OVER,
+    .levelCompleteMusic = MUSIC_BOSS_COMPLETE,
   },
   {
     .levelChipData = level_level3_c_data,
@@ -72,7 +78,9 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
     .moduleIndex = MUSIC_LEVEL_3,
     .readyMessage = I18N_LEVEL3_READY,
     .playerIntelligence = player_intelligence,
-    .mapTileWidth = MAP_LEVEL3_TILE_WIDTH
+    .mapTileWidth = MAP_LEVEL3_TILE_WIDTH,
+    .gameOverMusic = MUSIC_LEVEL_3_GAME_OVER,
+    .levelCompleteMusic = MUSIC_LEVEL_3_BOSS_COMPLETE,
   },
   {
     .levelChipData = level_level4_c_data,
@@ -83,7 +91,9 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
     .moduleIndex = 0,
     .readyMessage = I18N_LEVEL4_READY,
     .playerIntelligence = player_intelligence,
-    .mapTileWidth = MAP_LEVEL4_TILE_WIDTH
+    .mapTileWidth = MAP_LEVEL4_TILE_WIDTH,
+    .gameOverMusic = MUSIC_GAME_OVER,
+    .levelCompleteMusic = MUSIC_BOSS_COMPLETE,
   }
 };
 
@@ -187,4 +197,16 @@ level_scroll(uint16_t argument)
   }
 
   return 0;
+}
+
+void
+level_gameOver(void)
+{
+  music_play(level_levels[level_current].gameOverMusic);
+}
+
+void
+level_complete(void)
+{
+  music_play(level_levels[level_current].levelCompleteMusic);
 }

@@ -45,6 +45,9 @@ static music_song_t music_songs[] = {
   [MUSIC_INTRO] = { music_intro, sizeof(music_intro), 0},       // intro
   [MUSIC_LEVEL_2] = { music_level_2, sizeof(music_level_2), 0},  // level2
   [MUSIC_LEVEL_3] = { music_level_3, sizeof(music_level_3), 0},  // level3
+  [MUSIC_LEVEL_3_BOSS] = { music_level_3, sizeof(music_level_3), 28},  // level3
+  [MUSIC_LEVEL_3_BOSS_COMPLETE] = { music_level_3, sizeof(music_level_3), 32},  // level3
+  [MUSIC_LEVEL_3_GAME_OVER] = { music_level_3, sizeof(music_level_3), 26},  // level3
 };
 
 static void* music_current_ptr = music_module1;

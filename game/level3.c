@@ -624,7 +624,7 @@ level3_bossSequence(__UNUSED uint16_t argument)
 {
   game_maxHealth();
 
-  music_play(MUSIC_BOSS_1);
+  music_play(MUSIC_LEVEL_3_BOSS);
 
   return 1;
 }

@@ -1348,7 +1348,7 @@ game_setGameOver(void)
   if (!game_over) {
     game_over = 1;
     game_loopControl = GAME_LOOP_CONTROL_GAME_OVER;
-    music_play(MUSIC_GAME_OVER);
+    level_gameOver();
   }
 }
 
@@ -1380,7 +1380,7 @@ game_gameOverSequence(void)
 static void
 game_gameCompleteSequence(void)
 {
-  music_play(MUSIC_BOSS_COMPLETE);
+  level_complete();
   game_scoreBoardPlayer1Text(I18N_GAME_OVER);
   game_scoreBoardPlayer2Text(I18N_GAME_OVER);
 
@@ -1419,7 +1419,7 @@ game_gameCompleteSequence(void)
 static void
 game_levelCompleteSequence(void)
 {
-  music_play(MUSIC_BOSS_COMPLETE);
+  level_complete();
 
   game_waitForMenuExit(OBJECT_ANIM_LEVELCOMPLETE, 55);
 }
