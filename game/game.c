@@ -695,44 +695,35 @@ game_loadLevel(menu_command_t command)
   star_init();
 #endif
 
+  //  game_player1 = game_player2 = 0;
 
-  if (game_numPlayers == 2 || player1_character == 1) {
-    game_player1 = (game_newGame || game_player1) ? player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER1_STAND_RIGHT, 80, game_lastPlayer1Health) : 0;
-    if (game_player1) {
+  if (player1_character == 1) {
+    if (game_newGame || game_player1) {
+      game_player1 = player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER1_STAND_RIGHT, 80, game_lastPlayer1Health) ;
       game_player1->joystickPos = &hw_joystickPos;
       game_player1->joystickButton = &hw_joystickButton;
     }
-  } else {
-    game_player1 = 0;
-  }
-
-  if (game_numPlayers == 2 || player1_character == 0) {
-    game_player2 = (game_newGame || game_player2) ? player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER2_STAND_RIGHT, SCREEN_WIDTH-80, game_lastPlayer2Health) : 0;
-    if (game_player2) {
+  } else if (player1_character == 0) {
+    if (game_newGame || game_player2) {
+      game_player2 = player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER2_STAND_RIGHT, SCREEN_WIDTH-80, game_lastPlayer2Health);
       game_player2->joystickPos = &hw_joystickPos;
       game_player2->joystickButton = &hw_joystickButton;
     }
-  } else {
-    game_player2 = 0;
   }
 
-  if (game_numPlayers == 2 && player1_character == 0) {
-    if (game_player2) {
-      game_player2->joystickPos = &hw_joystick2Pos;
-      game_player2->joystickButton = &hw_joystick2Button;
-    }
-    if (game_player1) {
-       game_player1->joystickPos = &hw_joystickPos;
-       game_player1->joystickButton = &hw_joystickButton;
-    }
-  } else if (game_numPlayers == 2 && player1_character == 1) {
-    if (game_player1) {
-      game_player1->joystickPos = &hw_joystick2Pos;
-      game_player1->joystickButton = &hw_joystick2Button;
-    }
-    if (game_player2) {
-       game_player2->joystickPos = &hw_joystickPos;
-       game_player2->joystickButton = &hw_joystickButton;
+  if (game_numPlayers == 2) {
+    if (player1_character == 0) {
+      if (game_newGame || game_player1) {
+	game_player1 = player_init(OBJECT_ID_PLAYER1, OBJECT_ANIM_PLAYER1_STAND_RIGHT, 80, game_lastPlayer1Health) ;
+	game_player1->joystickPos = &hw_joystick2Pos;
+	game_player1->joystickButton = &hw_joystick2Button;
+      }
+    } else {
+      if (game_newGame || game_player2) {
+	game_player2 = player_init(OBJECT_ID_PLAYER2, OBJECT_ANIM_PLAYER2_STAND_RIGHT, SCREEN_WIDTH-80, game_lastPlayer2Health);
+	game_player2->joystickPos = &hw_joystick2Pos;
+	game_player2->joystickButton = &hw_joystick2Button;
+      }
     }
   }
 
@@ -1522,6 +1513,8 @@ game_loop()
   }
 
   game_newGame = 1;
+  game_player1 = game_player2 = 0;
+  player1_character = 0;
 #ifndef RELEASE
   game_level = game_startLevelIndex;
 #else
