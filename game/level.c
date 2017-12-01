@@ -66,8 +66,8 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
     .readyMessage = I18N_LEVEL2_READY,
     .playerIntelligence = level2_playerIntelligence,
     .mapTileWidth = MAP_LEVEL2_TILE_WIDTH,
-    .gameOverMusic = MUSIC_GAME_OVER,
-    .levelCompleteMusic = MUSIC_BOSS_COMPLETE,
+    .gameOverMusic = MUSIC_LEVEL_2_GAME_OVER,
+    .levelCompleteMusic = MUSIC_LEVEL_2_BOSS_COMPLETE,
   },
   {
     .levelChipData = level_level3_c_data,
@@ -209,4 +209,11 @@ void
 level_complete(void)
 {
   music_play(level_levels[level_current].levelCompleteMusic);
+}
+
+
+uint16_t
+level_finalLevel(void)
+{
+  return level_current == LEVEL_NUM_LEVELS-1;
 }

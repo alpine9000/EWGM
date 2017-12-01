@@ -326,7 +326,7 @@ fighter_dieCallback(__UNUSED object_t* me)
   }
   if (enemy_count == 0) {
     if (conductor_complete()) {
-      if (game_numPlayers == 2 && game_player1 && game_player2) {
+      if (game_numPlayers == 2 && game_player1 && game_player2 && level_finalLevel()) {
 	game_loopControl = GAME_LOOP_CONTROL_DISPLAY_DEATHMATCH;
       } else {
 	game_setGameComplete();

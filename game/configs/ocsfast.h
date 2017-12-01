@@ -1,4 +1,3 @@
-#define GAME_TURTLE                   1
 #define GAME_KEYBOARD_ENABLED         1
 #define GAME_RECORDING                1
 #define GAME_ONE_BITPLANE_SPRITE_MASK 1

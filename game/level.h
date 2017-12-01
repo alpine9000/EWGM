@@ -55,4 +55,7 @@ level_gameOver(void);
 
 void
 level_complete(void);
+
+uint16_t
+level_finalLevel(void);
 #endif

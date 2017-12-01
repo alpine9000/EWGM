@@ -647,7 +647,7 @@ level2_bossSequence(__UNUSED uint16_t argument)
 {
   game_maxHealth();
 
-  music_play(MUSIC_BOSS_1);
+  music_play(MUSIC_LEVEL_2_BOSS);
   alarm_add(75, level2_restoreIntelligence, 0);
   object_t* gf = gunfighter_add(&level2_gunfighterConfig, &level2_boss_config, SCREEN_WIDTH*5, 150);
   fighter_data(gf)->health *= 4;

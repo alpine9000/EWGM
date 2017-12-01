@@ -12,6 +12,7 @@ WORKBENCH_DEFINES=-DTRACKLOADER=0 -DFASTRAM=0 -DGAME_CONFIG=CONFIG_WORKBENCH -DG
 
 # programs and paths
 CC=/usr/local/amiga/vgcc/bin/m68k-amigaosvasm-gcc
+#CC=/usr/local/amiga/bebbo/bin/m68k-amigaosvasm-gcc
 VASM=/usr/local/amiga/vgcc/bin/vasmm68k_mot
 LD=/usr/local/amiga/vgcc/bin/vlink
 NDK=/usr/local/amiga/vgcc/ndk/

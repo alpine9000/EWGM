@@ -9,12 +9,13 @@
 #define CONFIG_OCS_FAST    2
 #define CONFIG_WORKBENCH   3
 
-#define DEBUG
+//#define DEBUG
 //#define GAME_AUTOSTART_REPLAY
 //#define GAME_DEBUG_OBJECT_RENDERING
 
 #ifdef DEBUG
 #define SCRIPTING
+#define GAME_TURTLE                   1
 #else
 #define RELEASE
 #endif
