@@ -30,6 +30,10 @@ static __SECTION_DISK uint8_t music_level_3[] DISK_SECTOR_ALIGN = {
 #include "out/P61.level3.lz.h"
 };
 
+static __SECTION_DISK uint8_t music_level_4[] DISK_SECTOR_ALIGN = {
+#include "out/P61.level4.lz.h"
+};
+
 typedef struct {
   uint8_t* data;
   uint32_t length;
@@ -51,6 +55,10 @@ static music_song_t music_songs[] = {
   [MUSIC_LEVEL_3_BOSS] = { music_level_3, sizeof(music_level_3), 28},  // level3
   [MUSIC_LEVEL_3_BOSS_COMPLETE] = { music_level_3, sizeof(music_level_3), 32},  // level3
   [MUSIC_LEVEL_3_GAME_OVER] = { music_level_3, sizeof(music_level_3), 26},  // level3
+  [MUSIC_LEVEL_4] = { music_level_4, sizeof(music_level_4), 0},  // level4
+  [MUSIC_LEVEL_4_BOSS] = { music_level_4, sizeof(music_level_4), 31},  // level4
+  [MUSIC_LEVEL_4_BOSS_COMPLETE] = { music_level_4, sizeof(music_level_4), 35},  // level4
+  [MUSIC_LEVEL_4_GAME_OVER] = { music_level_4, sizeof(music_level_4), 29},  // level4
 };
 
 static void* music_current_ptr = music_module1;

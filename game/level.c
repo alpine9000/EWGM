@@ -88,12 +88,12 @@ level_config_t level_levels[LEVEL_NUM_LEVELS] = {
     .chipDataSize = sizeof(level_level4_c_data),
     .fastDataSize = sizeof(level_level4_f_data),
     .instructions = level4_instructions,
-    .moduleIndex = 0,
+    .moduleIndex = MUSIC_LEVEL_4,
     .readyMessage = I18N_LEVEL4_READY,
     .playerIntelligence = player_intelligence,
     .mapTileWidth = MAP_LEVEL4_TILE_WIDTH,
-    .gameOverMusic = MUSIC_GAME_OVER,
-    .levelCompleteMusic = MUSIC_BOSS_COMPLETE,
+    .gameOverMusic = MUSIC_LEVEL_4_GAME_OVER,
+    .levelCompleteMusic = MUSIC_LEVEL_4_BOSS_COMPLETE,
   }
 };
 

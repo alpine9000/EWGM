@@ -700,7 +700,7 @@ level4_addTableAndChairs_3(uint16_t argument)
 static int16_t
 level4_bossSequence(__UNUSED uint16_t argument)
 {
-  music_play(MUSIC_BOSS_1);
+  music_play(MUSIC_LEVEL_4_BOSS);
   //  object_t* gf = gunfighter_add(&level4_gunfighterConfig, &level4_boss_config, SCREEN_WIDTH*5, 150);
   //  fighter_data(gf)->health *= 4;
 

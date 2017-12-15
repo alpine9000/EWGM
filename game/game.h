@@ -264,6 +264,7 @@ extern object_t* game_player1;
 extern object_t* game_player2;
 
 #define game_fire() ((!(hw_lastJoystickButton&0x1) && (hw_joystickButton&0x1)) || \
+                     (!(hw_lastJoystick2Button&0x1) && (hw_joystick2Button&0x1)) || \
 			(keyboard_lastKey != keyboard_key && keyboard_key && keyboard_code == KEYBOARD_CODE_RETURN))
 void
 game_loop(void);
