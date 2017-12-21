@@ -8,7 +8,7 @@ memory_ctor(void)
   extern char endBSS;
   //  extern char startRandom;
   //  extern char endRandom;
-  
+
   memset(&startBSS, 0x0, &endBSS-&startBSS);
   //  memset(&startRandom, 0x0, &endRandom-&startRandom);
 
@@ -17,15 +17,15 @@ memory_ctor(void)
   extern char endBSSChip;
   //  extern char startRandom;
   //  extern char endRandom;
-  
+
   memset(&startBSSChip, 0x0, &endBSSChip-&startBSSChip);
 #endif
 #endif
 }
 
 __EXTERNAL void
-init_amiga(void) 
-{  
+init_amiga(void)
+{
   custom->dmacon = 0x7ff;  /* disable all dma */
   custom->intena = 0x7fff; /* disable all interrupts */
 
@@ -44,13 +44,17 @@ init_amiga(void)
   custom->bplcon3 = 0xc00;
   custom->bplcon4 = 0x11;
 
-  custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_MASTER);  
-  
+  custom->dmacon = (DMAF_BLITTER|DMAF_SETCLR|DMAF_MASTER);
+
   memory_ctor();
   gfx_ctor();
   text_ctor();
-  
+
+#if TRACKLOADER==0
+  akiko_ctor();
+#endif
+
 #ifdef GAME_KEYBOARD_ENABLED
   keyboard_ctor();
-#endif  
+#endif
 }

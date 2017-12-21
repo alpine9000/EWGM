@@ -1647,6 +1647,7 @@ game_loop()
 #ifdef GAME_KEYBOARD_ENABLED
   keyboard_dtor();
 #endif
+    akiko_dtor();
 #endif
 }
 

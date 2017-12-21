@@ -59,7 +59,7 @@ WAITBLIT	MACRO
 .\@		btst	#6,$02(a6)
 		bne.b	.\@
 		ENDM
-		
+
 
 ***************************************************
 *** CLOSE DOWN SYSTEM - INIT PROGRAM		***
@@ -67,14 +67,14 @@ WAITBLIT	MACRO
 
 StartupFromOS:
 	movem.l	d0-a6,-(a7)
-
+        jsr     akiko_present
 	jsr	_hiscore_load
 	bsr     SaveSystemClock
 	move.l	$4.w,a6
 	lea	GFXname(pc),a1
 	moveq	#0,d0
 	jsr	-552(a6)			; OpenLibrary()
-	move.l	d0,GFXbase 
+	move.l	d0,GFXbase
 	beq	END
 	move.l	d0,a6
 	move.l	34(a6),OldView
@@ -110,7 +110,7 @@ StartupFromOS:
 	movem.l d0-a6,-(sp)
 	move.l	a7,longJump			; save the stack pointer
 	jmp	Main
-LongJump:	
+LongJump:
 	move.l	longJump,a7	; this isn't required as the stack pointer will not be corrupted
 	movem.l (sp)+,d0-a6     ; but it does allow us to bail out of the middle of a subroutine
 
@@ -152,7 +152,7 @@ END:	lea	$dff000,a6
 
 	bsr	RestoreSystemClock
 	jsr	_hiscore_save();                ; OS should be running now, safe to do OS stuff
-	
+
 	movem.l	(a7)+,d0-a6
 	moveq	#0,d0
 	rts
@@ -181,7 +181,7 @@ GetVBR:
 	dc.w 	$4e7a,$c801 	;hex for "movec VBR,a4"
 	move.l	a4,d0
 	rte				; back to user state code
-	
+
 
 *******************************************
 *** VERTICAL BLANK (VBI)		***

@@ -104,7 +104,7 @@ hiscore_load(__UNUSED uint16_t ignoreErrors)
 {
   int16_t loaded = 0;
 #ifdef GAME_HISCORE_SAVE_ENABLE
-  dos_init();
+  amigaos_ctor();
 
   BPTR file = Open("PROGDIR:hiscore.bin", MODE_OLDFILE);
 
@@ -120,6 +120,10 @@ hiscore_load(__UNUSED uint16_t ignoreErrors)
 #endif
   if (!loaded) {
     disk_loadData(&hiscore, &hiscore_disk, sizeof(hiscore_disk));
+  }
+
+  if (akiko_present) {
+    Delay(50);
   }
 
   return 0;
@@ -314,7 +318,7 @@ __EXTERNAL void
 hiscore_save(void)
 {
 #ifdef GAME_HISCORE_SAVE_ENABLE
-  dos_init();
+  amigaos_ctor();
 
   hiscore.checksum = hiscore_checksum();
 
@@ -323,6 +327,8 @@ hiscore_save(void)
     Write(file, &hiscore, sizeof(hiscore));
     Close(file);
   }
+
+  amigaos_dtor();
 #endif
 }
 
