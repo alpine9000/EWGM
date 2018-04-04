@@ -4,7 +4,7 @@ This game engine was developed for Amiga Wave who did the art/concept/sfx/music 
 
 It's written in C and 68k asm and targets "classic" Amiga with 1mb of ram.
 
-The game code is Copyright (c) 2017 Enable Software Pty Ltd except for the following which are either public domain or copright by their respective authors:
+The game code is Copyright (c) 2017 Enable Software Pty Ltd except for the following which are either public domain or copyright by their respective authors:
 
 1. [P6112-Play.s](game/P6112-Play.s) Photon/Scoopex,Guru/Sahara Surfers
 2. [P6112-Options.i](game/P6112-Options.i) Photon/Scoopex,Guru/Sahara Surfers
