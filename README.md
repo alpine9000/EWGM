@@ -2,7 +2,7 @@
 
 This game engine was developed for Amiga Wave who did the art/concept/sfx/music and released the game.
 
-It's written in C and 68k asm and tagets "classic" Amiga with 1mb of ram.
+It's written in C and 68k asm and targets "classic" Amiga with 1mb of ram.
 
 The game code is Copyright (c) 2017 Enable Software Pty Ltd except for the following which are either public domain or copright by their respective authors:
 
